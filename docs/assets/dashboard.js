@@ -333,6 +333,70 @@ function shortModel(m) {
   return String(m).replace(/^claude-/, "").replace(/^anthropic\//, "");
 }
 
+// ---------- lightbox ----------------------------------------------------
+//
+// Each comparison PNG rendered into the dashboard (iter-detail body or
+// scratchpad thumbnail) gets data-zoomable="1" so the lightbox click
+// handler picks it up. We use event delegation on document so the
+// handler covers images that are appended later.
+function openLightbox(src, caption) {
+  const box = document.getElementById("lightbox");
+  const img = document.getElementById("lightbox-img");
+  const cap = document.getElementById("lightbox-cap");
+  const newtab = document.getElementById("lightbox-newtab");
+  if (!box || !img) return;
+  img.src = src;
+  img.alt = caption || "comparison";
+  if (cap) cap.textContent = caption || "";
+  if (newtab) newtab.href = src;
+  box.hidden = false;
+  box.setAttribute("aria-hidden", "false");
+  // Defer focus so the browser doesn't scroll the page first.
+  setTimeout(() => {
+    const close = document.getElementById("lightbox-close");
+    if (close) close.focus();
+  }, 0);
+}
+function closeLightbox() {
+  const box = document.getElementById("lightbox");
+  const img = document.getElementById("lightbox-img");
+  if (!box) return;
+  box.hidden = true;
+  box.setAttribute("aria-hidden", "true");
+  if (img) img.src = "";
+}
+
+document.addEventListener("click", (ev) => {
+  const t = ev.target;
+  if (!(t instanceof Element)) return;
+  // Open: any image flagged zoomable.
+  const zoomable = t.closest("[data-zoomable]");
+  if (zoomable && zoomable.tagName === "IMG") {
+    ev.preventDefault();
+    openLightbox(zoomable.getAttribute("src"),
+                 zoomable.getAttribute("alt") || "");
+    return;
+  }
+  // Close: any click on the backdrop, the close button, or outside the
+  // figure inside the open lightbox.
+  if (t.closest("#lightbox-close")) {
+    closeLightbox();
+    return;
+  }
+  // Don't treat the new-tab anchor click as close.
+  if (t.closest("#lightbox-newtab")) return;
+  const box = document.getElementById("lightbox");
+  if (box && !box.hidden && !t.closest(".lightbox-figure")) {
+    closeLightbox();
+  }
+});
+document.addEventListener("keydown", (ev) => {
+  if (ev.key === "Escape") {
+    const box = document.getElementById("lightbox");
+    if (box && !box.hidden) closeLightbox();
+  }
+});
+
 function renderRunCard(r) {
   const card = el("a", {
     class: "dash-run-card",
@@ -503,7 +567,12 @@ async function renderIteration(slug, row) {
     const compResp = await fetchOptional(compPath);
     const compDiv = el("div", { class: "compare" });
     if (compResp) {
-      compDiv.appendChild(el("img", { src: compPath, alt: `${iterId} comparison` }));
+      compDiv.appendChild(el("img", {
+        src: compPath,
+        alt: `${slug} · ${iterId} comparison`,
+        "data-zoomable": "1",
+        title: "Click to enlarge",
+      }));
     } else {
       compDiv.appendChild(el("p", { class: "nocompare" }, "(no comparison image)"));
     }
@@ -588,7 +657,15 @@ function renderScratchCard(e) {
   const thumb = el("div", { class: "scratch-thumb" });
   if (e.comparison_image) {
     // Path is relative to docs/ (e.g. "runs/<slug>/iterations/iter-NNNN/comparison.png")
-    thumb.appendChild(el("img", { src: e.comparison_image, alt: "comparison" }));
+    const altParts = [];
+    if (e.run_id) altParts.push(e.run_id);
+    if (e.iter !== undefined) altParts.push(`iter ${e.iter}`);
+    thumb.appendChild(el("img", {
+      src: e.comparison_image,
+      alt: altParts.join(" · ") || "comparison",
+      "data-zoomable": "1",
+      title: "Click to enlarge",
+    }));
   } else {
     thumb.appendChild(el("div", { class: "nocompare" }, "no image"));
   }

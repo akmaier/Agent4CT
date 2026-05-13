@@ -89,6 +89,20 @@
     </footer>
   </main>
 
+  <!-- Lightbox: click any comparison PNG to view it full-screen.
+       The JS wires up clicks on .dash-iter-body .compare img and
+       .scratch-thumb img to open this overlay. Click anywhere or
+       press Esc to close. -->
+  <div id="lightbox" class="lightbox" hidden aria-hidden="true" role="dialog">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close">×</button>
+    <a id="lightbox-newtab" class="lightbox-newtab" target="_blank" rel="noopener"
+       aria-label="Open in new tab">↗</a>
+    <figure class="lightbox-figure">
+      <img id="lightbox-img" alt="">
+      <figcaption id="lightbox-cap"></figcaption>
+    </figure>
+  </div>
+
   <script src="assets/dashboard.js"></script>
 </body>
 </html>

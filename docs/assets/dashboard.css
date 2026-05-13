@@ -246,3 +246,81 @@
     row-gap: 0.25rem;
   }
 }
+
+/* --- Lightbox / image zoom ----------------------------------------- */
+
+/* Show a faint zoom cursor on any zoomable thumbnail. */
+img[data-zoomable] {
+  cursor: zoom-in;
+  transition: filter 0.12s ease;
+}
+img[data-zoomable]:hover {
+  filter: brightness(1.05);
+}
+
+/* The lightbox overlay covers the viewport. The figure is centered with
+   flex so the image always fits whatever the viewport size is, while
+   preserving aspect ratio. Comparison PNGs are wide (4-up grid), so we
+   want them as wide as possible without overflowing height. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 22, 36, 0.88);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  overscroll-behavior: contain;
+}
+.lightbox[hidden] { display: none; }
+.lightbox-figure {
+  margin: 0;
+  max-width: 96vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.lightbox-figure img {
+  max-width: 96vw;
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  border-radius: 4px;
+  background: #fff;
+  cursor: zoom-out;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+.lightbox-figure figcaption {
+  color: #e6e9ee;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.85rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+.lightbox-close,
+.lightbox-newtab {
+  position: absolute;
+  top: 1rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background 0.12s ease;
+}
+.lightbox-close:hover,
+.lightbox-newtab:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+.lightbox-close  { right: 1rem; }
+.lightbox-newtab { right: 4rem; }
