@@ -51,6 +51,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -207,14 +208,136 @@ def tool_write_file(args: dict, ctx: dict) -> str:
     return f"OK ({len(args['content'])} bytes -> {args['path']})"
 
 
-def tool_run_bash(args: dict, _ctx: dict) -> str:
-    cmd = args["command"]
-    timeout = int(args.get("timeout_s", 300))
-    print(f"[bash] $ {cmd}", flush=True)
-    p = subprocess.run(cmd, shell=True, capture_output=True, text=True,
-                       timeout=timeout, cwd=str(REPO))
-    out = (p.stdout or "") + (("\nSTDERR:\n" + p.stderr) if p.stderr else "")
-    return f"exit={p.returncode}\n{out[-6000:]}"
+# --- bounded pipeline tools (NO arbitrary shell) -----------------------
+
+CLUSTER_HOST = "maier@cluster.i5.informatik.uni-erlangen.de"
+CLUSTER_REPO = "/cluster/maier/Agent4CT"
+
+
+def _ssh(cmd_on_cluster: str, *, timeout_s: int = 60) -> subprocess.CompletedProcess:
+    """One ssh round-trip with bounded timeout."""
+    return subprocess.run(
+        ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+         CLUSTER_HOST, cmd_on_cluster],
+        capture_output=True, text=True, timeout=timeout_s,
+    )
+
+
+def _scp(src: str, dst: str, *, timeout_s: int = 60) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["scp", "-q", "-o", "BatchMode=yes", src, dst],
+        capture_output=True, text=True, timeout=timeout_s,
+    )
+
+
+def tool_submit_iteration(args: dict, ctx: dict) -> str:
+    """Push solver.py to the cluster, submit the family's sbatch, return job id.
+
+    The agent calls this AFTER it has written the new solver.py. Path
+    is reconstructed from the family — the agent cannot point this at
+    arbitrary files or arbitrary sbatch templates.
+    """
+    fam = ctx["family"]
+    local_solver = REPO / f"pentathlon/dl_sparse_view_{fam}/solver.py"
+    if not local_solver.exists():
+        return f"ERROR: {local_solver.relative_to(REPO)} does not exist; write it first."
+    remote_solver = f"{CLUSTER_REPO}/pentathlon/dl_sparse_view_{fam}/solver.py"
+    p = _scp(str(local_solver), f"{CLUSTER_HOST}:{remote_solver}")
+    if p.returncode != 0:
+        return f"scp FAILED: {p.stderr[:600]}"
+    sbatch_rel = f"cluster/slurm/dl_sparse_view_{fam}_5min.sbatch"
+    p = _ssh(f"cd {CLUSTER_REPO} && sbatch {sbatch_rel}")
+    out = (p.stdout + p.stderr).strip()
+    # Parse "Submitted batch job <jid>".
+    m = re.search(r"Submitted batch job (\d+)", out)
+    if not m:
+        return f"sbatch FAILED: rc={p.returncode}\n{out[:600]}"
+    jid = m.group(1)
+    return f"OK submitted job {jid}\n{out}"
+
+
+def tool_poll_iteration(args: dict, ctx: dict) -> str:
+    """Check if a Slurm job's result.json exists yet; if so, fetch
+    result.json + comparison.png back to /tmp/. The agent calls this
+    repeatedly until it gets the result back (we cap waits at 10 s
+    per call so the LLM-side loop stays in control).
+    """
+    fam = ctx["family"]
+    jid = str(args["job_id"])
+    if not jid.isdigit():
+        return f"ERROR: job_id must be numeric"
+    remote_out = f"{CLUSTER_REPO}/runs/iter-{fam}-{jid}"
+    # Probe queue + result.
+    p = _ssh(f"squeue -j {jid} -h 2>/dev/null; echo ---; "
+             f"test -f {remote_out}/result.json && echo HAVE_RESULT || echo NO_RESULT; "
+             f"tail -20 {CLUSTER_REPO}/results/slurm/ddssl-dlsv-{fam}-{jid}.out 2>/dev/null")
+    out = p.stdout
+    if "HAVE_RESULT" not in out:
+        return f"not ready yet:\n{out[-3000:]}"
+    # Fetch result + image.
+    local_result = f"/tmp/result-{fam}-{jid}.json"
+    local_image  = f"/tmp/comparison-{fam}-{jid}.png"
+    _scp(f"{CLUSTER_HOST}:{remote_out}/result.json", local_result)
+    _scp(f"{CLUSTER_HOST}:{remote_out}/comparison.png", local_image)
+    try:
+        body = Path(local_result).read_text()
+    except FileNotFoundError:
+        return f"result.json reported present but scp failed:\n{out[-1500:]}"
+    return (f"OK job {jid} complete\n"
+            f"result.json at {local_result}\n"
+            f"comparison.png at {local_image}\n"
+            f"--- result.json ---\n{body[:4000]}")
+
+
+def tool_record_iteration(args: dict, ctx: dict) -> str:
+    """Call agent4ct_record record with the agent's slug + family.
+
+    All free-form args (rationale, advice) are passed through; numeric
+    args are bounds-checked. The agent cannot record into another slug.
+    """
+    fam = ctx["family"]
+    slug = ctx["slug"]
+    iter_n = int(args["iter"])
+    val_score = float(args["val_score"])
+    headroom = float(args["headroom"])
+    params_M = float(args.get("params_M") or 0)
+    train_n = int(args.get("train_n") or 0)
+    change_class = str(args.get("change_class", "other"))
+    rationale = str(args["rationale"])[:2000]
+    advice = str(args.get("advice", ""))[:600]
+    kept = bool(args["kept"])
+    jid = str(args.get("job_id", "0"))
+    comparison = f"/tmp/comparison-{fam}-{jid}.png"
+    if not Path(comparison).exists():
+        comparison = ""   # the helper will skip it then
+    # current short HEAD
+    commit = subprocess.run(
+        ["git", "rev-parse", "--short", "HEAD"],
+        capture_output=True, text=True, cwd=str(REPO)
+    ).stdout.strip()
+    # Build the agent4ct_record CLI invocation
+    cmd = [
+        str(REPO / ".venv" / "bin" / "python"),
+        str(REPO / "scripts" / "agent4ct_record.py"), "record",
+        "--slug", slug, "--iter", str(iter_n),
+        "--val-score", f"{val_score:.6f}",
+        "--headroom",  f"{headroom:.6f}",
+        "--params-M",  f"{params_M:.6f}",
+        "--train-n",   str(train_n),
+        "--change-class", change_class,
+        "--rationale", rationale,
+        "--advice", advice,
+        "--kept", "true" if kept else "false",
+        "--commit", commit,
+        "--solver", f"pentathlon/dl_sparse_view_{fam}/solver.py",
+    ]
+    if comparison:
+        cmd += ["--comparison", comparison]
+    env = {**os.environ, "AGENT4CT_AGENT": fam, "AGENT4CT_MODEL": ctx["model"]}
+    p = subprocess.run(cmd, capture_output=True, text=True,
+                       cwd=str(REPO), env=env, timeout=120)
+    out = p.stdout + (("\nSTDERR:\n" + p.stderr) if p.stderr else "")
+    return f"exit={p.returncode}\n{out[-3000:]}"
 
 
 TOOLS_SCHEMA = [
@@ -235,19 +358,42 @@ TOOLS_SCHEMA = [
         }, "required": ["path", "content"]},
     }},
     {"type": "function", "function": {
-        "name": "run_bash",
-        "description": "Run a shell command from the repo root (scp / ssh / sbatch / python / git).",
+        "name": "submit_iteration",
+        "description": "Push pentathlon/dl_sparse_view_<family>/solver.py to the cluster and run cluster/slurm/dl_sparse_view_<family>_5min.sbatch. Returns the Slurm job id.",
+        "parameters": {"type": "object", "properties": {}, "required": []},
+    }},
+    {"type": "function", "function": {
+        "name": "poll_iteration",
+        "description": "Check whether a Slurm job has produced result.json. When it has, scp result.json + comparison.png to /tmp/ and return the result.json body inline.",
         "parameters": {"type": "object", "properties": {
-            "command": {"type": "string"},
-            "timeout_s": {"type": "integer", "default": 300},
-        }, "required": ["command"]},
+            "job_id": {"type": "string", "description": "Numeric Slurm job id returned by submit_iteration."},
+        }, "required": ["job_id"]},
+    }},
+    {"type": "function", "function": {
+        "name": "record_iteration",
+        "description": "Append the iteration to the agent's journal (results.tsv + observation.json + scratchpad) and commit + push. Always records under the agent's own slug.",
+        "parameters": {"type": "object", "properties": {
+            "iter":          {"type": "integer"},
+            "job_id":        {"type": "string"},
+            "val_score":     {"type": "number"},
+            "headroom":      {"type": "number"},
+            "params_M":      {"type": "number"},
+            "train_n":       {"type": "integer"},
+            "change_class":  {"type": "string",
+                              "enum": ["architecture","optimizer","loss","augmentation","other"]},
+            "rationale":     {"type": "string"},
+            "advice":        {"type": "string"},
+            "kept":          {"type": "boolean"},
+        }, "required": ["iter","val_score","headroom","change_class","rationale","kept"]},
     }},
 ]
 
 TOOL_DISPATCH = {
     "read_file": tool_read_file,
     "write_file": tool_write_file,
-    "run_bash":  tool_run_bash,
+    "submit_iteration": tool_submit_iteration,
+    "poll_iteration":   tool_poll_iteration,
+    "record_iteration": tool_record_iteration,
 }
 
 
@@ -271,37 +417,44 @@ ISOLATION RULES (hard contract, enforced at the tool level):
     under docs/runs/. The read_file tool will refuse these paths.
   * You may only WRITE {solver_dir}solver.py.
 
+AVAILABLE TOOLS (bounded — there is NO arbitrary shell):
+  * read_file(path, max_bytes)      — read repo file from the allow-list.
+  * write_file(path, content)       — overwrite ONLY your solver.py.
+  * submit_iteration()              — scp your solver.py to the cluster
+                                      and submit the family's sbatch.
+                                      Returns Slurm job id as a string.
+  * poll_iteration(job_id)          — check if the job's result.json is
+                                      ready; when it is, scp result.json
+                                      + comparison.png to /tmp/ and
+                                      return the result.json body
+                                      inline. Call this repeatedly
+                                      every ~30 s until ready (jobs
+                                      finish in ~4–6 min).
+  * record_iteration(...)           — append the iteration to your
+                                      journal + commit + push. All
+                                      free-form fields are passed
+                                      through; the slug + agent + model
+                                      labels are pinned to you.
+
 WORKFLOW per iteration:
-  1. Read program.md + (if iter > 1) your own last observation.json
-     under docs/runs/{slug}/iterations/iter-<N-1>/.
+  1. read_file pentathlon/dl_sparse_view/program.md + (iter > 1) your
+     own previous observation.json under docs/runs/{slug}/iterations/.
   2. Decide ONE change to solver.py (architecture | optimizer | loss |
      augmentation | other).
   3. write_file {solver_dir}solver.py with the new content.
-  4. scp it to the cluster:
-       scp {solver_dir}solver.py \\
-         maier@cluster.i5.informatik.uni-erlangen.de:/cluster/maier/Agent4CT/{solver_dir}solver.py
-  5. Submit:
-       ssh maier@cluster.i5.informatik.uni-erlangen.de \\
-         "cd /cluster/maier/Agent4CT && sbatch {sbatch}"
-     Capture the job id.
-  6. Poll until result.json appears in
-       /cluster/maier/Agent4CT/runs/iter-{family}-<jid>/
-     then scp result.json + comparison.png back to /tmp/.
-  7. Read /tmp/result.json. Decide kept = true / false.
-  8. Record the iteration via the env-var path so the journal carries
-     the right agent + model labels:
-       AGENT4CT_AGENT={family} AGENT4CT_MODEL={model} \\
-       .venv/bin/python scripts/agent4ct_record.py record \\
-         --slug {slug} --iter <N> \\
-         --val-score ... --headroom ... --params-M ... --train-n ... \\
-         --change-class <architecture|optimizer|loss|augmentation|other> \\
-         --rationale '...' --advice '...' \\
-         --kept <true|false> --commit $(git rev-parse --short HEAD) \\
-         --comparison /tmp/comparison.png \\
-         --solver {solver_dir}solver.py
+  4. submit_iteration() → capture the job id.
+  5. Call poll_iteration(job_id) in a loop until you get the result.json
+     back. Each call returns "not ready yet" with a tail of the Slurm
+     stdout (so you can spot crashes early) or "OK job ... complete".
+  6. Parse val_score + headroom + params_M from the returned JSON.
+     Decide kept = true / false. (Discard if headroom did not improve
+     vs your last keep.)
+  7. record_iteration(iter=N, job_id=jid, val_score=..., headroom=...,
+                      params_M=..., train_n=..., change_class=...,
+                      rationale='...', advice='...', kept=...).
 
 Be concise. Cite the knob you changed. Total budget: {iters} iterations,
-~30 tool calls each. After the last iteration write 'DONE'.
+~30 tool calls each. After the last iteration, output the text 'DONE'.
 """
 
 
@@ -324,7 +477,7 @@ def run_agent(slug: str, family: str, n_iters: int, *,
          f"After each iteration, summarise val_score + headroom + delta. "
          f"After the last one, write 'DONE'."},
     ]
-    ctx = {"slug": slug, "family": family}
+    ctx = {"slug": slug, "family": family, "model": model}
     max_steps = 30 * n_iters
     for step in range(max_steps):
         print(f"\n=== [{family}] step {step+1}/{max_steps} ===", flush=True)
