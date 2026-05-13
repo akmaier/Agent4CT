@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T23:43:32Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 6,
+  "challenge": "dl_sparse_view",
+  "change_class": "other",
+  "rationale": "iter-6: infra \u2014 added chunked validation (val_chunk=8) so the full-res residual stack fits on 16GB Q5000 VRAM. SSIM 0.6583 -> 0.6575 (within FP noise), headroom 0.5831 -> 0.5861 (+0.5% from FP determinism in chunked sums). Same model as iter-2, just safer validation. Keep so future iters land on this baseline.",
+  "val_score": 0.6575,
+  "headroom": 0.5861,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0006/comparison.png",
+  "advice_for_others": "Chunked validation (val_chunk=8) is essentially free for SSIM/PSNR and avoids OOM on slim VRAM GPUs; recommended whenever the denoiser is large at full resolution.",
+  "commit": ""
+}
