@@ -20,18 +20,25 @@ sees its own slug under ``docs/runs/``; the cross-run scratchpad
 directories are refused at the tool layer. "Advice for others" therefore
 only loops back to the agent that wrote it.
 
-Credentials + endpoint + per-family default model live in the gitignored
-``llm_api.toml`` (see ``llm_api.example.toml`` for the shape):
+Credentials + endpoint live in the gitignored ``config/llm_api.toml``
+(see ``config/llm_api.example.toml`` for the shape). The operator's
+existing per-project layout uses ``[llm]``:
 
-    [rrze]
-    api_key  = "..."                                    # required
-    base_url = "https://hub.nhr.fau.de/api/llmgw/v1"    # optional
+    [llm]
+    provider = "nhr_fau"
+    base_url = "https://hub.nhr.fau.de/api/llmgw/v1"
+    api_key  = "..."
 
-    [rrze.models]
+    # OPTIONAL — overrides the FAMILIES defaults below per family:
+    [llm.models]
     kimi     = "moonshotai/Kimi-K2.6"
     deepseek = "deepseek-ai/DeepSeek-V284B4-Flash"
     mistral  = "mistralai/Mistral-Medium-3.5-128B"
     gptoss   = "openai/gpt-oss-120b"
+
+If the ``[llm.models]`` sub-table is absent (the operator's current
+file), each family falls back to the built-in default in ``FAMILIES``
+below — same model ids as the comment table above.
 
 Usage:
 
@@ -71,10 +78,11 @@ except ImportError:
 # Each family pins a *default* RRZE model. The [rrze.models] table in
 # llm_api.toml (or `--model` on the CLI) wins when present.
 FAMILIES: dict[str, dict[str, str]] = {
+    # Model ids match what the FAU gateway lists in GET /models.
     "kimi":     {"model": "moonshotai/Kimi-K2.6"},
-    "deepseek": {"model": "deepseek-ai/DeepSeek-V284B4-Flash"},
+    "deepseek": {"model": "deepseek-ai/DeepSeek-V4-Flash"},
     "mistral":  {"model": "mistralai/Mistral-Medium-3.5-128B"},
-    "gptoss":   {"model": "openai/gpt-oss-120b"},
+    "gptoss":   {"model": "gpt-oss-120b"},
 }
 
 def family_solver_dir(family: str) -> str:
@@ -89,12 +97,27 @@ def family_sbatch(family: str) -> str:
 def load_credentials(toml_path: Path, family: str) -> dict[str, str]:
     """Read api_key + base_url + family-specific model from llm_api.toml.
 
+    Schemas supported (the operator's existing layout is `[llm]`):
+
+        [llm]
+        provider = "nhr_fau"
+        base_url = "https://hub.nhr.fau.de/api/llmgw/v1"
+        api_key  = "..."
+        # optional, takes precedence over the FAMILIES built-in defaults:
+        [llm.models]
+        kimi     = "moonshotai/Kimi-K2.6"
+        deepseek = "deepseek-ai/DeepSeek-V284B4-Flash"
+        ...
+
+    Or the older `[rrze]` table (still accepted for back-compat).
+
     The file is gitignored on purpose. Falls back to env-vars for any
     missing piece:
         LLMAPI_KEY   -> api_key
         LLM_BASE_URL -> base_url   (default: FAU gateway)
         LLM_MODEL    -> model      (default: per-family default above)
     """
+    llm: dict[str, Any] = {}
     rrze: dict[str, Any] = {}
     if toml_path.exists():
         if not _TOML_OK:
@@ -102,18 +125,23 @@ def load_credentials(toml_path: Path, family: str) -> dict[str, str]:
                 "Python >= 3.11 required to parse llm_api.toml")
         with toml_path.open("rb") as f:
             data = tomllib.load(f)
+        llm = dict(data.get("llm") or {})
         rrze = dict(data.get("rrze") or {})
-    models_table = dict(rrze.get("models") or {})
-    api_key = (rrze.get("api_key")
-               or os.environ.get("LLMAPI_KEY", "")).strip()
-    base_url = (rrze.get("base_url")
+    # api_key + base_url precedence: [llm] -> [rrze] -> env -> FAU default.
+    api_key = ((llm.get("api_key") or rrze.get("api_key")
+                or os.environ.get("LLMAPI_KEY", "")) or "").strip()
+    base_url = (llm.get("base_url") or rrze.get("base_url")
                 or os.environ.get("LLM_BASE_URL")
                 or "https://hub.nhr.fau.de/api/llmgw/v1")
-    # Precedence: env (LLM_MODEL) > [rrze.models][family] > legacy flat
-    # rrze.model > built-in default.
+    # Per-family model precedence: env > [llm.models][fam] > [rrze.models][fam]
+    # > FAMILIES default. We intentionally do NOT fall back to a flat
+    # [llm].model / [rrze].model — that's a single-model convention that
+    # would override the per-family routing for multi-agent runs.
+    llm_models = dict(llm.get("models") or {})
+    rrze_models = dict(rrze.get("models") or {})
     model = (os.environ.get("LLM_MODEL")
-             or models_table.get(family)
-             or rrze.get("model")
+             or llm_models.get(family)
+             or rrze_models.get(family)
              or FAMILIES[family]["model"])
     return {"api_key": api_key, "base_url": base_url, "model": model}
 
@@ -360,7 +388,8 @@ def main() -> int:
     p.add_argument("--model", default=None,
                    help="Override the model id from llm_api.toml.")
     p.add_argument("--base-url", default=None)
-    p.add_argument("--credentials", default=str(REPO / "llm_api.toml"))
+    p.add_argument("--credentials", default=str(REPO / "config" / "llm_api.toml"),
+                   help="Path to llm_api.toml (gitignored). Default: <repo>/config/llm_api.toml.")
     args = p.parse_args()
 
     creds = load_credentials(Path(args.credentials), args.family)

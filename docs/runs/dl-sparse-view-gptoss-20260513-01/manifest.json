@@ -1,0 +1,10 @@
+{
+  "slug": "dl-sparse-view-gptoss-20260513-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "dl-sparse-view-gptoss",
+  "started": "2026-05-13T23:50:29Z",
+  "agent": "gptoss",
+  "model": "gpt-oss-120b",
+  "status": "running",
+  "notes": "Autonomous RRZE-gateway agent. Isolated: only sees own slug + own solver dir."
+}
