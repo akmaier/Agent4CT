@@ -221,7 +221,14 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # --- Validation --------------------------------------------------- #
     pipe.eval()
     with torch.no_grad():
-        pred = pipe.predict(val_noisy)
+        # Chunked validation so a smaller GPU (or a wider BF kernel) does
+        # not OOM on val_n images in one batch. Concatenate the per-chunk
+        # predictions.
+        chunk = cfg.get("val_chunk", 10)
+        preds = []
+        for i in range(0, val_noisy.shape[0], chunk):
+            preds.append(pipe.predict(val_noisy[i:i + chunk]))
+        pred = torch.cat(preds, dim=0)
     # Log magnitudes so we can verify projection-count scaling in the journal.
     print(f"[solver] phantom range = [{float(val_ph.min()):.4f}, "
           f"{float(val_ph.max()):.4f}]", flush=True)

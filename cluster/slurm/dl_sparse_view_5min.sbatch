@@ -3,7 +3,7 @@
 #SBATCH --partition=main
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:q8000:1     # pin 48 GB; RTX 5000 / 16 GB OOMs at val_n=100 + BF
 #SBATCH --mem=24G
 #SBATCH --time=00:08:00            # 5-min iteration + ~3 min slack
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
