@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T21:35:20Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 11,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "Adam vs AdamW with weight_decay=1e-4. Val 0.6486 -> 0.6452 (-0.5%), headroom 0.5727 -> 0.5707 (-0.4%) \u2014 both within noise. wd=1e-4 makes essentially no difference at this configuration; AdamW marginally preferred.",
+  "val_score": 0.6452,
+  "headroom": 0.5707,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0011/comparison.png",
+  "advice_for_others": "On dual-domain N2I, AdamW (wd=1e-4) is statistically indistinguishable from Adam at lr=1e-4; either is fine, prefer AdamW for the small regularization.",
+  "commit": "c3320ef"
+}
