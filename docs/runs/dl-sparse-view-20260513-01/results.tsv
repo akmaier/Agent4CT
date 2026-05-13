@@ -1,1 +1,2 @@
 iter	commit	val_score	headroom	status	change_class	rationale
+1	804bd09	0.6445	0.568	keep	architecture	Baseline. Dual-domain U-Net (c=16) on Wagner @ 128 sparse views, AdamW lr=3e-4 wd=1e-4, 8 epochs, 400 synthetic ellipse phantoms. Converged at loss 0.00037. PSNR 31.86 dB SSIM 0.6445, headroom 0.5680 over the sparse-view FBP baseline (PSNR 24.57).
