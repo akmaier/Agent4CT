@@ -333,6 +333,29 @@ function shortModel(m) {
   return String(m).replace(/^claude-/, "").replace(/^anthropic\//, "");
 }
 
+// Build a comparison <img> that:
+//   * loads lazily so 30 thumbnails don't all hit the wire on first paint;
+//   * falls back to a placeholder if the file 404s instead of leaving a
+//     broken-image icon (some recordings have a comparison_image field
+//     pointing at a file that hasn't been pushed yet, or there's no PNG
+//     for crash/timeout iters);
+//   * gets data-zoomable so the lightbox click handler picks it up.
+function comparisonImg(src, alt, placeholderText = "(no comparison image)") {
+  const img = el("img", {
+    src,
+    alt: alt || "comparison",
+    loading: "lazy",
+    decoding: "async",
+    "data-zoomable": "1",
+    title: "Click to enlarge",
+  });
+  img.addEventListener("error", () => {
+    const ph = el("p", { class: "nocompare" }, placeholderText);
+    img.replaceWith(ph);
+  }, { once: true });
+  return img;
+}
+
 // ---------- lightbox ----------------------------------------------------
 //
 // Each comparison PNG rendered into the dashboard (iter-detail body or
@@ -561,21 +584,14 @@ async function renderIteration(slug, row) {
       obs = await fetchJSON(`runs/${slug}/iterations/${iterId}/observation.json`);
     } catch (_) { /* fine, no observation */ }
     body.innerHTML = "";
-    const compPath = (obs && obs.comparison_image)
-      ? `runs/${slug}/iterations/${iterId}/${(obs.comparison_image.split("/").pop())}`
-      : `runs/${slug}/iterations/${iterId}/comparison.png`;
-    const compResp = await fetchOptional(compPath);
-    const compDiv = el("div", { class: "compare" });
-    if (compResp) {
-      compDiv.appendChild(el("img", {
-        src: compPath,
-        alt: `${slug} · ${iterId} comparison`,
-        "data-zoomable": "1",
-        title: "Click to enlarge",
-      }));
-    } else {
-      compDiv.appendChild(el("p", { class: "nocompare" }, "(no comparison image)"));
-    }
+    // Build the comparison-image path from the iteration directory itself
+    // — not from the cross-run observation's comparison_image field, which
+    // is fragile (concurrent writers, schema drift). For crash/timeout
+    // iters the file simply 404s and `comparisonImg` swaps in a "no
+    // image" placeholder.
+    const compPath = `runs/${slug}/iterations/${iterId}/comparison.png`;
+    const compDiv = el("div", { class: "compare" },
+      comparisonImg(compPath, `${slug} · ${iterId} comparison`));
     body.appendChild(compDiv);
     if (obs && obs.rationale) {
       body.appendChild(el("div", { class: "rationale-full" }, obs.rationale));
@@ -655,17 +671,20 @@ function renderScratchCard(e) {
   }
 
   const thumb = el("div", { class: "scratch-thumb" });
-  if (e.comparison_image) {
-    // Path is relative to docs/ (e.g. "runs/<slug>/iterations/iter-NNNN/comparison.png")
+  // Reconstruct the path from run_id + iter rather than trusting
+  // observation.comparison_image (older entries can have a stale path,
+  // empty string, or just be missing for crash/timeout iters).
+  let imgPath = e.comparison_image;
+  if (!imgPath && e.run_id && (e.iter !== undefined)) {
+    const iterId = `iter-${String(e.iter).padStart(4, "0")}`;
+    imgPath = `runs/${e.run_id}/iterations/${iterId}/comparison.png`;
+  }
+  if (imgPath) {
     const altParts = [];
     if (e.run_id) altParts.push(e.run_id);
     if (e.iter !== undefined) altParts.push(`iter ${e.iter}`);
-    thumb.appendChild(el("img", {
-      src: e.comparison_image,
-      alt: altParts.join(" · ") || "comparison",
-      "data-zoomable": "1",
-      title: "Click to enlarge",
-    }));
+    thumb.appendChild(comparisonImg(imgPath,
+                                    altParts.join(" · "), "no image"));
   } else {
     thumb.appendChild(el("div", { class: "nocompare" }, "no image"));
   }
