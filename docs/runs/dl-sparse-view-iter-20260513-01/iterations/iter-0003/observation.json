@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-13T23:13:17Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 3,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-3 shared-weight iterated U-Net K=2 + BF tail (no projections). Training converged cleanly to loss 0.00037 (same plateau as iter-16 baseline). However iter-unet x2 doubles forward-pass cost and the whole job timed out at the slurm wall (8 min) before validation completed. Train_time was 400s. Next: cut epochs 8 -> 6 to fit the budget.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "crash",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "Shared-weight iterated U-Net (K=2) is loss-stable (no DC instability) but ~2x inference compute; tune epochs down to keep the 5-min wall.",
+  "commit": "fa7341a"
+}

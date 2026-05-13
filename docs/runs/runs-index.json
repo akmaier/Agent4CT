@@ -1,42 +1,54 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-13T23:08:06Z",
+  "updated": "2026-05-13T23:13:17Z",
   "runs": [
     {
       "slug": "demo-dl-sparse-view-20260513-01",
+      "short_id": "20260513-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T20:30:00Z",
       "status": "demo",
       "n_iterations": 3,
       "best_score": 0.62,
-      "best_headroom": 0.41
+      "best_headroom": 0.41,
+      "agent": "claude",
+      "model": "claude-sonnet-4.5"
     },
     {
       "slug": "dl-sparse-view-20260513-01",
+      "short_id": "20260513-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T20:21:16Z",
       "status": "running",
       "n_iterations": 23,
       "best_score": 0.6537,
-      "best_headroom": 0.576
+      "best_headroom": 0.576,
+      "agent": "claude",
+      "model": "claude-sonnet-4.5"
     },
     {
       "slug": "dl-sparse-view-iter-20260513-01",
+      "short_id": "20260513-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T22:38:37Z",
       "status": "running",
-      "n_iterations": 2,
+      "n_iterations": 3,
       "best_score": 0.0,
-      "best_headroom": 0.0
+      "best_headroom": 0.0,
+      "agent": "claude",
+      "model": "claude-sonnet-4.5"
     },
     {
       "slug": "dl-sparse-view-res-20260513-01",
+      "short_id": "20260513-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T22:38:38Z",
       "status": "running",
       "n_iterations": 2,
       "best_score": 0.6583,
-      "best_headroom": 0.5831
+      "best_headroom": 0.5831,
+      "agent": "claude",
+      "model": "claude-sonnet-4.5"
     }
   ]
 }
