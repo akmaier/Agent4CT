@@ -1,0 +1,9 @@
+# Copy this file to `config/llm_api.toml` and fill in your real credentials
+# locally. The real file is gitignored and should never be committed.
+
+[llm]
+provider = "nhr_fau"
+base_url = "https://hub.nhr.fau.de/api/llmgw/v1"
+model = "gpt-oss-120b"
+api_key = "replace-with-your-api-key"
+timeout_seconds = 60

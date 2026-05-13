@@ -1,0 +1,9 @@
+torch>=2.1
+numpy<3
+scipy
+scikit-image
+tqdm
+matplotlib
+pyyaml
+# PYRO-NN is CUDA-only and built from source; install separately on the
+# compute node. See cluster/setup.sh.

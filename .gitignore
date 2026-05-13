@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.claude/
+# Secrets / site-specific — never commit
+config/llm_api.toml
+**/llm_api.toml
+# Site-specific cluster operating guide — has internal hostnames + account
+# conventions. The generic template (cluster_agent_guide.template.md) is
+# committed; copy it to lme_cluster_agent_guide.md and fill in locally.
+config/lme_cluster_agent_guide.md
+config/*_cluster_agent_guide.md
+!config/cluster_agent_guide.template.md
+runs/
+data/
+out/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+papers/
