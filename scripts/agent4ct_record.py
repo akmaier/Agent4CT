@@ -29,6 +29,7 @@ Examples:
 """
 from __future__ import annotations
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -41,6 +42,15 @@ from ddssl_ldct.harness import (
     git_commit_and_push, build_iter_commit_message,
     REPO_ROOT,
 )
+
+# Agent / model identification. Each subagent can set
+#   AGENT4CT_AGENT  (e.g. "claude-iter", "claude-res", "claude-main")
+#   AGENT4CT_MODEL  (e.g. "claude-sonnet-4.5", "claude-opus-4.7")
+# in its environment; the CLI flags still take precedence if passed
+# explicitly. Defaults match the original hard-coded values for
+# backwards compatibility with existing journal entries.
+DEFAULT_AGENT = os.environ.get("AGENT4CT_AGENT", "claude")
+DEFAULT_MODEL = os.environ.get("AGENT4CT_MODEL", "claude-sonnet-4.5")
 
 
 def cmd_new_run(args):
@@ -178,8 +188,8 @@ def main():
     p_new = sub.add_parser("new-run")
     p_new.add_argument("--challenge", required=True)
     p_new.add_argument("--slug-prefix", required=True)
-    p_new.add_argument("--agent", default="claude")
-    p_new.add_argument("--model", default="claude-sonnet-4.5")
+    p_new.add_argument("--agent", default=DEFAULT_AGENT)
+    p_new.add_argument("--model", default=DEFAULT_MODEL)
     p_new.add_argument("--notes", default="")
     p_new.set_defaults(func=cmd_new_run)
 
@@ -197,8 +207,8 @@ def main():
                        choices=["keep", "discard", "crash", "timeout", None])
     p_rec.add_argument("--params-M", dest="params_M", type=float, default=None)
     p_rec.add_argument("--train-n", dest="train_n", type=int, default=None)
-    p_rec.add_argument("--agent", default="claude")
-    p_rec.add_argument("--model", default="claude-sonnet-4.5")
+    p_rec.add_argument("--agent", default=DEFAULT_AGENT)
+    p_rec.add_argument("--model", default=DEFAULT_MODEL)
     p_rec.add_argument("--advice", default=None,
                        help="single-sentence generalisable advice for other agents")
     p_rec.add_argument("--commit", default="")
