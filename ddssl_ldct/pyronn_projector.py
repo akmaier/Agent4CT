@@ -100,7 +100,25 @@ class PyronnFanBeamProjector(torch.nn.Module):
     every step.
     """
 
-    def __init__(self, geometry: FanBeamGeometry):
+    def __init__(self, geometry: FanBeamGeometry, redundancy: str = "auto"):
+        """
+        redundancy:
+            "auto"      Pick by angular_range. ≥ 2π → "full_scan"; otherwise
+                        Parker (short scan).
+            "full_scan" Uniform constant = angular_range / π across all
+                        (angle, detector) pairs. Correct for 2π scans —
+                        every ray is sampled twice, no per-view tapering
+                        is needed and Parker's endpoint taper would
+                        wrongly down-weight the first / last few views to
+                        zero.
+            "parker"    Use ``pyronn.ct_reconstruction.helpers.filters.
+                        weights.parker_weights_2d`` — the Parker-style
+                        redundancy weighting for short scans (angular
+                        range ≈ π + fan_angle).
+            "none"      No redundancy weighting at all (debug / scaling
+                        sweeps). FBP magnitude will be off by a constant
+                        factor.
+        """
         super().__init__()
         _import_pyronn()
         from pyronn.ct_reconstruction.geometry.geometry_base import GeometryFan2D
@@ -111,6 +129,7 @@ class PyronnFanBeamProjector(torch.nn.Module):
         )
 
         self.geom = geometry
+        self.redundancy = redundancy
         g = geometry
 
         # Build the upstream geometry. Note constructor order:
@@ -157,26 +176,34 @@ class PyronnFanBeamProjector(torch.nn.Module):
         self._fp = FanProjection2D()
         self._bp = FanBackProjection2D()
 
-        # Parker redundancy weights — the upstream example_fan_2d.py shows
-        # this is mandatory for a full-scan fan-beam FBP to come out at the
-        # right intensity. For 2π the scale_factor inside parker_weights_2d
-        # is ≈ 2; without it the FBP is ~half the correct amplitude.
-        #
-        # NOTE: an earlier hypothesis flipped the matrix along the angle axis
-        # (in case the trajectory CCW vs Parker CCW conventions disagreed).
-        # Empirically that *worsened* the FBP scale by ≈ 30 % on job 760360
-        # versus the un-flipped version on 760358 — so the un-flipped weights
-        # are correctly aligned with our projector and we leave them alone.
-        # If a rotation-direction asymmetry is still visible to an expert eye,
-        # the cause is elsewhere (e.g. the trajectory's swap_detector_axis
-        # flag interacting with the back-projector's reference frame).
-        from pyronn.ct_reconstruction.helpers.filters.weights import (
-            parker_weights_2d,
-        )
-        pw = parker_weights_2d(py_geom).astype(np.float32)
+        # Redundancy weights for FBP. See the class docstring's `redundancy`
+        # parameter for what each mode means. For a 2π full scan (the Wagner
+        # default + every Pentathlon challenge today), the right thing is a
+        # uniform constant — Parker's endpoint taper would wrongly zero the
+        # first/last few views, even though its trailing `scale_factor` of
+        # ~2 gets the global magnitude right. A flat angular_range/π
+        # produces the same global scaling without that boundary defect.
+        ang_range = float(g.angle_end - g.angle_start)
+        mode = self.redundancy
+        if mode == "auto":
+            mode = "full_scan" if ang_range >= 2 * math.pi - 1e-3 else "parker"
+        self._redundancy_mode = mode
+        n_a, n_d = g.n_angles, g.n_det
+        if mode == "full_scan":
+            const = ang_range / math.pi
+            rw = np.full((n_a, n_d), const, dtype=np.float32)
+        elif mode == "parker":
+            from pyronn.ct_reconstruction.helpers.filters.weights import (
+                parker_weights_2d,
+            )
+            rw = parker_weights_2d(py_geom).astype(np.float32)
+        elif mode == "none":
+            rw = np.ones((n_a, n_d), dtype=np.float32)
+        else:
+            raise ValueError(f"unknown redundancy mode {mode!r}")
         self.register_buffer(
-            "_parker_weights",
-            torch.from_numpy(pw).cuda().contiguous(),
+            "_redundancy_weights",
+            torch.from_numpy(rw).cuda().contiguous(),
             persistent=False,
         )
 
@@ -297,42 +324,48 @@ class PyronnFanBeamProjector(torch.nn.Module):
     def fbp(self, sino: torch.Tensor, filter_name: str = "hann") -> torch.Tensor:
         """Filtered back-projection. Returns ``(B, 1, H, W)``.
 
-        Order: Parker redundancy weights → ramp/Hann filter → back-project,
-        per the upstream ``example_fan_2d.py`` recipe. Parker is required even
-        for full 2π scans (its trailing ``scale_factor ≈ 2`` is what makes the
-        FBP intensity match the phantom).
+        Order: redundancy weights → ramp/Hann filter → back-project, per the
+        upstream ``example_fan_2d.py`` recipe. See class docstring for the
+        choice of redundancy weighting (default is mode-aware: a flat
+        ``angular_range / π`` for 2π full scan, Parker otherwise).
         """
-        # Parker weights are (A, D) for the *full* geometry. If the input
-        # sinogram has half the views (the Noise2Inverse split), recompute
-        # them lazily for that view count.
         A = sino.shape[-2]
-        if A == self._parker_weights.shape[0]:
-            pw = self._parker_weights
+        if A == self._redundancy_weights.shape[0]:
+            rw = self._redundancy_weights
         else:
-            from pyronn.ct_reconstruction.geometry.geometry_base import GeometryFan2D
-            from pyronn.ct_reconstruction.helpers.trajectories.circular_trajectory import (
-                circular_trajectory_2d,
-            )
-            from pyronn.ct_reconstruction.helpers.filters.weights import (
-                parker_weights_2d,
-            )
+            # Half-set or otherwise non-full angle count — rebuild for this A.
             g = self.geom
-            half = GeometryFan2D(
-                volume_shape=[g.image_size, g.image_size],
-                volume_spacing=[g.pixel_spacing, g.pixel_spacing],
-                detector_shape=[g.n_det],
-                detector_spacing=[g.det_spacing],
-                number_of_projections=A,
-                angular_range=[g.angle_start, g.angle_end],
-                source_detector_distance=g.sdd,
-                source_isocenter_distance=g.sod,
-            )
-            half.set_trajectory(circular_trajectory_2d(A, half.angular_range, True))
-            pw = torch.as_tensor(
-                parker_weights_2d(half).astype(np.float32),
-                dtype=sino.dtype, device=sino.device,
-            )
-        sino_w = sino * pw  # broadcast over (B, [1,] A, D)
+            ang_range = float(g.angle_end - g.angle_start)
+            mode = self._redundancy_mode
+            if mode == "full_scan":
+                const = ang_range / math.pi
+                rw_np = np.full((A, g.n_det), const, dtype=np.float32)
+            elif mode == "parker":
+                from pyronn.ct_reconstruction.geometry.geometry_base import GeometryFan2D
+                from pyronn.ct_reconstruction.helpers.trajectories.circular_trajectory import (
+                    circular_trajectory_2d,
+                )
+                from pyronn.ct_reconstruction.helpers.filters.weights import (
+                    parker_weights_2d,
+                )
+                half = GeometryFan2D(
+                    volume_shape=[g.image_size, g.image_size],
+                    volume_spacing=[g.pixel_spacing, g.pixel_spacing],
+                    detector_shape=[g.n_det],
+                    detector_spacing=[g.det_spacing],
+                    number_of_projections=A,
+                    angular_range=[g.angle_start, g.angle_end],
+                    source_detector_distance=g.sdd,
+                    source_isocenter_distance=g.sod,
+                )
+                half.set_trajectory(circular_trajectory_2d(A, half.angular_range, True))
+                rw_np = parker_weights_2d(half).astype(np.float32)
+            elif mode == "none":
+                rw_np = np.ones((A, g.n_det), dtype=np.float32)
+            else:
+                raise ValueError(f"unknown redundancy mode {mode!r}")
+            rw = torch.as_tensor(rw_np, dtype=sino.dtype, device=sino.device)
+        sino_w = sino * rw  # broadcast over (B, [1,] A, D)
         return self.back_project(self.filter_sino(sino_w, filter_name=filter_name))
 
     def forward(self, image: torch.Tensor) -> torch.Tensor:
