@@ -27,6 +27,29 @@ headroom  = 1 − val_rmse / baseline_sparse_view_RMSE   # in [0, 1]
 `headroom=0` means "same as a plain sparse-view FBP", `headroom=1` means
 "reconstruction error is zero against the truth". Aim to push headroom up.
 
+## Intensity calibration (REQUIRED — applies to every agent on this challenge)
+
+CT images live on a standard intensity scale (HU for real data; for the
+synthetic ellipse phantoms here the canonical max is **0.05** in
+attenuation-coefficient units). For PSNR / SSIM / displayed grey values
+to be **comparable across iterations and across agents** the solver must:
+
+1. Compute PSNR and SSIM with **fixed** `data_range = display_max − display_min`,
+   not auto. Auto data-range drifts iteration-to-iteration with FBP
+   overshoot and silently changes the PSNR denominator.
+2. Use the same `vmin = display_min` and `vmax = display_max` for **every**
+   column of `comparison.png` (reference / sparse-view FBP / your
+   prediction / phantom). A grey value of, say, 50 % then means the
+   same physical intensity in every column.
+3. For DL-Sparse-View synthetic: `display_min = 0.0`, `display_max = 0.05`.
+4. Headroom is RMSE-ratio so already scale-invariant — no change needed
+   there.
+
+The reference solver (`pentathlon/dl_sparse_view/solver.py`) does this
+correctly as of commit `f8b9f29+`; copy that pattern into your own
+`pentathlon/dl_sparse_view_*/solver.py`. Any iteration that disagrees with
+the calibration is not directly comparable to the others.
+
 ## Time budget per iteration
 
 5 minutes wall on a single GPU. The solver should finish well inside that,

@@ -89,6 +89,17 @@ CONFIG = {
     "noise_i0":      5e4,
     "noise_sigma_e": 5.0,
     "seed":          42,
+
+    # Intensity calibration. CT images live on a standard scale (HU for
+    # real data; for the synthetic ellipse phantoms here the canonical
+    # max is 0.05 in attenuation-coefficient units). PSNR and SSIM are
+    # computed with a FIXED data_range = display_max - display_min so
+    # numbers are comparable across iterations and across agents — auto
+    # data-range drifts with FBP overshoot and breaks comparability.
+    # Display vmin/vmax are the same fixed range for every column so a
+    # comparison image's grey value means the same thing across columns.
+    "display_min":   0.0,
+    "display_max":   0.05,
 }
 
 
@@ -211,10 +222,25 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     pipe.eval()
     with torch.no_grad():
         pred = pipe.predict(val_noisy)
-    val_psnr = float(psnr(pred, val_ref).cpu())
-    val_ssim = float(ssim(pred, val_ref).cpu())
+    # Log magnitudes so we can verify projection-count scaling in the journal.
+    print(f"[solver] phantom range = [{float(val_ph.min()):.4f}, "
+          f"{float(val_ph.max()):.4f}]", flush=True)
+    print(f"[solver] val_ref range = [{float(val_ref.min()):.4f}, "
+          f"{float(val_ref.max()):.4f}]", flush=True)
+    print(f"[solver] ld_fbp  range = [{float(ld_fbp.min()):.4f}, "
+          f"{float(ld_fbp.max()):.4f}]", flush=True)
+    print(f"[solver] pred    range = [{float(pred.min()):.4f}, "
+          f"{float(pred.max()):.4f}]", flush=True)
+
+    # Fixed data_range for PSNR/SSIM (calibration to the canonical phantom
+    # max). Without this, auto-data-range = val_ref.max() - val_ref.min()
+    # drifts iteration-to-iteration with FBP overshoot and silently
+    # changes the PSNR denominator, breaking cross-iter comparability.
+    data_range = cfg["display_max"] - cfg["display_min"]
+    val_psnr = float(psnr(pred, val_ref, data_range=data_range).cpu())
+    val_ssim = float(ssim(pred, val_ref, data_range=data_range).cpu())
     val_rmse = float(((pred - val_ref) ** 2).mean().sqrt().cpu())
-    baseline_psnr = float(psnr(ld_fbp, val_ref).cpu())
+    baseline_psnr = float(psnr(ld_fbp, val_ref, data_range=data_range).cpu())
     baseline_rmse = float(((ld_fbp - val_ref) ** 2).mean().sqrt().cpu())
     # Headroom = fraction of the gap between noisy baseline and perfect
     # reconstruction (oracle = 0 RMSE).
@@ -230,15 +256,21 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         fig, ax = plt.subplots(n_show, 4, figsize=(12, 3 * n_show))
         if n_show == 1:
             ax = ax[None]
-        vmax = float(val_ref.max())
+        # Common display vmin/vmax = the calibration scale (display_min,
+        # display_max). All four columns then share the *same* grey
+        # mapping — a grey value of, say, 50% means the same physical
+        # intensity in every column. Anything outside [display_min,
+        # display_max] (FBP overshoot etc.) is clipped at the display, not
+        # in the data.
+        vmin, vmax = cfg["display_min"], cfg["display_max"]
         for i in range(n_show):
-            ax[i, 0].imshow(val_ref[i, 0].cpu(), cmap="gray", vmin=0, vmax=vmax)
+            ax[i, 0].imshow(val_ref[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 0].set_title("reference" if i == 0 else "")
-            ax[i, 1].imshow(ld_fbp[i, 0].cpu(), cmap="gray", vmin=0, vmax=vmax)
+            ax[i, 1].imshow(ld_fbp[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 1].set_title(f"sparse-view FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
-            ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=0, vmax=vmax)
+            ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 2].set_title(f"dual-domain  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})" if i == 0 else "")
-            ax[i, 3].imshow(val_ph[i, 0].cpu(), cmap="gray")
+            ax[i, 3].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 3].set_title("phantom" if i == 0 else "")
             for a in ax[i]:
                 a.set_axis_off()
