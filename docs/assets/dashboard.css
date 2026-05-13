@@ -219,8 +219,17 @@
 }
 .scratch-card .scratch-advice {
   font-size: 0.85rem;
+  /* color set inline per-run by JS (colourForRun); fallback green if
+     for some reason the run mapping is missing. */
   color: #117a40;
   font-style: italic;
+  border-left: 3px solid #117a40;
+  padding-left: 0.5rem;
+  margin: 0.3rem 0 0 0;
+}
+.scratch-card .scratch-advice-label {
+  font-weight: 600;
+  font-style: normal;
 }
 .scratch-card .scratch-thumb img {
   width: 100%;
@@ -245,6 +254,72 @@
     grid-template-columns: 5rem 1fr;
     row-gap: 0.25rem;
   }
+}
+
+/* --- Failed-run placeholder ---------------------------------------- */
+
+/* Renders inside .scratch-thumb (small) and .dash-iter-body .compare
+   (large). It auto-stretches to the host container so the layout
+   doesn't reflow when an iter has no image. */
+.failed-run {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  min-height: 7rem;
+  padding: 1rem 0.5rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    #fafbfc 0px,
+    #fafbfc 8px,
+    #f1f3f5 8px,
+    #f1f3f5 16px
+  );
+  border: 1px dashed #d0d7de;
+  border-radius: 4px;
+  color: #6a737d;
+  font-family: ui-monospace, Menlo, monospace;
+  user-select: none;
+}
+.failed-run-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+}
+.failed-run-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.failed-run-label {
+  font-size: 0.7rem;
+  color: #8a949e;
+  margin-top: 0.25rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.failed-run.failed-crash {
+  color: #a83232;
+  border-color: #e7c1c1;
+}
+.failed-run.failed-crash .failed-run-icon { color: #a83232; }
+.failed-run.failed-timeout {
+  color: #8a6d11;
+  border-color: #ebd99c;
+}
+.failed-run.failed-timeout .failed-run-icon { color: #8a6d11; }
+.failed-run.failed-running {
+  color: #14457a;
+  border-color: #b9d2ec;
+}
+
+/* Big version in the iter-detail body. */
+.dash-iter-body .compare .failed-run {
+  min-height: 12rem;
 }
 
 /* --- Lightbox / image zoom ----------------------------------------- */

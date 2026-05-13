@@ -96,6 +96,31 @@ const CHART_COLOURS = [
 ];
 function colourFor(i) { return CHART_COLOURS[i % CHART_COLOURS.length]; }
 
+// Run-slug -> hex colour, populated by seedRunColours() so that every
+// downstream UI element (scratchpad cards, run cards, iter rows) can
+// reuse the chart's per-run colour for visual continuity.
+const _runColours = new Map();
+function colourForRun(slug) {
+  return _runColours.get(slug) || "#888";
+}
+// Mirrors renderOverviewCharts's grouping: within each chart-group, runs
+// get CHART_COLOURS[i] in order. Must be called before any UI element
+// that looks up colourForRun.
+function seedRunColours(runs) {
+  _runColours.clear();
+  const groups = new Map();
+  for (const r of runs) {
+    const k = chartGroupKey(r.slug);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(r);
+  }
+  for (const groupRuns of groups.values()) {
+    for (let i = 0; i < groupRuns.length; i++) {
+      _runColours.set(groupRuns[i].slug, colourFor(i));
+    }
+  }
+}
+
 async function loadResults(slug) {
   const resp = await fetchOptional(`runs/${slug}/results.tsv`);
   if (!resp) return [];
@@ -128,6 +153,8 @@ async function renderOverviewCharts(runs) {
     if (!groups.has(k)) groups.set(k, []);
     groups.get(k).push(r);
   }
+  // (the per-run colour map was already populated by seedRunColours
+  // before any cards rendered — see loadRunsIndex)
   if (groups.size === 0) {
     container.innerHTML = `<p class="muted">No runs yet.</p>`;
     return;
@@ -318,6 +345,10 @@ async function loadRunsIndex() {
     return;
   }
   empty.remove();
+  // Seed the run-slug -> colour map BEFORE rendering run cards (or the
+  // scratchpad), so colourForRun() inside renderRunCard / renderScratchCard
+  // returns the same hex as the chart will use.
+  seedRunColours(runs);
   for (const r of runs) {
     grid.appendChild(renderRunCard(r));
   }
@@ -333,14 +364,32 @@ function shortModel(m) {
   return String(m).replace(/^claude-/, "").replace(/^anthropic\//, "");
 }
 
+// Build a "run failed" placeholder (or status-specific text) that takes
+// up the same slot the missing image would have. Layout-stable so a
+// row of thumbnails doesn't reflow when one is missing.
+function failedRunPlaceholder(status, label = "") {
+  const statusLower = (status || "").toLowerCase();
+  let title = "run failed";
+  let icon = "✕";
+  if (statusLower === "crash")        { title = "run crashed";   icon = "✕"; }
+  else if (statusLower === "timeout") { title = "timed out";     icon = "⧗"; }
+  else if (statusLower === "running") { title = "still running"; icon = "…"; }
+  else if (statusLower === "")        { title = "no image";      icon = "?"; }
+  const box = el("div", { class: `failed-run failed-${statusLower || "unknown"}` },
+    el("div", { class: "failed-run-icon" }, icon),
+    el("div", { class: "failed-run-title" }, title),
+    label ? el("div", { class: "failed-run-label" }, label) : null);
+  return box;
+}
+
 // Build a comparison <img> that:
 //   * loads lazily so 30 thumbnails don't all hit the wire on first paint;
 //   * falls back to a placeholder if the file 404s instead of leaving a
-//     broken-image icon (some recordings have a comparison_image field
-//     pointing at a file that hasn't been pushed yet, or there's no PNG
-//     for crash/timeout iters);
+//     broken-image icon (crash/timeout iters never produced a PNG);
 //   * gets data-zoomable so the lightbox click handler picks it up.
-function comparisonImg(src, alt, placeholderText = "(no comparison image)") {
+// `status` is optional — when present ("crash" / "timeout" / "discard" /
+// "keep"), the failure placeholder is tailored to it.
+function comparisonImg(src, alt, status = "", label = "") {
   const img = el("img", {
     src,
     alt: alt || "comparison",
@@ -350,8 +399,7 @@ function comparisonImg(src, alt, placeholderText = "(no comparison image)") {
     title: "Click to enlarge",
   });
   img.addEventListener("error", () => {
-    const ph = el("p", { class: "nocompare" }, placeholderText);
-    img.replaceWith(ph);
+    img.replaceWith(failedRunPlaceholder(status || "unknown", label));
   }, { once: true });
   return img;
 }
@@ -426,6 +474,12 @@ function renderRunCard(r) {
     href: `#run/${r.slug}`,
     onclick: (ev) => { ev.preventDefault(); showRun(r.slug); },
   });
+  // Match the chart's per-run colour so the eye can connect a card to
+  // its line on the overview plot at a glance.
+  const runColour = colourForRun(r.slug);
+  card.style.borderLeftColor = runColour;
+  card.style.borderLeftWidth = "4px";
+  card.style.borderLeftStyle = "solid";
   const header = el("h3", {}, r.slug);
   const statusBadge = r.status ? badge(r.status, r.status) : null;
   if (statusBadge) header.appendChild(statusBadge);
@@ -433,8 +487,14 @@ function renderRunCard(r) {
   // Identity strip: agent · model · short-id (the date-ordinal slug tail).
   // Multi-agent runs surface their *current* recorder here so it's obvious
   // which subagent's iteration last touched the run.
+  const agentTag = el("span", { class: "tag tag-agent", title: "agent" },
+                      r.agent || "—");
+  // Tint the agent tag with the run's plot colour.
+  agentTag.style.borderColor = runColour;
+  agentTag.style.color = runColour;
+  agentTag.style.background = runColour + "14";
   const identity = el("div", { class: "dash-run-identity" },
-    el("span", { class: "tag tag-agent", title: "agent" }, r.agent || "—"),
+    agentTag,
     el("span", { class: "tag tag-model", title: "model" }, shortModel(r.model)),
     el("span", { class: "tag tag-id",    title: "short-id" }, r.short_id || "—"));
   card.appendChild(identity);
@@ -586,12 +646,19 @@ async function renderIteration(slug, row) {
     body.innerHTML = "";
     // Build the comparison-image path from the iteration directory itself
     // — not from the cross-run observation's comparison_image field, which
-    // is fragile (concurrent writers, schema drift). For crash/timeout
-    // iters the file simply 404s and `comparisonImg` swaps in a "no
-    // image" placeholder.
+    // is fragile (concurrent writers, schema drift). When status is
+    // crash/timeout we skip the fetch entirely and render the failed-run
+    // placeholder so the user sees a clear "run failed" panel instead of
+    // a half-second flash of a broken-image icon.
     const compPath = `runs/${slug}/iterations/${iterId}/comparison.png`;
-    const compDiv = el("div", { class: "compare" },
-      comparisonImg(compPath, `${slug} · ${iterId} comparison`));
+    const compDiv = el("div", { class: "compare" });
+    if (status === "crash" || status === "timeout") {
+      compDiv.appendChild(failedRunPlaceholder(status, `${slug} · ${iterId}`));
+    } else {
+      compDiv.appendChild(comparisonImg(
+        compPath, `${slug} · ${iterId} comparison`, status,
+        `${slug} · ${iterId}`));
+    }
     body.appendChild(compDiv);
     if (obs && obs.rationale) {
       body.appendChild(el("div", { class: "rationale-full" }, obs.rationale));
@@ -642,6 +709,8 @@ async function loadScratch() {
 }
 
 function renderScratchCard(e) {
+  const runColour = colourForRun(e.run_id);
+  const status = (e.status || "").toLowerCase();
   const body = el("div", { class: "scratch-body" });
   body.appendChild(el("div", { class: "scratch-meta" },
     [
@@ -666,8 +735,15 @@ function renderScratchCard(e) {
     body.appendChild(el("div", { class: "scratch-meta" }, scores.join(" · ")));
   }
   if (e.advice_for_others) {
-    body.appendChild(el("p", { class: "scratch-advice" },
-      "Advice for others: " + e.advice_for_others));
+    const advice = el("p", { class: "scratch-advice" },
+      el("span", { class: "scratch-advice-label" }, "Advice for others:"),
+      " ", e.advice_for_others);
+    // The "Advice for others" stripe wears the per-run colour so it's
+    // obvious which agent / run a piece of advice came from when
+    // scanning the cross-run scratchpad.
+    advice.style.borderLeftColor = runColour;
+    advice.style.color = runColour;
+    body.appendChild(advice);
   }
 
   const thumb = el("div", { class: "scratch-thumb" });
@@ -679,16 +755,23 @@ function renderScratchCard(e) {
     const iterId = `iter-${String(e.iter).padStart(4, "0")}`;
     imgPath = `runs/${e.run_id}/iterations/${iterId}/comparison.png`;
   }
-  if (imgPath) {
-    const altParts = [];
-    if (e.run_id) altParts.push(e.run_id);
-    if (e.iter !== undefined) altParts.push(`iter ${e.iter}`);
-    thumb.appendChild(comparisonImg(imgPath,
-                                    altParts.join(" · "), "no image"));
+  const label = [e.run_id, e.iter !== undefined ? `iter ${e.iter}` : ""]
+    .filter(Boolean).join(" · ");
+  if (status === "crash" || status === "timeout") {
+    // Skip the fetch — we know there's no PNG for failed runs and a
+    // styled placeholder is more informative than a broken icon.
+    thumb.appendChild(failedRunPlaceholder(status, label));
+  } else if (imgPath) {
+    thumb.appendChild(comparisonImg(imgPath, label, status, label));
   } else {
-    thumb.appendChild(el("div", { class: "nocompare" }, "no image"));
+    thumb.appendChild(failedRunPlaceholder("unknown", label));
   }
-  return el("div", { class: "scratch-card" }, body, thumb);
+  const card = el("div", { class: "scratch-card" }, body, thumb);
+  // Per-agent / per-run colour stripe on the card itself.
+  card.style.borderLeftColor = runColour;
+  card.style.borderLeftWidth = "4px";
+  card.style.borderLeftStyle = "solid";
+  return card;
 }
 
 // ---------- boot --------------------------------------------------------
