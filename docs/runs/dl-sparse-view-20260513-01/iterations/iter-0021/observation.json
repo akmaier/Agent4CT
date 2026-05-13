@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T22:41:05Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 21,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Stacked 2 BFs after the U-Net (n_bf=2). Val 0.6537 -> 0.6478 (-0.9%), headroom 0.5760 -> 0.5727 (-0.6%). Two BFs in series over-smooth \u2014 kernel=7 once is enough.",
+  "val_score": 0.6478,
+  "headroom": 0.5727,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0021/comparison.png",
+  "advice_for_others": "On dual-domain N2I, a single Wagner-2022 BF after the image U-Net is the right amount; stacking two over-smooths and hurts.",
+  "commit": "366ec9f"
+}
