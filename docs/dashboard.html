@@ -7,6 +7,8 @@
   <link rel="stylesheet" type="text/css" href="assets/css/style.css">
   <link rel="stylesheet" type="text/css" href="assets/site.css">
   <link rel="stylesheet" type="text/css" href="assets/dashboard.css">
+  <script defer
+          src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <title>Live dashboard · Agent4CT</title>
 </head>
 <body>
@@ -29,7 +31,16 @@
     </nav>
 
     <section id="overview">
-      <h2 id="runs">Runs</h2>
+      <h2 id="runs">Progress overview</h2>
+      <p class="muted">
+        Best <strong>headroom</strong> per run, plotted against iteration index.
+        Higher is better; <code>1.0</code> means the run matched the oracle on its in-loop val subset.
+      </p>
+      <div class="chart-wrap">
+        <canvas id="overview-chart" height="120"></canvas>
+      </div>
+
+      <h2>Runs</h2>
       <p class="muted">
         Each card is one autoresearch run, addressed by
         <code>&lt;challenge-slug&gt;-YYYYMMDD-NN</code>.
@@ -44,6 +55,13 @@
       <hr>
       <h2 id="run-detail-title">Run</h2>
       <div class="dash-run-meta" id="run-detail-meta"></div>
+
+      <div id="run-detail-final" class="a4c-callout" hidden></div>
+
+      <h3>Progress curve</h3>
+      <div class="chart-wrap">
+        <canvas id="run-chart" height="110"></canvas>
+      </div>
 
       <h3>Iterations</h3>
       <div id="run-detail-iters" class="dash-iters"></div>

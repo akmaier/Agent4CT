@@ -360,6 +360,9 @@ python scripts/agent4ct_record.py record \
     --kept true --commit "$(git rev-parse --short HEAD)" \
     --comparison runs/local/comparison.png \
     --solver pentathlon/dl_sparse_view/solver.py
+# → auto-commits + auto-pushes (pull --rebase --autostash before push to
+#   tolerate the other 4 agents racing on the shared scratch pad). Pass
+#   --no-commit / --no-push to opt out.
 
 # Every 30 iterations (1-hour Slurm job on 3x larger subset):
 python scripts/agent4ct_record.py stage \
@@ -368,12 +371,34 @@ python scripts/agent4ct_record.py stage \
     --iter-val-score 0.62 --verdict overfit \
     --notes "stage val ≪ iter val — shrink model on next iter"
 
-# When the run ends:
-python scripts/agent4ct_record.py finalize --slug "$SLUG" --status done
+# When the iteration phase ends (budget hit / no improvement / overfit /
+# manual): retrain the best solver on the full train set + eval on the
+# held test set in a separate Slurm job, then call finalize once.
+python scripts/agent4ct_record.py finalize --slug "$SLUG" \
+    --stop-reason budget \
+    --final-test-score 0.71 --final-test-headroom 0.55 \
+    --final-test-comparison runs/local/final_test_comparison.png \
+    --notes "Retrained iter 64 on full 4000-phantom train set."
 ```
 
-`git commit && git push` after each iteration; the dashboard picks it
-up on its next refresh.
+### Stopping a run
+
+A run ends when **any** of these holds:
+
+- iteration budget exhausted (default 100),
+- no improvement (no new `keep`) in the last 30 iterations,
+- three consecutive **stage** checks return `overfit` with no recovery,
+- or the operator stops it manually.
+
+The agent picks the matching `--stop-reason` for `finalize`.
+
+### Final test evaluation
+
+Test sets are **never** read during the iteration phase. After the run
+ends, the agent reruns the best iteration's solver on the full train
+subset, evaluates on the held test set, and records the result via
+`finalize`. The dashboard surfaces this as a banner on the run-detail
+page.
 
 ## Status today
 

@@ -1,0 +1,6 @@
+# Cross-agent append-only journals — merge concurrent appends by union
+# rather than failing the rebase. Five agents pushing iterations in
+# parallel would otherwise constantly conflict on these.
+docs/runs/observations.jsonl merge=union
+docs/runs/**/results.tsv     merge=union
+docs/runs/**/stages.tsv      merge=union

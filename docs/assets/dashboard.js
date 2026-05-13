@@ -71,6 +71,189 @@ function el(tag, attrs = {}, ...children) {
   return e;
 }
 
+// ---------- charts ------------------------------------------------------
+
+let _overviewChart = null;
+let _runChart = null;
+
+// Distinguishable colours per run.
+const CHART_COLOURS = [
+  "#155799", "#159957", "#c9810c", "#a83232",
+  "#6a2477", "#117a40", "#1f6f8b", "#b5402a",
+  "#5c3a96", "#2e7d32",
+];
+function colourFor(i) { return CHART_COLOURS[i % CHART_COLOURS.length]; }
+
+async function loadResults(slug) {
+  const resp = await fetchOptional(`runs/${slug}/results.tsv`);
+  if (!resp) return [];
+  return parseTSV(await resp.text());
+}
+
+function bestSoFar(rows) {
+  const out = [];
+  let best = -Infinity;
+  for (const r of rows) {
+    const h = parseFloat(r.headroom);
+    if (!isNaN(h) && h > best) best = h;
+    out.push({ iter: parseInt(r.iter, 10), best: best === -Infinity ? null : best });
+  }
+  return out;
+}
+
+async function renderOverviewChart(runs) {
+  if (typeof Chart === "undefined") return; // CDN still loading; skip silently
+  const canvas = document.getElementById("overview-chart");
+  if (!canvas) return;
+  if (_overviewChart) { _overviewChart.destroy(); _overviewChart = null; }
+
+  // For each run, fetch results.tsv and compute running-best headroom.
+  const datasets = [];
+  for (let i = 0; i < runs.length; i++) {
+    const r = runs[i];
+    const rows = await loadResults(r.slug);
+    if (rows.length === 0) continue;
+    const series = bestSoFar(rows);
+    datasets.push({
+      label: r.slug,
+      data: series.map(p => ({ x: p.iter, y: p.best })),
+      borderColor: colourFor(i),
+      backgroundColor: colourFor(i) + "33",
+      tension: 0.15,
+      pointRadius: 2,
+      borderWidth: 2,
+      spanGaps: true,
+    });
+  }
+  if (datasets.length === 0) {
+    canvas.parentElement.innerHTML =
+      `<p class="muted" style="margin: 0;">No iterations yet — chart will populate as runs land.</p>`;
+    return;
+  }
+
+  _overviewChart = new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      scales: {
+        x: {
+          type: "linear",
+          title: { display: true, text: "iteration" },
+          ticks: { stepSize: 1, precision: 0 },
+        },
+        y: {
+          title: { display: true, text: "best headroom (running max)" },
+          suggestedMin: 0, suggestedMax: 1,
+        },
+      },
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            title: (items) => `iter ${items[0].parsed.x}`,
+            label: (item) => `${item.dataset.label}: ${item.parsed.y.toFixed(3)}`,
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderRunChart(rows) {
+  if (typeof Chart === "undefined") return;
+  const canvas = document.getElementById("run-chart");
+  if (!canvas) return;
+  if (_runChart) { _runChart.destroy(); _runChart = null; }
+
+  const points = rows.map(r => ({
+    x: parseInt(r.iter, 10),
+    y: parseFloat(r.val_score),
+    status: (r.status || "").toLowerCase(),
+  })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+
+  const headroom = rows.map(r => ({
+    x: parseInt(r.iter, 10),
+    y: parseFloat(r.headroom),
+  })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+
+  const best = bestSoFar(rows).map(p => ({ x: p.iter, y: p.best }));
+
+  const colour = (s) =>
+      s === "keep"    ? "#159957"
+    : s === "discard" ? "#a83232"
+    : s === "crash"   ? "#6a2477"
+    : s === "timeout" ? "#c9810c"
+    : "#888";
+
+  _runChart = new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      datasets: [
+        {
+          label: "val_score",
+          data: points.map(p => ({ x: p.x, y: p.y })),
+          borderColor: "#155799",
+          backgroundColor: "#15579933",
+          pointBackgroundColor: points.map(p => colour(p.status)),
+          pointBorderColor: points.map(p => colour(p.status)),
+          pointRadius: 4,
+          tension: 0.15,
+          borderWidth: 2,
+        },
+        {
+          label: "running-best val_score",
+          data: best,
+          borderColor: "#159957",
+          borderDash: [6, 4],
+          pointRadius: 0,
+          tension: 0,
+          borderWidth: 2,
+        },
+        {
+          label: "headroom",
+          data: headroom,
+          borderColor: "#c9810c",
+          backgroundColor: "#c9810c33",
+          pointRadius: 2,
+          tension: 0.15,
+          borderWidth: 1.5,
+          yAxisID: "yHr",
+          hidden: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      scales: {
+        x: {
+          type: "linear",
+          title: { display: true, text: "iteration" },
+          ticks: { stepSize: 1, precision: 0 },
+        },
+        y: {
+          title: { display: true, text: "val_score" },
+          suggestedMin: 0,
+        },
+        yHr: {
+          position: "right",
+          title: { display: true, text: "headroom" },
+          grid: { drawOnChartArea: false },
+          suggestedMin: 0, suggestedMax: 1,
+        },
+      },
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 12 } },
+        tooltip: { mode: "index" },
+      },
+    },
+  });
+}
+
 // ---------- runs grid ---------------------------------------------------
 
 async function loadRunsIndex() {
@@ -93,6 +276,7 @@ async function loadRunsIndex() {
   for (const r of runs) {
     grid.appendChild(renderRunCard(r));
   }
+  await renderOverviewChart(runs);
 }
 
 function renderRunCard(r) {
@@ -145,10 +329,31 @@ async function showRun(slug) {
   }
   renderManifest(meta, manifest);
 
+  // Final result banner if present.
+  const finalDiv = document.getElementById("run-detail-final");
+  finalDiv.hidden = true;
+  const finalResp = await fetchOptional(`runs/${slug}/final.json`);
+  if (finalResp) {
+    const fin = await finalResp.json();
+    finalDiv.hidden = false;
+    finalDiv.innerHTML = `<strong>Run finalised.</strong>
+      Stopped on <code>${fin.stop_reason || "?"}</code> after
+      ${fin.n_iterations ?? "?"} iterations.
+      Best iter <code>${fin.best_iter ?? "?"}</code>
+      (val=${fmtNum(fin.best_val_score)}, hr=${fmtNum(fin.best_headroom)}).
+      <br>
+      <strong>Test set:</strong>
+      score=${fmtNum(fin.final_test_score)},
+      headroom=${fmtNum(fin.final_test_headroom)}.
+      ${fin.notes ? `<br><em>${fin.notes}</em>` : ""}`;
+  }
+
   const resultsResp = await fetchOptional(`runs/${slug}/results.tsv`);
+  let rowsAll = [];
   if (resultsResp) {
-    const rows = parseTSV(await resultsResp.text());
-    for (const row of rows.reverse()) {
+    rowsAll = parseTSV(await resultsResp.text());
+    renderRunChart(rowsAll);
+    for (const row of rowsAll.slice().reverse()) {
       iters.appendChild(await renderIteration(slug, row));
     }
   } else {

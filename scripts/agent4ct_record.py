@@ -35,7 +35,12 @@ from pathlib import Path
 # Allow running without an installed package.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from ddssl_ldct.harness import Run, Observation, utc_now_iso
+from ddssl_ldct.harness import (
+    Run, Observation, FinalResult,
+    utc_now_iso, write_final,
+    git_commit_and_push, build_iter_commit_message,
+    REPO_ROOT,
+)
 
 
 def cmd_new_run(args):
@@ -78,6 +83,13 @@ def cmd_record(args):
         stdout_log=args.stdout_log,
     )
     print(d)
+    if args.commit_git:
+        msg = build_iter_commit_message(run.slug, args.iter, obs)
+        sha = git_commit_and_push(REPO_ROOT, msg, push=args.push)
+        if sha:
+            print(f"committed {sha}{' & pushed' if args.push else ''}")
+        else:
+            print("nothing to commit")
 
 
 def cmd_stage(args):
@@ -94,7 +106,50 @@ def cmd_stage(args):
 
 def cmd_finalize(args):
     run = Run.load(args.slug)
-    run.finalize(status=args.status, notes=args.notes or "")
+    # Discover best iteration so far from results.tsv.
+    results_path = run.dir / "results.tsv"
+    best_iter, best_val, best_hr = None, None, None
+    if results_path.exists():
+        for line in results_path.read_text().splitlines()[1:]:
+            cells = line.split("\t")
+            try:
+                it = int(cells[0]); v = float(cells[2])
+                if best_val is None or v > best_val:
+                    best_val = v; best_iter = it
+                    try:
+                        best_hr = float(cells[3])
+                    except (ValueError, IndexError):
+                        pass
+            except (ValueError, IndexError):
+                continue
+    n_iter = 0
+    if results_path.exists():
+        n_iter = sum(1 for _ in results_path.read_text().splitlines()[1:])
+
+    final = FinalResult(
+        slug=run.slug,
+        ended=utc_now_iso(),
+        n_iterations=n_iter,
+        stop_reason=args.stop_reason,
+        best_iter=best_iter,
+        best_val_score=best_val,
+        best_headroom=best_hr,
+        final_test_score=args.final_test_score,
+        final_test_headroom=args.final_test_headroom,
+        final_test_comparison=args.final_test_comparison,
+        notes=args.notes or "",
+    )
+    write_final(run, final)
+    if args.commit_git:
+        msg = (f"finalize {run.slug}: "
+               f"test_score={args.final_test_score} "
+               f"test_hr={args.final_test_headroom} "
+               f"stop={args.stop_reason}")
+        if args.notes:
+            msg += "\n\n" + args.notes
+        sha = git_commit_and_push(REPO_ROOT, msg, push=args.push)
+        if sha:
+            print(f"committed {sha}{' & pushed' if args.push else ''}")
 
 
 def _parse_bool(s: str | None) -> bool | None:
@@ -142,7 +197,11 @@ def main():
                        help="path to solver.py snapshot to capture")
     p_rec.add_argument("--stdout-log", dest="stdout_log", default=None,
                        help="contents of a stdout log to save (string, not path)")
-    p_rec.set_defaults(func=cmd_record)
+    p_rec.add_argument("--no-commit", dest="commit_git", action="store_false",
+                       help="skip auto git commit (default: commit after recording)")
+    p_rec.add_argument("--no-push", dest="push", action="store_false",
+                       help="skip auto git push (default: push after commit)")
+    p_rec.set_defaults(func=cmd_record, commit_git=True, push=True)
 
     p_st = sub.add_parser("stage")
     p_st.add_argument("--slug", required=True)
@@ -154,12 +213,27 @@ def main():
     p_st.add_argument("--notes", default="")
     p_st.set_defaults(func=cmd_stage)
 
-    p_fin = sub.add_parser("finalize")
+    p_fin = sub.add_parser("finalize",
+        description="Run-level finalize: writes final.json with test scores "
+                    "+ stop reason. Run this once per run, after the "
+                    "iteration phase is over and you've evaluated the best "
+                    "iteration's solver on the held test set.")
     p_fin.add_argument("--slug", required=True)
-    p_fin.add_argument("--status", default="done",
-                       choices=["done", "abandoned", "crashed"])
+    p_fin.add_argument("--stop-reason", dest="stop_reason",
+                       choices=["budget", "no_improvement", "overfit_stage",
+                                "manual", "crashed"],
+                       required=True,
+                       help="why iteration phase ended")
+    p_fin.add_argument("--final-test-score", dest="final_test_score", type=float,
+                       default=None, help="score on the held test set")
+    p_fin.add_argument("--final-test-headroom", dest="final_test_headroom",
+                       type=float, default=None, help="headroom on held test set")
+    p_fin.add_argument("--final-test-comparison", dest="final_test_comparison",
+                       default=None, help="path (relative to docs/) to a comparison PNG")
     p_fin.add_argument("--notes", default="")
-    p_fin.set_defaults(func=cmd_finalize)
+    p_fin.add_argument("--no-commit", dest="commit_git", action="store_false")
+    p_fin.add_argument("--no-push", dest="push", action="store_false")
+    p_fin.set_defaults(func=cmd_finalize, commit_git=True, push=True)
 
     args = p.parse_args()
     args.func(args)

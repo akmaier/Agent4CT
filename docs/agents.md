@@ -121,14 +121,86 @@ with open_run(challenge="dl_sparse_view", slug_prefix="dl-sparse-view") as run:
 
 The helper handles: building the slug, creating per-iteration directories, writing `observation.json`, appending to `results.tsv` and the global `observations.jsonl`, and updating `runs-index.json` so the dashboard sees the new iteration on its next refresh.
 
-## How to start a run
+## How to start (and run) a run
+
+The CLI auto-commits and auto-pushes after each `record` (and after `finalize`) by default — pass `--no-commit` / `--no-push` if you want to batch up changes.
 
 ```bash
-# from the laptop, one terminal per challenge
-agent4ct-record --challenge dl_sparse_view --new-run
-# then submit iterations in a loop:
-agent4ct-record --challenge dl_sparse_view --iter 1 --comparison comparison.png \
-    --val-score 0.58 --headroom 0.37 --rationale "baseline U-Net"
+# Once, at the start of a run:
+SLUG=$(python scripts/agent4ct_record.py new-run \
+    --challenge dl_sparse_view --slug-prefix dl-sparse-view \
+    --notes "first run, baseline U-Net")
+
+# After each 5-minute Slurm iteration:
+python scripts/agent4ct_record.py record \
+    --slug "$SLUG" --iter 1 \
+    --val-score 0.58 --headroom 0.37 \
+    --change-class architecture \
+    --rationale "baseline U-Net c=24, Adam lr=1e-3" \
+    --advice "U-Net c=24 is a sane starting point for ~400 train samples" \
+    --kept true --commit "$(git rev-parse --short HEAD)" \
+    --comparison runs/local/comparison.png \
+    --solver pentathlon/dl_sparse_view/solver.py
+# → writes docs/runs/$SLUG/iterations/iter-0001/{observation.json,comparison.png,…},
+#   appends a row to results.tsv, appends a line to docs/runs/observations.jsonl,
+#   commits the journal additions, pulls --rebase (in case another agent
+#   pushed during the 5-min Slurm job), and pushes.
+
+# Every 30 iterations (1-hour Slurm job, 3× larger subset):
+python scripts/agent4ct_record.py stage \
+    --slug "$SLUG" --iter 30 \
+    --stage-val-score 0.55 --stage-headroom 0.30 \
+    --iter-val-score 0.62 --verdict overfit \
+    --notes "stage val ≪ iter val — shrink model on next iter"
 ```
 
-The dashboard updates as soon as you `git push` — the JSON/TSV files are served as static assets out of `docs/runs/`.
+For the *discard* case, the agent reverts its solver edit before calling `record`:
+
+```bash
+git checkout HEAD -- pentathlon/$CHALLENGE/solver.py
+python scripts/agent4ct_record.py record --slug "$SLUG" --iter N \
+    --kept false --status discard ...
+```
+
+— so the next iteration starts from the last *kept* solver, and the journal still records the failed attempt.
+
+## Stopping a run
+
+A run ends when **any** of these is true:
+
+| Condition | Default |
+|---|---|
+| Iteration budget exhausted | 100 iterations |
+| No improvement (no new `keep`) in last 30 iterations | always on |
+| Three consecutive **stage** checks return `overfit` with no intervening `ok` | always on |
+| Manual stop (operator's call) | — |
+
+The agent decides which applies and calls `finalize` with the matching `--stop-reason`. The default budget of **100 iterations** is a sensible upper bound for a single challenge — five challenges × 100 iters × 5 min ≈ 40 GPU-hours, modest on a small lab cluster.
+
+## Final test-set evaluation (once per run)
+
+The iteration phase **never** touches the test set. After the iteration phase ends:
+
+1. Identify the best iteration from `results.tsv` (highest `val_score`).
+2. Optionally re-train its solver on the **full** challenge train set (not the 200–400-sample iteration subset) — typically a 1-to-2-hour Slurm job mirroring the stage job's budget.
+3. Run that retrained solver on the **held test set** (also via a Slurm job).
+4. Record the result:
+
+```bash
+python scripts/agent4ct_record.py finalize \
+    --slug "$SLUG" --stop-reason budget \
+    --final-test-score 0.71 --final-test-headroom 0.55 \
+    --final-test-comparison runs/local/final_test_comparison.png \
+    --notes "Retrained best iter (iter 64, AdamW c=24) on full 4000-phantom train set; tested on 100 held-out phantoms."
+```
+
+→ Writes `docs/runs/$SLUG/final.json` and updates the manifest's status to `done`. The dashboard renders the result as a banner on the run-detail page.
+
+## Preparing for the Pentathlon final
+
+Once each of the five challenges has a finalised run, the **Pentathlon all-rounder** phase searches for a single configuration that maximises the unweighted mean of headrooms across all five test sets.
+
+1. Start an all-rounder run: `--slug-prefix pentathlon-allrounder --challenge pentathlon`.
+2. Each iteration evaluates on a *small subset* of each challenge's val set (still 5-min budget). The reported `val_score` is the mean headroom across challenges.
+3. Stage checks every 30 iter still trigger (1-hour, 3× larger subsets).
+4. When the all-rounder run ends, the final-test eval evaluates on the **test set of all five challenges** in one job and reports the Pentathlon score (mean test headroom).

@@ -327,3 +327,113 @@ class Run:
 
 def _tsv_safe(s: str) -> str:
     return s.replace("\t", " ").replace("\n", " ").replace("\r", " ")
+
+
+# --- Final evaluation ----------------------------------------------------
+
+@dataclass
+class FinalResult:
+    """Test-set evaluation, produced *once* per run after the iteration phase."""
+    slug: str
+    ended: str
+    n_iterations: int
+    stop_reason: str           # e.g. "budget", "no_improvement", "overfit_stage", "manual"
+    best_iter: Optional[int] = None
+    best_val_score: Optional[float] = None
+    best_headroom: Optional[float] = None
+    final_test_score: Optional[float] = None
+    final_test_headroom: Optional[float] = None
+    final_test_comparison: Optional[str] = None   # path relative to docs/
+    notes: str = ""
+
+
+def write_final(run: "Run", result: FinalResult) -> Path:
+    """Write final.json into the run dir + mark the manifest as done."""
+    data = asdict(result)
+    path = run.dir / "final.json"
+    _atomic_write_text(path, json.dumps(data, indent=2))
+    run.update_manifest(
+        status="done",
+        ended=result.ended,
+        stop_reason=result.stop_reason,
+        best_iter=result.best_iter,
+        best_val_score=result.best_val_score,
+        final_test_score=result.final_test_score,
+        final_test_headroom=result.final_test_headroom,
+    )
+    return path
+
+
+# --- Git helpers ---------------------------------------------------------
+
+import subprocess
+
+
+def _run(cmd: list[str], cwd: Path | None = None, check: bool = True
+         ) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, cwd=cwd, check=check, capture_output=True, text=True)
+
+
+def git_commit_and_push(repo_root: Path, message: str, *, files: list[Path] | None = None,
+                        push: bool = True, rebase_retries: int = 2) -> Optional[str]:
+    """Stage given files (or everything new in docs/runs/ + the harness side
+    effects), commit with the given message, and push.
+
+    Handles parallel-agent collisions by pulling --rebase before push and
+    retrying up to ``rebase_retries`` times. Returns the short commit hash on
+    success, or None if there was nothing to commit.
+    """
+    cwd = Path(repo_root)
+    # Stage requested files; fall back to "everything in docs/runs/" if none.
+    if files:
+        for f in files:
+            try:
+                _run(["git", "add", "--", str(Path(f).relative_to(cwd))], cwd=cwd)
+            except Exception:
+                _run(["git", "add", "--", str(f)], cwd=cwd)
+    else:
+        _run(["git", "add", "docs/runs/"], cwd=cwd)
+
+    # If there's nothing staged, bail.
+    diff = _run(["git", "diff", "--cached", "--name-only"], cwd=cwd).stdout.strip()
+    if not diff:
+        return None
+
+    _run(["git", "commit", "-m", message], cwd=cwd)
+    sha = _run(["git", "rev-parse", "--short", "HEAD"], cwd=cwd).stdout.strip()
+
+    if not push:
+        return sha
+
+    for attempt in range(rebase_retries + 1):
+        try:
+            _run(["git", "pull", "--rebase", "--autostash", "origin", "HEAD"], cwd=cwd)
+        except subprocess.CalledProcessError as e:
+            if attempt < rebase_retries:
+                continue
+            raise
+        push_res = subprocess.run(["git", "push"], cwd=cwd,
+                                  capture_output=True, text=True)
+        if push_res.returncode == 0:
+            return sha
+        if attempt == rebase_retries:
+            raise RuntimeError(f"git push failed after {rebase_retries + 1} attempts: "
+                               f"{push_res.stderr.strip()}")
+    return sha
+
+
+def build_iter_commit_message(slug: str, iter_n: int, obs: "Observation") -> str:
+    """Standard one-line + body commit message for an iteration."""
+    head = (
+        f"iter {iter_n:04d} {slug}: "
+        f"val={obs.val_score if obs.val_score is not None else '?'} "
+        f"hr={obs.headroom if obs.headroom is not None else '?'} "
+        f"{obs.status}"
+    )
+    body_parts = []
+    if obs.rationale:
+        body_parts.append(obs.rationale)
+    if obs.advice_for_others:
+        body_parts.append(f"Advice: {obs.advice_for_others}")
+    body = "\n\n".join(body_parts)
+    return head + ("\n\n" + body if body else "")
