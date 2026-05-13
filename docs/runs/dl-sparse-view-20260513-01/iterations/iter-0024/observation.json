@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T23:08:06Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 24,
+  "challenge": "dl_sparse_view",
+  "change_class": "other",
+  "rationale": "Re-measurement of iter-16 c=16+BF architecture under FIXED calibration (data_range=display_max-display_min=0.05). Headroom 0.576 unchanged (RMSE-ratio is scale-invariant); val_ssim 0.6537->0.3070 because auto data_range was previously inflated by FBP overshoot (~0.07). All future iterations compete against THIS calibrated baseline. Also adds GPU pin q8000 + chunked validation so iter does not OOM on smaller cards.",
+  "val_score": 0.30696630477905273,
+  "headroom": 0.5759020032230067,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.465765,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0024/comparison.png",
+  "advice_for_others": "PSNR/SSIM are only cross-iteration comparable when data_range is fixed; use the same vmin/vmax across all comparison columns. Headroom (RMSE-ratio) stays comparable across the metric switch.",
+  "commit": "e62c86a"
+}
