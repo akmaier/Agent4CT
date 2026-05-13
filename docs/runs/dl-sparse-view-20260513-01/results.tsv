@@ -20,3 +20,4 @@ iter	commit	val_score	headroom	status	change_class	rationale
 19	d4086f7	0.6499	0.5739	discard	architecture	bf_kernel 7 -> 9. Val 0.6537 -> 0.6499 (-0.6%), headroom 0.5760 -> 0.5739 (-0.4%). 7 is the BF window sweet spot: 7 > 9 > 11 (OOM).
 20	07ec77d	0.6496	0.5738	discard	optimizer	epochs 8 -> 10 on iter-16 baseline. Val 0.6537 -> 0.6496 (-0.6%), headroom 0.5760 -> 0.5738 (-0.4%). Loss plateau 0.00037 hit by epoch 6 in both 8 and 10 epoch runs; extra epochs don't help.
 21	366ec9f	0.6478	0.5727	discard	architecture	Stacked 2 BFs after the U-Net (n_bf=2). Val 0.6537 -> 0.6478 (-0.9%), headroom 0.5760 -> 0.5727 (-0.6%). Two BFs in series over-smooth — kernel=7 once is enough.
+22	9547e02	0.6518	0.5748	discard	optimizer	weight_decay 1e-4 -> 1e-3 on iter-16 baseline. Val 0.6537 -> 0.6518 (-0.3%), headroom 0.5760 -> 0.5748 (-0.2%) — both within noise. Stronger WD doesn't compound with BF; the small wd was already adequate.
