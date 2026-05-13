@@ -7,5 +7,5 @@
   "agent": "claude",
   "model": "claude-sonnet-4.5",
   "status": "demo",
-  "notes": "Seeded demo run so the dashboard renders before any real run has landed. Replace with real data once the harness has produced iterations."
+  "notes": "Seeded demo run so the dashboard renders before any real DL-Sparse-View run has landed. Comparison images are from cluster smoke job 760361 (PYRO-NN, Wagner geometry, dual-domain @ 5 epochs on synthetic random-ellipse phantoms): low-dose-FBP 25.12 dB / 0.529 SSIM, dual-domain 33.19 dB / 0.840 SSIM. The iteration narrative below is synthetic. Replace with real data once the harness has produced iterations."
 }
