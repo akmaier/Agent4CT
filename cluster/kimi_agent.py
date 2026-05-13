@@ -1,9 +1,16 @@
 """Kimi-K2.6 autonomous DL-Sparse-View agent.
 
-Drives one full autoresearch loop against the FAU/RRZE LLM gateway:
-    base_url = https://hub.nhr.fau.de/api/llmgw/v1
-    model    = moonshotai/Kimi-K2.6
-    auth     = Bearer  $LLMAPI_KEY
+Drives one full autoresearch loop against the FAU/RRZE LLM gateway. The
+credentials + endpoint live in ``llm_api.toml`` (gitignored). Copy
+``llm_api.example.toml`` to ``llm_api.toml`` and put your real key in
+the ``[rrze]`` table:
+
+    [rrze]
+    api_key  = "..."
+    base_url = "https://hub.nhr.fau.de/api/llmgw/v1"
+    model    = "moonshotai/Kimi-K2.6"
+
+(See https://hpc.fau.de/request-llm-api-key/ for the key.)
 
 Per the operator's directive this agent is ISOLATED from what other agents
 have already found: it must not read the cross-run scratchpad
@@ -13,7 +20,6 @@ and that path *is* allowed.
 
 Usage:
 
-    export LLMAPI_KEY=...           # one-shot from the user's shell
     python cluster/kimi_agent.py    \\
         --slug   dl-sparse-view-kimi-20260514-01  \\
         --iters  5
@@ -56,6 +62,47 @@ try:
 except ImportError:
     OpenAI = None  # type: ignore
     _OPENAI_OK = False
+
+# tomllib is stdlib from Python 3.11+; on older 3.10 fall back to a tiny
+# manual parser is overkill — refuse instead.
+try:
+    import tomllib  # type: ignore[attr-defined]
+    _TOML_OK = True
+except ImportError:
+    _TOML_OK = False
+
+
+# --- credentials --------------------------------------------------------
+
+def load_credentials(toml_path: Path) -> dict[str, str]:
+    """Read api_key / base_url / model from llm_api.toml's [rrze] table.
+
+    The file is gitignored on purpose. The caller (operator) creates it
+    locally from `llm_api.example.toml`. The agent never logs or echoes
+    the api_key value.
+
+    Falls back to environment variables for any missing field:
+        LLMAPI_KEY -> api_key
+        LLM_BASE_URL -> base_url   (default: FAU gateway)
+        LLM_MODEL    -> model      (default: moonshotai/Kimi-K2.6)
+    """
+    cfg: dict[str, Any] = {}
+    if toml_path.exists():
+        if not _TOML_OK:
+            raise RuntimeError(
+                "Python >= 3.11 required to parse llm_api.toml")
+        with toml_path.open("rb") as f:
+            data = tomllib.load(f)
+        cfg = dict(data.get("rrze") or {})
+    api_key = (cfg.get("api_key")
+               or os.environ.get("LLMAPI_KEY", "")).strip()
+    base_url = (cfg.get("base_url")
+                or os.environ.get("LLM_BASE_URL")
+                or "https://hub.nhr.fau.de/api/llmgw/v1")
+    model = (cfg.get("model")
+             or os.environ.get("LLM_MODEL")
+             or "moonshotai/Kimi-K2.6")
+    return {"api_key": api_key, "base_url": base_url, "model": model}
 
 # --- isolation rules ----------------------------------------------------
 
@@ -282,18 +329,35 @@ def main() -> int:
                    help="The agent's own run slug (must already be created).")
     p.add_argument("--iters", type=int, default=3,
                    help="How many solver iterations to run.")
-    p.add_argument("--model", default="moonshotai/Kimi-K2.6")
-    p.add_argument("--base-url", default="https://hub.nhr.fau.de/api/llmgw/v1")
+    p.add_argument("--model", default=None,
+                   help="Override model from llm_api.toml.")
+    p.add_argument("--base-url", default=None,
+                   help="Override base_url from llm_api.toml.")
+    p.add_argument("--credentials", default=str(REPO / "llm_api.toml"),
+                   help="Path to llm_api.toml (gitignored). Default: repo root.")
     args = p.parse_args()
 
-    api_key = os.environ.get("LLMAPI_KEY", "").strip()
-    if not api_key:
-        print("ERROR: LLMAPI_KEY env-var is empty. Set it from your shell "
-              "(see https://hpc.fau.de/request-llm-api-key/) before launching.",
-              file=sys.stderr)
+    creds = load_credentials(Path(args.credentials))
+    if args.model:    creds["model"] = args.model
+    if args.base_url: creds["base_url"] = args.base_url
+    if not creds["api_key"]:
+        print(
+            f"ERROR: no api_key found.\n"
+            f"  Tried: {args.credentials} (table [rrze], key api_key)\n"
+            f"  Then : env-var LLMAPI_KEY\n"
+            f"  Copy llm_api.example.toml -> llm_api.toml and fill in your\n"
+            f"  RRZE key from https://hpc.fau.de/request-llm-api-key/.",
+            file=sys.stderr,
+        )
         return 2
-    return run_agent(args.slug, args.iters, model=args.model,
-                     base_url=args.base_url, api_key=api_key)
+    # Mask the key in any incidental log output.
+    print(f"[kimi] model={creds['model']}  base_url={creds['base_url']}  "
+          f"key=***{creds['api_key'][-4:] if len(creds['api_key']) > 8 else 'set'}",
+          flush=True)
+    return run_agent(args.slug, args.iters,
+                     model=creds["model"],
+                     base_url=creds["base_url"],
+                     api_key=creds["api_key"])
 
 
 if __name__ == "__main__":

@@ -24,3 +24,4 @@ config/*_cluster_agent_guide.md
 papers/
 
 .env
+llm_api.toml
