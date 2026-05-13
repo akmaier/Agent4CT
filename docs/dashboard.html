@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,maximum-scale=2">
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+  <link rel="stylesheet" type="text/css" href="assets/site.css">
+  <link rel="stylesheet" type="text/css" href="assets/dashboard.css">
+  <title>Live dashboard · Agent4CT</title>
+</head>
+<body>
+  <header class="page-header" role="banner">
+    <h1 class="project-name">Agent4CT — Live dashboard</h1>
+    <h2 class="project-tagline">Every run, every iteration, every observation.</h2>
+    <a href="index.html" class="btn">← Back to project</a>
+    <a href="https://github.com/akmaier/Agent4CT" class="btn">GitHub</a>
+  </header>
+
+  <main id="content" class="main-content" role="main">
+    <nav class="a4c-nav">
+      <a href="index.html">Home</a>
+      <a href="setup.html">Setup</a>
+      <a href="pentathlon.html">Pentathlon</a>
+      <a href="agents.html">Agents</a>
+      <a href="performance.html">Performance</a>
+      <a class="a4c-nav-dashboard" href="dashboard.html"><strong>Live dashboard</strong></a>
+      <a class="a4c-nav-github" href="https://github.com/akmaier/Agent4CT">GitHub</a>
+    </nav>
+
+    <section id="overview">
+      <h2 id="runs">Runs</h2>
+      <p class="muted">
+        Each card is one autoresearch run, addressed by
+        <code>&lt;challenge-slug&gt;-YYYYMMDD-NN</code>.
+        Click to expand and see the per-iteration timeline.
+      </p>
+      <div id="runs-grid" class="a4c-grid">
+        <p id="runs-empty" class="muted">loading runs…</p>
+      </div>
+    </section>
+
+    <section id="run-detail" hidden>
+      <hr>
+      <h2 id="run-detail-title">Run</h2>
+      <div class="dash-run-meta" id="run-detail-meta"></div>
+
+      <h3>Iterations</h3>
+      <div id="run-detail-iters" class="dash-iters"></div>
+
+      <h3>Stage checks (every 30 iter)</h3>
+      <div id="run-detail-stages" class="dash-stages"></div>
+    </section>
+
+    <section id="scratchpad">
+      <hr>
+      <h2 id="scratch-pad">Shared scratch pad</h2>
+      <p class="muted">
+        Cross-run observations.
+        Every iteration on every challenge appends one entry here; agents
+        read the last ~30 before their next edit. Newest first.
+      </p>
+      <div id="scratch-list"></div>
+    </section>
+
+    <footer class="site-footer">
+      <span class="site-footer-credits">
+        Data fetched directly from <code>docs/runs/</code>. Last
+        refreshed <span id="last-fetched">—</span>.
+      </span>
+    </footer>
+  </main>
+
+  <script src="assets/dashboard.js"></script>
+</body>
+</html>

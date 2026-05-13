@@ -1,0 +1,28 @@
+title: Agent4CT
+description: >-
+  An autoresearch loop for CT reconstruction. Five AAPM challenges, one
+  PYRO-NN backbone, headroom-recovered Pentathlon scoring.
+theme: jekyll-theme-cayman
+
+show_downloads: false
+
+# Repository on GitHub (used in the Cayman header + nav).
+repository: akmaier/Agent4CT
+
+# Default front-matter for every page.
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+# Keep raw data files (TSV, JSONL, txt snapshots of solver.py) out of
+# Jekyll's processing but still served as static files.
+include:
+  - runs
+
+exclude:
+  - README.md
+  - vendor
+
+# (relative_url filter is built into Jekyll; no extra plugins needed.)

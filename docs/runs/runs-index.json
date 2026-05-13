@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "updated": "2026-05-13T21:00:00Z",
+  "runs": [
+    {
+      "slug": "demo-dl-sparse-view-20260513-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-13T20:30:00Z",
+      "status": "demo",
+      "n_iterations": 3,
+      "best_score": 0.62,
+      "best_headroom": 0.41
+    }
+  ]
+}

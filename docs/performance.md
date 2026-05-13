@@ -1,4 +1,7 @@
-# Runtime and I/O — Agent4CT on the LME cluster
+---
+title: Performance
+description: How PYRO-NN consumes data + the small-files / NFS pattern that keeps the GPU busy.
+---
 
 This document covers two intertwined questions:
 

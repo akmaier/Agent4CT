@@ -14,9 +14,10 @@ config/llm_api.toml
 config/lme_cluster_agent_guide.md
 config/*_cluster_agent_guide.md
 !config/cluster_agent_guide.template.md
-runs/
-data/
-out/
+/runs/
+/data/
+/out/
+# docs/runs/ is the dashboard data and IS committed.
 *.egg-info/
 .pytest_cache/
 .ipynb_checkpoints/

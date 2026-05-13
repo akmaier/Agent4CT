@@ -1,0 +1,4 @@
+iter	commit	val_score	headroom	status	change_class	rationale
+1	demo0001	0.58	0.37	keep	architecture	baseline U-Net c=24, Adam lr=1e-3
+2	demo0002	0.55	0.33	discard	architecture	tried c=64 (4x params); val regressed on 400-sample subset
+3	demo0003	0.62	0.41	keep	optimizer	switched Adam -> AdamW with weight_decay=1e-4

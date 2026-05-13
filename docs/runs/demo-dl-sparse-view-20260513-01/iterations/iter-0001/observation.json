@@ -1,0 +1,20 @@
+{
+  "ts": "2026-05-13T20:32:00Z",
+  "run_id": "demo-dl-sparse-view-20260513-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Baseline U-Net with c=24, residual prediction head, Adam optimizer lr=1e-3. Trained for 12 epochs on the 400-phantom train subset of DL-Sparse-View; eval on 100-phantom val subset.",
+  "val_score": 0.58,
+  "headroom": 0.37,
+  "delta_vs_best": null,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.9,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/demo-dl-sparse-view-20260513-01/iterations/iter-0001/comparison.png",
+  "advice_for_others": "U-Net at c=24 gives a sane baseline for ~400 training samples; do not start larger.",
+  "commit": "demo0001"
+}

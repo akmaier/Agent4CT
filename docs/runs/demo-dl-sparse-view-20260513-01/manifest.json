@@ -1,0 +1,11 @@
+{
+  "slug": "demo-dl-sparse-view-20260513-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-sparse-view",
+  "started": "2026-05-13T20:30:00Z",
+  "ended": "2026-05-13T21:00:00Z",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "status": "demo",
+  "notes": "Seeded demo run so the dashboard renders before any real run has landed. Replace with real data once the harness has produced iterations."
+}

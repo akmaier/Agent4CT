@@ -1,0 +1,20 @@
+{
+  "ts": "2026-05-13T20:52:00Z",
+  "run_id": "demo-dl-sparse-view-20260513-01",
+  "iter": 3,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "Reverted to c=24 baseline. Switched Adam -> AdamW with weight_decay=1e-4. Val score 0.58 -> 0.62 (+0.04). The optimizer-level regularisation is doing what iter 2's bigger model couldn't.",
+  "val_score": 0.62,
+  "headroom": 0.41,
+  "delta_vs_best": 0.04,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.9,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/demo-dl-sparse-view-20260513-01/iterations/iter-0003/comparison.png",
+  "advice_for_others": "AdamW (weight_decay=1e-4) > Adam on small-data CT recon; try first before scaling the model.",
+  "commit": "demo0003"
+}

@@ -1,0 +1,80 @@
+/* Tweaks on top of the Cayman theme + the custom nav + dashboard. */
+
+/* ---- top nav ---- */
+.a4c-nav {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  padding: 0.75rem 1.5rem;
+  margin: -1rem -1rem 1.5rem -1rem;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.a4c-nav a {
+  color: #155799;
+  text-decoration: none;
+  font-weight: 500;
+}
+.a4c-nav a:hover { text-decoration: underline; }
+.a4c-nav .a4c-nav-dashboard {
+  margin-left: auto;
+  font-weight: 600;
+}
+.a4c-nav .a4c-nav-github {
+  font-weight: 500;
+  color: #444;
+}
+
+/* ---- callout boxes ---- */
+.a4c-callout {
+  border-left: 4px solid #159957;
+  padding: 0.75rem 1rem;
+  margin: 1.25rem 0;
+  background: #f3fbf5;
+  border-radius: 4px;
+}
+.a4c-callout strong:first-child { color: #117a40; }
+.a4c-callout.warn {
+  border-color: #c9810c;
+  background: #fdf7e8;
+}
+.a4c-callout.warn strong:first-child { color: #9a6308; }
+
+/* ---- challenge grid on home / pentathlon pages ---- */
+.a4c-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.a4c-grid > .card {
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  background: #ffffff;
+}
+.a4c-grid > .card h3 { margin-top: 0; }
+.a4c-grid > .card .stat {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* ---- tables: nicer than the cayman default ---- */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+th, td {
+  border-bottom: 1px solid #d0d7de;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+thead th {
+  background: #f6f8fa;
+  border-bottom: 2px solid #d0d7de;
+}

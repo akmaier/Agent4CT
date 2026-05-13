@@ -1,0 +1,20 @@
+{
+  "ts": "2026-05-13T20:42:00Z",
+  "run_id": "demo-dl-sparse-view-20260513-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Increased U-Net channels c=24 -> c=64 (params 0.9 M -> 3.6 M). Val score dropped from 0.58 to 0.55: the model is too large for the 400-phantom subset and starts to overfit. Discarding.",
+  "val_score": 0.55,
+  "headroom": 0.33,
+  "delta_vs_best": -0.03,
+  "kept": false,
+  "status": "discard",
+  "params_M": 3.6,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/demo-dl-sparse-view-20260513-01/iterations/iter-0002/comparison.png",
+  "advice_for_others": "Quadrupling parameters on a small training set degrades val score immediately — Don't try larger models without first adding regularisation.",
+  "commit": "demo0002"
+}

@@ -1,5 +1,10 @@
 # Agent4CT — Autoresearch for CT Reconstruction
 
+📊 **Live dashboard & docs:** <https://akmaier.github.io/Agent4CT/>
+
+---
+
+
 A continuously-running LLM agent that improves a CT reconstruction codebase
 by editing it, running short experiments on the LME GPU cluster, and keeping
 or discarding changes based on the resulting metrics. Modeled after
@@ -269,6 +274,7 @@ Agent4CT/
     phantoms.py                       Random-ellipse + Shepp-Logan stand-ins
     metrics.py                        PSNR / SSIM
     training.py                       DualDomainPipeline (Wagner et al. 2023)
+    harness.py                        Run / Iteration writer for docs/runs/
   challenges/                       per-challenge documentation
     mayo_ldct/README.md
     dl_sparse_view/README.md
@@ -290,6 +296,8 @@ Agent4CT/
   scripts/
     run_experiment.py                 single-pass DDSSL reproduction runner
     sanity_pyronn.py                  projector / FBP sanity test
+    agent4ct_record.py                CLI wrapper around ddssl_ldct.harness
+    build_literature.py               PDFs + tutorials → literature/*.md
   cluster/
     setup.sh                          one-time build on a GPU compute node
     slurm/
@@ -301,12 +309,71 @@ Agent4CT/
     llm_api.example.toml              copy to llm_api.toml and fill in (gitignored)
     cluster_agent_guide.template.md   cluster operating manual (committed)
     <site>_cluster_agent_guide.md     your filled-in copy (gitignored)
-  docs/
-    performance.md                    NFS / small-files / DataLoader notes
-  papers/                             reference PDFs (Agent4MR + Wagner papers)
+  docs/                             GitHub Pages site (served at akmaier.github.io/Agent4CT/)
+    _config.yml                       Jekyll config (Cayman theme + overrides)
+    index.md                          landing page
+    setup.md  pentathlon.md  agents.md  performance.md   sub-pages
+    dashboard.html                    live dashboard (fetches docs/runs/)
+    assets/dashboard.{js,css}, site.css                  dashboard JS + styling
+    runs/                             written by the harness, served as static JSON / TSV / PNG
+      runs-index.json                 list of all runs (auto-maintained)
+      observations.jsonl              cross-run append-only scratch pad
+      <slug>/manifest.json + results.tsv + iterations/iter-NNNN/...
+  literature/                       offline markdown copies of papers + tutorials
+  papers/                             reference PDFs (gitignored)
 ```
 
 ---
+
+## Run / iteration versioning + dashboard
+
+The autoresearch loop writes its results into `docs/runs/`, which is served
+by GitHub Pages as the live dashboard at
+<https://akmaier.github.io/Agent4CT/dashboard.html>.
+
+- **Run slug**: `<challenge-slug>-YYYYMMDD-NN`, e.g. `dl-sparse-view-20260513-01`.
+- **Iteration**: `iter-NNNN`, four-digit zero-padded.
+- Each iteration writes `observation.json`, `comparison.png`, and a
+  snapshot of the solver source into its own dir. Every iteration also
+  appends one line to the cross-run scratch pad at
+  `docs/runs/observations.jsonl`, which the dashboard renders as cards
+  with the comparison image, score, and rationale.
+
+The Python helper that owns these conventions is
+[`ddssl_ldct/harness.py`](ddssl_ldct/harness.py); the CLI wrapper agents
+call from a Slurm job is
+[`scripts/agent4ct_record.py`](scripts/agent4ct_record.py):
+
+```bash
+# Once, at the start of a run:
+SLUG=$(python scripts/agent4ct_record.py new-run \
+    --challenge dl_sparse_view --slug-prefix dl-sparse-view \
+    --notes "first run, baseline U-Net")
+
+# After each 5-minute Slurm iteration:
+python scripts/agent4ct_record.py record \
+    --slug "$SLUG" --iter 1 \
+    --val-score 0.58 --headroom 0.37 \
+    --change-class architecture \
+    --rationale "baseline U-Net c=24, Adam lr=1e-3" \
+    --advice "U-Net c=24 is a sane starting point for ~400 train samples" \
+    --kept true --commit "$(git rev-parse --short HEAD)" \
+    --comparison runs/local/comparison.png \
+    --solver pentathlon/dl_sparse_view/solver.py
+
+# Every 30 iterations (1-hour Slurm job on 3x larger subset):
+python scripts/agent4ct_record.py stage \
+    --slug "$SLUG" --iter 30 \
+    --stage-val-score 0.55 --stage-headroom 0.30 \
+    --iter-val-score 0.62 --verdict overfit \
+    --notes "stage val ≪ iter val — shrink model on next iter"
+
+# When the run ends:
+python scripts/agent4ct_record.py finalize --slug "$SLUG" --status done
+```
+
+`git commit && git push` after each iteration; the dashboard picks it
+up on its next refresh.
 
 ## Status today
 
