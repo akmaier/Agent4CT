@@ -73,8 +73,20 @@ function el(tag, attrs = {}, ...children) {
 
 // ---------- charts ------------------------------------------------------
 
-let _overviewChart = null;
+let _overviewCharts = [];
 let _runChart = null;
+
+// "dl-sparse-view-iter-20260514-01" -> "dl-sparse-view-iter".
+function slugPrefix(slug) {
+  return slug.replace(/-\d{8}-\d{2}$/, "");
+}
+// First two hyphen-segments of the slug-prefix, used as the chart-group key.
+// "dl-sparse-view-iter" -> "dl-sparse"; "demo-dl-sparse-view" -> "demo-dl";
+// "mayo-ldct" -> "mayo-ldct".
+function chartGroupKey(slug) {
+  const p = slugPrefix(slug).split("-");
+  return p.slice(0, 2).join("-");
+}
 
 // Distinguishable colours per run.
 const CHART_COLOURS = [
@@ -101,13 +113,46 @@ function bestSoFar(rows) {
   return out;
 }
 
-async function renderOverviewChart(runs) {
-  if (typeof Chart === "undefined") return; // CDN still loading; skip silently
-  const canvas = document.getElementById("overview-chart");
-  if (!canvas) return;
-  if (_overviewChart) { _overviewChart.destroy(); _overviewChart = null; }
+async function renderOverviewCharts(runs) {
+  if (typeof Chart === "undefined") return; // CDN still loading
+  const container = document.getElementById("overview-charts");
+  if (!container) return;
+  for (const c of _overviewCharts) c.destroy();
+  _overviewCharts = [];
+  container.innerHTML = "";
 
-  // For each run, fetch results.tsv and compute running-best headroom.
+  // Group by chart-group key (first two hyphen-segments of slug-prefix).
+  const groups = new Map();
+  for (const r of runs) {
+    const k = chartGroupKey(r.slug);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(r);
+  }
+  if (groups.size === 0) {
+    container.innerHTML = `<p class="muted">No runs yet.</p>`;
+    return;
+  }
+  // Sort groups: real challenges before demos (lexicographic puts "demo-"
+  // first naturally, but flip so the active work is on top).
+  const groupKeys = [...groups.keys()].sort((a, b) => {
+    if (a.startsWith("demo-") && !b.startsWith("demo-")) return 1;
+    if (!a.startsWith("demo-") && b.startsWith("demo-")) return -1;
+    return a.localeCompare(b);
+  });
+
+  for (const key of groupKeys) {
+    const section = document.createElement("div");
+    section.innerHTML = `
+      <h3 class="overview-group-title">${key}-*</h3>
+      <div class="chart-wrap overview-group"><canvas></canvas></div>
+    `;
+    container.appendChild(section);
+    const canvas = section.querySelector("canvas");
+    await renderOneOverviewChart(canvas, groups.get(key));
+  }
+}
+
+async function renderOneOverviewChart(canvas, runs) {
   const datasets = [];
   for (let i = 0; i < runs.length; i++) {
     const r = runs[i];
@@ -127,11 +172,10 @@ async function renderOverviewChart(runs) {
   }
   if (datasets.length === 0) {
     canvas.parentElement.innerHTML =
-      `<p class="muted" style="margin: 0;">No iterations yet — chart will populate as runs land.</p>`;
+      `<p class="muted" style="margin: 0;">No iterations yet.</p>`;
     return;
   }
-
-  _overviewChart = new Chart(canvas.getContext("2d"), {
+  const chart = new Chart(canvas.getContext("2d"), {
     type: "line",
     data: { datasets },
     options: {
@@ -146,7 +190,7 @@ async function renderOverviewChart(runs) {
         },
         y: {
           title: { display: true, text: "best headroom (running max)" },
-          suggestedMin: 0, suggestedMax: 1,
+          min: 0, max: 1,    // fixed 0..1 so all curves use the same vertical scale
         },
       },
       plugins: {
@@ -160,6 +204,7 @@ async function renderOverviewChart(runs) {
       },
     },
   });
+  _overviewCharts.push(chart);
 }
 
 function renderRunChart(rows) {
@@ -276,7 +321,9 @@ async function loadRunsIndex() {
   for (const r of runs) {
     grid.appendChild(renderRunCard(r));
   }
-  await renderOverviewChart(runs);
+  const emptyOverview = document.getElementById("overview-empty");
+  if (emptyOverview) emptyOverview.remove();
+  await renderOverviewCharts(runs);
 }
 
 function renderRunCard(r) {

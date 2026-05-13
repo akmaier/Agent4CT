@@ -12,6 +12,16 @@
   position: relative;
 }
 .chart-wrap canvas { max-width: 100%; }
+/* Overview group charts: y-axis [0, 1] is the headroom range; give it
+   plenty of vertical real estate so curves are readable. ~5x the
+   previous 120-px default. */
+.chart-wrap.overview-group { height: 520px; }
+.overview-group-title {
+  margin: 1.25rem 0 0.25rem 0;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.95rem;
+  color: #155799;
+}
 
 /* --- Run cards --- */
 .dash-run-card {
