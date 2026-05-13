@@ -1,2 +1,3 @@
 iter	commit	val_score	headroom	status	change_class	rationale
 1	804bd09	0.6445	0.568	keep	architecture	Baseline. Dual-domain U-Net (c=16) on Wagner @ 128 sparse views, AdamW lr=3e-4 wd=1e-4, 8 epochs, 400 synthetic ellipse phantoms. Converged at loss 0.00037. PSNR 31.86 dB SSIM 0.6445, headroom 0.5680 over the sparse-view FBP baseline (PSNR 24.57).
+2	dc68d37	0.6418	0.5667	discard	augmentation	Tried horizontal-flip data augmentation (effective 2x dataset) with epochs halved 8->4 to keep total step count constant. Val 0.6445 -> 0.6418 (-0.4%), within noise. Augmentation at fixed compute did not help on this 400-phantom random-ellipse subset. Reverting solver.py to iter-1 baseline.
