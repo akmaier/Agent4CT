@@ -22,3 +22,5 @@ config/*_cluster_agent_guide.md
 .pytest_cache/
 .ipynb_checkpoints/
 papers/
+
+.env
