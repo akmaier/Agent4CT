@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T21:07:23Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 7,
+  "challenge": "dl_sparse_view",
+  "change_class": "other",
+  "rationale": "Increased train_n 400->600. SSIM 0.6486 -> 0.6471 (-0.2% noise), headroom 0.5727 -> 0.5755 (+0.5% within noise). Marginal positive on headroom but training time +50% (5:00). We are saturated on the synthetic random-ellipse distribution at c=16.",
+  "val_score": 0.6471,
+  "headroom": 0.5755,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 600,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0007/comparison.png",
+  "advice_for_others": "On synthetic ellipse phantoms more data barely helps at c=16; the model is distribution-saturated, not data-limited.",
+  "commit": "e1fc953"
+}
