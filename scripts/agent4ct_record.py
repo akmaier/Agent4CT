@@ -85,7 +85,18 @@ def cmd_record(args):
     print(d)
     if args.commit_git:
         msg = build_iter_commit_message(run.slug, args.iter, obs)
-        sha = git_commit_and_push(REPO_ROOT, msg, push=args.push)
+        # For a *keep*, also stage the solver source so the repo's working
+        # tree matches the journal. For a *discard*, the agent has already
+        # reverted the solver edit via `git checkout HEAD -- ...` (per the
+        # program.md protocol), so we only stage docs/runs/.
+        extra: list[str] = []
+        if args.kept and args.solver:
+            extra.append(args.solver)
+        sha = git_commit_and_push(
+            REPO_ROOT, msg,
+            files=([REPO_ROOT / "docs" / "runs"] + [REPO_ROOT / p for p in extra]) if extra else None,
+            push=args.push,
+        )
         if sha:
             print(f"committed {sha}{' & pushed' if args.push else ''}")
         else:

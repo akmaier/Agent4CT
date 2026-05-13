@@ -77,7 +77,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,
     "batch_size":    1,
-    "lr":            3e-4,
+    "lr":            1e-4,
     "optimizer":     "adamw",   # adam | adamw
     "weight_decay":  1e-4,
 
