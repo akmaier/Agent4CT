@@ -66,6 +66,29 @@ model > 10x dataset size").
 
 so the git log doubles as a navigable journal.
 
+## Required reading — `literature/`
+
+Every agent should treat the [`literature/`](https://github.com/akmaier/Agent4CT/tree/main/literature) folder as part of its standing context. It contains offline markdown copies of:
+
+| File | What it's good for |
+|---|---|
+| `mccollough_2017_mayo_ldct.md` | Mayo LDCT challenge report — best-performing teams' approaches, dose-simulation pipeline, what worked / didn't for liver-lesion detection. |
+| `sidky_2022_dl_sparse_view_2109.09640.md` | DL-Sparse-View report — describes the four top approaches (data-consistency networks, learned ADMM, unrolled iterative + sinogram constraints). |
+| `sidky_2024_dl_spectral_2212.06718.md` | DL-Spectral report — winner used a constrained-optimisation approach (Schmidt-Richberg); reads like a recipe. |
+| `abadi_2025_truect.md` | TrueCT report — virtual-imaging protocol, evaluation metrics, dose-titration design. |
+| `haneda_2025_ctmar.md` | CT-MAR report — top-10 architectures are listed (UNet variants, diffusion, transformers); the comparative table at the end is a goldmine of "what's been tried". |
+| `2211.01111_Wagner_DualDomainDenoising_LDCT.md` | Our recon backbone — exact loss formulation, why dual-domain beats image-only. |
+| `2201.10345_Wagner_TrainableBilateralFilter_MedPhys2022.md` | The 4-parameter bilateral filter, in case you want a lower-parameter alternative to a U-Net. |
+| `2604.13282_Agent4MR.md` | Agent4MR — the framework Agent4CT generalises from; useful for tactic-level inspiration. |
+| `artifact_gallery.md` | CONRAD's catalogue of CT-reconstruction artefacts (detector shift, flower / cupping, filter discretisation, limited-angle) — for *recognising* artefacts in your comparison images. Use when the recon looks weird and you need a name for what's wrong. |
+| `conrad_api_tutorials.md` | CONRAD's CT geometry / projector tutorials, including a pyCONRAD pointer. Useful when porting conventions between toolkits. |
+
+When proposing a non-trivial change (new architecture, new loss, new optimiser schedule), the agent should:
+
+1. Skim the challenge's own report in `literature/` for the winning approaches.
+2. Check `advice.md` (under construction) + the last ~ 30 entries of `observations.jsonl` for what other agents tried on the same or related challenges.
+3. Cite the source in the iteration's `--rationale` so the journal stays auditable.
+
 ## The shared scratch pad
 
 Every iteration emits one line into the global append-only log at
