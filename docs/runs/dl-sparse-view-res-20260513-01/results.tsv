@@ -1,1 +1,2 @@
 iter	commit	val_score	headroom	status	change_class	rationale
+1		0	0	timeout	architecture	iter-1 default ResNet (8 blocks, c=48, GroupNorm, ReLU; 0.67M params). Timed out at 4/8 epochs in 8min. No down/up-sampling means full-resolution compute at 1152x736 proj-domain is ~3x slower per epoch than the U-Net. Next: shrink to c=32 / 6 blocks to fit the 5-min budget. Cites Sidky 2022 sec III where the spread of arch families suggests this class is worth trying.
