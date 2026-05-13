@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T22:33:52Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 20,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "epochs 8 -> 10 on iter-16 baseline. Val 0.6537 -> 0.6496 (-0.6%), headroom 0.5760 -> 0.5738 (-0.4%). Loss plateau 0.00037 hit by epoch 6 in both 8 and 10 epoch runs; extra epochs don't help.",
+  "val_score": 0.6496,
+  "headroom": 0.5738,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0020/comparison.png",
+  "advice_for_others": "On iter-16 baseline, training-time is bounded by the loss plateau at ~0.00037; epochs > 8 doesn't help and slightly hurts at fixed seed.",
+  "commit": "07ec77d"
+}
