@@ -193,12 +193,12 @@ A run ends when **any** of these is true:
 
 | Condition | Default |
 |---|---|
-| Iteration budget exhausted | 100 iterations |
+| Iteration budget exhausted | **150 iterations** (≈ one day per run) |
 | No improvement (no new `keep`) in last 30 iterations | always on |
 | Three consecutive **stage** checks return `overfit` with no intervening `ok` | always on |
 | Manual stop (operator's call) | — |
 
-The agent decides which applies and calls `finalize` with the matching `--stop-reason`. The default budget of **100 iterations** is a sensible upper bound for a single challenge — five challenges × 100 iters × 5 min ≈ 40 GPU-hours, modest on a small lab cluster.
+The agent decides which applies and calls `finalize` with the matching `--stop-reason`. The default budget of **150 iterations** maps to roughly one calendar day per run: 150 × 5 min ≈ 12.5 GPU-hours of iteration work plus five stage checks at iter 30 / 60 / 90 / 120 / 150 (≈ 5 GPU-hours), so a single GPU finishes a run in ≈ 17–18 hours including modest queue waits. Five challenges run sequentially fit in a long week; five in parallel fit in a single day if the cluster has the GPUs.
 
 ## Final test-set evaluation (once per run)
 

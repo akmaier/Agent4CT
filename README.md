@@ -209,7 +209,7 @@ smallest / quickest to start is **DL-Sparse-View** (~15 GB):
 # From your laptop:
 agent4ct pentathlon start \
     --challenge dl_sparse_view \
-    --iterations 100 \
+    --iterations 150 \
     --agent claude
 ```
 
@@ -233,11 +233,11 @@ agent4ct pentathlon board                               # all 5, sorted
 Each in its own terminal (or tmux pane / persistent agent):
 
 ```bash
-agent4ct pentathlon start --challenge mayo_ldct       --iterations 100
-agent4ct pentathlon start --challenge dl_sparse_view  --iterations 100
-agent4ct pentathlon start --challenge truect          --iterations 100
-agent4ct pentathlon start --challenge ct_mar          --iterations 100
-agent4ct pentathlon start --challenge dl_spectral     --iterations 100
+agent4ct pentathlon start --challenge mayo_ldct       --iterations 150
+agent4ct pentathlon start --challenge dl_sparse_view  --iterations 150
+agent4ct pentathlon start --challenge truect          --iterations 150
+agent4ct pentathlon start --challenge ct_mar          --iterations 150
+agent4ct pentathlon start --challenge dl_spectral     --iterations 150
 ```
 
 Slurm schedules them on whatever GPUs are free. No coordination needed at
@@ -385,7 +385,7 @@ python scripts/agent4ct_record.py finalize --slug "$SLUG" \
 
 A run ends when **any** of these holds:
 
-- iteration budget exhausted (default 100),
+- iteration budget exhausted (default **150** — about one day per run: 150 × 5 min ≈ 12.5 GPU-h plus 5 × 1-h stage checks ≈ 17.5 h wall-clock),
 - no improvement (no new `keep`) in the last 30 iterations,
 - three consecutive **stage** checks return `overfit` with no recovery,
 - or the operator stops it manually.
