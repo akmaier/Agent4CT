@@ -1,1 +1,2 @@
 iter	commit	val_score	headroom	status	change_class	rationale
+1	969fb99	0	0	crash	architecture	iter-1 LPD-style unrolled image_denoiser (K=2, alpha=0.1, +BF tail). Training diverged: DC gradient step R^T(Rz-g) blew up at epoch 5 (loss 0.04 to 0.17) and timed out at epoch 7/8. Issue is the |R^T R| spectral norm is ~N_angles*det_norm >> 1, so alpha=0.1 is far too large. Need to either init alpha << 1e-3 or precondition the gradient. Inspired by Sidky 2022 top teams (ItNet, YM&RH variational network).
