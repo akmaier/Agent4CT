@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T23:19:09Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 25,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Cross-ported spawn-agent B (dl-sparse-view-res) iter-2 winner: symmetric 6-block c=32 GroupNorm-ReLU residual stack with global residual head, replacing the U-Net+BF (iter-16/24 baseline). Result under calibration: val_ssim 0.3070->0.3099 (+0.9%), headroom 0.5759->0.5807 (+0.83%, NEW BEST) at 0.225 M params vs 0.466 M (half the parameter count). Confirms Sidky 2022 finding that residual / DnCNN-style families are competitive with U-Net on sparse-view CT. Single change: build_denoisers now returns ResidualStack pair when img_denoiser=\"resnet\"; everything else (lr, epochs, wd, seed, calibration) held constant.",
+  "val_score": 0.30991843342781067,
+  "headroom": 0.5807076708177992,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0025/comparison.png",
+  "advice_for_others": "On dual-domain N2I at 128 sparse views, a 6-block c=32 GroupNorm-ReLU residual stack with global residual head beats SmallUNet+BF on headroom at ~half the parameter count; cross-port between agents is faithful when seeds + DualDomainPipeline config match.",
+  "commit": "0d512cd"
+}
