@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T21:47:42Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 13,
+  "challenge": "dl_sparse_view",
+  "change_class": "loss",
+  "rationale": "Halved consistency_weight further from 0.05 -> 0.005. Val 0.6486 -> 0.5102 (-21.4%), still catastrophic. Even tiny lambda > 0 pulls the model toward fitting noisy sino. The MSE(R*y_hat, x_noisy) consistency term is structurally incompatible with self-supervised denoising \u2014 there is no positive lambda regime.",
+  "val_score": 0.5102,
+  "headroom": 0.5525,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0013/comparison.png",
+  "advice_for_others": "Forward-projection data consistency against the noisy input sinogram does not work for self-supervised dual-domain denoising at any lambda \u2014 would need a clean target or a different formulation (e.g. consistency on the proj-denoiser's output).",
+  "commit": "906a41d"
+}
