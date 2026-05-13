@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-13T23:39:06Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 7,
+  "challenge": "dl_sparse_view",
+  "change_class": "other",
+  "rationale": "Re-baseline iter-5's K=2 shared-weight iter U-Net + BF (epochs=6) under FIXED calibration (display_min=0, display_max=0.05, data_range=0.05) \u2014 ported from main-agent iter-24 fix. Headroom 0.5745 (down from previously-reported 0.5788, which was inflated by auto-data-range drift). Now comparable to main iter-25 residual stack (0.5807) and spawn-B iter-2 (0.5831). I'm 0.6-0.9% headroom behind; need iterative gains on top of the calibrated baseline.",
+  "val_score": 0.3067,
+  "headroom": 0.5745,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0007/comparison.png",
+  "advice_for_others": "Always port a calibration fix from the parent run before claiming improvements; auto data_range silently inflates SSIM by 2x and inflates headroom by ~1%.",
+  "commit": "20e2459"
+}
