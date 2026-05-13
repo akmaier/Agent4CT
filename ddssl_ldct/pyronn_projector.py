@@ -162,19 +162,18 @@ class PyronnFanBeamProjector(torch.nn.Module):
         # right intensity. For 2π the scale_factor inside parker_weights_2d
         # is ≈ 2; without it the FBP is ~half the correct amplitude.
         #
-        # NOTE: parker_weights_2d iterates beta starting at 0 and rising by
-        # angular_increment per view (CCW), but ``circular_trajectory_2d(...,
-        # swap_detector_axis=True)`` (the upstream `example_fan_2d.py` choice
-        # we follow) sweeps the projector in the opposite direction. We
-        # therefore flip the Parker matrix along the angle axis to bring the
-        # weighting back into register — without this, the FBP shows a
-        # rotation-dependent intensity asymmetry that an expert eye spots
-        # immediately even though PSNR looks "fine".
+        # NOTE: an earlier hypothesis flipped the matrix along the angle axis
+        # (in case the trajectory CCW vs Parker CCW conventions disagreed).
+        # Empirically that *worsened* the FBP scale by ≈ 30 % on job 760360
+        # versus the un-flipped version on 760358 — so the un-flipped weights
+        # are correctly aligned with our projector and we leave them alone.
+        # If a rotation-direction asymmetry is still visible to an expert eye,
+        # the cause is elsewhere (e.g. the trajectory's swap_detector_axis
+        # flag interacting with the back-projector's reference frame).
         from pyronn.ct_reconstruction.helpers.filters.weights import (
             parker_weights_2d,
         )
         pw = parker_weights_2d(py_geom).astype(np.float32)
-        pw = np.ascontiguousarray(pw[::-1, :])
         self.register_buffer(
             "_parker_weights",
             torch.from_numpy(pw).cuda().contiguous(),
@@ -329,12 +328,9 @@ class PyronnFanBeamProjector(torch.nn.Module):
                 source_isocenter_distance=g.sod,
             )
             half.set_trajectory(circular_trajectory_2d(A, half.angular_range, True))
-            pw_np = parker_weights_2d(half).astype(np.float32)
-            # Same flip as in __init__ — keep the half-set Parker weights in
-            # register with the swept rotation direction.
-            pw_np = np.ascontiguousarray(pw_np[::-1, :])
             pw = torch.as_tensor(
-                pw_np, dtype=sino.dtype, device=sino.device,
+                parker_weights_2d(half).astype(np.float32),
+                dtype=sino.dtype, device=sino.device,
             )
         sino_w = sino * pw  # broadcast over (B, [1,] A, D)
         return self.back_project(self.filter_sino(sino_w, filter_name=filter_name))
