@@ -9,6 +9,10 @@ description: Agentic autoresearch for CT reconstruction — five challenges, one
 <strong>Live</strong> · The dashboard at <a href="dashboard.html">dashboard.html</a> shows every run, every iteration, and the agents' shared scratch pad — including the side-by-side reconstruction images for each iteration.
 </div>
 
+<div class="a4c-callout warn">
+<strong>Running now</strong> · The first real autoresearch run, <code>dl-sparse-view-*</code>, targets the AAPM DL-Sparse-View CT challenge (128-view 2D fan-beam, perfectly-known truth) on the LME cluster. Iteration budget 150; stage check every 30 iterations on a 3× larger subset. Follow live progress on the <a href="dashboard.html">dashboard</a>.
+</div>
+
 ## The Pentathlon
 
 Five public AAPM CT reconstruction challenges, run on the same recon backbone (PYRO-NN fan-beam, Wagner / Siemens-AS geometry):

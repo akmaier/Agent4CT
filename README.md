@@ -2,6 +2,10 @@
 
 📊 **Live dashboard & docs:** <https://akmaier.github.io/Agent4CT/>
 
+🟢 **First run live:** `dl-sparse-view-*` — AAPM DL-Sparse-View CT challenge,
+128-view 2D fan-beam, perfectly-known truth. Iteration budget 150 (≈ one
+day). Follow on the [dashboard](https://akmaier.github.io/Agent4CT/dashboard.html).
+
 ---
 
 
