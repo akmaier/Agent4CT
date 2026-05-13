@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-13T23:04:13Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-2 K=1 LPD + FBP-preconditioning. Training still diverged (loss 0.00078 -> 0.013, alpha climbing 0.52 -> 0.76) and timed out at ~6 min. FBP-preconditioned grad x_k+1=(1-alpha)*z + alpha*x_in is a learnable interp between denoised and input image; the projection round-trip in the loss path destabilises it. Time cost of even K=1 fp+fbp per call is prohibitive (added 2x to runtime). Pivoting iter-3 to pure shared-weight iterated U-Net (no explicit fp/bp in denoiser).",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "crash",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "Adding explicit forward/back-projection inside the image_denoiser doubles training time and creates loss-landscape instability with FBP-preconditioning. If you want iterative recon under 5 min budget, do shared-weight recurrent denoising (no extra projections) or pretrain components separately.",
+  "commit": "cd85445"
+}
