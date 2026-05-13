@@ -326,6 +326,13 @@ async function loadRunsIndex() {
   await renderOverviewCharts(runs);
 }
 
+// Strip the leading "claude-" or trailing "-sonnet-4.5" noise to make
+// model strings fit a card. e.g. "claude-sonnet-4.5" -> "sonnet-4.5".
+function shortModel(m) {
+  if (!m) return "—";
+  return String(m).replace(/^claude-/, "").replace(/^anthropic\//, "");
+}
+
 function renderRunCard(r) {
   const card = el("a", {
     class: "dash-run-card",
@@ -336,6 +343,14 @@ function renderRunCard(r) {
   const statusBadge = r.status ? badge(r.status, r.status) : null;
   if (statusBadge) header.appendChild(statusBadge);
   card.appendChild(header);
+  // Identity strip: agent · model · short-id (the date-ordinal slug tail).
+  // Multi-agent runs surface their *current* recorder here so it's obvious
+  // which subagent's iteration last touched the run.
+  const identity = el("div", { class: "dash-run-identity" },
+    el("span", { class: "tag tag-agent", title: "agent" }, r.agent || "—"),
+    el("span", { class: "tag tag-model", title: "model" }, shortModel(r.model)),
+    el("span", { class: "tag tag-id",    title: "short-id" }, r.short_id || "—"));
+  card.appendChild(identity);
   card.appendChild(el("div", { class: "stat" },
     el("span", { class: "label" }, "challenge"),
     el("span", {}, r.challenge || "—")));
@@ -449,11 +464,25 @@ async function renderIteration(slug, row) {
                     : status === "timeout" ? "timeout"
                     : "";
 
+  // Identity tags (only render when the iteration actually has them — old
+  // pre-2026-05-14 rows that pre-date the agent/model columns just omit them).
+  const identityTags = [];
+  if (row.agent) {
+    identityTags.push(el("span", { class: "tag tag-agent", title: "agent" }, row.agent));
+  }
+  if (row.model) {
+    identityTags.push(el("span", { class: "tag tag-model", title: "model" }, shortModel(row.model)));
+  }
+  const identityCell = identityTags.length
+    ? el("span", { class: "iter-identity" }, ...identityTags)
+    : el("span", { class: "iter-identity" });
+
   const summary = el("summary", {},
     el("span", { class: "iter-id" }, iterId),
     el("span", { class: "iter-score" },
       `val=${fmtNum(row.val_score)} hr=${fmtNum(row.headroom)}`),
     el("span", { class: "iter-rationale" }, row.rationale || row.description || ""),
+    identityCell,
     badge(status || "?", statusClass),
     el("span", { class: "iter-link" }, row.commit || ""));
 
@@ -534,6 +563,8 @@ function renderScratchCard(e) {
       e.ts || "",
       e.run_id ? ` · ${e.run_id}` : "",
       (e.iter !== undefined) ? ` · iter ${e.iter}` : "",
+      e.agent ? ` · ${e.agent}` : "",
+      e.model ? ` · ${shortModel(e.model)}` : "",
       e.change_class ? ` · ${e.change_class}` : "",
       e.kept !== undefined ? ` · ${e.kept ? "keep" : "discard"}` : "",
     ].join("")));

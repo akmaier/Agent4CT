@@ -30,6 +30,7 @@ Versioning:
 """
 from __future__ import annotations
 import json
+import re as _re
 import shutil
 import time
 from dataclasses import dataclass, field, asdict
@@ -44,6 +45,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DOCS_RUNS = REPO_ROOT / "docs" / "runs"
 
 RESULTS_HEADER = (
+    "iter\tcommit\tval_score\theadroom\tstatus\tchange_class\t"
+    "agent\tmodel\trationale\n"
+)
+# Old (pre-2026-05-14) schema, for in-place migration of existing runs.
+_RESULTS_HEADER_V1 = (
     "iter\tcommit\tval_score\theadroom\tstatus\tchange_class\trationale\n"
 )
 STAGES_HEADER = (
@@ -228,8 +234,35 @@ class Run:
         _atomic_write_text(d / "observation.json",
                            json.dumps(observation.to_json(), indent=2))
 
-        # Append to results.tsv.
-        with (self.dir / "results.tsv").open("a") as f:
+        # Append to results.tsv (migrating from the V1 schema in-place if
+        # this run was created before agent/model columns existed).
+        results_path = self.dir / "results.tsv"
+        if results_path.exists():
+            head = results_path.read_text().split("\n", 1)[0] + "\n"
+            if head == _RESULTS_HEADER_V1:
+                old_rows = results_path.read_text().splitlines()[1:]
+                migrated = [RESULTS_HEADER]
+                for r in old_rows:
+                    if not r:
+                        continue
+                    cells = r.split("\t")
+                    # Old order: iter, commit, val, hr, status, change_class, rationale
+                    if len(cells) >= 7:
+                        agent_m, model_m = "", ""
+                        # Try to recover agent/model from the matching observation.json.
+                        try:
+                            iter_n_old = int(cells[0])
+                            obs_p = self.iteration_dir(iter_n_old) / "observation.json"
+                            if obs_p.exists():
+                                o = json.loads(obs_p.read_text())
+                                agent_m = o.get("agent") or ""
+                                model_m = o.get("model") or ""
+                        except Exception:
+                            pass
+                        new_cells = cells[:6] + [agent_m, model_m] + cells[6:]
+                        migrated.append("\t".join(new_cells) + "\n")
+                _atomic_write_text(results_path, "".join(migrated))
+        with results_path.open("a") as f:
             f.write("\t".join(str(c) for c in [
                 iter_n,
                 observation.commit or "",
@@ -237,6 +270,8 @@ class Run:
                 "" if observation.headroom is None else f"{observation.headroom:.6g}",
                 observation.status or "",
                 observation.change_class or "",
+                _tsv_safe(observation.agent or ""),
+                _tsv_safe(observation.model or ""),
                 _tsv_safe(observation.rationale or ""),
             ]) + "\n")
 
@@ -308,14 +343,44 @@ class Run:
                             best_hr = h
                     except (ValueError, IndexError):
                         pass
+            slug = manifest.get("slug", run_dir.name)
+            # Last iteration's agent/model wins (multi-agent runs can swap
+            # who's recording over time); falls back to manifest's
+            # creation-time agent/model otherwise.
+            last_agent = manifest.get("agent")
+            last_model = manifest.get("model")
+            iters_dir = run_dir / "iterations"
+            if iters_dir.is_dir():
+                iter_dirs = sorted(
+                    [d for d in iters_dir.iterdir() if d.is_dir() and d.name.startswith("iter-")],
+                    key=lambda d: d.name,
+                )
+                if iter_dirs:
+                    obs_p = iter_dirs[-1] / "observation.json"
+                    if obs_p.exists():
+                        try:
+                            last_obs = json.loads(obs_p.read_text())
+                            if last_obs.get("agent"):
+                                last_agent = last_obs["agent"]
+                            if last_obs.get("model"):
+                                last_model = last_obs["model"]
+                        except Exception:
+                            pass
+            # Short-id = the date+ordinal suffix carried by every slug
+            # (e.g. "dl-sparse-view-20260513-01" -> "20260513-01").
+            m_short = _re.search(r"(\d{8}-\d{2})$", slug)
+            short_id = m_short.group(1) if m_short else slug
             runs.append({
-                "slug": manifest.get("slug", run_dir.name),
+                "slug": slug,
+                "short_id": short_id,
                 "challenge": manifest.get("challenge"),
                 "started": manifest.get("started"),
                 "status": manifest.get("status", "running"),
                 "n_iterations": n_iter,
                 "best_score": best_score,
                 "best_headroom": best_hr,
+                "agent": last_agent,
+                "model": last_model,
             })
         index = {
             "schema_version": 1,

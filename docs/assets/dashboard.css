@@ -56,6 +56,26 @@
 }
 .dash-run-card .stat .label { color: #888; }
 
+/* Identity strip on each run card (agent · model · short-id). */
+.dash-run-identity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.25rem 0 0.5rem 0;
+}
+.tag {
+  display: inline-block;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-family: ui-monospace, Menlo, monospace;
+  border: 1px solid transparent;
+  line-height: 1.3;
+}
+.tag-agent  { background: #eef4fb; color: #155799; border-color: #cdddee; }
+.tag-model  { background: #f3fbf5; color: #117a40; border-color: #cfe9d5; }
+.tag-id     { background: #fdf7e8; color: #8a6d11; border-color: #ece4c6; }
+
 .badge {
   display: inline-block;
   padding: 0.15rem 0.5rem;
@@ -100,12 +120,17 @@
   cursor: pointer;
   list-style: none;
   display: grid;
-  grid-template-columns: 6rem 6rem 1fr auto auto;
+  grid-template-columns: 6rem 6rem 1fr auto auto auto;
   gap: 0.75rem;
   align-items: center;
   padding: 0.5rem 0.75rem;
   font-family: ui-monospace, Menlo, monospace;
   font-size: 0.9rem;
+}
+.dash-iter .iter-identity {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
 }
 .dash-iter > summary::-webkit-details-marker { display: none; }
 .dash-iter > summary::before {
