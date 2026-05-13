@@ -1,22 +1,24 @@
 # RRZE / FAU LLM-gateway credentials for Agent4CT.
 #
 # Copy this file to `llm_api.toml` (gitignored) and put your real key
-# in it. The Kimi agent (cluster/kimi_agent.py) reads `llm_api.toml`
-# at startup; the example file is just shape documentation.
+# in it. The RRZE agents (cluster/rrze_agent.py) read `llm_api.toml`
+# at startup; this example file just documents the shape.
 #
-# Source of the endpoint info:
-#   https://hpc.fau.de/request-llm-api-key/
+# Source of the endpoint info: https://hpc.fau.de/request-llm-api-key/
 
 [rrze]
-# Bearer token from the FAU LLM-gateway page. Looks like "sk-..." or a
-# random hex string; the gateway does the validation.
-api_key = "PUT-YOUR-REAL-KEY-IN-llm_api.toml-NOT-HERE"
+# Bearer token from the FAU LLM-gateway page.
+api_key  = "PUT-YOUR-REAL-KEY-IN-llm_api.toml-NOT-HERE"
 
 # OpenAI-compatible base URL of the FAU gateway. Stable as of 2026-05.
 base_url = "https://hub.nhr.fau.de/api/llmgw/v1"
 
-# Which model the Kimi agent should drive. Currently the only Kimi
-# variant on the gateway; other model IDs are visible via:
-#   curl -s -H "Authorization: Bearer $LLMAPI_KEY" \
-#     https://hub.nhr.fau.de/api/llmgw/v1/models | jq .
-model = "moonshotai/Kimi-K2.6"
+# Per-family model IDs. The CLI's --family flag picks the family
+# (kimi / deepseek / mistral / gptoss); the agent looks up the model
+# string from this table. Override any one with `--model <id>` on the
+# command line.
+[rrze.models]
+kimi     = "moonshotai/Kimi-K2.6"
+deepseek = "deepseek-ai/DeepSeek-V284B4-Flash"
+mistral  = "mistralai/Mistral-Medium-3.5-128B"
+gptoss   = "openai/gpt-oss-120b"
