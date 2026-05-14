@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:30:34Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 24,
+  "challenge": "dl_sparse_view",
+  "change_class": "augmentation",
+  "rationale": "Per-batch i0 noise jitter [3e4, 8e4]. Train across noise range, val at fixed 5e4.",
+  "val_score": 0.3043,
+  "headroom": 0.565,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0024/comparison.png",
+  "advice_for_others": "DISCARD: hr=0.5650 vs iter-16 0.5833 (-1.83pp). Train-time noise jitter hurts because val is at specific i0=5e4: model becomes general-purpose denoiser at the cost of specific i0=5e4 performance (test-time mismatch). Lesson: do not use train-time noise jitter when val noise is fixed at one level.",
+  "commit": "5aca9e1"
+}
