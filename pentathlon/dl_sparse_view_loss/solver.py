@@ -180,18 +180,20 @@ CONFIG = {
     "img_denoiser":  "resnet",
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
+    # iter-19: widen channels 32 -> 48. 6 blocks @ 48ch ~ 0.5 M params,
+    # still <<10*400*512^2 anti-overfit cap. With wd=1e-3 KEPT (iter-16)
+    # regularization is calibrated for a larger model. Wider channels
+    # give more parallel features per layer; effective receptive field
+    # unchanged but representation capacity per scale ~2x.
     "res_blocks":    6,
-    "res_channels":  32,
+    "res_channels":  48,
     "res_norm":      "group",   # group | batch | none
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # relu | gelu | swish
     "res_kernel":    3,
-    # iter-18: add light dropout 0.0 -> 0.05 in res blocks. iter-16
-    # established the dual-domain pipeline benefits from regularization
-    # (wd 10x helped). Dropout is a different mechanism (stochastic
-    # activation masking) that complements wd (weight magnitude penalty).
-    # 0.05 is light; 0.1 risks underfitting on small phantoms.
-    "res_dropout":   0.05,
+    # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
+    # dual-domain self-supervised target (-1.26pp). No dropout.
+    "res_dropout":   0.0,
     "res_residual":  True,      # global residual head (predicts noise)
 
     # Noise simulation — kept fixed so headroom is comparable across iter.
