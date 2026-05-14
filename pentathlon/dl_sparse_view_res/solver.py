@@ -71,7 +71,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1e-4,       # iter-67 closed 1.2e-4 on batch -0.16pp
+    "lr":            8e-5,       # iter-78: 1e-4 -> 8e-5 retest on batch substrate (was -2.55 on group)
     "adamw_eps":     1e-10,      # iter-53 KEEP (iter-55/56 both DISCARD around it; basin shallow)
     "optimizer":     "adamw",   # iter-54 closed adam at -1.01pp; AdamW + wd_split is right for this slug
     "weight_decay":  1e-4,       # iter-66 closed wd=5e-5 -0.07pp on batch substrate
@@ -87,7 +87,7 @@ CONFIG = {
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
-    "swa_last_n":    2,           # iter-77: 0 -> 2 (narrow SWA window; iter-69 was full 4)
+    "swa_last_n":    0,           # SWA family closed
     "adamw_beta2":   0.999,      # iter-46 closed beta2=0.99 axis (-1.28pp)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
