@@ -120,8 +120,7 @@ CONFIG = {
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,
     "batch_size":    1,        # iter-31 closed batch=2 at -2.75pp (under-training at fixed epoch budget)
-    # iter-32: input_dropout 0.0 -> 0.05 (small noise injection at head input)
-    "input_dropout": 0.05,
+    "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            1e-4,
@@ -210,7 +209,7 @@ CONFIG = {
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
     "res_dropout":   0.0,
-    "res_residual":  True,      # global residual head (predicts noise)
+    "res_residual":  False,     # iter-33: True -> False (predict output directly, not noise residual)
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
     "res_n_bf":      0,

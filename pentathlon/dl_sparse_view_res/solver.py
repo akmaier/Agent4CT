@@ -64,7 +64,8 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-34 sweet spot; iter-39/40/41 LR schedule axis fully closed
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.05,        # iter-48: 0.0 -> 0.05 (small noise injection at head input)
+    "input_dropout": 0.0,         # iter-48 closed 0.05 at -0.75pp
+    "lr_warmup_epochs": 1,        # iter-49: 0 -> 1 (linear warmup epoch 1 from 0 to lr)
     "lr":            1e-4,
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
@@ -377,6 +378,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                 pg["lr"] = cur_lr
         else:
             cur_lr = lr_max
+        # iter-49: optional linear warmup over first lr_warmup_epochs epochs.
+        warmup_epochs = int(cfg.get("lr_warmup_epochs", 0))
+        if warmup_epochs > 0 and ep < warmup_epochs:
+            cur_lr = lr_max * (ep + 1) / max(1, warmup_epochs)
+            for pg in opt.param_groups:
+                pg["lr"] = cur_lr
         pipe.train()
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
