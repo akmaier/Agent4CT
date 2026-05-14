@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T22:13:34Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 51,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-51: lr_schedule cosine on batch substrate iter-46. Headroom 0.6054 -> 0.5785 (-2.69pp). DISCARD. Cosine fails on batch too (was -1.07pp on group).",
+  "val_score": 0.29893311858177185,
+  "headroom": 0.5784692876467115,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0051/comparison.png",
+  "advice_for_others": "DISCARD: cosine on batch -2.69pp. Cosine fails cross-substrate. Closes lr_schedule axis.",
+  "commit": "e1061b5"
+}
