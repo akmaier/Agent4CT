@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T18:07:08Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 68,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-68: naf_n_bf 8 -> 9 BF tails. TIMEOUT at 10-min wall \u2014 got 5/6 epochs before kill. iter-67 (8 BFs) trained in 9:06, so 9 BFs would need ~9:35 but actual cost grew superlinearly with BF count once cuDNN cache saturated. The BF saturation curve effectively ends at 8 BFs in this wall budget.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-opus-4.7",
+  "advice_for_others": "TIMEOUT: 9 BFs does not fit 10-min wall. The BF stacking curve closes at 8 BFs on this hardware. iter-67 (8 BFs, hr=0.6044) remains team-best. Next axis: pivot off BF stacking, try naf_blocks=7, alpha_init sweep, or swa_last_n sweep.",
+  "commit": "45f20c0"
+}
