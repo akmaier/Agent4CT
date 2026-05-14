@@ -61,11 +61,14 @@ CONFIG = {
     "val_n":         100,
 
     # Editable: training schedule.
-    "epochs":        8,
+    "epochs":        8,          # iter-41: revert to iter-34 baseline (iter-39/40 confirmed >8 overfits)
     "batch_size":    1,
     "lr":            1e-4,
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
+    "lr_schedule":   "step7",    # iter-41: step-decay-at-epoch-7-only (lr cut to lr/3 for final epoch, per iter-34 advice)
+    "lr_step_factor": 0.3333,    # iter-41: factor to multiply LR by at the step (1e-4 -> 3.33e-5)
+    "lr_min":        1e-6,       # unused for step7 but preserved for future cosine retry
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-2: 8 -> 6 to fit 5-min budget
@@ -296,8 +299,30 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     print(f"[solver-res] params = {params_total/1e6:.3f} M", flush=True)
 
     opt = make_optimizer(pipe, cfg)
+    lr_schedule = cfg.get("lr_schedule", "constant")
+    lr_max = float(cfg["lr"])
+    lr_min = float(cfg.get("lr_min", 0.0))
+    lr_step_factor = float(cfg.get("lr_step_factor", 0.3333))
+    n_epochs = int(cfg["epochs"])
+    if lr_schedule == "cosine":
+        print(f"[solver-res] LR schedule: cosine {lr_max:.2e} -> {lr_min:.2e} over {n_epochs} epochs",
+              flush=True)
+    elif lr_schedule == "step7":
+        print(f"[solver-res] LR schedule: step7 (lr={lr_max:.2e} for ep 1-7, then x{lr_step_factor} for ep 8)",
+              flush=True)
     t0 = time.time()
-    for ep in range(cfg["epochs"]):
+    for ep in range(n_epochs):
+        if lr_schedule == "cosine" and n_epochs > 1:
+            progress = ep / (n_epochs - 1)
+            cur_lr = lr_min + 0.5 * (lr_max - lr_min) * (1.0 + math.cos(math.pi * progress))
+            for pg in opt.param_groups:
+                pg["lr"] = cur_lr
+        elif lr_schedule == "step7":
+            cur_lr = lr_max * lr_step_factor if ep == n_epochs - 1 else lr_max
+            for pg in opt.param_groups:
+                pg["lr"] = cur_lr
+        else:
+            cur_lr = lr_max
         pipe.train()
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
@@ -310,7 +335,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             opt.step()
             running += float(losses["loss"].detach().cpu())
         mean_loss = running / max(1, train_noisy.shape[0])
-        print(f"[solver-res] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
+        print(f"[solver-res] epoch {ep+1:3d}/{n_epochs}  loss={mean_loss:.5f}  lr={cur_lr:.2e}",
               flush=True)
     train_time = time.time() - t0
     print(f"[solver-res] training took {train_time:.1f}s", flush=True)

@@ -164,7 +164,7 @@ CONFIG = {
     # learns its own (sigma_x/y, sigma_r) so 5 BFs partition the residual
     # into 5 (edge/streak/freq) regimes. If keep: try BF=6. If discard:
     # try Charbonnier loss (was harmful on ReLU; might work here).
-    "naf_n_bf":      5,                # iter-44: 5 trainable BF tails (was 4)
+    "naf_n_bf":      6,                # iter-45: 6 BFs (iter-44 +0.17pp at 5; main iter-65 confirmed +0.13pp at 6)
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,
