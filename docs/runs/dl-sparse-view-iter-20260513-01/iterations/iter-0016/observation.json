@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T06:39:55Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 16,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-16 SWA (uniform mean over last 2 epochs final weights, 800 samples) on iter-7 K=2 U-Net + BF. Headroom 0.5762 vs iter-15 EMA decay=0.99 0.5759 (+0.03pp) and vs iter-7 0.5745 (+0.17pp). SWA marginally beats EMA at this budget but both are below the 1pp keep threshold. The cumulative lesson from iter-14/15/16 is that late-trajectory averaging (EMA decay 0.99 or SWA) provides a robust 0.15-0.17pp lift but the magnitude is below noise. Train_time 235s (vs 242s for iter-15) \u2014 SWA adds ~10s for 2 epochs.",
+  "val_score": 0.3075,
+  "headroom": 0.5762,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0016/comparison.png",
+  "advice_for_others": "On this 5-min CT recon budget, late-trajectory weight averaging (SWA over final 2 epochs / EMA at decay 0.99) is a reliable but small (0.1-0.2pp) lift; do not expect it alone to clear the 1pp keep threshold.",
+  "commit": "b1cd3c4"
+}
