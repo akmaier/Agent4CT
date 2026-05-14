@@ -101,6 +101,7 @@ CONFIG = {
     "naf_alpha_init": 0.1,    # iter-78 closed 0.15 at -0.14pp
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert
+    "naf_norm": "bn",     # iter-86: ln -> bn (cross-port from B/C +1.5/1.9pp breakthrough)
     # iter-57: stack 3 trainable Wagner BF tails on the image NAFNet
     # output. Agent A iter-29/31/38 confirmed +0.28/+0.63/+0.31pp from
     # 1/2/3 BFs (on their wd=1e-4 substrate). Tests if the BF-stacking
@@ -112,7 +113,7 @@ CONFIG = {
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
-    "swa_last_n":    0,   # iter-85: 4 -> 0 (disable SWA test; iter-71 KEEP at 4)
+    "swa_last_n":    4,   # iter-71 KEEP (iter-85 closed disabling at -0.18pp)
     "bf_kernel":     7,   # iter-74 closed kernel=5 at -0.33pp
     "bf_sigma_r":    0.01,   # iter-76 closed 0.02 at -0.94pp (BF basin tight at 0.01)
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
@@ -194,10 +195,11 @@ class _LayerNorm2d(nn.Module):
 
 class NafBlock(nn.Module):
     def __init__(self, c: int, expand: int = 2, alpha_init: float = 0.1,
-                 gate: str = "gelu"):
+                 gate: str = "gelu", norm: str = "ln"):
         super().__init__()
         c_mid = c * expand
-        self.norm = _LayerNorm2d(c)
+        # iter-86: optional BatchNorm cross-port from B/C iter-62/46 breakthrough.
+        self.norm = nn.BatchNorm2d(c) if norm == "bn" else _LayerNorm2d(c)
         self.pw_in = nn.Conv2d(c, c_mid, 1)
         self.dw = nn.Conv2d(c_mid, c_mid, 3, padding=1, groups=c_mid)
         # iter-61: matching Agent A iter-38 GELU gate (+0.04pp on their substrate).
@@ -216,11 +218,12 @@ class NafNetStack(nn.Module):
     def __init__(self, c: int = 32, n_blocks: int = 6, alpha_init: float = 0.1,
                  residual: bool = True, n_bf: int = 0, bf_kernel: int = 7,
                  bf_sigma_x: float = 1.5, bf_sigma_y: float = 1.5,
-                 bf_sigma_r: float = 0.01, gate: str = "gelu"):
+                 bf_sigma_r: float = 0.01, gate: str = "gelu",
+                 norm: str = "ln"):
         super().__init__()
         self.residual = residual
         self.stem = nn.Conv2d(1, c, 3, padding=1)
-        self.blocks = nn.ModuleList([NafBlock(c, alpha_init=alpha_init, gate=gate) for _ in range(n_blocks)])
+        self.blocks = nn.ModuleList([NafBlock(c, alpha_init=alpha_init, gate=gate, norm=norm) for _ in range(n_blocks)])
         self.head = nn.Conv2d(c, 1, 3, padding=1)
         nn.init.zeros_(self.head.weight)
         nn.init.zeros_(self.head.bias)
@@ -350,6 +353,7 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
                 bf_kernel=cfg.get("bf_kernel", 7),
                 bf_sigma_r=cfg.get("bf_sigma_r", 0.01),
                 gate=cfg.get("naf_gate", "gelu"),
+                norm=cfg.get("naf_norm", "ln"),
             )
         # BF tail on image domain only (Agent B iter-17 finding: sino
         # domain has no anatomical edges for BF to exploit).

@@ -103,7 +103,7 @@ CONFIG = {
     "batch_size":    1,
     "lr":            1e-4,             # iter-55 closed 8e-5 at -0.05pp (substrate-dependent lr)
     "naf_alpha":     0.1,              # iter-57 closed alpha=0.15 -0.06pp
-    "ema_every":     2,                # iter-58: 1 -> 2 (skip every other step in SWA averaging)
+    "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
 
@@ -121,7 +121,7 @@ CONFIG = {
     "proj_denoiser": "nafnet",         # NEW: also use NAFNet for proj domain
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
     "naf_blocks":    6,                # 6 NAF blocks at c=32, full res
-    "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
+    "naf_expand":    3,                # iter-59: 2 -> 3 (wider hidden dim in NafBlock)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-52: GELU -> ReLU (test gate reversion; no wall cost)
                                          #  (alpha overridden by 0.05 in iter-56 above)
