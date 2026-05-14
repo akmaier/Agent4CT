@@ -119,12 +119,12 @@ CONFIG = {
     # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,
-    "batch_size":    2,        # iter-49: retest batch=2 on batch-norm substrate (was -2.75pp on group)
+    "batch_size":    1,        # iter-49 closed batch=2 on batch -1.36pp; final-closed
     "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            8e-5,       # iter-40 KEEP (iter-42 closed 9e-5 at -0.28pp)
-    "swa":           False,       # iter-43 closed on Adam substrate -1.16pp (same as iter-11)
+    "swa":           True,        # iter-50: retest SWA on batch-norm substrate
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,

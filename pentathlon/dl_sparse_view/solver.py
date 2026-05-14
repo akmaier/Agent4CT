@@ -79,7 +79,7 @@ CONFIG = {
     "batch_size":    1,
     "lr":            8e-5,    # iter-79 KEEP (iter-81 9e-5 near-flat -0.01pp)
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
-    "weight_decay":  5e-5,      # iter-87: 1e-5 -> 5e-5 (try mid wd; iter-84 wd=2e-5 was flat)
+    "weight_decay":  1e-5,      # iter-87 closed 5e-5 near-flat; revert
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
     # toward 0 and preventing them from growing. WD=0 lets alpha
@@ -116,6 +116,8 @@ CONFIG = {
     "swa_last_n":    4,   # iter-71 KEEP (iter-85 closed disabling at -0.18pp)
     "bf_kernel":     7,   # iter-74 closed kernel=5 at -0.33pp
     "bf_sigma_r":    0.01,   # iter-76 closed 0.02 at -0.94pp (BF basin tight at 0.01)
+    "bf_sigma_x":    2.0,    # iter-88: 1.5 -> 2.0 (looser spatial BF; untested)
+    "bf_sigma_y":    2.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,
@@ -352,6 +354,8 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
                 n_bf=cfg.get("naf_n_bf", 0) if with_bf else 0,
                 bf_kernel=cfg.get("bf_kernel", 7),
                 bf_sigma_r=cfg.get("bf_sigma_r", 0.01),
+                bf_sigma_x=cfg.get("bf_sigma_x", 1.5),
+                bf_sigma_y=cfg.get("bf_sigma_y", 1.5),
                 gate=cfg.get("naf_gate", "gelu"),
                 norm=cfg.get("naf_norm", "ln"),
             )
