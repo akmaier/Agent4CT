@@ -89,6 +89,26 @@
 .badge.crash   { background: #f0d6f8; color: #6a2477; }
 .badge.timeout { background: #fdf2cf; color: #8a6d11; }
 .badge.running { background: #d6e7f8; color: #14457a; }
+.badge.hallucinated {
+  /* Warning candy stripe so the eye treats hallucinated metrics as
+     "do not promote" — distinct from a normal red badge. */
+  background: repeating-linear-gradient(
+    -45deg, #fbe6e6 0 6px, #fad2d2 6px 12px);
+  color: #a83232;
+  border: 1px solid #e6b8b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Dim hallucinated scratchpad cards + iter rows so the legitimate
+   results visually dominate the page. */
+.scratch-card-hallucinated,
+.dash-iter-hallucinated {
+  background: #fdf6f6;
+  opacity: 0.78;
+}
+.scratch-card-hallucinated:hover,
+.dash-iter-hallucinated:hover { opacity: 1; }
 
 /* --- Run-detail iteration timeline --- */
 .dash-run-meta {

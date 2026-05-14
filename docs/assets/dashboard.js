@@ -128,9 +128,18 @@ async function loadResults(slug) {
 }
 
 function bestSoFar(rows) {
+  // Skip rows flagged as hallucinated — those are reported under a
+  // different (easier) problem, so promoting them onto the best-so-far
+  // curve would mislead. They still appear as individual iter rows
+  // with the "hallucinated" badge.
   const out = [];
   let best = -Infinity;
   for (const r of rows) {
+    if (detectHallucination(r).length > 0) {
+      // carry the previous best forward without bumping
+      out.push({ iter: parseInt(r.iter, 10), best: best === -Infinity ? null : best });
+      continue;
+    }
     const h = parseFloat(r.headroom);
     if (!isNaN(h) && h > best) best = h;
     out.push({ iter: parseInt(r.iter, 10), best: best === -Infinity ? null : best });
@@ -362,6 +371,50 @@ async function loadRunsIndex() {
 function shortModel(m) {
   if (!m) return "—";
   return String(m).replace(/^claude-/, "").replace(/^anthropic\//, "");
+}
+
+// ---------- hallucination detection ------------------------------------
+//
+// An iteration is "hallucinated" if the agent reported metrics under
+// conditions that violate the program contract — so the headroom number
+// it claims is not comparable to legitimate iterations. The DL-Sparse-View
+// contract pins train_n=400, val_n=100, and the canonical sparse-view-FBP
+// baseline_rmse; an agent that reduces the dataset, swaps the baseline,
+// or uses a non-standard SSIM is operating on an easier problem and its
+// hr is meaningless.
+//
+// Returns [] for a legitimate row, or an array of human-readable reasons.
+// Accepts either a results.tsv row OR a full observation.json object —
+// both are read with the same field names (train_n, val_n, ...).
+const _CONTRACT = { train_n: 400, val_n: 100 };
+function detectHallucination(obj) {
+  if (!obj) return [];
+  const reasons = [];
+  const status = (obj.status || (obj.kept === "true" || obj.kept === true ? "keep" : obj.kept === "false" || obj.kept === false ? "discard" : "")).toString().toLowerCase();
+  // Only "keep" iterations can mislead the leaderboard; crash/timeout/discard
+  // rows are honestly tagged. We still mark non-keeps with violations to
+  // avoid surprises if the operator promotes one later.
+  const tn = obj.train_n;
+  if (tn !== undefined && tn !== null && tn !== "" && Number(tn) !== _CONTRACT.train_n) {
+    reasons.push(`train_n=${tn} (contract: ${_CONTRACT.train_n})`);
+  }
+  // val_n is rarely stored in observation.json (the harness only writes it
+  // when the agent passes it explicitly); a *non-canonical* value flags.
+  const vn = obj.val_n;
+  if (vn !== undefined && vn !== null && vn !== "" && Number(vn) !== _CONTRACT.val_n) {
+    reasons.push(`val_n=${vn} (contract: ${_CONTRACT.val_n})`);
+  }
+  // Rationale heuristic — catches "robust 3x3 SSIM", "custom training",
+  // "modified metric", etc. Cheap, opt-in, hopefully no false positives
+  // on legitimate rationales.
+  const rat = String(obj.rationale || "").toLowerCase();
+  if (rat.match(/robust\s+(3x3\s+)?ssim/) || rat.match(/custom\s+(training|ssim)/) ||
+      rat.match(/avoid\s+cuda|to avoid\s+cudnn/i)) {
+    if (status === "keep") {
+      reasons.push("custom metric/training (rationale)");
+    }
+  }
+  return reasons;
 }
 
 // Build a "run failed" placeholder (or status-specific text) that takes
@@ -610,6 +663,11 @@ async function renderIteration(slug, row) {
                     : status === "crash" ? "crash"
                     : status === "timeout" ? "timeout"
                     : "";
+  // Hallucination from the TSV row alone (rationale heuristic).
+  // detectHallucination is also re-run in the body once observation.json
+  // is fetched, which adds the train_n/val_n checks.
+  const rowHallucReasons = detectHallucination(row);
+  const rowIsHallucinated = rowHallucReasons.length > 0;
 
   // Identity tags (only render when the iteration actually has them — old
   // pre-2026-05-14 rows that pre-date the agent/model columns just omit them).
@@ -624,16 +682,36 @@ async function renderIteration(slug, row) {
     ? el("span", { class: "iter-identity" }, ...identityTags)
     : el("span", { class: "iter-identity" });
 
+  // Score cell: when the row is hallucinated, strike-through the
+  // headroom so the eye doesn't read it as a real result.
+  const scoreCell = el("span", { class: "iter-score" },
+    `val=${fmtNum(row.val_score)} hr=${fmtNum(row.headroom)}`);
+  if (rowIsHallucinated) {
+    scoreCell.style.textDecoration = "line-through";
+    scoreCell.style.opacity = "0.7";
+    scoreCell.title = "Hallucinated metric — " + rowHallucReasons.join("; ");
+  }
+  // Badge cell: the usual status badge, plus a "hallucinated" badge
+  // appended when the row violates the contract.
+  const statusBadge = badge(status || "?", statusClass);
+  const badges = el("span", { class: "iter-badges" }, statusBadge);
+  if (rowIsHallucinated) {
+    const hb = badge("hallucinated", "hallucinated");
+    hb.title = "Contract violation: " + rowHallucReasons.join("; ");
+    badges.appendChild(hb);
+  }
+
   const summary = el("summary", {},
     el("span", { class: "iter-id" }, iterId),
-    el("span", { class: "iter-score" },
-      `val=${fmtNum(row.val_score)} hr=${fmtNum(row.headroom)}`),
+    scoreCell,
     el("span", { class: "iter-rationale" }, row.rationale || row.description || ""),
     identityCell,
-    badge(status || "?", statusClass),
+    badges,
     el("span", { class: "iter-link" }, row.commit || ""));
 
-  const details = el("details", { class: "dash-iter" }, summary);
+  const details = el("details", {
+    class: "dash-iter" + (rowIsHallucinated ? " dash-iter-hallucinated" : ""),
+  }, summary);
   details.addEventListener("toggle", async () => {
     if (!details.open || details.dataset.loaded) return;
     details.dataset.loaded = "1";
@@ -711,9 +789,11 @@ async function loadScratch() {
 function renderScratchCard(e) {
   const runColour = colourForRun(e.run_id);
   const status = (e.status || "").toLowerCase();
+  const hallucReasons = detectHallucination(e);
+  const isHallucinated = hallucReasons.length > 0;
   const body = el("div", { class: "scratch-body" });
-  body.appendChild(el("div", { class: "scratch-meta" },
-    [
+  // Meta line + hallucination badge (right-aligned inline)
+  const metaText = [
       e.ts || "",
       e.run_id ? ` · ${e.run_id}` : "",
       (e.iter !== undefined) ? ` · iter ${e.iter}` : "",
@@ -721,7 +801,15 @@ function renderScratchCard(e) {
       e.model ? ` · ${shortModel(e.model)}` : "",
       e.change_class ? ` · ${e.change_class}` : "",
       e.kept !== undefined ? ` · ${e.kept ? "keep" : "discard"}` : "",
-    ].join("")));
+  ].join("");
+  const metaRow = el("div", { class: "scratch-meta" }, metaText);
+  if (isHallucinated) {
+    const b = badge("hallucinated", "hallucinated");
+    b.title = "Contract violation: " + hallucReasons.join("; ");
+    metaRow.appendChild(document.createTextNode(" "));
+    metaRow.appendChild(b);
+  }
+  body.appendChild(metaRow);
   if (e.rationale) {
     body.appendChild(el("p", { class: "scratch-rationale" }, e.rationale));
   }
@@ -766,9 +854,17 @@ function renderScratchCard(e) {
   } else {
     thumb.appendChild(failedRunPlaceholder("unknown", label));
   }
-  const card = el("div", { class: "scratch-card" }, body, thumb);
-  // Per-agent / per-run colour stripe on the card itself.
-  card.style.borderLeftColor = runColour;
+  const card = el("div", {
+    class: "scratch-card" + (isHallucinated ? " scratch-card-hallucinated" : ""),
+  }, body, thumb);
+  // Per-agent / per-run colour stripe on the card itself. Hallucinated
+  // cards use a striped warning border instead so the eye treats them
+  // as "set aside" rather than as a real result in the per-run palette.
+  if (isHallucinated) {
+    card.style.borderLeftColor = "#a83232";
+  } else {
+    card.style.borderLeftColor = runColour;
+  }
   card.style.borderLeftWidth = "4px";
   card.style.borderLeftStyle = "solid";
   return card;

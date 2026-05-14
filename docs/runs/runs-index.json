@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-14T06:54:10Z",
+  "updated": "2026-05-14T06:58:51Z",
   "runs": [
     {
       "slug": "demo-dl-sparse-view-20260513-01",
@@ -93,8 +93,8 @@
       "started": "2026-05-13T23:50:28Z",
       "status": "running",
       "n_iterations": 5,
-      "best_score": 0.363459,
-      "best_headroom": 0.633917,
+      "best_score": 0.0,
+      "best_headroom": 0.0,
       "agent": "mistral",
       "model": "mistralai/Mistral-Medium-3.5-128B"
     },

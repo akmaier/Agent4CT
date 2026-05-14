@@ -331,6 +331,21 @@ class Run:
                 n_iter = len(rows)
                 for r in rows:
                     cells = r.split("\t")
+                    # Skip hallucinated rows: the contract pins train_n=400,
+                    # val_n=100, canonical SSIM. Best-of metrics must exclude
+                    # rows that violate this so the leaderboard isn't
+                    # poisoned by easier-problem results.
+                    rationale_lower = (cells[8] if len(cells) > 8 else "").lower()
+                    is_hallucinated = (
+                        ("avoid cuda" in rationale_lower)
+                        or ("avoid cudnn" in rationale_lower)
+                        or ("custom training" in rationale_lower)
+                        or ("custom ssim" in rationale_lower)
+                        or _re.search(r"robust\s+(3x3\s+)?ssim", rationale_lower)
+                        or _re.search(r"reduced dataset size", rationale_lower)
+                    )
+                    if is_hallucinated:
+                        continue
                     try:
                         v = float(cells[2])
                         if best_score is None or v > best_score:
