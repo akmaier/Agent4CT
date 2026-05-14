@@ -134,13 +134,24 @@ CONFIG = {
     "charbonnier_eps": 1e-3,
     "huber_delta":   1e-3,
 
-    # iter-9: per-batch flip augmentation. iter-8 used per-epoch global
-    # flips → optimizer adapts to "the world is hflipped" then re-adapts
-    # next epoch (pure cancellation). Per-batch granularity gives genuine
-    # aug gradient. Re-projects only the flipped batch through the SAME
-    # geometry (image content changes, geometry fixed).
-    "aug_flip":      True,
+    # iter-9 (DISCARD, hr=0.5620 vs 0.5807): per-batch flip aug -1.87pp.
+    # All three flip variants (D4 per-epoch, hflip+vflip per-epoch,
+    # per-batch flip) fail. Mechanism: flips create OOD orientations the
+    # baseline never sees, hurts net's prior on the random-ellipse
+    # phantom distribution. Disable.
+    "aug_flip":      False,
     "aug_flip_seed": 1234,
+
+    # iter-10: MIXUP. Different aug mechanism — instead of flipping a
+    # single phantom (OOD), MIXUP samples two phantoms per training
+    # sample, mixes them at the *phantom* level with λ ~ Beta(α, α), then
+    # re-projects and simulates noise. The mixed phantom stays in the
+    # random-ellipse distribution (additive ellipses ≈ another valid
+    # phantom) so no OOD penalty. Acts as a label-smoothing regulariser
+    # in pixel space + cheap "more data" effect. α=0.4 per Zhang+ 2018.
+    "aug_mixup":     True,
+    "aug_mixup_alpha": 0.4,
+    "aug_mixup_seed":  5678,
 
     # Editable: model architecture.
     "unet_c":        16,
@@ -372,51 +383,59 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     opt = make_optimizer(pipe.parameters(), cfg)
     loss_name = cfg.get("train_loss", "mse")
     loss_fn = _loss_fn(loss_name, cfg)
-    # iter-9 (dl-sparse-view-loss): per-BATCH flip augmentation.
-    # iter-8 used per-epoch global flips → optimizer sees "world is hflipped"
-    # for a whole epoch then re-adapts on the next: pure cancellation, no
-    # genuine aug gradient. Per-batch flip applies a fresh random (hflip,
-    # vflip) to every (epoch × sample) pair → 8 ep × 400 samples × 4 flips
-    # ≈ 1600 effective unique (phantom, orientation) pairs. Re-projects the
-    # augmented phantom through the SAME geometry (only image content
-    # changes) and re-runs simulate_low_dose for the matching noisy sinogram.
-    aug_flip = bool(cfg.get("aug_flip", False))
-    print(f"[solver] train_loss={loss_name}  aug_flip={aug_flip}", flush=True)
-    aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_flip_seed", 1234)))
+    # iter-10 (dl-sparse-view-loss): MIXUP augmentation. Per-batch,
+    # sample a partner phantom index j and a mixing weight λ ~ Beta(α, α),
+    # mix at the phantom level (lin combo of attenuation maps), re-project
+    # through the SAME geometry, simulate noise. Stays in the random-
+    # ellipse distribution (sum of ellipses ≈ another valid phantom).
+    # Different mechanism than flip (which was OOD): mixup is a label-
+    # smoothing-in-pixel-space regulariser. With α=0.4, λ peaks near 0/1
+    # so most batches see "mostly one phantom + a faint trace of another"
+    # — gentle regularisation, not heavy mixing.
+    aug_mixup = bool(cfg.get("aug_mixup", False))
+    aug_alpha = float(cfg.get("aug_mixup_alpha", 0.4))
+    print(f"[solver] train_loss={loss_name}  aug_mixup={aug_mixup} alpha={aug_alpha}",
+          flush=True)
+    aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_mixup_seed", 5678)))
     t0 = time.time()
     for ep in range(cfg["epochs"]):
         pipe.train()
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
-        n_hflip = 0
-        n_vflip = 0
+        n_mix = 0
         n_idn = 0
         for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
-            if aug_flip:
-                # Fresh random (hflip, vflip) per batch. With batch_size=1
-                # this is per-sample. Re-projects only when at least one
-                # axis flips; identity case reuses the cached train_noisy.
-                hflip = bool(torch.rand((), generator=aug_rng).item() < 0.5)
-                vflip = bool(torch.rand((), generator=aug_rng).item() < 0.5)
-                if hflip or vflip:
+            if aug_mixup:
+                # λ ~ Beta(α, α). For α=0.4 the mode is at 0 and 1 →
+                # gentle mixing (λ usually small). Pick a random partner
+                # index uniformly from the training pool (≠ self).
+                lam = float(torch.distributions.Beta(aug_alpha, aug_alpha).sample(
+                    sample_shape=()).item())
+                # Convert idx -> partner idx (random; different image)
+                bs = idx.shape[0]
+                j = torch.randint(0, train_ph.shape[0], (bs,), generator=aug_rng)
+                # Avoid self-mix if it lands on the same idx
+                same = (j == idx)
+                if same.any():
+                    j[same] = (j[same] + 1) % train_ph.shape[0]
+                # Skip very small λ values that are essentially identity
+                # (saves compute by reusing cached noisy).
+                if abs(lam - 0.0) < 1e-3 or abs(lam - 1.0) < 1e-3:
+                    batch = train_noisy[idx].to(device)
+                    n_idn += 1
+                else:
                     with torch.no_grad():
-                        ph_b = train_ph[idx]
-                        if hflip:
-                            ph_b = torch.flip(ph_b, dims=[-1])
-                            n_hflip += 1
-                        if vflip:
-                            ph_b = torch.flip(ph_b, dims=[-2])
-                            n_vflip += 1
-                        clean_b = R_full.forward_project(ph_b)
+                        ph_a = train_ph[idx]
+                        ph_b = train_ph[j]
+                        ph_mix = lam * ph_a + (1.0 - lam) * ph_b
+                        clean_b = R_full.forward_project(ph_mix)
                         batch = simulate_low_dose(
                             clean_b,
                             i0=cfg["noise_i0"], sigma_e=cfg["noise_sigma_e"],
                             seed=cfg["seed"] + 30_000 + ep * 100_000 + i,
                         )
-                else:
-                    batch = train_noisy[idx].to(device)
-                    n_idn += 1
+                    n_mix += 1
             else:
                 batch = train_noisy[idx].to(device)
             if loss_name == "mse":
@@ -428,9 +447,9 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             opt.step()
             running += float(losses["loss"].detach().cpu())
         mean_loss = running / max(1, train_noisy.shape[0])
-        if aug_flip:
+        if aug_mixup:
             print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}"
-                  f"  aug: h={n_hflip} v={n_vflip} idn={n_idn}", flush=True)
+                  f"  mixup: mix={n_mix} idn={n_idn}", flush=True)
         else:
             print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
                   flush=True)
