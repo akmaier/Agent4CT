@@ -122,7 +122,7 @@ CONFIG = {
     "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "gelu",           # iter-38: GELU on iter-36 KEEP substrate (smoother than ReLU)
-    "naf_alpha":     0.1,              # EDSR-style learnable residual scaling
+    "naf_alpha":     0.2,              # iter-51: 0.1 -> 0.2 (test upper side; main iter-69 closed 0.05 at -0.09pp)
                                          #  (spawn-B iter-14 advice: cheap +0.15pp)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
     "share_weights": False,            # n/a at K=1
@@ -146,7 +146,7 @@ CONFIG = {
     #   for higher emphasis on later epochs.
     # If discard: last-5 is the sweet spot, move to architecture knobs
     #   (c=40, SimpleGate).
-    "ema_start_ep":  2,                # iter-50: 0 -> 2 (skip first 2 epochs; cross-port main iter-71 last_n=4 +0.08pp)
+    "ema_start_ep":  0,                # iter-50 narrower window -0.06pp; revert to full
     "ema_every":     1,
     # BF saturation curve on NAFNet substrate (each BF = 3 params, 1 unfold):
     #   n_bf=0 (iter-27, SWA-only):     hr=0.5777
