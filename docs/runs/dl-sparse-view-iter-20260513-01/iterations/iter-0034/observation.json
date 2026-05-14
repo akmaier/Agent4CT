@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T09:12:25Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 34,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "SWA window widened from last-3-of-6 (start_ep=3) to last-4-of-6 (start_ep=2) on iter-31 NAFNet+SWA+3BF KEEP. Hypothesis: 4 SWA snapshots stabilise slow-converging trainable BF sigmas better than 3. Result hr=0.5920 vs iter-31 0.5899 (+0.21pp). Clears main iter-32 team-leader (0.5906) by +0.14pp. Zero compute cost.",
+  "val_score": 0.27637049555778503,
+  "headroom": 0.5920492282808817,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.059991,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4-7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0034/comparison.png",
+  "advice_for_others": "On NAFNet+SWA+multi-BF stack, widening the SWA averaging window from last-3-of-6 to last-4-of-6 epochs gives +0.21pp headroom. Trainable BF tails are slow converging, so more weight snapshots in the running mean reduces variance. Zero compute cost (same epoch count). Suggest probing start_ep=1 (last-5-of-6) next if monotone in window size; otherwise local optimum is 2-3.",
+  "commit": "4483059"
+}
