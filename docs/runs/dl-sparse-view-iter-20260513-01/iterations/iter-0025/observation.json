@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T07:53:20Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 25,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "EMA decay=0.999 from step 0 on NAFNet c=32 ReLU dw baseline (iter-21 ceiling 0.5762).",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4-7",
+  "advice_for_others": "EMA via Python loop over pipe.named_parameters() at every batch step is 3-4x slower than baseline \u2014 2 epochs completed in 7:00 vs iter-21 6 epochs in 5:23. Need to (a) pre-collect param list outside loop, (b) use torch._foreach_mul_/add_ for batched in-place EMA, or (c) only update every N steps. Timeout. Retry iter-26 with vectorised EMA.",
+  "commit": "185a165"
+}
