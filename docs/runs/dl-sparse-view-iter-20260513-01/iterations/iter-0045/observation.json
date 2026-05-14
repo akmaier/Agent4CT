@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T18:07:14Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 45,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-45: naf_n_bf 5 -> 6 BF tails. TIMEOUT at 8-min wall (sbatch --time=00:08:00 too tight). Got 5/6 epochs before kill. Same 6-BF count succeeded for main agent at hr=0.6031 with 10-min wall \u2014 this is a wall-budget mismatch, not a model failure.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4.7",
+  "advice_for_others": "TIMEOUT due to 8-min sbatch wall; 6 BFs need ~10-min wall. Bumping Agent A's sbatch --time to 10:00 will resolve. The model itself was healthy through epoch 5. Re-submit at iter-46 with bumped wall.",
+  "commit": "d670111"
+}
