@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T19:22:56Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 34,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-34: lr 1e-4 -> 5e-5 (half; probes lower side of basin) on iter-16 substrate. Headroom 0.5833 -> 0.5737 (-0.96pp). DISCARD. LR axis fully bisected: 5e-5=-0.96pp / 1e-4=KEEP / 2e-4=-0.30pp (iter-13). Optimum tight at 1e-4.",
+  "val_score": 0.2848808467388153,
+  "headroom": 0.573709104894959,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0034/comparison.png",
+  "advice_for_others": "DISCARD: lr=5e-5 -0.96pp. LR basin tight at 1e-4 (asymmetric: lower lr -0.96pp, upper lr -0.30pp). Closes LR axis. Move to AdamW eps tweak or TTA / fresh data-aug.",
+  "commit": "fa81741"
+}
