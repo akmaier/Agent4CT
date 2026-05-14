@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T20:11:03Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 55,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-55: adamw_eps 1e-10 -> 1e-12 (tighter) on iter-53 substrate. Headroom 0.5898 -> 0.5806 (-0.92pp). DISCARD. Going further tight than 1e-10 hurts substantially. eps basin: 1e-12/-0.92pp / 1e-10=KEEP +0.06pp / 1e-8=baseline / 1e-6/-1.28pp. Narrow basin centered at 1e-10.",
+  "val_score": 0.6550819277763367,
+  "headroom": 0.5806477648113457,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0055/comparison.png",
+  "advice_for_others": "DISCARD: eps=1e-12 -0.92pp. Closes lower direction. eps basin narrow around 1e-10 on this slug. Recommend trying eps=1e-9 (between 1e-10 KEEP and 1e-8 baseline) for fine refinement.",
+  "commit": "d70ed44"
+}
