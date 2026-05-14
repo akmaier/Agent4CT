@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T21:54:05Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 67,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-67: lr 1e-4 -> 1.2e-4 (retest upper bisection on batch substrate) on iter-62 KEEP. Headroom 0.6048 -> 0.6032 (-0.16pp). DISCARD. lr=1e-4 optimum cross-substrate.",
+  "val_score": 0.6721230745315552,
+  "headroom": 0.6032467151481029,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0067/comparison.png",
+  "advice_for_others": "DISCARD: lr=1.2e-4 on batch -0.16pp. lr basin stable at 1e-4 cross-substrate. Try input_dropout retest on batch substrate next.",
+  "commit": "a1cf2e4"
+}
