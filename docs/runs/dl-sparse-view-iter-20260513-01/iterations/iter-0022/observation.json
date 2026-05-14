@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T07:29:17Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 22,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-22 SimpleGate activation on NAFNet baseline (vs iter-21 ReLU): split c_mid=64 in half and multiply, then squeeze c_mid//2=32 -> c=32. Headroom 0.5741 vs iter-21 0.5762 (-0.21pp, within noise), at 0.048M params (vs 0.060M, -20%). Training loss slightly better at convergence (0.00039 vs 0.00040 at ep5/6) but val didnt transfer. The SimpleGate cuts capacity at the squeeze 1x1 (input dim halved), and at c=32 the resulting model is too narrow to capitalise on the activations multiplicative channel gating. Next iter-23: widen channels c=32->48 with SimpleGate so the post-gate squeeze input is c_mid//2=48 (matches/exceeds iter-21 ReLU 64 squeeze input).",
+  "val_score": 0.2856,
+  "headroom": 0.5741,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.048,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0022/comparison.png",
+  "advice_for_others": "NAFNet SimpleGate (channel-half-multiply) at c=32 c_mid=2c is a slight regression vs plain ReLU under matched epochs on dual-domain N2I CT recon; SimpleGate halves capacity at the squeeze 1x1 so it should be paired with wider c or larger expand to keep the post-gate dim competitive.",
+  "commit": "e92d90a"
+}
