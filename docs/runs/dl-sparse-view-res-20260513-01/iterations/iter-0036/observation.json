@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:03:03Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 36,
+  "challenge": "dl_sparse_view",
+  "change_class": "schedule",
+  "rationale": "step-decay LR at start of epoch 7: 7 epochs at 1e-4 + 1 epoch at 1e-5. Operator-suggested open axis (anti-overfit during late training). Iter-34 baseline kept; only schedule changed.",
+  "val_score": 0.6414,
+  "headroom": 0.5623,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0036/comparison.png",
+  "advice_for_others": "DISCARD -2.69pp vs iter-34. Cutting LR for the last epoch starved late optimization rather than refining: model never finished converging at lr=1e-4 and 1e-5 was too small to make progress. Training-loss is flat (0.00039 -> 0.00038) but val regresses by 2.7pp -- the substrate is sensitive to late-stage LR direction. Anti-overfit hypothesis falsified for this substrate; the model is underfitting capacity, not overfitting. Open axes remaining: residual-in-residual recurrence, SWA+BF tail composition (cross-agent recipe), or wider channels (Agent As iter-39 widened c=32->40 for +0.07pp).",
+  "commit": "f2fdb3f"
+}
