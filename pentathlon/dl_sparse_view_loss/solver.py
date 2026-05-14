@@ -134,20 +134,6 @@ CONFIG = {
     "charbonnier_eps": 1e-3,
     "huber_delta":   1e-3,
 
-    # Editable: image-space phantom augmentation (iter-7/iter-8).
-    # iter-7 tried full D4 (rot90 + hflip + vflip = 16 transforms): -0.78pp
-    # headroom regression. Hypothesis from that failure: 90/270 rotations
-    # produce vertically-oriented bodies (the elliptical-body outline is
-    # 0.85x0.65 horizontal), which is OOD vs validation -> the model burns
-    # capacity on unrealistic orientations.
-    # iter-8 restricts to hflip+vflip only (4 transforms incl. identity) -
-    # this preserves the horizontal body axis and only mirrors the internal
-    # ellipse arrangement, which IS in-distribution. Per-epoch global aug
-    # re-projects through R_full (same fan-beam geometry) with fresh noise
-    # per epoch (different seed).
-    "aug_flip":      True,
-    "aug_flip_seed": 1234,
-
     # Editable: model architecture.
     "unet_c":        16,
     # "unet" | "unet_plus_bf" (Wagner 2022 BF tail) | "resnet"
@@ -378,43 +364,15 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     opt = make_optimizer(pipe.parameters(), cfg)
     loss_name = cfg.get("train_loss", "mse")
     loss_fn = _loss_fn(loss_name, cfg)
-    aug_flip = bool(cfg.get("aug_flip", False))
-    print(f"[solver] train_loss={loss_name}  aug_flip={aug_flip}", flush=True)
-    # R_full is reused to re-project augmented phantoms; same geometry as
-    # train_noisy, only image content is flipped.
-    aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_flip_seed", 1234)))
+    print(f"[solver] train_loss={loss_name}", flush=True)
     t0 = time.time()
     for ep in range(cfg["epochs"]):
         pipe.train()
-        # ---- per-epoch hflip/vflip augmentation (no rotation) ----------- #
-        if aug_flip:
-            hflip = bool(torch.rand((), generator=aug_rng).item() < 0.5)
-            vflip = bool(torch.rand((), generator=aug_rng).item() < 0.5)
-            if hflip or vflip:
-                with torch.no_grad():
-                    ph_ep = train_ph
-                    if hflip:
-                        ph_ep = torch.flip(ph_ep, dims=[-1])
-                    if vflip:
-                        ph_ep = torch.flip(ph_ep, dims=[-2])
-                    clean_ep = R_full.forward_project(ph_ep)
-                    noisy_ep = simulate_low_dose(
-                        clean_ep,
-                        i0=cfg["noise_i0"], sigma_e=cfg["noise_sigma_e"],
-                        seed=cfg["seed"] + 20_000 + ep,
-                    )
-                print(f"[solver] epoch {ep+1}: aug (hflip={hflip}, vflip={vflip})",
-                      flush=True)
-            else:
-                noisy_ep = train_noisy
-                print(f"[solver] epoch {ep+1}: aug (identity)", flush=True)
-        else:
-            noisy_ep = train_noisy
-        perm = torch.randperm(noisy_ep.shape[0])
+        perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
-        for i in range(0, noisy_ep.shape[0], cfg["batch_size"]):
+        for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
-            batch = noisy_ep[idx].to(device)
+            batch = train_noisy[idx].to(device)
             if loss_name == "mse":
                 losses = pipe.training_step(batch)
             else:
@@ -423,7 +381,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             losses["loss"].backward()
             opt.step()
             running += float(losses["loss"].detach().cpu())
-        mean_loss = running / max(1, noisy_ep.shape[0])
+        mean_loss = running / max(1, train_noisy.shape[0])
         print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
               flush=True)
     train_time = time.time() - t0
