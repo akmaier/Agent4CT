@@ -39,6 +39,7 @@ from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose, split_projections
 from ddssl_ldct.training import DualDomainPipeline
+from ddssl_ldct.models import TrainableBilateralFilter2d
 from ddssl_ldct.metrics import psnr, ssim
 
 
@@ -61,14 +62,12 @@ CONFIG = {
     "val_n":         100,
 
     # Editable: training schedule.
-    "epochs":        8,          # iter-41: revert to iter-34 baseline (iter-39/40 confirmed >8 overfits)
+    "epochs":        8,          # iter-34 sweet spot; iter-39/40/41 LR schedule axis fully closed
     "batch_size":    1,
     "lr":            1e-4,
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
-    "lr_schedule":   "step7",    # iter-41: step-decay-at-epoch-7-only (lr cut to lr/3 for final epoch, per iter-34 advice)
-    "lr_step_factor": 0.3333,    # iter-41: factor to multiply LR by at the step (1e-4 -> 3.33e-5)
-    "lr_min":        1e-6,       # unused for step7 but preserved for future cosine retry
+    "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-2: 8 -> 6 to fit 5-min budget
@@ -79,6 +78,16 @@ CONFIG = {
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-14: EDSR-style learnable per-block residual scaling, init 0.1
+
+    # iter-42: trainable Wagner BF tails stacked on the image-denoiser output.
+    # Cross-port from main iter-63..67 (KEEP, +0.26..+0.04 per BF) and
+    # Agent A iter-29..44 (KEEP, +0.28..+0.17 per BF). BF stacking is the
+    # most reliable lift mechanism in the project. Single BF as starting test.
+    "res_n_bf":      1,           # iter-42: 0 -> 1 BF tail
+    "bf_kernel":     7,
+    "bf_sigma_x":    1.5,
+    "bf_sigma_y":    1.5,
+    "bf_sigma_r":    0.01,
 
 
     # Noise simulation — FIXED so headroom comparable across iter / runs.
@@ -197,6 +206,26 @@ class ResidualStack(nn.Module):
         return x - y if self.residual else y
 
 
+class ResidualStackPlusBFs(nn.Module):
+    """ResidualStack followed by N stacked TrainableBilateralFilter2d tails.
+    Cross-port from main/A NAFNet+BF recipe (+0.04..+0.28pp per BF, compounding)."""
+    def __init__(self, stack: nn.Module, n_bf: int, kernel: int,
+                 sigma_x: float, sigma_y: float, sigma_r: float):
+        super().__init__()
+        self.stack = stack
+        self.bfs = nn.ModuleList([
+            TrainableBilateralFilter2d(
+                kernel_size=kernel, sigma_x=sigma_x,
+                sigma_y=sigma_y, sigma_r=sigma_r)
+            for _ in range(n_bf)
+        ])
+    def forward(self, x):
+        h = self.stack(x)
+        for bf in self.bfs:
+            h = bf(h)
+        return h
+
+
 def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
     """Return (proj_denoiser, image_denoiser).
 
@@ -214,7 +243,18 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
             residual=cfg["residual"],
             res_scale=cfg.get("res_scale", None),
         )
-    return make(), make()
+    proj_dn = make()
+    img_dn = make()
+    n_bf = int(cfg.get("res_n_bf", 0))
+    if n_bf > 0:
+        img_dn = ResidualStackPlusBFs(
+            img_dn, n_bf=n_bf,
+            kernel=int(cfg.get("bf_kernel", 7)),
+            sigma_x=float(cfg.get("bf_sigma_x", 1.5)),
+            sigma_y=float(cfg.get("bf_sigma_y", 1.5)),
+            sigma_r=float(cfg.get("bf_sigma_r", 0.01)),
+        )
+    return proj_dn, img_dn
 
 
 # ----------------------------------------------------------------------- #
