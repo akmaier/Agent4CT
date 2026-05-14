@@ -121,7 +121,9 @@ CONFIG = {
     "proj_denoiser": "nafnet",         # NEW: also use NAFNet for proj domain
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
     "naf_blocks":    6,                # 6 NAF blocks at c=32, full res
-    "naf_expand":    3,                # iter-59: 2 -> 3 (wider hidden dim in NafBlock)
+    "naf_expand":    2,                # iter-59 timed out at expand=3
+    "bf_sigma_x":    2.0,              # iter-60: cross-port main iter-88 KEEP (looser BF spatial)
+    "bf_sigma_y":    2.0,
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-52: GELU -> ReLU (test gate reversion; no wall cost)
                                          #  (alpha overridden by 0.05 in iter-56 above)
@@ -526,6 +528,8 @@ def _build_one_denoiser(kind: str, c: int, cfg: dict,
             alpha_init=float(cfg.get("naf_alpha", 0.1)),
             residual=True,
             n_bf=n_bf_naf,
+            bf_sigma_x=float(cfg.get("bf_sigma_x", 1.5)),
+            bf_sigma_y=float(cfg.get("bf_sigma_y", 1.5)),
         )
     if kind == "iter_unet_bf":
         return IteratedUNetBF(
