@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T07:03:56Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 19,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-19 candidate A: Wagner BF interleaved INSIDE the K=2 unroll (unet -> BF -> unet -> BF, per-step BFs) instead of unet -> unet -> BF tail. Headroom 0.5748 vs iter-7 tail-BF 0.5745 (+0.03pp = within noise) and vs iter-18 cosine+SWA 0.5763 (-0.15pp). At 0.466M params and loss plateau 0.00038 by ep4 (matching iter-7), the architectural placement of edge-preserving smoothing inside vs after the iteration is a wash. The Sidky 2022 ItNet motif of regulariser inside every step does NOT translate to a gain at this 6-epoch / 400-phantom budget \u2014 the K=2 shared U-Net is already absorbing the iterative refinement role and the tail BF provides sufficient edge regularisation. Confirms my iter-18 verdict: cannot close the 1pp gap to spawn-B with iterated-denoiser tweaks alone.",
+  "val_score": 0.3023,
+  "headroom": 0.5748,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0019/comparison.png",
+  "advice_for_others": "BF placement inside vs outside the K-step iterated-denoiser loop is statistically indistinguishable at K=2 / converged-loss budget; the K-step recurrence already provides whatever iterative refinement the architecture is capable of, and adding a per-step BF adds zero new headroom (within 0.2pp noise).",
+  "commit": "ce77b48"
+}
