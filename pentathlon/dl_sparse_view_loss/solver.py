@@ -118,7 +118,12 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,
     "batch_size":    1,
-    "lr":            1e-4,
+    # iter-13: bump lr 1e-4 -> 2e-4. Iter-11 (SWA) and iter-12 (cosine
+    # decay) both showed the model is LR-LIMITED at 8 epochs - the loss
+    # is still actively decreasing in the final epoch. Doubling LR gives
+    # ~2x effective step-distance for the same wallclock; AdamW handles
+    # 2-3e-4 well in most vision tasks. Risk: oscillation / divergence.
+    "lr":            2e-4,
     "optimizer":     "adamw",   # adam | adamw
     "weight_decay":  1e-4,
 
@@ -157,14 +162,11 @@ CONFIG = {
     "swa":            False,
     "swa_start_epoch": 7,
 
-    # iter-12: cosine LR schedule from lr -> lr_min over all epochs.
-    # The natural complement to SWA: with cosine decay the final epoch
-    # barely moves weights, so we get the "flat optimum" of SWA for free
-    # without needing to average snapshots. Min LR = lr/100 (1e-6).
-    # Standard practice in vision (SGDR / Loshchilov 2017). One extra
-    # line in the optimizer setup.
-    "lr_schedule":     "cosine",   # "constant" (default) | "cosine"
-    "lr_min_ratio":    0.01,       # final LR = lr * lr_min_ratio = 1e-6
+    # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
+    # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
+    # epoch budget. Revert to constant LR.
+    "lr_schedule":     "constant", # "constant" (default) | "cosine"
+    "lr_min_ratio":    0.01,
 
 
     # Editable: model architecture.
