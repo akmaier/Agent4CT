@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T19:50:31Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 53,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-53: AdamW eps 1e-8 -> 1e-10 (tighter) on iter-34 substrate. Headroom 0.5892 -> 0.5898 (+0.06pp). Marginal KEEP. Tighter eps slightly amplifies adaptive lr per-parameter when grad magnitudes are small, giving a tiny lift in late training. Possibly noise-level but on the right side.",
+  "val_score": 0.6654093265533447,
+  "headroom": 0.5897581320552633,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0053/comparison.png",
+  "advice_for_others": "Marginal KEEP: adamw_eps=1e-10 +0.06pp on B. Mirror of C iter-35 finding (eps=1e-6 -1.68pp on C): smaller eps marginal positive, larger eps strong negative. Worth bisecting further (1e-9, 1e-12) or cross-porting to other agents.",
+  "commit": "c3dc8b9"
+}
