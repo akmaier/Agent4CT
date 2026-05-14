@@ -164,16 +164,13 @@ CONFIG = {
     "swa":            False,
     "swa_start_epoch": 7,
 
-    # iter-20: EMA (exponential moving average) of weights with decay
-    # 0.999. Maintained continuously throughout training (NOT just
-    # last-2 snapshots like iter-11 SWA), so it gives more weight to
-    # recent (well-trained) iterates. Standard in diffusion models,
-    # NAFNet, Restormer. With wd=1e-3 KEPT (iter-16) the loss landscape
-    # is flatter near optimum, so EMA averaging in that region is
-    # benign-to-helpful. Cross-agent: Agent A added EMA to NAFNet -
-    # data point on whether EMA transfers across architectures.
+    # iter-20 (DISCARD, hr=0.5373): EMA decay=0.999 -4.60pp. Decay too
+    # high for 3200-step training: shadow weighted toward early iterates.
+    # iter-21: EMA with decay=0.99 (effective lookback ~100 steps = the
+    # last ~0.25 epoch). Should give heavy weight to recent (best)
+    # iterates while still smoothing noise around the optimum.
     "ema":            True,
-    "ema_decay":      0.999,
+    "ema_decay":      0.99,
 
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
     # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
