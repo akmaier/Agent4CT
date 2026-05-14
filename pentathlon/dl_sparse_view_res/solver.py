@@ -61,7 +61,7 @@ CONFIG = {
     "val_n":         100,
 
     # Editable: training schedule.
-    "epochs":        8,
+    "epochs":        12,         # iter-39: 8 -> 12 to test undertraining hypothesis at wd-split substrate (loss drifted 0.00042->0.00037 at epoch 8, suggesting more headroom)
     "batch_size":    1,
     "lr":            1e-4,
     "optimizer":     "adamw",
