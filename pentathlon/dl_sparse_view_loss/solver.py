@@ -126,8 +126,13 @@ CONFIG = {
     "optimizer":     "adamw",   # adam | adamw
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
-    # Optimum bracketed at wd~1e-3. Revert.
+    # Optimum bracketed at wd~1e-3.
     "weight_decay":  1e-3,
+    # iter-22: gradient clipping max_norm=1.0. Different mechanism from
+    # wd. Caps per-step update magnitude; prevents rare large-gradient
+    # batches from kicking the model far from optimum. Cheap and
+    # orthogonal to wd. 0 = disabled.
+    "grad_clip":     1.0,
 
     # Editable: training loss. "mse" (default Wagner-style; pipeline.training_step),
     # "l1", "charbonnier" (smooth L1 with epsilon), or "huber".
@@ -164,12 +169,10 @@ CONFIG = {
     "swa":            False,
     "swa_start_epoch": 7,
 
-    # iter-20 (DISCARD, hr=0.5373): EMA decay=0.999 -4.60pp. Decay too
-    # high for 3200-step training: shadow weighted toward early iterates.
-    # iter-21: EMA with decay=0.99 (effective lookback ~100 steps = the
-    # last ~0.25 epoch). Should give heavy weight to recent (best)
-    # iterates while still smoothing noise around the optimum.
-    "ema":            True,
+    # iter-20/21 (DISCARD): EMA at both decay=0.999 and 0.99 hurts.
+    # Combined with iter-11/12: ALL weight-smoothing interventions fail
+    # on this baseline. Last iterate is the optimum here.
+    "ema":            False,
     "ema_decay":      0.99,
 
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
@@ -504,6 +507,9 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                 losses = _custom_training_step(pipe, batch, loss_fn)
             opt.zero_grad(set_to_none=True)
             losses["loss"].backward()
+            if cfg.get("grad_clip", 0) > 0:
+                torch.nn.utils.clip_grad_norm_(pipe.parameters(),
+                                               max_norm=float(cfg["grad_clip"]))
             opt.step()
             if use_ema:
                 # EMA update: shadow = decay*shadow + (1-decay)*current
