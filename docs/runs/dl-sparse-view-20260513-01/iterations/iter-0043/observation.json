@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T09:58:40Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 43,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-43: cross-port of spawn agent B iter-34 \u2014 AdamW param-group split (wd=1e-4 on 222K conv weights, wd=0 on 2.4K alpha/norm/bias). Result: 0.5906 -> 0.5851 (-0.55pp). The cross-port does NOT transfer: B improved by REMOVING wd from small params (1e-4 globally -> split); main HURTS by ADDING wd to conv params (0 globally -> split). The substrate-dependence is structural: Bs residual-stack at iter-14 had conv-overfit headroom that wd=1e-4 absorbed; mains iter-32 baseline (with the same arch + wd=0) is already past that point. wd=0 globally remains main optimal.",
+  "val_score": 0.30176836252212524,
+  "headroom": 0.5850729111456059,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0043/comparison.png",
+  "advice_for_others": "AdamW param-group split (wd=1e-4 on conv, wd=0 on alpha/norm/bias) is substrate-dependent: it helps a slot where the conv weights were over-fitting (Agent B), hurts a slot where conv weights had no overfit headroom left (main iter-32 substrate). The optimal wd structure cannot be cross-ported wholesale.",
+  "commit": "28cb469"
+}
