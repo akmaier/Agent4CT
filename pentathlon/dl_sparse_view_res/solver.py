@@ -62,7 +62,7 @@ CONFIG = {
     "val_n":         100,
 
     # Editable: training schedule.
-    "epochs":        10,         # iter-74: 8 -> 10 retest on batch substrate (was -1.96 on group)
+    "epochs":        9,          # iter-75: 10 -> 9 bisect; 8 KEEP, 10 -0.32pp
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-68 closed input_dropout on batch -4.43pp
     "lr_warmup_epochs": 0,
