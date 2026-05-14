@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T06:52:51Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 18,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-18 Cosine LR (1e-4 -> 1e-5 over 6 epochs) + SWA + MSE on iter-7 K=2 U-Net + BF. Headroom 0.5763 vs iter-16 (SWA + constant LR) 0.5762 (+0.01pp) and vs iter-7 0.5745 (+0.18pp). Cosine LR adds nothing measurable at this budget: the loss has plateaued by epoch 3 (loss=0.00038 stable through ep4-5 even with lr decay), so smaller late-training updates don\\\\t escape the plateau \u2014 they just stick. Both gains (SWA + cosine) overlap, not stack. Conclude: with 6-epoch budget on this architecture, the model is *converged*, and post-hoc tweaks (averaging, schedule) sit within ~0.2pp noise.",
+  "val_score": 0.3014,
+  "headroom": 0.5763,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0018/comparison.png",
+  "advice_for_others": "On already-converged training (loss plateau reached by epoch ~3), cosine LR decay provides no measurable lift because there is no over-step to dampen \u2014 the gradient has vanished. Schedule helps only when the model is still moving.",
+  "commit": "da63315"
+}
