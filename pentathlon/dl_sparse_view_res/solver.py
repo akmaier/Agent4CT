@@ -76,14 +76,6 @@ CONFIG = {
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-14: EDSR-style learnable per-block residual scaling, init 0.1
-    # iter-31: alpha-shape mode. "scalar" = iter-14 baseline (one alpha per
-    # block, 12 scalars total across 2 nets x 6 blocks). "channel" = a
-    # length-c learnable vector per block, broadcast over spatial dims so
-    # each feature channel gets its own residual gate. Same init value 0.1
-    # across all entries. Tests channel-wise modulation as a richer variant
-    # of the EDSR scaling mechanism. Param cost: 12 -> 2*6*32 = 384 (still
-    # negligible vs the 224k conv weights).
-    "res_scale_mode": "channel",  # iter-31: scalar -> channel (per-channel alpha)
 
 
     # Noise simulation — FIXED so headroom comparable across iter / runs.
@@ -134,17 +126,10 @@ class ResBlock(nn.Module):
     Combined with the zero-init tail conv this gives a very gentle info
     path early in training — the network must actively learn to use the
     residual blocks rather than rely on them by default.
-
-    iter-31: optional per-channel alpha (`scale_mode="channel"`). Replaces
-    the scalar alpha with a length-c learnable vector, broadcast over
-    spatial dims so each feature channel has its own residual gate. Same
-    0.1 init across all entries. Param cost negligible (384 scalars total
-    across 2 nets x 6 blocks x 32 channels).
     """
     def __init__(self, c: int, kernel: int = 3, norm: str = "group",
                  act: str = "relu", dropout: float = 0.0,
-                 res_scale: float | None = None,
-                 scale_mode: str = "scalar"):
+                 res_scale: float | None = None):
         super().__init__()
         pad = kernel // 2
         self.conv1 = nn.Conv2d(c, c, kernel, padding=pad)
@@ -155,11 +140,6 @@ class ResBlock(nn.Module):
         self.n2 = _make_norm(norm, c)
         if res_scale is None:
             self.alpha = None
-        elif scale_mode == "channel":
-            # per-channel alpha, shape (1, c, 1, 1) for broadcasting over
-            # (B, C, H, W) feature maps. Init all entries to res_scale.
-            self.alpha = nn.Parameter(torch.full((1, c, 1, 1),
-                                                 float(res_scale)))
         else:
             self.alpha = nn.Parameter(torch.tensor(float(res_scale)))
 
@@ -191,8 +171,7 @@ class ResidualStack(nn.Module):
     def __init__(self, n_blocks: int = 8, c: int = 48,
                  kernel: int = 3, norm: str = "group", act: str = "relu",
                  dropout: float = 0.0, residual: bool = True,
-                 res_scale: float | None = None,
-                 scale_mode: str = "scalar"):
+                 res_scale: float | None = None):
         super().__init__()
         self.residual = residual
         pad = kernel // 2
@@ -200,7 +179,7 @@ class ResidualStack(nn.Module):
         self.head_act = _make_act(act)
         self.blocks = nn.Sequential(*[
             ResBlock(c, kernel=kernel, norm=norm, act=act, dropout=dropout,
-                     res_scale=res_scale, scale_mode=scale_mode)
+                     res_scale=res_scale)
             for _ in range(n_blocks)
         ])
         self.tail = nn.Conv2d(c, 1, kernel, padding=pad)
@@ -231,7 +210,6 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
             dropout=cfg["res_dropout"],
             residual=cfg["residual"],
             res_scale=cfg.get("res_scale", None),
-            scale_mode=cfg.get("res_scale_mode", "scalar"),
         )
     return make(), make()
 
