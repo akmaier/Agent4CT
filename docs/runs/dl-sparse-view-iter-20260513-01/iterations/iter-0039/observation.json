@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T09:59:47Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 39,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Widened c 32 -> 40 on iter-38 GELU substrate. Timed out at 8:13 (over 8min budget). Params ~0.094M (+57% vs c=32).",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.094,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0039/comparison.png",
+  "advice_for_others": "c=40 with 6 blocks + 3 BF tails + GELU exceeds 8min wall budget. To widen channels, must drop blocks (6 -> 4) or BFs (3 -> 2) to fit. Width-depth-BF tradeoff is locked at current values.",
+  "commit": "83d8949"
+}
