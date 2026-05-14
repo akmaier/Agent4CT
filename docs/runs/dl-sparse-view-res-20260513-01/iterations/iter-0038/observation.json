@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:22:50Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 38,
+  "challenge": "dl_sparse_view",
+  "change_class": "arch",
+  "rationale": "iter-38 RRDB-style: group 6 ResBlocks into 3 pairs of 2, add learnable per-pair gamma scalar (init 0.1) so out=x+gamma*pair(x); inner per-block alpha preserved. Hierarchical residual: alpha (block) + gamma (pair). gamma in no-wd group. 0.225M params (same as iter-34).",
+  "val_score": 0.6597,
+  "headroom": 0.5763,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0038/comparison.png",
+  "advice_for_others": "DISCARD: hr=0.5763 vs iter-34=0.5892 (-1.29pp). Diagnosis: training plateaus much earlier than iter-34 (loss flat 0.00039 from epoch 3 onward; iter-34 drifted 0.00042->0.00037 over 8 epochs). The outer gamma=0.1 gating compounds with inner alpha=0.1, leaving effective signal ~0.01x at init \u2014 gradients to inner pairs too small to escape the plateau. The substrate cannot bear additional gating; iter-34 already at a fragile basin. Next: try iter-39 (epochs 8->12 at wd-split) to test the undertraining hypothesis directly on iter-34 substrate. If iter-39 discards, consider iter-40 (CBAM) or iter-41 (NAFNet+SWA pivot).",
+  "commit": "2258ffc"
+}
