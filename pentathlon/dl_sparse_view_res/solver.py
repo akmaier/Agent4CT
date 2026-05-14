@@ -63,7 +63,7 @@ CONFIG = {
 
     # Editable: training schedule.
     "epochs":        8,          # iter-34 sweet spot; iter-39/40/41 LR schedule axis fully closed
-    "batch_size":    1,
+    "batch_size":    2,          # iter-47: 1 -> 2 (more stable gradient on Q8000 48GB; parallel to C iter-31)
     "lr":            1e-4,
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
@@ -79,8 +79,7 @@ CONFIG = {
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-14 KEEP
     "swa_last_n":    0,           # iter-45 SWA -1.92pp; weight-smoothing axes closed on resnet substrate
-    # iter-46: AdamW beta2 0.999 -> 0.99 (faster forget of past grad stats; fresh axis)
-    "adamw_beta2":   0.99,
+    "adamw_beta2":   0.999,      # iter-46 closed beta2=0.99 axis (-1.28pp)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
