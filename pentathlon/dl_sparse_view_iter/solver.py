@@ -101,7 +101,7 @@ CONFIG = {
     # ResStack ballpark (full-resolution conv but no down/up).
     "epochs":        6,
     "batch_size":    1,
-    "lr":            1e-4,
+    "lr":            8e-5,             # iter-55: 1e-4 -> 8e-5 (cross-port main iter-79 / C iter-40 KEEP)
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
 
@@ -146,7 +146,7 @@ CONFIG = {
     #   for higher emphasis on later epochs.
     # If discard: last-5 is the sweet spot, move to architecture knobs
     #   (c=40, SimpleGate).
-    "ema_start_ep":  1,                # iter-54: 0 -> 1 (skip first 1 epoch; cross-port main iter-71)
+    "ema_start_ep":  0,                # iter-54 closed start_ep=1 at -0.16pp; revert
     "ema_every":     1,
     # BF saturation curve on NAFNet substrate (each BF = 3 params, 1 unfold):
     #   n_bf=0 (iter-27, SWA-only):     hr=0.5777
