@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T06:53:40Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 4,
+  "challenge": "dl_sparse_view",
+  "change_class": "loss",
+  "rationale": "Huber loss with delta=1e-3 on residual-stack baseline. Hypothesis: most pixel errors stay in quadratic regime (preserving RMSE) and only outliers get L1.",
+  "val_score": 0.311,
+  "headroom": 0.565,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0004/comparison.png",
+  "advice_for_others": "Huber delta=1e-3 underperforms MSE on this denoising task (headroom 0.5650 vs MSE 0.5831). Like Charbonnier 1e-3 (iter-3 = 0.5606), the smooth-L1 family hurts pixel-RMSE; quadratic regime is too narrow at this scale.",
+  "commit": "14448de"
+}
