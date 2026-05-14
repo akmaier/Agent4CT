@@ -118,12 +118,9 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,
     "batch_size":    1,
-    # iter-13: bump lr 1e-4 -> 2e-4. Iter-11 (SWA) and iter-12 (cosine
-    # decay) both showed the model is LR-LIMITED at 8 epochs - the loss
-    # is still actively decreasing in the final epoch. Doubling LR gives
-    # ~2x effective step-distance for the same wallclock; AdamW handles
-    # 2-3e-4 well in most vision tasks. Risk: oscillation / divergence.
-    "lr":            2e-4,
+    # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
+    # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
+    "lr":            1e-4,
     "optimizer":     "adamw",   # adam | adamw
     "weight_decay":  1e-4,
 
@@ -181,7 +178,12 @@ CONFIG = {
     "res_blocks":    6,
     "res_channels":  32,
     "res_norm":      "group",   # group | batch | none
-    "res_act":       "relu",    # relu | gelu | swish
+    # iter-14: ReLU -> GELU. ReLU loses signal below 0 (hard 0 gradient
+    # at negative pre-activations, dead neurons in early training).
+    # GELU is smooth + nonzero gradient everywhere, used in NAFNet,
+    # Restormer, and the recent CT denoising SOTA. ~0 extra compute,
+    # identical param count, often +0.1-0.3pp on dense regression tasks.
+    "res_act":       "gelu",    # relu | gelu | swish
     "res_kernel":    3,
     "res_dropout":   0.0,
     "res_residual":  True,      # global residual head (predicts noise)
