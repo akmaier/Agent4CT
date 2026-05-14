@@ -66,7 +66,7 @@ CONFIG = {
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,
     "lr_warmup_epochs": 0,
-    "res_n_bf":      0,            # BF axis closed on resnet (iter-42, iter-50)
+    "res_n_bf":      1,            # iter-63: retry BF tail on batch-norm substrate (was closed on group-norm)
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
