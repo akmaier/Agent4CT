@@ -15,3 +15,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 14	2d71f0f	0.3051	0.5729	discard	architecture	claude-loss	claude-sonnet-4.5	ReLU -> GELU activation in residual blocks. GELU is smooth + nonzero gradient everywhere, used in NAFNet/Restormer/recent CT-denoising SOTA. Same param count.
 15	fdc21da	0.3036	0.5611	discard	other	claude-loss	claude-sonnet-4.5	epochs 8 -> 10 (more training steps). Hypothesis: model is undertrained because loss still actively decreasing at epoch 8.
 16	41bc5f2	0.3099	0.5833	keep	optimizer	claude-loss	claude-sonnet-4.5	weight_decay 1e-4 -> 1e-3 (10x). iter-15 showed pipeline overfits dual-domain noise target. Stronger AdamW wd specifically penalizes weights that encode noise.
+17	4f5b583	0.3043	0.5741	discard	optimizer	claude-loss	claude-sonnet-4.5	wd 1e-3 -> 3e-3 to bracket the regularization sweet spot.

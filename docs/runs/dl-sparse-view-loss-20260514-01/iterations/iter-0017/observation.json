@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T09:19:12Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 17,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "wd 1e-3 -> 3e-3 to bracket the regularization sweet spot.",
+  "val_score": 0.3043,
+  "headroom": 0.5741,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0017/comparison.png",
+  "advice_for_others": "DISCARD: hr=0.5741 vs iter-16 best 0.5833 (-0.92pp). wd=3e-3 is too aggressive - over-regularizes, weights stay too small to fit the dual-domain target. The optimum is at wd~1e-3 (10x original). Revert to wd=1e-3. Lesson: log10 spacing for wd search caught the optimum in one step.",
+  "commit": "4f5b583"
+}
