@@ -77,7 +77,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
-    "lr":            6e-5,    # iter-80: 8e-5 -> 6e-5 (continue down; iter-79 +0.04pp at 8e-5)
+    "lr":            9e-5,    # iter-81: 6e-5 -> 9e-5 (probe upper of bisection; iter-79 KEEP at 8e-5)
     "optimizer":     "adam",    # iter-77 KEEP +0.01pp marginal
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
