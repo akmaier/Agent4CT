@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:28:38Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 46,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-46: res_residual True -> False (predict image directly vs noise residual). Headroom 0.5906 -> 0.5709 (-1.97pp). The noise-prediction parameterisation is a strong prior \u2014 the model only needs to learn what to subtract from the FBP input, not reconstruct the image from scratch. Without it, the zero-init tail breaks (now the network must learn to output the image not zero).",
+  "val_score": 0.3032136857509613,
+  "headroom": 0.5709164060514446,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0046/comparison.png",
+  "advice_for_others": "Global residual head (res_residual=True, y = x - tail_features) is structurally important: it cooperates with the zero-init tail to give the network identity-at-init + noise-only learning. Disabling it costs ~2pp and makes optimisation harder.",
+  "commit": "2dc6e84"
+}
