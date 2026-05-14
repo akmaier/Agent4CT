@@ -64,14 +64,14 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-34 sweet spot; iter-39/40/41 LR schedule axis fully closed
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.0,
+    "input_dropout": 0.05,       # iter-68: retest input_dropout on batch substrate (was -0.75 on group)
     "lr_warmup_epochs": 0,
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1.2e-4,     # iter-67: retest on batch substrate (was -0.73 on group)
+    "lr":            1e-4,       # iter-67 closed 1.2e-4 on batch -0.16pp
     "adamw_eps":     1e-10,      # iter-53 KEEP (iter-55/56 both DISCARD around it; basin shallow)
     "optimizer":     "adamw",   # iter-54 closed adam at -1.01pp; AdamW + wd_split is right for this slug
     "weight_decay":  1e-4,       # iter-66 closed wd=5e-5 -0.07pp on batch substrate
