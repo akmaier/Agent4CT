@@ -216,9 +216,12 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    # iter-27: EDSR per-block residual scaling (Agent B iter-14 KEEP +0.22pp on res slug).
-    # Cross-port: same architecture family (residual stack), known cross-port lift.
-    "res_scale_init": 0.1,        # iter-27: 0 -> 0.1 learnable per-block alpha (init small for slow growth)
+    # iter-27 (DISCARD, -0.23pp): EDSR per-block alpha=0.1 alone fails on
+    # this slug's wd=1e-3 substrate (alpha decayed to ~0 by wd).
+    # iter-28: same alpha=0.1 + wd_split (alpha excluded from wd) to rescue
+    # the per-block scaling. Cross-port from Agent B iter-34 KEEP wd_split.
+    "res_scale_init": 0.1,
+    "wd_split":      True,        # iter-28: exclude alpha/norm/bias from wd; conv weights still get wd=1e-3
 
     # Noise simulation — kept fixed so headroom is comparable across iter.
     # iter-24 (DISCARD, hr=0.5650): noise jitter [3e4, 8e4] -1.83pp.
@@ -436,10 +439,34 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
     return phantoms, clean, noisy
 
 
-def make_optimizer(params, cfg):
+def make_optimizer(pipe_or_params, cfg):
+    """Build optimizer. If wd_split=True (iter-28 cross-port from Agent B
+    iter-34 KEEP +0.22pp): split into two param groups, conv weights get wd,
+    alpha/norm/bias get wd=0 (BERT/ConvNeXt style; rescues per-block alpha
+    from wd-induced collapse in high-wd regimes)."""
     if cfg["optimizer"] == "adam":
+        params = list(pipe_or_params.parameters()) if hasattr(pipe_or_params, "parameters") else list(pipe_or_params)
         return torch.optim.Adam(params, lr=cfg["lr"])
-    return torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=cfg["weight_decay"])
+    wd = float(cfg["weight_decay"])
+    if not cfg.get("wd_split", False):
+        params = list(pipe_or_params.parameters()) if hasattr(pipe_or_params, "parameters") else list(pipe_or_params)
+        return torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=wd)
+    pipe = pipe_or_params
+    decay, no_decay = [], []
+    for n, p in pipe.named_parameters():
+        if not p.requires_grad:
+            continue
+        if (n.endswith(".alpha")
+                or n.endswith(".bias")
+                or "n1." in n or "n2." in n
+                or ".weight" in n and p.dim() == 1):  # 1-D norm scales
+            no_decay.append(p)
+        else:
+            decay.append(p)
+    return torch.optim.AdamW(
+        [{"params": decay, "weight_decay": wd},
+         {"params": no_decay, "weight_decay": 0.0}],
+        lr=cfg["lr"])
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
@@ -473,7 +500,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
 
     # Manual training loop (the upstream `train` helper hard-codes Adam;
     # we use our chosen optimiser instead).
-    opt = make_optimizer(pipe.parameters(), cfg)
+    opt = make_optimizer(pipe, cfg)
     # Optional cosine LR schedule (iter-12): step once per epoch from
     # lr -> lr * lr_min_ratio with a half-cosine curve. Standard SGDR /
     # cosine annealing (Loshchilov 2017). The natural complement to SWA
