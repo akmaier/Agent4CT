@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T16:19:25Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 59,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-59: same NAFNet+3BF+SWA recipe as iter-58 but wd=0 -> wd=1e-4 (matching Agent A iter-38 substrate exactly). Headroom 0.5906 -> 0.5821 (-0.85pp). DIDNT reproduce Agent A 0.5988 \u2014 within FP noise of iter-58 (0.5824 at wd=0). Cross-slug investigation reveals my SWA is PER-EPOCH (6 snapshots) but Agent As is PER-STEP (~2400 samples) \u2014 much more averaging, different effect. Implementation gap accounts for the ~1.6pp cross-slug discrepancy.",
+  "val_score": 0.2715485095977783,
+  "headroom": 0.5820773287463926,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.059991,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0059/comparison.png",
+  "advice_for_others": "When porting SWA across solvers, the averaging GRANULARITY matters: per-step (Agent A vectorised torch._foreach_*) gives ~400\u00d7 more samples per epoch than per-epoch snapshots. They are NOT equivalent for fast-converging mechanisms like BF sigmas.",
+  "commit": "297ed86"
+}
