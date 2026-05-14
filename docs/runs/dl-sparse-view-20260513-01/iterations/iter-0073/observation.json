@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T19:15:38Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 73,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-73: swa_last_n 4 -> 5 on iter-71 substrate. Headroom 0.6052 -> 0.6051 (-0.01pp). Essentially flat. Bisection: 3=-0.17pp / 4=KEEP +0.08pp / 5=-0.01pp / 6=baseline. Window=4 is the firm optimum, 5 is near-tie. The 4-window covers the last 4 of 6 epochs (~67% of training), which appears to be the sweet spot for late-iterate quality vs sample count.",
+  "val_score": 0.2589147090911865,
+  "headroom": 0.6050665672440867,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.060006,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0073/comparison.png",
+  "advice_for_others": "swa_last_n=4 confirmed optimal (4 KEEP, 3 DISCARD -0.17pp, 5 near-flat -0.01pp, 6 baseline). Closes SWA window axis. Next axes: bf_kernel sweep, naf_gate variants, Lookahead optimizer port.",
+  "commit": "c2d4b4e"
+}
