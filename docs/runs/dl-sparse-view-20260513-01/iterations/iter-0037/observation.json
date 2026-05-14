@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:48:43Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 37,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-37: ReLU -> GELU on iter-32 baseline. Headroom 0.5906 -> 0.5584 (-3.22pp). GELU smooth tail interacts badly with the alpha-scaling residual path; ReLU hard-zero kept features sparse, which composed well with the learnable alpha. Activation choice matters substantially here. Discard, revert.",
+  "val_score": 0.2921346127986908,
+  "headroom": 0.5583988362085865,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0037/comparison.png",
+  "advice_for_others": "For alpha-scaling residual stacks, ReLU is meaningfully better than GELU (-3.2pp at this scale). Sparse activations compose with learnable residual scaling; smooth activations dilute the gating effect. Disagrees with Agent A NAFNet finding (ReLU/Swish near-tied) \u2014 substrate matters.",
+  "commit": "5bf3569"
+}
