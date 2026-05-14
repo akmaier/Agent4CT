@@ -97,7 +97,7 @@ CONFIG = {
     # onto main's wd=0 substrate. "nafnet" routes via build_denoisers.
     "img_denoiser":  "nafnet",
     "naf_blocks":    6,
-    "naf_alpha_init": 0.1,
+    "naf_alpha_init": 0.05,   # iter-69: 0.1 -> 0.05 (slower per-block residual growth; revert n_bf 9 -> 8 timed out)
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",
     # iter-57: stack 3 trainable Wagner BF tails on the image NAFNet
@@ -107,7 +107,7 @@ CONFIG = {
     # iter-63: 3 -> 4 BF tails. Agent A had +0.28/+0.63/+0.31pp from
     # 1/2/3 BFs (compounding) and timed out testing iter-33 bf_kernel=9.
     # Push naf_n_bf to 4 (smaller compute cost than wider kernel).
-    "naf_n_bf":      9,    # iter-68: 8 -> 9 BFs (final long-tail attempt; iter-67 train 9:06 leaves ~54s; +1 BF ~27s)
+    "naf_n_bf":      8,    # iter-67 KEEP (iter-68 9 BFs timed out — BF saturation at 8)
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
