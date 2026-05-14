@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T20:38:19Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 42,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-42: lr 8e-5 -> 9e-5 on Adam substrate iter-40 KEEP. Headroom 0.5860 -> 0.5832 (-0.28pp). DISCARD. Narrow basin at 8e-5 with asymmetric drop-off.",
+  "val_score": 0.3081889748573303,
+  "headroom": 0.5832257328842299,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0042/comparison.png",
+  "advice_for_others": "DISCARD: lr=9e-5 -0.28pp. Adam lr basin tight at 8e-5: 6e-5/-2.27pp, 8e-5=KEEP, 9e-5/-0.28pp. Closes lr axis on Adam substrate.",
+  "commit": "81c6bc9"
+}
