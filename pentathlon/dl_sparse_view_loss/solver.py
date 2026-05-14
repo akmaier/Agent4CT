@@ -149,16 +149,22 @@ CONFIG = {
     "aug_mixup_alpha": 0.4,
     "aug_mixup_seed":  5678,
 
-    # iter-11: Stochastic Weight Averaging (SWA) over the last 2 epochs.
-    # After all augmentation strategies failed/neutral, pivot to OPTIMIZER
-    # land. SWA averages the model weights along a flat region of the
-    # loss landscape (Izmailov+ 2018) - reliably gives a small boost
-    # without extra training compute. Take snapshot at end of epoch 7
-    # and again at end of epoch 8; final model = mean. Costs ~0 compute,
-    # one extra forward pass for BN-stat refresh (we have GroupNorm, so
-    # no refresh needed — even simpler).
-    "swa":            True,
-    "swa_start_epoch": 7,    # 1-indexed; with 8 epochs total → snapshots at end of 7 and 8
+    # iter-11 (DISCARD, hr=0.5741): SWA over last 2 epochs hurt RMSE
+    # (-0.66pp) because the model is still rapidly improving at end-of-
+    # training with constant LR; averaging with a less-trained snapshot
+    # regresses pixel accuracy. SSIM rose but RMSE dropped → SWA needs
+    # LR decay to work here.
+    "swa":            False,
+    "swa_start_epoch": 7,
+
+    # iter-12: cosine LR schedule from lr -> lr_min over all epochs.
+    # The natural complement to SWA: with cosine decay the final epoch
+    # barely moves weights, so we get the "flat optimum" of SWA for free
+    # without needing to average snapshots. Min LR = lr/100 (1e-6).
+    # Standard practice in vision (SGDR / Loshchilov 2017). One extra
+    # line in the optimizer setup.
+    "lr_schedule":     "cosine",   # "constant" (default) | "cosine"
+    "lr_min_ratio":    0.01,       # final LR = lr * lr_min_ratio = 1e-6
 
 
     # Editable: model architecture.
@@ -389,6 +395,20 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # Manual training loop (the upstream `train` helper hard-codes Adam;
     # we use our chosen optimiser instead).
     opt = make_optimizer(pipe.parameters(), cfg)
+    # Optional cosine LR schedule (iter-12): step once per epoch from
+    # lr -> lr * lr_min_ratio with a half-cosine curve. Standard SGDR /
+    # cosine annealing (Loshchilov 2017). The natural complement to SWA
+    # (iter-11): with cosine decay the final epochs barely move weights,
+    # giving the same "flat optimum" effect for free.
+    lr_schedule = cfg.get("lr_schedule", "constant")
+    if lr_schedule == "cosine":
+        eta_min = cfg["lr"] * float(cfg.get("lr_min_ratio", 0.01))
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            opt, T_max=cfg["epochs"], eta_min=eta_min)
+        print(f"[solver] LR cosine: {cfg['lr']:.2e} -> {eta_min:.2e} over {cfg['epochs']} epochs",
+              flush=True)
+    else:
+        scheduler = None
     loss_name = cfg.get("train_loss", "mse")
     loss_fn = _loss_fn(loss_name, cfg)
     # iter-10 (dl-sparse-view-loss): MIXUP augmentation. Per-batch,
@@ -462,12 +482,15 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             opt.step()
             running += float(losses["loss"].detach().cpu())
         mean_loss = running / max(1, train_noisy.shape[0])
+        cur_lr = opt.param_groups[0]["lr"]
         if aug_mixup:
             print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}"
-                  f"  mixup: mix={n_mix} idn={n_idn}", flush=True)
+                  f"  lr={cur_lr:.2e}  mixup: mix={n_mix} idn={n_idn}", flush=True)
         else:
-            print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
-                  flush=True)
+            print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}"
+                  f"  lr={cur_lr:.2e}", flush=True)
+        if scheduler is not None:
+            scheduler.step()
         # SWA: snapshot at end of each epoch in [swa_start, last_epoch]
         if use_swa and (ep + 1) >= swa_start:
             cur = {k: v.detach().clone() for k, v in pipe.state_dict().items()}
