@@ -58,7 +58,7 @@ CONFIG = {
     "sdd":           1085.6,
 
     # Training subset for the 5-minute iteration budget.
-    "train_n":       500,         # iter-71: 350 -> 500 (try more data; was -1.18 at 600 on group)
+    "train_n":       400,         # iter-71 closed 500 at -0.59pp; data axis fully bisected
     "val_n":         100,
 
     # Editable: training schedule.
@@ -82,7 +82,7 @@ CONFIG = {
     "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
     "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
-    "res_act":       "relu",     # "relu" | "gelu" | "swish"
+    "res_act":       "gelu",     # iter-72: relu -> gelu retest on batch substrate (was -1.0pp on group)
     "res_kernel":    3,
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
