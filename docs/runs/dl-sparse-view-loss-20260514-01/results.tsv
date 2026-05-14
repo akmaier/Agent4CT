@@ -17,3 +17,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 16	41bc5f2	0.3099	0.5833	keep	optimizer	claude-loss	claude-sonnet-4.5	weight_decay 1e-4 -> 1e-3 (10x). iter-15 showed pipeline overfits dual-domain noise target. Stronger AdamW wd specifically penalizes weights that encode noise.
 17	4f5b583	0.3043	0.5741	discard	optimizer	claude-loss	claude-sonnet-4.5	wd 1e-3 -> 3e-3 to bracket the regularization sweet spot.
 18	1ef47af	0.2694	0.5707	discard	architecture	claude-loss	claude-sonnet-4.5	Add light dropout=0.05 to residual blocks on top of wd=1e-3. Stack two regularization mechanisms.
+19	f4789a8	0.3064	0.5707	discard	architecture	claude-loss	claude-sonnet-4.5	Widen channels 32 -> 48 (~2.25x params, 0.225M -> 0.503M) on top of iter-16 wd=1e-3 KEEP.
