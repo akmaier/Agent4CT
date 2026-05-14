@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T00:16:36Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 11,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-11 train K=1 / inference K=2 on 6-block c=32 resnet. Hypothesis: cheap test-time iteration of a well-trained denoiser. Reality: val 0.2990 / headroom 0.527 \u2014 catastrophic vs main iter-25 K=1 (0.5807). The residual stack predicts noise; iterating it without joint training keeps subtracting residual on the (now nearly clean) image, oversmoothing and creating systematic bias. Inference-time K does NOT generalise without train-time exposure. Single-pass is the right operating point for residual-predicting denoisers.",
+  "val_score": 0.2989,
+  "headroom": 0.527,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0011/comparison.png",
+  "advice_for_others": "Train-time and inference-time K must match for residual-predicting denoisers; cheap test-time iteration of a K=1-trained noise-predictor degrades the output by ~5pp because the model has no fixed point at clean image.",
+  "commit": "2813b07"
+}
