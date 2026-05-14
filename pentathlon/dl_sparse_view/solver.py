@@ -77,7 +77,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
-    "lr":            9e-5,    # iter-81: 6e-5 -> 9e-5 (probe upper of bisection; iter-79 KEEP at 8e-5)
+    "lr":            8e-5,    # iter-79 KEEP (iter-81 9e-5 near-flat -0.01pp)
     "optimizer":     "adam",    # iter-77 KEEP +0.01pp marginal
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
@@ -99,7 +99,7 @@ CONFIG = {
     "naf_blocks":    6,   # iter-67 KEEP (iter-70 7-blocks timed out)
     "naf_alpha_init": 0.1,    # iter-78 closed 0.15 at -0.14pp
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
-    "naf_gate": "gelu",
+    "naf_gate": "relu",   # iter-82: gelu -> relu (cross-port from A iter-53 +0.03pp KEEP)
     # iter-57: stack 3 trainable Wagner BF tails on the image NAFNet
     # output. Agent A iter-29/31/38 confirmed +0.28/+0.63/+0.31pp from
     # 1/2/3 BFs (on their wd=1e-4 substrate). Tests if the BF-stacking
