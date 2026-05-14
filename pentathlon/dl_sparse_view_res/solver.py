@@ -77,7 +77,7 @@ CONFIG = {
     "res_kernel":    3,
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
-    "res_scale":     0.05,       # iter-43: 0.1 -> 0.05 (slow growth, finer per-block control)
+    "res_scale":     0.2,        # iter-44: 0.1 -> 0.2 (other side of 0.1 sweet spot; iter-43 0.05 -3.09pp closed lower bound)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
