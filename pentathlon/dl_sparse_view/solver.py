@@ -111,7 +111,9 @@ CONFIG = {
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
-    "swa_last_n":    5,   # iter-73: 4 -> 5 (other side of 4-window; iter-72 closed narrower at -0.17pp)
+    "swa_last_n":    4,   # iter-71 KEEP (iter-72 narrower DISCARD, iter-73 wider near-flat)
+    "bf_kernel":     5,   # iter-74: 7 -> 5 (smaller BF spatial extent; saves ~10% wall)
+    "bf_sigma_r":    0.01,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,
@@ -344,6 +346,8 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
                 alpha_init=cfg.get("naf_alpha_init", 0.1),
                 residual=cfg["res_residual"],
                 n_bf=cfg.get("naf_n_bf", 0) if with_bf else 0,
+                bf_kernel=cfg.get("bf_kernel", 7),
+                bf_sigma_r=cfg.get("bf_sigma_r", 0.01),
                 gate=cfg.get("naf_gate", "gelu"),
             )
         # BF tail on image domain only (Agent B iter-17 finding: sino
