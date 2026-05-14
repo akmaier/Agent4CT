@@ -125,7 +125,8 @@ CONFIG = {
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            1e-4,       # iter-34 closed 5e-5 at -0.96pp; LR axis fully bisected
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
-    "optimizer":     "adam",    # iter-36: adamw -> adam (no wd; tests if L2-via-grad vs decoupled-wd matters)
+    "optimizer":     "adam",    # iter-36 KEEP +0.09pp (Adam beats AdamW marginally)
+    "adam_wd":       1e-4,      # iter-37: 0 -> 1e-4 (small L2-via-grad on Adam)
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
     # iter-23 (DISCARD, hr=0.5589): wd=2e-3 also too aggressive (-2.44pp).
@@ -458,7 +459,8 @@ def make_optimizer(pipe_or_params, cfg):
     eps = float(cfg.get("adamw_eps", 1e-8))
     if cfg["optimizer"] == "adam":
         params = list(pipe_or_params.parameters()) if hasattr(pipe_or_params, "parameters") else list(pipe_or_params)
-        return torch.optim.Adam(params, lr=cfg["lr"], betas=betas, eps=eps)
+        return torch.optim.Adam(params, lr=cfg["lr"], betas=betas, eps=eps,
+                                weight_decay=cfg.get("adam_wd", 0.0))
     wd = float(cfg["weight_decay"])
     if not cfg.get("wd_split", False):
         params = list(pipe_or_params.parameters()) if hasattr(pipe_or_params, "parameters") else list(pipe_or_params)
