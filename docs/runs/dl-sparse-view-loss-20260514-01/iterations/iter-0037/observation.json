@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T19:51:38Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 37,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-37: Adam optimizer + weight_decay 0 -> 1e-4 (L2-via-grad style) on iter-36 substrate. Headroom 0.5842 -> 0.5158 (-6.84pp). STRONG DISCARD. Adam's wd is L2-via-grad (wd*w added inside grad) rather than decoupled (AdamW). With this regime any positive wd grows with parameter magnitude per step, destabilising training. Adam wants wd=0 strictly.",
+  "val_score": 0.16164030134677887,
+  "headroom": 0.5157676205461171,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0037/comparison.png",
+  "advice_for_others": "STRONG DISCARD: Adam+wd=1e-4 -6.84pp. Adam's L2-via-grad weight decay is fundamentally different from AdamW's decoupled wd. Confirmed cross-substrate: switching Adam wd>0 destabilises. Adam should always use wd=0 on this slug.",
+  "commit": "d1e3cf2"
+}
