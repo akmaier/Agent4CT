@@ -216,7 +216,7 @@ CONFIG = {
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
-    "res_n_bf":      1,             # iter-47: retry BF tail on batch substrate (was -1.22 on group)
+    "res_n_bf":      0,             # iter-47 closed BF on batch -6.18pp; BF/resnet axis final-closed
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
@@ -228,7 +228,7 @@ CONFIG = {
     # the per-block scaling. Cross-port from Agent B iter-34 KEEP wd_split.
     # iter-29 (DISCARD, -1.97pp), iter-30 (DISCARD beta2=0.99, -0.87pp).
     # Revert all optimizer cruft. iter-31: batch_size 1 -> 2 (more stable grad)
-    "res_scale_init": 0.0,
+    "res_scale_init": 0.1,         # iter-48: retest alpha=0.1 on batch substrate (was -0.23pp on group)
     "wd_split":      False,
     "adamw_beta2":   0.999,
 
