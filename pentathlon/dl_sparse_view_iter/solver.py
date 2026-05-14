@@ -124,7 +124,7 @@ CONFIG = {
     "naf_expand":    2,                # iter-59 timed out at expand=3
     "bf_sigma_x":    2.0,              # iter-61 closed 2.5 marginal flat; 2.0 stays
     "bf_sigma_y":    2.0,
-    "bf_sigma_r":    0.005,            # iter-62: tighter range filter (untested on A)
+    "bf_sigma_r":    0.001,            # iter-63: 0.005 -> 0.001 (continue tighter; iter-62 +0.43pp)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-52: GELU -> ReLU (test gate reversion; no wall cost)
                                          #  (alpha overridden by 0.05 in iter-56 above)

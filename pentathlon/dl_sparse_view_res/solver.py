@@ -58,11 +58,11 @@ CONFIG = {
     "sdd":           1085.6,
 
     # Training subset for the 5-minute iteration budget.
-    "train_n":       400,         # iter-71 closed 500 at -0.59pp; data axis fully bisected
+    "train_n":       450,         # iter-76: 400 -> 450 fine bisection (300 closed -1.74, 500 closed -0.59)
     "val_n":         100,
 
     # Editable: training schedule.
-    "epochs":        9,          # iter-75: 10 -> 9 bisect; 8 KEEP, 10 -0.32pp
+    "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-68 closed input_dropout on batch -4.43pp
     "lr_warmup_epochs": 0,
