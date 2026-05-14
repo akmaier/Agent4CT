@@ -121,8 +121,7 @@ CONFIG = {
     "naf_blocks":    6,                # 6 NAF blocks at c=32, full res
     "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
-    "naf_gate":      "relu",           # iter-21: ReLU (safer baseline first)
-                                         #          iter-22 plan: switch to "simple"
+    "naf_gate":      "gelu",           # iter-38: GELU on iter-36 KEEP substrate (smoother than ReLU)
     "naf_alpha":     0.1,              # EDSR-style learnable residual scaling
                                          #  (spawn-B iter-14 advice: cheap +0.15pp)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
@@ -241,7 +240,7 @@ class NafBlock(nn.Module):
                  dw: bool = True, gate: str = "simple",
                  alpha_init: float = 0.1):
         super().__init__()
-        assert gate in ("simple", "relu"), gate
+        assert gate in ("simple", "relu", "gelu"), gate
         self.gate_kind = gate
         c_mid = c * expand
         self.norm = _LayerNorm2d(c)
@@ -257,6 +256,12 @@ class NafBlock(nn.Module):
             self.gate = _SimpleGate()
             c_after = c_mid // 2
             assert c_mid % 2 == 0, "SimpleGate needs even c_mid"
+        elif gate == "gelu":
+            # iter-38: GELU (modern default for image restoration networks,
+            # NAFNet baseline before SimpleGate). Same param count as ReLU
+            # but smoother gradient near 0, preserves negative info.
+            self.gate = nn.GELU()
+            c_after = c_mid
         else:
             self.gate = nn.ReLU(inplace=True)
             c_after = c_mid
