@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T19:25:10Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 74,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-74: bf_kernel 7 -> 5 (smaller BF spatial extent; saved 107s wall) on iter-71 substrate. Headroom 0.6052 -> 0.6019 (-0.33pp). DISCARD. Smaller BF kernel reduces spatial coverage; each BF learns a less expressive filter. Wall savings are real (441s vs 548s) but quality drop overrides.",
+  "val_score": 0.262966126203537,
+  "headroom": 0.6019206027862958,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.060006,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0074/comparison.png",
+  "advice_for_others": "DISCARD: bf_kernel=5 -0.33pp despite saving 107s wall. The 7-pixel spatial extent is needed for the residual-streak structure. Closes bf_kernel=5 downward. Try bf_sigma_r sweep or naf_gate variants.",
+  "commit": "528afd5"
+}
