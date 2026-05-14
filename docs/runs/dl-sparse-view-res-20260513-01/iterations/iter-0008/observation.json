@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T00:03:00Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 8,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-8: c=32 -> c=40 (params 0.225M -> 0.350M, +55%). SSIM 0.6575 -> 0.6408 (-2.5%), headroom 0.5861 -> 0.5598 (-4.5%). Substantial regression. Wider on 400-phantom subset overfits, mirroring the main agent's iter-3 finding that U-Net c>=24 hurts on this data budget. c=32 confirmed as residual-stack width sweet spot.",
+  "val_score": 0.6408,
+  "headroom": 0.5598,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.35,
+  "train_n": 400,
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0008/comparison.png",
+  "advice_for_others": "On 400 synthetic phantoms, residual-stack width above c=32 overfits \u2014 pattern mirrors the main agent's U-Net c>=24 result.",
+  "commit": ""
+}
