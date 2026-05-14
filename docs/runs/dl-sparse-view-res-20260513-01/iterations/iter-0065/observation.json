@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T21:38:01Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 65,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-65: res_blocks 6 -> 7 on batch-norm substrate iter-62 KEEP. Headroom 0.6048 -> 0.5159 (-8.89pp). STRONG DISCARD. BatchNorm + deeper net has instability (running stats accumulate errors). Capacity axis is even more saturated on batch substrate.",
+  "val_score": 0.6289476156234741,
+  "headroom": 0.5159292762322208,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.261968,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0065/comparison.png",
+  "advice_for_others": "STRONG DISCARD: res_blocks=7 on batch -8.89pp. BatchNorm with more layers compounds running-stats instability. Capacity firmly capped at 6 blocks.",
+  "commit": "cbe1d6e"
+}
