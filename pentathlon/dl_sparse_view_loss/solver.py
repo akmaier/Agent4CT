@@ -116,7 +116,15 @@ CONFIG = {
     "val_n":         100,
 
     # Editable: training schedule.
-    "epochs":        8,
+    # iter-15: bump epochs 8 -> 10. Past iters show loss is still
+    # actively decreasing at epoch 8 (LR-limited but LR can't go up
+    # without instability per iter-13). The right move is MORE STEPS at
+    # the same LR. 8 ep = 435s; 10 ep should fit in ~550s ( <9 min, well
+    # under the 15 min slurm budget). At fixed compute this is unfair
+    # (gives this iter +25% training); accept the cost - the journal
+    # makes it explicit. Anti-overfit threshold still OK: same
+    # param count, no extra data.
+    "epochs":        10,
     "batch_size":    1,
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
@@ -178,12 +186,8 @@ CONFIG = {
     "res_blocks":    6,
     "res_channels":  32,
     "res_norm":      "group",   # group | batch | none
-    # iter-14: ReLU -> GELU. ReLU loses signal below 0 (hard 0 gradient
-    # at negative pre-activations, dead neurons in early training).
-    # GELU is smooth + nonzero gradient everywhere, used in NAFNet,
-    # Restormer, and the recent CT denoising SOTA. ~0 extra compute,
-    # identical param count, often +0.1-0.3pp on dense regression tasks.
-    "res_act":       "gelu",    # relu | gelu | swish
+    # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
+    "res_act":       "relu",    # relu | gelu | swish
     "res_kernel":    3,
     "res_dropout":   0.0,
     "res_residual":  True,      # global residual head (predicts noise)
