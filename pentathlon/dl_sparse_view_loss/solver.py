@@ -204,11 +204,18 @@ CONFIG = {
     "res_norm":      "group",   # group | batch | none
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # relu | gelu | swish
-    "res_kernel":    5,
+    "res_kernel":    3,         # iter-26: revert kernel 5 -> 3 (iter-25 timed out at kernel=5)
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
     "res_dropout":   0.0,
     "res_residual":  True,      # global residual head (predicts noise)
+    # iter-26: trainable Wagner BF tails stacked on the image-denoiser output.
+    # Cross-port from main/iter best recipe. n=1 minimal cross-port test.
+    "res_n_bf":      1,           # iter-26: 0 -> 1 BF tail (Wagner 2022 trainable bilateral)
+    "bf_kernel":     7,           # BF kernel size (odd; matches main/A defaults)
+    "bf_sigma_x":    1.5,
+    "bf_sigma_y":    1.5,
+    "bf_sigma_r":    0.01,
 
     # Noise simulation — kept fixed so headroom is comparable across iter.
     # iter-24 (DISCARD, hr=0.5650): noise jitter [3e4, 8e4] -1.83pp.
@@ -337,6 +344,27 @@ class ResidualStack(nn.Module):
         return x - y if self.residual else y
 
 
+class ResidualStackPlusBFs(nn.Module):
+    """ResidualStack followed by N stacked TrainableBilateralFilter2d tails.
+    Cross-port from main/A NAFNet+BF recipe: BF stacking compounds positive lift
+    at every step (main iter-63..67: +0.26/+0.19/+0.13/+0.08/+0.04 pp at counts 4..8)."""
+    def __init__(self, stack: nn.Module, n_bf: int, kernel: int,
+                 sigma_x: float, sigma_y: float, sigma_r: float):
+        super().__init__()
+        self.stack = stack
+        self.bfs = nn.ModuleList([
+            TrainableBilateralFilter2d(
+                kernel_size=kernel, sigma_x=sigma_x,
+                sigma_y=sigma_y, sigma_r=sigma_r)
+            for _ in range(n_bf)
+        ])
+    def forward(self, x):
+        h = self.stack(x)
+        for bf in self.bfs:
+            h = bf(h)
+        return h
+
+
 def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
     """Return (proj_denoiser, image_denoiser)."""
     family = cfg.get("img_denoiser", "unet")
@@ -351,8 +379,18 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
                 dropout=cfg["res_dropout"],
                 residual=cfg["res_residual"],
             )
-        # Symmetric residual denoisers on both domains (matches spawn agent B).
-        return make_res(), make_res()
+        proj_dn = make_res()
+        img_dn = make_res()
+        n_bf = int(cfg.get("res_n_bf", 0))
+        if n_bf > 0:
+            img_dn = ResidualStackPlusBFs(
+                img_dn, n_bf=n_bf,
+                kernel=int(cfg.get("bf_kernel", 7)),
+                sigma_x=float(cfg.get("bf_sigma_x", 1.5)),
+                sigma_y=float(cfg.get("bf_sigma_y", 1.5)),
+                sigma_r=float(cfg.get("bf_sigma_r", 0.01)),
+            )
+        return proj_dn, img_dn
     c = cfg["unet_c"]
     proj = SmallUNet(c=c)
     if family == "unet_plus_bf":
