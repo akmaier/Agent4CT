@@ -124,13 +124,13 @@ CONFIG = {
 
     # Editable: training loss. "mse" (default Wagner-style; pipeline.training_step),
     # "l1", "charbonnier" (smooth L1 with epsilon), or "huber".
-    # Charbonnier rationale (iter-3, dl-sparse-view-loss): on the residual-stack
-    # baseline (Agent B iter-2: 6 blk c=32, headroom 0.5831), no loss alternative
-    # has been tried. Charbonnier = sqrt((y_hat - y_tgt)^2 + eps^2) behaves like
-    # MSE near zero and L1 far away -- smoother gradient than L1, sharper edges
-    # than MSE. Main agent iter-6 found L1 trades headroom for SSIM; Charbonnier
-    # should keep more of the MSE pixel accuracy.
-    "train_loss":    "charbonnier",
+    # iter-3 (dl-sparse-view-loss) found Charbonnier (eps=1e-3) drops headroom
+    # 0.5831 -> 0.5606 vs Agent B iter-2's MSE baseline. Same L1/MSE trade-off
+    # main-agent iter-6 saw: sharper edges, worse pixel-RMSE. Reverted to MSE.
+    # Next loss to try: Huber with a *tiny* delta (1e-3 or smaller) so most
+    # samples stay in the quadratic regime (preserving RMSE/headroom) and only
+    # outliers get L1-treatment. Or: weighted MSE + small TV regulariser.
+    "train_loss":    "mse",
     "charbonnier_eps": 1e-3,
     "huber_delta":   1e-3,
 
