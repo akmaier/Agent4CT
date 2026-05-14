@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:16:58Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 28,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "COMPOSE NAFNet c=32 ReLU dw + SWA (last 3/6 epochs) + iter-7 Wagner BF tail (1 trainable bilateral filter post-CNN). The +0.15pp SWA lift (iter-27) and +0.28pp BF lift compose additively. Total +0.43pp over the iter-21 0.5762 NAFNet baseline; +0.60pp over the iter-7 0.5745 ceiling. CLEARS 0.5PP KEEP THRESHOLD.",
+  "val_score": 0.2885,
+  "headroom": 0.5805,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4-7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0028/comparison.png",
+  "advice_for_others": "COMPOSITION WORKS: NAFNet c=32 (cheap 0.060M params) + SWA (last half of training) + 1 trainable BF tail on the image slot reaches headroom 0.5805 \u2014 +0.60pp over the iter-7 K=2 UNet+BF ceiling at 1/8 the params. Three independent +0.1-0.3pp lifts compose nearly additively. Lesson: the iter-7 BF tail trick (Wagner 2022) and SWA (iter-15/16 trick) are slot-orthogonal to the CNN architecture and can be stacked freely. Implementation: NafNetStack.bfs ModuleList of TrainableBilateralFilter2d, applied AFTER the residual subtraction (so it sees the denoised image, not the noise prediction). Only on image slot; force naf_n_bf=0 on proj slot. Vectorised SWA via torch._foreach_* is essential \u2014 naive named_parameters loop is 3-4x slower.",
+  "commit": "720665b"
+}
