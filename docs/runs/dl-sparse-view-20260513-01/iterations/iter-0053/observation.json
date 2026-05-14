@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T15:15:49Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 53,
+  "challenge": "dl_sparse_view",
+  "change_class": "augmentation",
+  "rationale": "iter-53: input_dropout p=0.05 (Dropout2d on FBP image before head conv). Headroom 0.5906 -> 0.5789 (-1.17pp). Random pixel zeroing on the FBP input is too disruptive at this scale \u2014 the network cannot use sparse-pixel-dropped inputs well; it has to learn to handle holes that never appear at val time.",
+  "val_score": 0.2911306917667389,
+  "headroom": 0.5789097854328338,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0053/comparison.png",
+  "advice_for_others": "Input-image dropout (Dropout2d on the network input) hurts denoisers at small data. The model needs full information to learn the noise pattern; randomly hiding pixels just adds a different kind of noise the network must also denoise.",
+  "commit": "d46066c"
+}
