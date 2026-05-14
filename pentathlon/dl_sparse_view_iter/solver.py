@@ -118,7 +118,16 @@ CONFIG = {
     "img_denoiser":  "nafnet",         # NEW: NAFNet stack as image_denoiser
     "proj_denoiser": "nafnet",         # NEW: also use NAFNet for proj domain
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
-    "naf_blocks":    6,                # 6 NAF blocks at c=32, full res
+    # iter-41: extend depth 6 -> 7 on iter-38 KEEP substrate (NAFNet c=32 GELU
+    # dw + SWA full + 3 BFs). Adds 0.0085M params (~14% more body) but stays
+    # well under c=40 wall (which timed out at 8:13 in iter-39). Hypothesis:
+    # at c=32 (narrow) the substrate is depth-limited rather than width-limited
+    # — c=40 timed out because PER-EPOCH cost scales as c^2 in conv+dw, while
+    # depth scales LINEARLY. Adding one more block should push toughest residual
+    # 1-2% further with sub-minute wall hit. SWA-last-6-of-6 stabilises any new
+    # parameter slop. If keep: try blocks=8 next. If discard: try alpha_init or
+    # Charbonnier on substrate.
+    "naf_blocks":    7,                # iter-41: 7 NAF blocks at c=32, full res
     "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "gelu",           # iter-38: GELU on iter-36 KEEP substrate (smoother than ReLU)
