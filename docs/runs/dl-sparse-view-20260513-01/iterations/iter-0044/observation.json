@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:06:17Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 44,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-44: epochs 8 -> 6 on iter-32 baseline. Headroom 0.5906 -> 0.5754 (-1.52pp). 6 epochs undertrain; combined with iter-33 (epochs=10 overfits -2.07pp) and Agent B iter-20 (same finding cross-substrate) the optimal epoch count is firmly 8. Symmetric basin from both sides.",
+  "val_score": 0.29051363468170166,
+  "headroom": 0.5754193702528281,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0044/comparison.png",
+  "advice_for_others": "epochs=8 is now triple-confirmed as the data-bound optimum (10 overfits, 6 undertrains, both -1.5 to -2pp). The training schedule is fully characterised at this train_n=400 data scale.",
+  "commit": "1abacee"
+}
