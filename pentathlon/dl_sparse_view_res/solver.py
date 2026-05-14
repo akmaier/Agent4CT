@@ -65,7 +65,7 @@ CONFIG = {
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-68 closed
-    "lr_warmup_epochs": 1,        # iter-80: 0 -> 1 retest warmup on batch substrate
+    "lr_warmup_epochs": 2,        # iter-81: 1 -> 2 continue up (iter-80 +0.19pp at 1)
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
