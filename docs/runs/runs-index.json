@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-14T05:36:52Z",
+  "updated": "2026-05-14T06:13:04Z",
   "runs": [
     {
       "slug": "demo-dl-sparse-view-20260513-01",
@@ -44,9 +44,9 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T23:50:29Z",
       "status": "running",
-      "n_iterations": 0,
-      "best_score": null,
-      "best_headroom": null,
+      "n_iterations": 1,
+      "best_score": 0.0,
+      "best_headroom": 0.0,
       "agent": "gptoss",
       "model": "gpt-oss-120b"
     },
@@ -73,6 +73,18 @@
       "best_headroom": null,
       "agent": "kimi",
       "model": "moonshotai/Kimi-K2.6"
+    },
+    {
+      "slug": "dl-sparse-view-loss-20260514-01",
+      "short_id": "20260514-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-14T06:10:23Z",
+      "status": "running",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "claude-loss",
+      "model": "claude-sonnet-4.5"
     },
     {
       "slug": "dl-sparse-view-mistral-20260513-01",

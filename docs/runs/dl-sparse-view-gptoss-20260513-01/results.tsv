@@ -1,1 +1,2 @@
 iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1	f48cc80	0	0	crash	other	gptoss	gpt-oss-120b	Baseline run timed out/hung after long RUNNING state; no result produced.
