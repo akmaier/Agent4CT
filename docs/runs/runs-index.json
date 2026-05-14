@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-14T18:19:52Z",
+  "updated": "2026-05-14T18:19:59Z",
   "runs": [
     {
       "slug": "demo-dl-sparse-view-20260513-01",
@@ -80,7 +80,7 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-14T06:10:23Z",
       "status": "running",
-      "n_iterations": 27,
+      "n_iterations": 28,
       "best_score": 0.3154,
       "best_headroom": 0.5833,
       "agent": "claude-loss",
