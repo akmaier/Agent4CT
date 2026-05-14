@@ -69,6 +69,16 @@ CONFIG = {
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-2: 8 -> 6 to fit 5-min budget
+    # iter-27: asymmetric depth REVERSED of iter-26 (which had proj=4, img=8
+    # and was the most-balanced loss among 4 recent discards at -0.83pp).
+    # Hypothesis: iter-26 noted "proj capacity matters more than expected",
+    # so test the opposite asymmetry — heavier proj-side denoising (where
+    # the noise originates per Poisson + Gaussian sinogram model) and
+    # lighter image-side post-processing. Total blocks 6+6=12 = 8+4, so
+    # total params stay essentially identical to iter-14 baseline. Single
+    # knob test of the proj > img asymmetry direction.
+    "res_blocks_proj": 8,        # iter-27: 6 -> 8 (heavier proj-side)
+    "res_blocks_img":  4,        # iter-27: 6 -> 4 (lighter img-side)
     "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
     "res_norm":      "group",    # "group" | "none" | "batch"
     "res_act":       "relu",     # "relu" | "gelu" | "swish"
@@ -197,12 +207,16 @@ class ResidualStack(nn.Module):
 def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
     """Return (proj_denoiser, image_denoiser).
 
-    Symmetric residual stacks — the main agent's runs showed asymmetric
-    capacity overfits, so we start symmetric here too.
+    iter-27 enables per-domain depth via cfg["res_blocks_proj"] /
+    cfg["res_blocks_img"], falling back to cfg["res_blocks"] if absent so
+    older callers / journal-baseline configs still resolve.
     """
-    def make():
+    n_proj = int(cfg.get("res_blocks_proj", cfg["res_blocks"]))
+    n_img  = int(cfg.get("res_blocks_img",  cfg["res_blocks"]))
+
+    def make(n_blocks: int):
         return ResidualStack(
-            n_blocks=cfg["res_blocks"],
+            n_blocks=n_blocks,
             c=cfg["res_channels"],
             kernel=cfg["res_kernel"],
             norm=cfg["res_norm"],
@@ -211,7 +225,7 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
             residual=cfg["residual"],
             res_scale=cfg.get("res_scale", None),
         )
-    return make(), make()
+    return make(n_proj), make(n_img)
 
 
 # ----------------------------------------------------------------------- #
