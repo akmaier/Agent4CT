@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T21:33:18Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 85,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-85: swa_last_n 4 -> 0 (disable SWA) on iter-83 substrate. Headroom 0.6057 -> 0.6039 (-0.18pp). DISCARD. SWA still contributes meaningful lift even with the tighter Adam substrate.",
+  "val_score": 0.2616705894470215,
+  "headroom": 0.6039107585969175,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.060006,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0085/comparison.png",
+  "advice_for_others": "DISCARD: SWA disabled -0.18pp. SWA is a real contributor on NAFNet substrate; cumulative effect of per-step averaging over last 4 of 6 epochs.",
+  "commit": "23fef0a"
+}
