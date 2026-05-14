@@ -76,6 +76,8 @@ CONFIG = {
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-14: EDSR-style learnable per-block residual scaling, init 0.1
+    "pair_blocks":   2,          # iter-38: group blocks into meta-residual pairs (2 blocks per pair)
+    "pair_gamma":    0.1,        # iter-38: per-pair learnable outer-residual scale (init 0.1)
 
 
     # Noise simulation — FIXED so headroom comparable across iter / runs.
@@ -155,33 +157,91 @@ class ResBlock(nn.Module):
         return x + self.alpha * h
 
 
+class ResPair(nn.Module):
+    """Meta-residual group of stacked ResBlocks (iter-38).
+
+    Implements a hierarchical residual at the *pair* level:
+        out = x + gamma * inner(x)
+    where ``inner`` is a Sequential of ``n_blocks`` ResBlocks (each of which
+    already keeps its own per-block alpha residual scaling). This is the
+    residual-in-residual idea from RRDB (Wang ESRGAN 2018) and CARN-style
+    architectures: a coarse outer skip composed with finer inner skips
+    encourages information to bypass entire sub-stacks when a group's
+    contribution would hurt, and the small gamma init (0.1) starts each pair
+    near identity so the inner blocks have to actively earn their gating.
+
+    With pair_blocks=2 and gamma fixed (init 0.1) this matches the iter-38
+    plan: groups of 2 ResBlocks gated by an outer scalar gamma, init small.
+    """
+    def __init__(self, c: int, n_blocks: int, kernel: int = 3,
+                 norm: str = "group", act: str = "relu",
+                 dropout: float = 0.0, res_scale: float | None = None,
+                 gamma: float | None = 0.1):
+        super().__init__()
+        self.inner = nn.Sequential(*[
+            ResBlock(c, kernel=kernel, norm=norm, act=act, dropout=dropout,
+                     res_scale=res_scale)
+            for _ in range(n_blocks)
+        ])
+        if gamma is None:
+            self.gamma = None
+        else:
+            self.gamma = nn.Parameter(torch.tensor(float(gamma)))
+
+    def forward(self, x):
+        h = self.inner(x)
+        if self.gamma is None:
+            return x + h
+        return x + self.gamma * h
+
+
 class ResidualStack(nn.Module):
     """Stack of residual blocks at a single spatial resolution.
 
     Architecture:
         head conv (1 -> c)
-        N x ResBlock(c, c)
+        N_pairs x ResPair(c, c)  (each pair = pair_blocks x ResBlock + outer gamma skip)
         tail conv (c -> 1, zero-init so the network starts as identity)
         + (optional) global residual: y = x - tail(features)
 
     The zero-init of the tail matches `SmallUNet`'s behaviour: the network
     starts as the identity (or as `x` when residual=True), so optimisation
     starts at a sensible point even at random init.
+
+    iter-38: blocks are now grouped into pairs with an outer learnable gamma
+    scalar (init 0.1) per pair, on top of the per-block alpha (init 0.1).
+    With n_blocks=6 and pair_blocks=2 this yields 3 pairs of 2 ResBlocks.
     """
     def __init__(self, n_blocks: int = 8, c: int = 48,
                  kernel: int = 3, norm: str = "group", act: str = "relu",
                  dropout: float = 0.0, residual: bool = True,
-                 res_scale: float | None = None):
+                 res_scale: float | None = None,
+                 pair_blocks: int | None = None,
+                 pair_gamma: float | None = None):
         super().__init__()
         self.residual = residual
         pad = kernel // 2
         self.head = nn.Conv2d(1, c, kernel, padding=pad)
         self.head_act = _make_act(act)
-        self.blocks = nn.Sequential(*[
-            ResBlock(c, kernel=kernel, norm=norm, act=act, dropout=dropout,
-                     res_scale=res_scale)
-            for _ in range(n_blocks)
-        ])
+        if pair_blocks is None or pair_blocks <= 1:
+            # Flat stack (pre iter-38 behaviour).
+            self.blocks = nn.Sequential(*[
+                ResBlock(c, kernel=kernel, norm=norm, act=act, dropout=dropout,
+                         res_scale=res_scale)
+                for _ in range(n_blocks)
+            ])
+        else:
+            # iter-38: group blocks into hierarchical meta-residual pairs.
+            assert n_blocks % pair_blocks == 0, (
+                f"n_blocks={n_blocks} must be divisible by pair_blocks={pair_blocks}"
+            )
+            n_pairs = n_blocks // pair_blocks
+            self.blocks = nn.Sequential(*[
+                ResPair(c, n_blocks=pair_blocks, kernel=kernel, norm=norm,
+                        act=act, dropout=dropout, res_scale=res_scale,
+                        gamma=pair_gamma)
+                for _ in range(n_pairs)
+            ])
         self.tail = nn.Conv2d(c, 1, kernel, padding=pad)
         nn.init.zeros_(self.tail.weight)
         nn.init.zeros_(self.tail.bias)
@@ -210,6 +270,8 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
             dropout=cfg["res_dropout"],
             residual=cfg["residual"],
             res_scale=cfg.get("res_scale", None),
+            pair_blocks=cfg.get("pair_blocks", None),
+            pair_gamma=cfg.get("pair_gamma", None),
         )
     return make(), make()
 
@@ -250,11 +312,14 @@ def make_optimizer(model: nn.Module, cfg):
     # under-regularised conv weights (-0.51pp). Targeted: keep WD on conv
     # weights, exclude alpha (and biases, and norm scales — standard practice
     # for the 1-D / per-channel params that don't benefit from L2 shrinkage).
+    # iter-38: also exclude pair-level gamma scalars from WD (same rationale
+    # as alpha — 1-D learnable scale shouldn't be pulled toward 0 by L2).
     no_wd_params, wd_params = [], []
     for name, p in model.named_parameters():
         if not p.requires_grad:
             continue
-        if name.endswith(".alpha") or name.endswith("bias") or "n1" in name or "n2" in name:
+        if (name.endswith(".alpha") or name.endswith(".gamma")
+                or name.endswith("bias") or "n1" in name or "n2" in name):
             no_wd_params.append(p)
         else:
             wd_params.append(p)
