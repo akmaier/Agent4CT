@@ -79,7 +79,7 @@ CONFIG = {
     "batch_size":    1,
     "lr":            8e-5,    # iter-79 KEEP (iter-81 9e-5 near-flat -0.01pp)
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
-    "weight_decay":  2e-5,      # iter-84: 1e-5 -> 2e-5 (continue bisection upper)
+    "weight_decay":  1e-5,      # iter-83 KEEP marginal
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
     # toward 0 and preventing them from growing. WD=0 lets alpha
@@ -112,7 +112,7 @@ CONFIG = {
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
-    "swa_last_n":    4,   # iter-71 KEEP (iter-72 narrower DISCARD, iter-73 wider near-flat)
+    "swa_last_n":    0,   # iter-85: 4 -> 0 (disable SWA test; iter-71 KEEP at 4)
     "bf_kernel":     7,   # iter-74 closed kernel=5 at -0.33pp
     "bf_sigma_r":    0.01,   # iter-76 closed 0.02 at -0.94pp (BF basin tight at 0.01)
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").

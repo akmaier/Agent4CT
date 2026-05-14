@@ -102,7 +102,8 @@ CONFIG = {
     "epochs":        6,
     "batch_size":    1,
     "lr":            1e-4,             # iter-55 closed 8e-5 at -0.05pp (substrate-dependent lr)
-    "naf_alpha":     0.15,             # iter-57: 0.1 -> 0.15 (probe upper; iter-51 timed out at 0.2+9BFs, now 8BFs)
+    "naf_alpha":     0.1,              # iter-57 closed alpha=0.15 -0.06pp
+    "ema_every":     2,                # iter-58: 1 -> 2 (skip every other step in SWA averaging)
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
 

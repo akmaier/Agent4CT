@@ -66,7 +66,7 @@ CONFIG = {
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,
     "lr_warmup_epochs": 0,
-    "res_n_bf":      1,            # iter-63: retry BF tail on batch-norm substrate (was closed on group-norm)
+    "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
@@ -86,7 +86,7 @@ CONFIG = {
     "res_kernel":    3,
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
-    "res_scale":     0.1,        # iter-14 KEEP
+    "res_scale":     0.2,        # iter-64: retest alpha=0.2 on batch substrate (was -1.33pp on group)
     "swa_last_n":    0,           # iter-45 SWA -1.92pp; weight-smoothing axes closed on resnet substrate
     "adamw_beta2":   0.999,      # iter-46 closed beta2=0.99 axis (-1.28pp)
 
