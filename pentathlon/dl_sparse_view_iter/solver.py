@@ -148,24 +148,23 @@ CONFIG = {
     #   (c=40, SimpleGate).
     "ema_start_ep":  0,                # iter-36: last 6 of 6 (was 1 = last-5)
     "ema_every":     1,
-    # Iter-31: push BF tail to 3. Saturation test. Curve so far on NAFNet:
+    # BF saturation curve on NAFNet substrate (each BF = 3 params, 1 unfold):
     #   n_bf=0 (iter-27, SWA-only):     hr=0.5777
-    #   n_bf=1 (iter-28):               hr=0.5805 (+0.28pp over 0)
-    #   n_bf=2 (iter-29 KEEP):          hr=0.5868 (+0.63pp over 1, +0.91pp over 0)
-    #   n_bf=3 (iter-31 KEEP):          hr=0.5898 (+0.30pp over 2)
+    #   n_bf=1 (iter-28):               hr=0.5805 (+0.28pp)
+    #   n_bf=2 (iter-29 KEEP):          hr=0.5868 (+0.63pp)
+    #   n_bf=3 (iter-31 KEEP):          hr=0.5898 (+0.30pp)
     #   ... iter-36 + iter-38 substrate gains (SWA full + GELU): hr=0.5988
-    #   n_bf=4 (iter-43, this try):     hr=??? — does the curve still climb?
-    # iter-43: push BF tail to 4 on iter-38 KEEP substrate. iter-41 (depth)
-    # and iter-42 (alpha_init) both regressed -> these are saturated. BF
-    # curve has been monotonically positive: +0.28pp, +0.63pp, +0.30pp.
-    # Each extra BF gets +0.05-0.3pp depending on whether the residual still
-    # has structure for it to specialise on. With 4 BFs each can target a
-    # different (sigma_x/y, sigma_r) regime — hard-edge, soft-edge, streak
-    # smoothing, low-frequency residual. Cost: +3 params, +1 BF unfold pass
-    # (~5-10s wall added). If keep: try BF=5 next. If discard: try
-    # Charbonnier loss as last single-axis bet (was harmful on ReLU; might
-    # work on GELU+full-SWA substrate).
-    "naf_n_bf":      4,                # iter-43: 4 trainable BF tails (was 3)
+    #   n_bf=4 (iter-43 KEEP):          hr=0.6010 (+0.22pp, breaks 0.60 wall)
+    #   n_bf=5 (iter-44, this try):     hr=??? — does the curve still climb?
+    # iter-44: push BF tail to 5 on iter-43 KEEP substrate. The curve has
+    # NEVER REGRESSED across 5 prior keep tries. Diminishing returns are
+    # expected (each extra BF specialises on a smaller residual slice).
+    # Cost: +3 params, +1 BF unfold pass (~10s wall added on top of
+    # iter-43's 431s = 441s, still within 8-min wall budget). Each BF
+    # learns its own (sigma_x/y, sigma_r) so 5 BFs partition the residual
+    # into 5 (edge/streak/freq) regimes. If keep: try BF=6. If discard:
+    # try Charbonnier loss (was harmful on ReLU; might work here).
+    "naf_n_bf":      5,                # iter-44: 5 trainable BF tails (was 4)
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,
