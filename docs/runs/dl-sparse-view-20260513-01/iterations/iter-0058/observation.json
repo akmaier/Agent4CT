@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T16:08:04Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 58,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-58: full Agent A recipe (NAFNet c=32 + 3 BF tails + SWA last-6-of-8) on mains wd=0 substrate. Headroom 0.5906 -> 0.5824 (-0.83pp). vs Agent A iter-38 (same recipe at wd=1e-4): 0.5988. Mains wd=0 LOSES 1.65pp vs Agent As wd=1e-4 on the NAFNet substrate. wd interaction is substrate-dependent: alpha-scaling resnet PREFERS wd=0 (iter-32 +0.73pp); NAFNet PREFERS wd=1e-4. Decomposition lift: bare NAFNet 0.5723 -> +BFs 0.5804 (+0.81pp) -> +SWA 0.5824 (+0.20pp).",
+  "val_score": 0.27170103788375854,
+  "headroom": 0.5823718871795364,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.059991,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0058/comparison.png",
+  "advice_for_others": "wd interaction is substrate-dependent: residual-alpha stacks prefer wd=0 (alpha needs to grow); NAFNet prefers wd=1e-4 (extra conv overfit headroom that wd regulates). Cannot cross-port wd choice with architecture. Also: SWA gives only +0.20pp on NAFNet+wd=0 vs +0.42pp on NAFNet+wd=1e-4 (Agent A iter-36). The averaging-mechanism also interacts with wd.",
+  "commit": "d74c510"
+}
