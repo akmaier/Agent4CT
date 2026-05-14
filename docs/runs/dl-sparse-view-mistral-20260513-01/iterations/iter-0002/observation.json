@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T06:25:04Z",
+  "run_id": "dl-sparse-view-mistral-20260513-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Job failed during dataset building with AttributeError: 'PyronnFanBeamProjector' object has no attribute 'fp'. The projector should be called directly as a nn.Module (projector(x)) rather than using .fp() method. Configuration: 6 epochs, 4 residual blocks, 2e-4 LR.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "crash",
+  "params_M": 0.15,
+  "train_n": 400,
+  "agent": "mistral",
+  "model": "mistralai/Mistral-Medium-3.5-128B",
+  "advice_for_others": "PyronnFanBeamProjector is a torch.nn.Module and should be called directly: projector(input) instead of projector.fp(input). Always test forward projection calls before full training runs.",
+  "commit": "6f26440"
+}

@@ -1,2 +1,3 @@
 iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 1	ec7f6df	0	0	crash	architecture	mistral	mistralai/Mistral-Medium-3.5-128B	Job failed during evaluation with CUDNN_BACKEND_EXECUTION_PLAN_DESCRIPTOR error in SSIM computation. Training completed 7/8 epochs successfully with loss decreasing from 0.00041 to 0.00037, but evaluation crashed. The original solver.py was complete and functional.
+2	6f26440	0	0	crash	architecture	mistral	mistralai/Mistral-Medium-3.5-128B	Job failed during dataset building with AttributeError: 'PyronnFanBeamProjector' object has no attribute 'fp'. The projector should be called directly as a nn.Module (projector(x)) rather than using .fp() method. Configuration: 6 epochs, 4 residual blocks, 2e-4 LR.
