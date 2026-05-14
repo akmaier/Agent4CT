@@ -118,20 +118,23 @@ CONFIG = {
     "img_denoiser":  "nafnet",         # NEW: NAFNet stack as image_denoiser
     "proj_denoiser": "nafnet",         # NEW: also use NAFNet for proj domain
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
-    # iter-41: extend depth 6 -> 7 on iter-38 KEEP substrate (NAFNet c=32 GELU
-    # dw + SWA full + 3 BFs). Adds 0.0085M params (~14% more body) but stays
-    # well under c=40 wall (which timed out at 8:13 in iter-39). Hypothesis:
-    # at c=32 (narrow) the substrate is depth-limited rather than width-limited
-    # — c=40 timed out because PER-EPOCH cost scales as c^2 in conv+dw, while
-    # depth scales LINEARLY. Adding one more block should push toughest residual
-    # 1-2% further with sub-minute wall hit. SWA-last-6-of-6 stabilises any new
-    # parameter slop. If keep: try blocks=8 next. If discard: try alpha_init or
-    # Charbonnier on substrate.
-    "naf_blocks":    7,                # iter-41: 7 NAF blocks at c=32, full res
+    "naf_blocks":    6,                # 6 NAF blocks at c=32, full res
     "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "gelu",           # iter-38: GELU on iter-36 KEEP substrate (smoother than ReLU)
-    "naf_alpha":     0.1,              # EDSR-style learnable residual scaling
+    # iter-42: alpha_init 0.1 -> 0.05 on iter-38 KEEP substrate (hr=0.5988).
+    # iter-41 (depth 6->7) regressed -0.56pp suggesting the substrate is NOT
+    # capacity-limited; rather, it may be init-sensitive. Each NAFNet block
+    # is residual y = x + alpha * Body(x). Starting alpha=0.1 means each block
+    # contributes 10% of its raw signal initially; alpha=0.05 starts each
+    # block at 5% contribution -> gentler chain of 6 blocks -> training begins
+    # much closer to the identity map (which is well-conditioned for FBP->FBP
+    # half-set denoising tasks). The alpha parameters are LEARNABLE (one per
+    # block), so they can grow if needed during training. Hypothesis: gentler
+    # init avoids early-epoch noise that gets baked into the SWA full-window
+    # average. If keep: try alpha_init=0.025 next. If discard: try
+    # naf_n_bf 3->4 (BF saturation curve) or Charbonnier loss.
+    "naf_alpha":     0.05,             # iter-42: gentler init (was 0.1)
                                          #  (spawn-B iter-14 advice: cheap +0.15pp)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
     "share_weights": False,            # n/a at K=1
