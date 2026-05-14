@@ -64,7 +64,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-34 sweet spot; iter-39/40/41 LR schedule axis fully closed
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.05,       # iter-68: retest input_dropout on batch substrate (was -0.75 on group)
+    "input_dropout": 0.0,        # iter-68 closed input_dropout on batch -4.43pp
     "lr_warmup_epochs": 0,
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
@@ -87,7 +87,7 @@ CONFIG = {
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
-    "swa_last_n":    0,           # iter-45 SWA -1.92pp; weight-smoothing axes closed on resnet substrate
+    "swa_last_n":    4,           # iter-69: retest SWA on batch substrate (was -1.92 on group)
     "adamw_beta2":   0.999,      # iter-46 closed beta2=0.99 axis (-1.28pp)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
