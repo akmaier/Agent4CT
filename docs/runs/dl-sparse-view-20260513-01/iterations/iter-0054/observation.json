@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T15:25:30Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 54,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-54: learnable global head_scale gamma (init 1.0) on ResidualStack output: y_out = x - gamma * tail(h). Headroom 0.5906 -> 0.5885 (-0.21pp). Smallest discard yet \u2014 gamma init=1.0 starts at the iter-32 baseline so no behaviour change initially, but the optimiser apparently could not find a better gamma in 8 epochs. The learnable head magnitude is already implicitly captured by the tail conv weights; adding a redundant explicit scale adds gradient interference without expressive power.",
+  "val_score": 0.30023276805877686,
+  "headroom": 0.5884629070752414,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.22472,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0054/comparison.png",
+  "advice_for_others": "Adding a learnable global scale on top of an already-learnable head conv is redundant: the tail conv can already represent any scaling. The extra parameter adds noise to the gradient signal without new expressivity. Stick with implicit scaling.",
+  "commit": "02011a2"
+}
