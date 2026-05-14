@@ -137,7 +137,13 @@ CONFIG = {
     # to +0.05pp, we land at ~0.5810 — still well above iter-7 and within
     # noise of iter-28.
     "ema":           True,
-    "ema_decay":     0.0,              # SWA mode (uniform mean)
+    # Iter-40: switch from SWA (uniform mean) to EMA decay=0.999 on iter-38
+    # substrate. Full SWA (last-6-of-6) gave hr=0.5985. EMA weighs later
+    # steps more heavily — better signal/noise if late epochs are clearly
+    # superior. decay=0.999 with ~400 steps/epoch * 6 epochs = 2400 steps
+    # gives an effective window of ~1000 steps (half-life ~693), which
+    # roughly emphasizes the last 2.5 epochs.
+    "ema_decay":     0.999,            # iter-40: EMA decay=0.999 (was 0.0 = SWA)
     # Iter-36: widen SWA window from last-5-of-6 (start_ep=1) to last-6-of-6
     # (start_ep=0). iter-35 KEEP at last-5 (hr=0.5942, +0.22pp over iter-34)
     # confirmed monotonic widening; test if including epoch 0 (the noisiest)
