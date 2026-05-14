@@ -134,17 +134,19 @@ CONFIG = {
     "charbonnier_eps": 1e-3,
     "huber_delta":   1e-3,
 
-    # Editable: image-space phantom augmentation (iter-7).
-    # On each epoch, apply a random transform from D4 (4 rotations x 2 hflips x
-    # 2 vflips = 16 distinct image-space symmetries) to the *phantoms*, then
-    # re-project through the fan-beam geometry to get matching clean+noisy
-    # sinograms. The geometry stays identical; only image content rotates/flips.
-    # Net effect: effective dataset size 8x for the same 400 phantoms (the
-    # rotation by 180 + hflip + vflip combos collapse to ~8 unique under D4 on
-    # square phantoms, but the per-epoch resampling exposes the model to
-    # different orientations across training).
-    "aug_geom":      True,
-    "aug_geom_seed": 1234,
+    # Editable: image-space phantom augmentation (iter-7/iter-8).
+    # iter-7 tried full D4 (rot90 + hflip + vflip = 16 transforms): -0.78pp
+    # headroom regression. Hypothesis from that failure: 90/270 rotations
+    # produce vertically-oriented bodies (the elliptical-body outline is
+    # 0.85x0.65 horizontal), which is OOD vs validation -> the model burns
+    # capacity on unrealistic orientations.
+    # iter-8 restricts to hflip+vflip only (4 transforms incl. identity) -
+    # this preserves the horizontal body axis and only mirrors the internal
+    # ellipse arrangement, which IS in-distribution. Per-epoch global aug
+    # re-projects through R_full (same fan-beam geometry) with fresh noise
+    # per epoch (different seed).
+    "aug_flip":      True,
+    "aug_flip_seed": 1234,
 
     # Editable: model architecture.
     "unet_c":        16,
@@ -376,38 +378,36 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     opt = make_optimizer(pipe.parameters(), cfg)
     loss_name = cfg.get("train_loss", "mse")
     loss_fn = _loss_fn(loss_name, cfg)
-    aug_geom = bool(cfg.get("aug_geom", False))
-    print(f"[solver] train_loss={loss_name}  aug_geom={aug_geom}", flush=True)
-    # Reuse R_full (full-resolution fan-beam projector) for re-projecting
-    # the augmented phantoms each epoch. Same geometry used for the
-    # original training set; only the image content changes.
-    aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_geom_seed", 1234)))
+    aug_flip = bool(cfg.get("aug_flip", False))
+    print(f"[solver] train_loss={loss_name}  aug_flip={aug_flip}", flush=True)
+    # R_full is reused to re-project augmented phantoms; same geometry as
+    # train_noisy, only image content is flipped.
+    aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_flip_seed", 1234)))
     t0 = time.time()
     for ep in range(cfg["epochs"]):
         pipe.train()
-        # ---- per-epoch phantom augmentation -------------------------- #
-        if aug_geom:
-            k = int(torch.randint(0, 4, (1,), generator=aug_rng).item())
+        # ---- per-epoch hflip/vflip augmentation (no rotation) ----------- #
+        if aug_flip:
             hflip = bool(torch.rand((), generator=aug_rng).item() < 0.5)
             vflip = bool(torch.rand((), generator=aug_rng).item() < 0.5)
-            with torch.no_grad():
-                ph_ep = train_ph
-                if k > 0:
-                    ph_ep = torch.rot90(ph_ep, k, dims=[-2, -1])
-                if hflip:
-                    ph_ep = torch.flip(ph_ep, dims=[-1])
-                if vflip:
-                    ph_ep = torch.flip(ph_ep, dims=[-2])
-                clean_ep = R_full.forward_project(ph_ep)
-                # Different per-epoch seed so the photon noise also resamples
-                # — otherwise the model could memorise the noise pattern.
-                noisy_ep = simulate_low_dose(
-                    clean_ep,
-                    i0=cfg["noise_i0"], sigma_e=cfg["noise_sigma_e"],
-                    seed=cfg["seed"] + 20_000 + ep,
-                )
-            print(f"[solver] epoch {ep+1}: aug (k={k}, hflip={hflip}, vflip={vflip})",
-                  flush=True)
+            if hflip or vflip:
+                with torch.no_grad():
+                    ph_ep = train_ph
+                    if hflip:
+                        ph_ep = torch.flip(ph_ep, dims=[-1])
+                    if vflip:
+                        ph_ep = torch.flip(ph_ep, dims=[-2])
+                    clean_ep = R_full.forward_project(ph_ep)
+                    noisy_ep = simulate_low_dose(
+                        clean_ep,
+                        i0=cfg["noise_i0"], sigma_e=cfg["noise_sigma_e"],
+                        seed=cfg["seed"] + 20_000 + ep,
+                    )
+                print(f"[solver] epoch {ep+1}: aug (hflip={hflip}, vflip={vflip})",
+                      flush=True)
+            else:
+                noisy_ep = train_noisy
+                print(f"[solver] epoch {ep+1}: aug (identity)", flush=True)
         else:
             noisy_ep = train_noisy
         perm = torch.randperm(noisy_ep.shape[0])
