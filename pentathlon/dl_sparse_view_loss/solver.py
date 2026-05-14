@@ -192,25 +192,30 @@ CONFIG = {
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     # iter-19 (DISCARD, hr=0.5707): widen 32 -> 48 (0.225M -> 0.503M)
-    # -1.26pp. Capacity is NOT the bottleneck. Revert.
+    # -1.26pp. Capacity is NOT the bottleneck.
     "res_blocks":    6,
     "res_channels":  32,
+    # iter-25: kernel 3 -> 5 in residual blocks. Different from widening:
+    # increases receptive field (each block sees 2 more pixels each
+    # direction) without scaling depth. Params scale as 25/9 = 2.78x per
+    # conv: 0.225M -> ~0.55M, still well under cap. Streak artifacts in
+    # sparse-view FBP have spatial extent ~few pixels; kernel=5 may
+    # capture them better. Stacks with iter-16 KEEP wd=1e-3.
     "res_norm":      "group",   # group | batch | none
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # relu | gelu | swish
-    "res_kernel":    3,
+    "res_kernel":    5,
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
     "res_dropout":   0.0,
     "res_residual":  True,      # global residual head (predicts noise)
 
-    # Noise simulation — kept fixed for VAL so headroom is comparable
-    # across iter. iter-24: jitter train-time i0 per batch within
-    # [i0_jitter_lo, i0_jitter_hi]. The network sees a range of noise
-    # levels and learns a more general denoiser. Val still uses i0=5e4.
+    # Noise simulation — kept fixed so headroom is comparable across iter.
+    # iter-24 (DISCARD, hr=0.5650): noise jitter [3e4, 8e4] -1.83pp.
+    # Test-time mismatch: train across noise range hurts specific 5e4 perf.
     "noise_i0":      5e4,
     "noise_sigma_e": 5.0,
-    "noise_jitter":  True,
+    "noise_jitter":  False,
     "i0_jitter_lo":  3e4,
     "i0_jitter_hi":  8e4,
     "seed":          42,
