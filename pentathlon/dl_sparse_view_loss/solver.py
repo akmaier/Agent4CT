@@ -123,7 +123,7 @@ CONFIG = {
     "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
-    "lr":            1e-4,
+    "lr":            5e-5,       # iter-34: 1e-4 -> 5e-5 (half; iter-13 closed 2e-4, this probes lower side)
     "optimizer":     "adamw",   # adam | adamw
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
@@ -209,7 +209,7 @@ CONFIG = {
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
     "res_dropout":   0.0,
-    "res_residual":  False,     # iter-33: True -> False (predict output directly, not noise residual)
+    "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
     "res_n_bf":      0,

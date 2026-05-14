@@ -64,8 +64,14 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-34 sweet spot; iter-39/40/41 LR schedule axis fully closed
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.0,         # iter-48 closed 0.05 at -0.75pp
-    "lr_warmup_epochs": 1,        # iter-49: 0 -> 1 (linear warmup epoch 1 from 0 to lr)
+    "input_dropout": 0.0,
+    "lr_warmup_epochs": 0,        # iter-49 closed warmup at -0.17pp
+    # iter-50: retry BF tail with looser range filter (sigma_r 0.01 -> 0.05)
+    "res_n_bf":      1,
+    "bf_kernel":     7,
+    "bf_sigma_x":    1.5,
+    "bf_sigma_y":    1.5,
+    "bf_sigma_r":    0.05,        # iter-50: 5x larger range scale (iter-42 0.01 failed)
     "lr":            1e-4,
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
