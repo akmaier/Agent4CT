@@ -119,7 +119,7 @@ CONFIG = {
     # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,
-    "batch_size":    1,
+    "batch_size":    2,        # iter-31: 1 -> 2 (more stable gradient on Q8000 48GB)
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            1e-4,
@@ -220,12 +220,11 @@ CONFIG = {
     # this slug's wd=1e-3 substrate (alpha decayed to ~0 by wd).
     # iter-28: same alpha=0.1 + wd_split (alpha excluded from wd) to rescue
     # the per-block scaling. Cross-port from Agent B iter-34 KEEP wd_split.
-    # iter-29 (DISCARD, -1.97pp): wd_split alone fails on wd=1e-3 substrate.
-    # Revert wd_split. The whole alpha/wd_split exploration is closed.
+    # iter-29 (DISCARD, -1.97pp), iter-30 (DISCARD beta2=0.99, -0.87pp).
+    # Revert all optimizer cruft. iter-31: batch_size 1 -> 2 (more stable grad)
     "res_scale_init": 0.0,
     "wd_split":      False,
-    # iter-30: AdamW beta2 default 0.999 -> 0.99 (faster forget of past grad stats)
-    "adamw_beta2":   0.99,
+    "adamw_beta2":   0.999,
 
     # Noise simulation — kept fixed so headroom is comparable across iter.
     # iter-24 (DISCARD, hr=0.5650): noise jitter [3e4, 8e4] -1.83pp.
