@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T22:41:33Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 54,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-54: res_dropout 0.0 -> 0.05 on batch substrate iter-46 KEEP. Headroom 0.6054 -> 0.5797 (-2.57pp). DISCARD. Same direction as B iter-73. Dropout closed cross-substrate on batch.",
+  "val_score": 0.2932441234588623,
+  "headroom": 0.5797370101635,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0054/comparison.png",
+  "advice_for_others": "DISCARD: res_dropout on batch -2.57pp. Closes dropout axis.",
+  "commit": "b69a3a3"
+}
