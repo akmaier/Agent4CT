@@ -98,6 +98,7 @@ CONFIG = {
     # onto main's wd=0 substrate. "nafnet" routes via build_denoisers.
     "img_denoiser":  "nafnet",
     "naf_blocks":    6,   # iter-67 KEEP (iter-70 7-blocks timed out)
+    "naf_expand":    3,   # iter-92: 2 (default) -> 3 (wider hidden dim; A timed out but main has lower BF load)
     "naf_alpha_init": 0.1,    # iter-78 closed 0.15 at -0.14pp
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert
@@ -114,7 +115,7 @@ CONFIG = {
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-71 KEEP (iter-85 closed disabling at -0.18pp)
-    "bf_kernel":     9,   # iter-91: 7 -> 9 (larger kernel with wider sigma; untested combo)
+    "bf_kernel":     7,   # iter-91 timed out at kernel=9
     "bf_sigma_r":    0.01,   # iter-76 closed 0.02 at -0.94pp (BF basin tight at 0.01)
     "bf_sigma_x":    2.0,    # iter-88 KEEP (basin 2.0..2.5 flat, 3.0 declining)
     "bf_sigma_y":    2.0,
@@ -221,11 +222,11 @@ class NafNetStack(nn.Module):
                  residual: bool = True, n_bf: int = 0, bf_kernel: int = 7,
                  bf_sigma_x: float = 1.5, bf_sigma_y: float = 1.5,
                  bf_sigma_r: float = 0.01, gate: str = "gelu",
-                 norm: str = "ln"):
+                 norm: str = "ln", expand: int = 2):
         super().__init__()
         self.residual = residual
         self.stem = nn.Conv2d(1, c, 3, padding=1)
-        self.blocks = nn.ModuleList([NafBlock(c, alpha_init=alpha_init, gate=gate, norm=norm) for _ in range(n_blocks)])
+        self.blocks = nn.ModuleList([NafBlock(c, expand=expand, alpha_init=alpha_init, gate=gate, norm=norm) for _ in range(n_blocks)])
         self.head = nn.Conv2d(c, 1, 3, padding=1)
         nn.init.zeros_(self.head.weight)
         nn.init.zeros_(self.head.bias)
@@ -358,6 +359,7 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
                 bf_sigma_y=cfg.get("bf_sigma_y", 1.5),
                 gate=cfg.get("naf_gate", "gelu"),
                 norm=cfg.get("naf_norm", "ln"),
+                expand=cfg.get("naf_expand", 2),
             )
         # BF tail on image domain only (Agent B iter-17 finding: sino
         # domain has no anatomical edges for BF to exploit).
