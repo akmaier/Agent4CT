@@ -71,8 +71,8 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1e-4,       # iter-52 closed 2e-4 at -1.77pp (LR axis fully bisected)
-    "adamw_eps":     1e-9,       # iter-56: 1e-10 -> 1e-9 (bisect: 1e-8 baseline, 1e-10 KEEP, 1e-12 DISCARD)
+    "lr":            1.2e-4,     # iter-57: 1e-4 -> 1.2e-4 (fine bisection upper; 2e-4 closed at -1.77pp)
+    "adamw_eps":     1e-10,      # iter-53 KEEP (iter-55/56 both DISCARD around it; basin shallow)
     "optimizer":     "adamw",   # iter-54 closed adam at -1.01pp; AdamW + wd_split is right for this slug
     "weight_decay":  1e-4,
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
