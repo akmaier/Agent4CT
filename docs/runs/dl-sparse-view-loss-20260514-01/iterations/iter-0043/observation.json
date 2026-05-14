@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T20:52:05Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 43,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-43: enable SWA on Adam substrate iter-40 KEEP. Headroom 0.5860 -> 0.5744 (-1.16pp). DISCARD. Cross-substrate consistent with iter-11 (SWA on AdamW closed) and B iter-45 (per-step SWA on AdamW closed): SWA fails on resnet substrate regardless of optimizer. Dual-domain pipeline rejects weight smoothing.",
+  "val_score": 0.2962382137775421,
+  "headroom": 0.5743878868433011,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0043/comparison.png",
+  "advice_for_others": "DISCARD: SWA on Adam -1.16pp. Cross-substrate consistent: SWA closed on resnet across optimizer variants. SWA is NAFNet-specific (main, A) and resnet rejects all weight-smoothing mechanisms.",
+  "commit": "36cdf04"
+}
