@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-14T07:10:12Z",
+  "updated": "2026-05-14T07:12:55Z",
   "runs": [
     {
       "slug": "demo-dl-sparse-view-20260513-01",
@@ -20,9 +20,9 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T20:21:16Z",
       "status": "running",
-      "n_iterations": 26,
+      "n_iterations": 27,
       "best_score": 0.6537,
-      "best_headroom": 0.580708,
+      "best_headroom": 0.58333,
       "agent": "claude-main",
       "model": "claude-sonnet-4.5"
     },
@@ -104,7 +104,7 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T22:38:38Z",
       "status": "running",
-      "n_iterations": 15,
+      "n_iterations": 16,
       "best_score": 0.663,
       "best_headroom": 0.587,
       "agent": "claude-res",

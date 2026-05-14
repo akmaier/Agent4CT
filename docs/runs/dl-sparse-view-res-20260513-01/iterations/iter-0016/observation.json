@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T07:12:55Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 16,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-16: switch ResBlock from post-norm (conv->norm->act->conv->norm + x) to pre-norm/pre-activation (norm->act->conv->norm->act->conv + x). Keeps iter-14 alpha=0.1 keep \u2014 single-knob change. Hypothesis: pre-norm is more stable for deep residual stacks (cf. He et al. 2016 identity mappings, Xiong et al. 2020 on transformer pre-LN). Result: val_ssim 0.6630 -> 0.6622 (-0.12%, flat), headroom 0.5870 -> 0.5703 (-2.8%). val_ssim is essentially unchanged but headroom regresses materially; train_time also 453s -> 354s (faster, but irrelevant). Interpretation: at only 6 blocks the pre-norm stability win is absent; meanwhile losing the trailing norm leaves the residual h with looser scale before the alpha*h add, which interacts badly with the small alpha=0.1 init. Discard. Note: pre-norm might still pay off at deeper stacks (12-16 blocks) where post-norm gradients can degrade.",
+  "val_score": 0.6622,
+  "headroom": 0.5703,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0016/comparison.png",
+  "advice_for_others": "Pre-norm vs post-norm ordering is depth-dependent. At 6 blocks post-norm wins; pre-norm only helps when norm-pre-add interacts with sufficiently deep gradient paths. Worth revisiting if/when we go to >=12 blocks. Also note pre-norm trained ~22% faster (no trailing norm in the residual path) so it may be a cheaper substrate to scale up.",
+  "commit": "dd81906"
+}

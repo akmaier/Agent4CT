@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T07:12:55Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 28,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-28 (resubmit of crashed iter-27 attempt after fixing sbatch bad-node exclusion): cross-ported spawn-agent-B iter-14 winner \u2014 residual-in-residual with learnable per-block alpha scaling (init=0.1, EDSR Lim+2017 + ReZero Bachlechner+2020). 12 extra scalar params total (6 blocks x 2 nets). Headroom 0.5807 (iter-25) -> 0.5833 (+0.26pp, NEW MAIN BEST). val_rmse 0.005537 -> 0.005503 (-0.6%). Effectively ties spawn-B iter-14 leader (0.587) within FP noise. Confirms the learnable-alpha scaling generalises from B/res slot to main/iter-25 baseline.",
+  "val_score": 0.3059752285480499,
+  "headroom": 0.5833297486105615,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0028/comparison.png",
+  "advice_for_others": "Residual-in-residual with learnable per-block alpha scaling (EDSR + ReZero) ports cleanly from spawn-B and gives +0.2-0.3pp on the resnet baseline at essentially zero parameter cost. Initialise alpha=0.1 (near-identity start lets optimiser discover useful residual magnitudes).",
+  "commit": "dd81906"
+}
