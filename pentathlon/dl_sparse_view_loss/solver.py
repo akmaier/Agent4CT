@@ -116,21 +116,23 @@ CONFIG = {
     "val_n":         100,
 
     # Editable: training schedule.
-    # iter-15: bump epochs 8 -> 10. Past iters show loss is still
-    # actively decreasing at epoch 8 (LR-limited but LR can't go up
-    # without instability per iter-13). The right move is MORE STEPS at
-    # the same LR. 8 ep = 435s; 10 ep should fit in ~550s ( <9 min, well
-    # under the 15 min slurm budget). At fixed compute this is unfair
-    # (gives this iter +25% training); accept the cost - the journal
-    # makes it explicit. Anti-overfit threshold still OK: same
-    # param count, no extra data.
-    "epochs":        10,
+    # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
+    # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
+    "epochs":        8,
     "batch_size":    1,
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            1e-4,
     "optimizer":     "adamw",   # adam | adamw
-    "weight_decay":  1e-4,
+    # iter-16: weight_decay 1e-4 -> 1e-3 (10x). iter-15 showed the
+    # pipeline OVERFITS the dual-domain noise target with more epochs.
+    # Stronger wd specifically combats noise-fitting: penalizes large
+    # weights that encode high-frequency noise pattern. AdamW decouples
+    # wd from gradient so this is true L2 regularization, not LR-scaled.
+    # Cross-agent context: main agent at iter-32 testing wd=0 (opposite
+    # direction); we test wd=10x to see which side of the optimum we're
+    # on. Free experiment - zero compute cost.
+    "weight_decay":  1e-3,
 
     # Editable: training loss. "mse" (default Wagner-style; pipeline.training_step),
     # "l1", "charbonnier" (smooth L1 with epsilon), or "huber".
