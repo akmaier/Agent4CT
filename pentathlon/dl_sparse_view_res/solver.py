@@ -74,11 +74,11 @@ CONFIG = {
     "lr":            1e-4,       # iter-57 closed 1.2e-4 at -0.73pp
     "adamw_eps":     1e-10,      # iter-53 KEEP (iter-55/56 both DISCARD around it; basin shallow)
     "optimizer":     "adamw",   # iter-54 closed adam at -1.01pp; AdamW + wd_split is right for this slug
-    "weight_decay":  1e-4,       # iter-34 KEEP (iter-58/59 bisection closed both sides)
+    "weight_decay":  5e-5,       # iter-66: 1e-4 -> 5e-5 on batch substrate (retest wd lower on new substrate)
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
 
     # Editable: residual-stack model architecture.
-    "res_blocks":    7,          # iter-65: retry 7 blocks on batch substrate (was -2.38 on group)
+    "res_blocks":    6,          # iter-65 closed 7 on batch -8.89pp; capacity firmly at 6
     "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
     "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
