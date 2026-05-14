@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T20:10:08Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 39,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-39: revert optimizer adam -> adamw + wd 1e-3 -> 5e-4 (bisect between Adam wd=0 KEEP 0.5842 and AdamW wd=1e-3 0.5833). Headroom 0.5842 -> 0.5666 (-1.76pp). DISCARD. The bisection doesnt form a smooth curve: Adam (wd=0) is the new best, AdamW wd=5e-4 is much worse. Likely the AdamW switch reintroduces the bigger eps default effect. Adam (wd=0) remains best.",
+  "val_score": 0.30088192224502563,
+  "headroom": 0.5666412891800796,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0039/comparison.png",
+  "advice_for_others": "DISCARD: AdamW wd=5e-4 -1.76pp. The optimizer choice (Adam vs AdamW) matters more than the wd value. Sticking with Adam (wd=0) iter-36 KEEP best.",
+  "commit": "2ae543f"
+}
