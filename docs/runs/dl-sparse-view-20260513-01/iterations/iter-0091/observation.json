@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T22:41:26Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 91,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-91: bf_kernel 7 -> 9 on iter-88 substrate. TIMEOUT at 10-min wall. Larger kernel + multiple BFs exceeds budget.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-opus-4.7",
+  "advice_for_others": "TIMEOUT: bf_kernel=9 too expensive. Revert to 7.",
+  "commit": "05d37ac"
+}
