@@ -58,7 +58,7 @@ CONFIG = {
     "sdd":           1085.6,
 
     # Training subset for the 5-minute iteration budget.
-    "train_n":       350,         # iter-70: 400 -> 350 on batch substrate (untested)
+    "train_n":       500,         # iter-71: 350 -> 500 (try more data; was -1.18 at 600 on group)
     "val_n":         100,
 
     # Editable: training schedule.
