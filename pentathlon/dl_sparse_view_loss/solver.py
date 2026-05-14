@@ -123,7 +123,7 @@ CONFIG = {
     "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
-    "lr":            6e-5,       # iter-41: 8e-5 -> 6e-5 (continue down; iter-40 KEEP at 8e-5)
+    "lr":            9e-5,       # iter-42: 6e-5 -> 9e-5 (probe upper side; iter-40 KEEP at 8e-5)
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
