@@ -139,16 +139,15 @@ CONFIG = {
     # noise of iter-28.
     "ema":           True,
     "ema_decay":     0.0,              # SWA mode (uniform mean)
-    # Iter-35: widen SWA window from last-4-of-6 (start_ep=2) to last-5-of-6
-    # (start_ep=1). iter-34 KEEP at last-4 (hr=0.5920) shows that widening the
-    # SWA window further was monotonically beneficial. Test if widening one
-    # more epoch further compounds, or if early-epoch noise re-enters the
-    # average and degrades the result. The trainable BF sigmas are slow to
-    # converge (3 BF tails @ n_bf=3) so the BF-driven slow signal may keep
-    # dominating. Zero compute cost — same epoch count, same per-epoch wall.
-    # If keep at +0.1pp or higher: try last-6 (start_ep=0).
-    # If discard: last-4 is the sweet spot, move to other knobs.
-    "ema_start_ep":  1,                # iter-35: last 5 of 6 (was 2 = last-4)
+    # Iter-36: widen SWA window from last-5-of-6 (start_ep=1) to last-6-of-6
+    # (start_ep=0). iter-35 KEEP at last-5 (hr=0.5942, +0.22pp over iter-34)
+    # confirmed monotonic widening; test if including epoch 0 (the noisiest)
+    # still helps or if early-epoch noise finally re-enters the average.
+    # If keep: SWA covers full training => may want to test EMA decay > 0
+    #   for higher emphasis on later epochs.
+    # If discard: last-5 is the sweet spot, move to architecture knobs
+    #   (c=40, SimpleGate).
+    "ema_start_ep":  0,                # iter-36: last 6 of 6 (was 1 = last-5)
     "ema_every":     1,
     # Iter-31: push BF tail to 3. Saturation test. Curve so far on NAFNet:
     #   n_bf=0 (iter-27, SWA-only):     hr=0.5777
