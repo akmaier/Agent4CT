@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T21:45:04Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 66,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-66: wd 1e-4 -> 5e-5 on batch-norm substrate iter-62 KEEP. Headroom 0.6048 -> 0.6041 (-0.07pp). Near-flat DISCARD. wd basin shape preserved on batch substrate.",
+  "val_score": 0.6809336543083191,
+  "headroom": 0.6040807135267943,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0066/comparison.png",
+  "advice_for_others": "Near-flat DISCARD: wd=5e-5 on batch -0.07pp. wd=1e-4 stays optimum on both group and batch substrates.",
+  "commit": "1ab3021"
+}
