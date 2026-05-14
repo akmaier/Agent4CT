@@ -214,6 +214,55 @@ CLUSTER_HOST = "maier@cluster.i5.informatik.uni-erlangen.de"
 CLUSTER_REPO = "/cluster/maier/Agent4CT"
 
 
+# Static safety scan on the agent-written solver.py before we scp +
+# sbatch it. A solver only needs torch / numpy / matplotlib + the
+# ddssl_ldct package; anything that spawns processes, opens sockets,
+# loads untrusted pickles, or runs strings as code is refused.
+# Defense-in-depth on top of the bounded tools — an external-LLM agent
+# can write almost any python it wants into solver.py, but the cluster
+# executes that code, so we filter at the shipping boundary.
+_DANGEROUS_PATTERNS: list[tuple[str, str]] = [
+    (r"\bsubprocess\b",                       "subprocess module"),
+    (r"\bos\.(system|popen|exec[lv]?p?e?|spawn[lv]?p?e?)\b",
+                                              "os shell/process spawn"),
+    (r"\bsocket\b",                           "socket module"),
+    (r"\b(urllib|urllib2|urllib3|requests|httpx|http\.client)\b",
+                                              "HTTP client"),
+    # The bare builtins eval / exec / compile / __import__ — the
+    # (?<!\.) lookbehind excludes attribute calls like pipe.eval(),
+    # model.eval(), torch.compile(), tensor.exec_strategy() etc., which
+    # are legitimate PyTorch / numpy patterns.
+    (r"(?<!\.)\beval\s*\(",                   "eval() builtin"),
+    (r"(?<!\.)\bexec\s*\(",                   "exec() builtin"),
+    (r"(?<!\.)\bcompile\s*\(",                "compile() builtin"),
+    (r"\b__import__\s*\(",                    "__import__()"),
+    (r"\bpickle\.loads?\s*\(",                "pickle.load(s)"),
+    (r"\bshutil\.rmtree\s*\(",                "shutil.rmtree"),
+    (r"\bos\.remove\s*\(",                    "os.remove"),
+    (r"\bos\.unlink\s*\(",                    "os.unlink"),
+]
+
+
+def _scan_solver_for_dangerous_patterns(solver_path: Path) -> list[str]:
+    """Return a list of "line N: <label> (<match>)" strings for each hit.
+
+    Naive regex over the whole file — won't strip comments / docstrings.
+    False positives are fine; the agent can rewrite and resubmit. False
+    negatives are what we want to avoid.
+    """
+    try:
+        content = solver_path.read_text()
+    except OSError as e:
+        return [f"could not read solver.py: {e}"]
+    findings: list[str] = []
+    for pat, label in _DANGEROUS_PATTERNS:
+        for m in re.finditer(pat, content):
+            line_no = content[: m.start()].count("\n") + 1
+            snippet = m.group(0)
+            findings.append(f"line {line_no}: {label} ({snippet!r})")
+    return findings
+
+
 def _ssh(cmd_on_cluster: str, *, timeout_s: int = 60) -> subprocess.CompletedProcess:
     """One ssh round-trip with bounded timeout."""
     return subprocess.run(
@@ -236,11 +285,26 @@ def tool_submit_iteration(args: dict, ctx: dict) -> str:
     The agent calls this AFTER it has written the new solver.py. Path
     is reconstructed from the family — the agent cannot point this at
     arbitrary files or arbitrary sbatch templates.
+
+    BEFORE the scp, the solver is scanned for dangerous Python patterns
+    (subprocess, os.system, sockets, http clients, eval/exec, ...).
+    Any hit refuses the submission; the agent can rewrite and try
+    again.  Pure-torch / numpy / matplotlib code is the expected shape
+    of solver.py and contains none of those patterns.
     """
     fam = ctx["family"]
     local_solver = REPO / f"pentathlon/dl_sparse_view_{fam}/solver.py"
     if not local_solver.exists():
         return f"ERROR: {local_solver.relative_to(REPO)} does not exist; write it first."
+    findings = _scan_solver_for_dangerous_patterns(local_solver)
+    if findings:
+        return ("REFUSED: solver.py contains patterns the safety scan "
+                "refuses to ship to the cluster. Rewrite solver.py using "
+                "pure torch / numpy / matplotlib + the ddssl_ldct package "
+                "(no subprocess, no os.system, no sockets / HTTP, no "
+                "eval / exec / __import__, no pickle.load, no shutil.rmtree, "
+                "no file deletion).\n  findings:\n"
+                + "\n".join(f"    - {f}" for f in findings))
     remote_solver = f"{CLUSTER_REPO}/pentathlon/dl_sparse_view_{fam}/solver.py"
     p = _scp(str(local_solver), f"{CLUSTER_HOST}:{remote_solver}")
     if p.returncode != 0:
