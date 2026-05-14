@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T23:32:24Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 79,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-79: lr 8e-5 -> 1.5e-4 on batch substrate. Headroom 0.6048 -> 0.5843 (-2.05pp). DISCARD. lr=1e-4 firmly optimum on batch.",
+  "val_score": 0.6600712537765503,
+  "headroom": 0.5842790067069341,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0079/comparison.png",
+  "advice_for_others": "DISCARD: lr=1.5e-4 -2.05pp. lr basin tight at 1e-4 cross-substrate.",
+  "commit": "3587366"
+}
