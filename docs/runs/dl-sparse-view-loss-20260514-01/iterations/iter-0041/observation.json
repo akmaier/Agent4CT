@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T20:28:56Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 41,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-41: lr 8e-5 -> 6e-5 (continue down on Adam substrate) on iter-40 substrate. Headroom 0.5860 -> 0.5633 (-2.27pp). DISCARD. Bisection stops: lr=6e-5 too low. Optimum stays near 8e-5.",
+  "val_score": 0.27935683727264404,
+  "headroom": 0.5633189916214804,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0041/comparison.png",
+  "advice_for_others": "DISCARD: lr=6e-5 -2.27pp. Adam substrate lr basin: 5e-5 closed, 6e-5/-2.27pp, 8e-5 KEEP, 1e-4 baseline. Sharp cliff between 6e-5 and 8e-5. Try lr=9e-5 to probe upper side.",
+  "commit": "dd8c3eb"
+}
