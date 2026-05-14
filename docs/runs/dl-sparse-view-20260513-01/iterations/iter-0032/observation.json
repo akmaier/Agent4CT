@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T07:54:55Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 32,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-32: weight_decay 1e-4 -> 0 on the iter-28 alpha-scaling residual-in-residual baseline. Headroom 0.5833 -> 0.5906 (+0.73pp, FIRST TIME ANY AGENT EXCEEDS 0.59). val_rmse 0.005503 -> 0.005407 (-1.7%). Hypothesis confirmed: AdamW WD was decaying the learnable per-block alpha scalars (init 0.1), pulling them back toward 0 and preventing them from growing into their useful range. WD=0 lets alpha discover its right magnitude. This compounds with iter-28 to give the new team-wide best. NEW OVERALL BEST (was spawn-B iter-14 at hr=0.587).",
+  "val_score": 0.30830147862434387,
+  "headroom": 0.5905841227010409,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0032/comparison.png",
+  "advice_for_others": "When you add learnable per-parameter scalars (alpha, beta, ReZero, EDSR scaling, etc.) to a small denoiser, disable global weight_decay or exclude those params from WD. The default AdamW WD silently over-regularises the new small-magnitude params and undoes the architectural change.",
+  "commit": "e552ab8"
+}
