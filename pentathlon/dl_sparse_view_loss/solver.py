@@ -124,7 +124,7 @@ CONFIG = {
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            8e-5,       # iter-40 KEEP (iter-42 closed 9e-5 at -0.28pp)
-    "swa":           True,        # iter-43: enable SWA on Adam substrate (iter-11 closed on AdamW substrate; Adam may differ)
+    "swa":           False,       # iter-43 closed on Adam substrate -1.16pp (same as iter-11)
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
@@ -216,11 +216,11 @@ CONFIG = {
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
-    "res_n_bf":      0,
+    "res_n_bf":      1,            # iter-44: retry BF tail on Adam substrate (iter-26 closed on AdamW)
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
-    "bf_sigma_r":    0.01,
+    "bf_sigma_r":    0.05,         # 0.05 sigma_r (iter-26 used 0.01; try looser)
     # iter-27 (DISCARD, -0.23pp): EDSR per-block alpha=0.1 alone fails on
     # this slug's wd=1e-3 substrate (alpha decayed to ~0 by wd).
     # iter-28: same alpha=0.1 + wd_split (alpha excluded from wd) to rescue
