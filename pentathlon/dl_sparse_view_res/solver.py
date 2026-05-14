@@ -77,7 +77,8 @@ CONFIG = {
     "res_kernel":    3,
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
-    "res_scale":     0.2,        # iter-44: 0.1 -> 0.2 (other side of 0.1 sweet spot; iter-43 0.05 -3.09pp closed lower bound)
+    "res_scale":     0.1,        # iter-14 KEEP (bisection complete: 0.05/-3.09pp, 0.2/-1.33pp)
+    "swa_last_n":    4,           # iter-45: per-step SWA over last 4 of 8 epochs (cross-port from main iter-60 +0.32pp)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
@@ -348,6 +349,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     elif lr_schedule == "step7":
         print(f"[solver-res] LR schedule: step7 (lr={lr_max:.2e} for ep 1-7, then x{lr_step_factor} for ep 8)",
               flush=True)
+    # iter-45: per-step SWA cross-port from main iter-60 (+0.32pp on NAFNet).
+    # Average model weights over EVERY optimizer step in the last swa_last_n epochs.
+    swa_last_n = int(cfg.get("swa_last_n", 0))
+    swa_start_ep = n_epochs - swa_last_n
+    swa_state = None
+    swa_count = 0
     t0 = time.time()
     for ep in range(n_epochs):
         if lr_schedule == "cosine" and n_epochs > 1:
@@ -372,11 +379,27 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             losses["loss"].backward()
             opt.step()
             running += float(losses["loss"].detach().cpu())
+            if swa_last_n > 0 and ep >= swa_start_ep:
+                if swa_state is None:
+                    swa_state = {k: v.detach().clone() for k, v in pipe.state_dict().items()
+                                 if v.dtype.is_floating_point}
+                    swa_count = 1
+                else:
+                    swa_count += 1
+                    w = 1.0 / swa_count
+                    for k, v in pipe.state_dict().items():
+                        if v.dtype.is_floating_point:
+                            swa_state[k].mul_(1.0 - w).add_(v.detach(), alpha=w)
         mean_loss = running / max(1, train_noisy.shape[0])
         print(f"[solver-res] epoch {ep+1:3d}/{n_epochs}  loss={mean_loss:.5f}  lr={cur_lr:.2e}",
               flush=True)
     train_time = time.time() - t0
     print(f"[solver-res] training took {train_time:.1f}s", flush=True)
+    if swa_state is not None:
+        live = {k: v.detach().clone() for k, v in pipe.state_dict().items()}
+        merged = dict(live); merged.update(swa_state)
+        pipe.load_state_dict(merged, strict=False)
+        print(f"[solver-res] loaded SWA-averaged weights ({swa_count} per-step snapshots)", flush=True)
 
     pipe.eval()
     # Chunked validation so we don't OOM on smaller VRAM (Q5000 16GB) when
