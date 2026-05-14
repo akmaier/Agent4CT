@@ -77,13 +77,11 @@ CONFIG = {
     "res_kernel":    3,
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
-    "res_scale":     0.1,        # iter-14: EDSR-style learnable per-block residual scaling, init 0.1
+    "res_scale":     0.05,       # iter-43: 0.1 -> 0.05 (slow growth, finer per-block control)
 
-    # iter-42: trainable Wagner BF tails stacked on the image-denoiser output.
-    # Cross-port from main iter-63..67 (KEEP, +0.26..+0.04 per BF) and
-    # Agent A iter-29..44 (KEEP, +0.28..+0.17 per BF). BF stacking is the
-    # most reliable lift mechanism in the project. Single BF as starting test.
-    "res_n_bf":      1,           # iter-42: 0 -> 1 BF tail
+    # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
+    # to resnet substrate. Same finding as Agent C iter-26. Disable.
+    "res_n_bf":      0,
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
