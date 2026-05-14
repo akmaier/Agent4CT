@@ -112,7 +112,7 @@ CONFIG = {
     "sdd":           1085.6,
 
     # Training subset for the 5-minute iteration budget.
-    "train_n":       500,        # iter-53: 350 -> 500 (more data; parallel to B iter-71)
+    "train_n":       400,        # iter-53 closed train_n=500 on batch
     "val_n":         100,
 
     # Editable: training schedule.
@@ -212,7 +212,7 @@ CONFIG = {
     "res_kernel":    3,         # iter-26: revert kernel 5 -> 3 (iter-25 timed out at kernel=5)
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
-    "res_dropout":   0.0,
+    "res_dropout":   0.05,      # iter-54: retest on batch substrate (was -1.26 on group)
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
