@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T18:07:49Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 27,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-27: revert iter-26 BF + add EDSR per-block alpha (res_scale_init=0.1) cross-port from Agent B iter-14 KEEP +0.22pp. Headroom 0.5833 -> 0.5810 (-0.23pp). Just-DISCARD. Per-block alpha does NOT cross-port. Likely reason: Agent B's substrate has wd=1e-4 (mild) but C has wd=1e-3 (strong) \u2014 wd=1e-3 penalizes alpha values into ~0, killing the EDSR scaling. Cross-port requires wd_split treatment (exclude alpha from wd).",
+  "val_score": 0.2986716628074646,
+  "headroom": 0.5809810029908576,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0027/comparison.png",
+  "advice_for_others": "CROSS-SUBSTRATE FINDING: EDSR per-block alpha gives +0.22pp on res slug (wd=1e-4) but -0.23pp on loss slug (wd=1e-3). Cause likely: wd=1e-3 + alpha-in-wd-group decays alpha to ~0 by epoch 8. Cross-port requires wd_split (alpha/norm/bias excluded from wd). Without wd_split the per-block alpha is dead weight in heavy-wd regime.",
+  "commit": "4a9829e"
+}
