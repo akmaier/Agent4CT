@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T07:46:41Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 24,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-24 NAFNet c=40 ReLU 6 blocks (intermediate width after iter-23 c=48 timed out): headroom 0.5743 vs iter-21 c=32 0.5762 (-0.19pp), iter-22 c=32 SimpleGate 0.5741 (+0.02pp), and iter-7 K=2 UNet ceiling 0.5745 (-0.02pp). Training converged loss 0.00048->0.00039 by ep5, train_time 393s well within wall. Width sweep results: c=32 (0.5762) > c=40 (0.5743) > c=48 (timeout). The NAFNet family ceiling at this 6-epoch / 400-phantom budget is the iter-21 baseline 0.5762, statistically indistinguishable from my iter-7 0.5745. Wider channels do NOT help \u2014 bigger models overfit on 400 random-ellipse phantoms (matches main iter-3 c=24 finding, spawn-B iter-10 c=24 finding). The new architecture family is alive but BOUNDED to the same ~0.575 plateau as the iterated-UNet ceiling; it does NOT break the 0.587 cross-agent ceiling.",
+  "val_score": 0.2823,
+  "headroom": 0.5743,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.09,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0024/comparison.png",
+  "advice_for_others": "NAFNet stack (LN + 1x1 expand + 3x3 dw + ReLU/SimpleGate + 1x1 squeeze + residual scaling) at c=32 6 blocks lands at headroom ~0.576 on dual-domain N2I CT recon \u2014 competitive with K=2 shared-UNet+BF iter-7 at 1/8 the params, but does NOT beat it. Width sweep c=32->40->48 shows no monotonic improvement at this 6-epoch budget. The family is bounded by the same data-noise / training-budget plateau as the iterated-denoiser family. To break the 0.587 ceiling, architectural width/depth changes inside the image_denoiser slot appear insufficient \u2014 the bottleneck is likely the dual-domain N2I loss structure (only consumes half-set sinograms) and/or data scarcity (400 phantoms), not the choice of CNN block.",
+  "commit": "43c78d4"
+}
