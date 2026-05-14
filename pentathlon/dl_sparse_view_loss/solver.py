@@ -220,10 +220,12 @@ CONFIG = {
     # this slug's wd=1e-3 substrate (alpha decayed to ~0 by wd).
     # iter-28: same alpha=0.1 + wd_split (alpha excluded from wd) to rescue
     # the per-block scaling. Cross-port from Agent B iter-34 KEEP wd_split.
-    # iter-29: revert alpha to 0 (iter-28 nearly recovered but added no lift),
-    # keep wd_split to isolate effect on norm/bias exclusion only.
+    # iter-29 (DISCARD, -1.97pp): wd_split alone fails on wd=1e-3 substrate.
+    # Revert wd_split. The whole alpha/wd_split exploration is closed.
     "res_scale_init": 0.0,
-    "wd_split":      True,
+    "wd_split":      False,
+    # iter-30: AdamW beta2 default 0.999 -> 0.99 (faster forget of past grad stats)
+    "adamw_beta2":   0.99,
 
     # Noise simulation — kept fixed so headroom is comparable across iter.
     # iter-24 (DISCARD, hr=0.5650): noise jitter [3e4, 8e4] -1.83pp.
@@ -446,13 +448,15 @@ def make_optimizer(pipe_or_params, cfg):
     iter-34 KEEP +0.22pp): split into two param groups, conv weights get wd,
     alpha/norm/bias get wd=0 (BERT/ConvNeXt style; rescues per-block alpha
     from wd-induced collapse in high-wd regimes)."""
+    beta2 = float(cfg.get("adamw_beta2", 0.999))
+    betas = (0.9, beta2)
     if cfg["optimizer"] == "adam":
         params = list(pipe_or_params.parameters()) if hasattr(pipe_or_params, "parameters") else list(pipe_or_params)
-        return torch.optim.Adam(params, lr=cfg["lr"])
+        return torch.optim.Adam(params, lr=cfg["lr"], betas=betas)
     wd = float(cfg["weight_decay"])
     if not cfg.get("wd_split", False):
         params = list(pipe_or_params.parameters()) if hasattr(pipe_or_params, "parameters") else list(pipe_or_params)
-        return torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=wd)
+        return torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=wd, betas=betas)
     pipe = pipe_or_params
     decay, no_decay = [], []
     for n, p in pipe.named_parameters():
@@ -468,7 +472,7 @@ def make_optimizer(pipe_or_params, cfg):
     return torch.optim.AdamW(
         [{"params": decay, "weight_decay": wd},
          {"params": no_decay, "weight_decay": 0.0}],
-        lr=cfg["lr"])
+        lr=cfg["lr"], betas=betas)
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
