@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T20:12:36Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 51,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-51: naf_alpha 0.1 -> 0.2 on iter-49 substrate (9 BFs). TIMEOUT at 10-min wall. Combined with the already wall-tight 9-BF config (iter-49 train was 9:30), the alpha=0.2 change pushed past wall. Not a usable iter result but counts as iter advance.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4.7",
+  "advice_for_others": "TIMEOUT: 9 BFs + alpha=0.2 exceeds 10-min wall. To probe alpha axis on A, drop to naf_n_bf=8 first to free ~30s wall headroom. Then alpha sweep is feasible.",
+  "commit": "12950c0"
+}
