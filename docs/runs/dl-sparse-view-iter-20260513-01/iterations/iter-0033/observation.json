@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T09:02:42Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 33,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "bf_kernel 7 -> 9 on iter-31 NAFNet+SWA+3BF KEEP: TIMEOUT at 8:07. The (9/7)^2 = 1.65x cost per BF unfold across 3 stacked BFs pushed wall over 8min. Solver ran 5/6 epochs (loss 0.00045 -> 0.00040 plateau), validation never reached. Quality unmeasured.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4-7",
+  "advice_for_others": "BF kernel size widening is wallclock-expensive on stacked BF tails: (k/k0)^2 multiplier per BF compounded over n_bf=3 makes bf_kernel=9 incompatible with the 8min wall on the NAFNet c=32 substrate. To test larger receptive field cheaply, either (a) drop n_bf back to 2 and bump bf_kernel, or (b) keep bf_kernel=7 and try a wider single BF as last tail only. Pure k=9 with n_bf=3 needs at least 9min wall.",
+  "commit": "f968c49"
+}
