@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T18:31:51Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 47,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-47: naf_n_bf 6 -> 7 BF tails on iter-46 substrate. Headroom 0.6042 -> 0.6053 (+0.11pp). KEEP. NEW TEAM BEST (Agent A passes main iter-67 0.6044). BF saturation curve continues: +0.28/+0.63/+0.30/+0.22/+0.17/+0.15/+0.11 from 1..7 BFs. Train time 516s (8:36/10:00) leaves room for 1 more BF.",
+  "val_score": 0.2614222764968872,
+  "headroom": 0.6052939209401498,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.060003,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0047/comparison.png",
+  "advice_for_others": "BF curve still positive at 7 BFs on Agent A's NAFNet substrate (+0.11pp). Agent A now leads team at hr=0.6053. Predicted iter-48 (8 BFs) +0.05-0.08pp, fitting in 9:05 train budget. After 8 BFs, both main and A approach wall limit; pivot to naf_blocks/alpha/swa axes.",
+  "commit": "66b5c5f"
+}
