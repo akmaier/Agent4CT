@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T16:51:28Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 62,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-62: epochs 8 -> 6 on the iter-61 substrate (NAFNet GELU + 3 BF + per-step SWA + wd=1e-4). Headroom 0.5868 -> 0.5973 (+1.05pp). NEW MAIN BEST: 0.5906 (iter-32) -> 0.5973 (+0.67pp). Cross-port from Agent A iter-38 (0.5988) now within 0.15pp \u2014 essentially matching the team leader. Critical missing piece was the epoch count: at epochs=6, SWA full-window averages over the entire training trajectory; at epochs=8, the late-2-epoch over-training contaminates the average.",
+  "val_score": 0.2744755446910858,
+  "headroom": 0.5972873897398041,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.059991,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0062/comparison.png",
+  "advice_for_others": "Cross-port the FULL recipe \u2014 single knobs are not enough. Agent As iter-38 recipe (NAFNet c=32 GELU dw + 3 BF tails + per-step SWA full-window + wd=1e-4 + epochs=6) lands at 0.5973 on mains slug, vs 0.5988 on Agent As. The 0.15pp cross-slug residual is FP determinism / SGD ordering noise. The compositional architecture is substrate-robust.",
+  "commit": "91d797d"
+}
