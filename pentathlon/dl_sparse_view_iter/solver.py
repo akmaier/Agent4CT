@@ -101,7 +101,8 @@ CONFIG = {
     # ResStack ballpark (full-resolution conv but no down/up).
     "epochs":        6,
     "batch_size":    1,
-    "lr":            8e-5,             # iter-55: 1e-4 -> 8e-5 (cross-port main iter-79 / C iter-40 KEEP)
+    "lr":            1e-4,             # iter-55 closed 8e-5 at -0.05pp (substrate-dependent lr)
+    "naf_alpha":     0.05,             # iter-56: 0.1 -> 0.05 on iter-53 substrate (8 BFs+ReLU)
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
 
@@ -122,8 +123,7 @@ CONFIG = {
     "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-52: GELU -> ReLU (test gate reversion; no wall cost)
-    "naf_alpha":     0.1,              # iter-51 TIMED OUT (alpha=0.2 + 9 BFs > wall)
-                                         #  (spawn-B iter-14 advice: cheap +0.15pp)
+                                         #  (alpha overridden by 0.05 in iter-56 above)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
     "share_weights": False,            # n/a at K=1
     "n_bf":          0,                # iter-21: no tail BF on legacy paths

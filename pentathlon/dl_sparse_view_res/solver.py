@@ -78,7 +78,8 @@ CONFIG = {
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
 
     # Editable: residual-stack model architecture.
-    "res_blocks":    7,          # iter-60: 6 -> 7 (small capacity bump; iter-3 closed 8, 7 untested)
+    "res_blocks":    6,          # iter-60 closed 7 at -2.38pp; capacity saturated at 6
+    "res_bias":      False,      # iter-61: disable biases in convs (untested architectural simplification)
     "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
     "res_norm":      "group",    # "group" | "none" | "batch"
     "res_act":       "relu",     # "relu" | "gelu" | "swish"
@@ -149,14 +150,15 @@ class ResBlock(nn.Module):
     """
     def __init__(self, c: int, kernel: int = 3, norm: str = "group",
                  act: str = "relu", dropout: float = 0.0,
-                 res_scale: float | None = None):
+                 res_scale: float | None = None,
+                 bias: bool = True):
         super().__init__()
         pad = kernel // 2
-        self.conv1 = nn.Conv2d(c, c, kernel, padding=pad)
+        self.conv1 = nn.Conv2d(c, c, kernel, padding=pad, bias=bias)
         self.n1 = _make_norm(norm, c)
         self.act1 = _make_act(act)
         self.drop = nn.Dropout2d(dropout) if dropout > 0 else nn.Identity()
-        self.conv2 = nn.Conv2d(c, c, kernel, padding=pad)
+        self.conv2 = nn.Conv2d(c, c, kernel, padding=pad, bias=bias)
         self.n2 = _make_norm(norm, c)
         if res_scale is None:
             self.alpha = None
@@ -192,16 +194,17 @@ class ResidualStack(nn.Module):
                  kernel: int = 3, norm: str = "group", act: str = "relu",
                  dropout: float = 0.0, residual: bool = True,
                  res_scale: float | None = None,
-                 input_dropout: float = 0.0):
+                 input_dropout: float = 0.0,
+                 bias: bool = True):
         super().__init__()
         self.residual = residual
         pad = kernel // 2
         self.input_dropout = nn.Dropout2d(input_dropout) if input_dropout > 0 else nn.Identity()
-        self.head = nn.Conv2d(1, c, kernel, padding=pad)
+        self.head = nn.Conv2d(1, c, kernel, padding=pad, bias=bias)
         self.head_act = _make_act(act)
         self.blocks = nn.Sequential(*[
             ResBlock(c, kernel=kernel, norm=norm, act=act, dropout=dropout,
-                     res_scale=res_scale)
+                     res_scale=res_scale, bias=bias)
             for _ in range(n_blocks)
         ])
         self.tail = nn.Conv2d(c, 1, kernel, padding=pad)
@@ -254,6 +257,7 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
             residual=cfg["residual"],
             res_scale=cfg.get("res_scale", None),
             input_dropout=float(cfg.get("input_dropout", 0.0)),
+            bias=bool(cfg.get("res_bias", True)),
         )
     proj_dn = make()
     img_dn = make()
