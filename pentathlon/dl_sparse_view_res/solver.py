@@ -71,7 +71,8 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            2e-4,       # iter-52: 1e-4 -> 2e-4 (double; lower side closed iter-51 -2.55pp)
+    "lr":            1e-4,       # iter-52 closed 2e-4 at -1.77pp (LR axis fully bisected)
+    "adamw_eps":     1e-10,      # iter-53: 1e-8 -> 1e-10 (tighter eps; C iter-35 closed upper 1e-6)
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
@@ -297,8 +298,9 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
 def make_optimizer(model: nn.Module, cfg):
     beta2 = float(cfg.get("adamw_beta2", 0.999))
     betas = (0.9, beta2)
+    eps = float(cfg.get("adamw_eps", 1e-8))
     if cfg["optimizer"] == "adam":
-        return torch.optim.Adam(model.parameters(), lr=cfg["lr"], betas=betas)
+        return torch.optim.Adam(model.parameters(), lr=cfg["lr"], betas=betas, eps=eps)
     # iter-34: split params into wd-regulated and wd-excluded groups.
     # alpha (EDSR residual-scaling scalar, init 0.1) lives at module.alpha
     # in ResBlock. AdamW WD pulls alpha toward 0 throughout training, which
@@ -323,6 +325,7 @@ def make_optimizer(model: nn.Module, cfg):
         ],
         lr=cfg["lr"],
         betas=betas,
+        eps=eps,
     )
 
 
