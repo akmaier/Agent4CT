@@ -72,8 +72,8 @@ CONFIG = {
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
     "lr":            1e-4,       # iter-52 closed 2e-4 at -1.77pp (LR axis fully bisected)
-    "adamw_eps":     1e-10,      # iter-53: 1e-8 -> 1e-10 (tighter eps; C iter-35 closed upper 1e-6)
-    "optimizer":     "adamw",
+    "adamw_eps":     1e-10,      # iter-53 KEEP +0.06pp marginal
+    "optimizer":     "adam",    # iter-54: adamw -> adam (cross-port C iter-36 KEEP +0.09pp)
     "weight_decay":  1e-4,
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
 
