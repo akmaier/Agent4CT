@@ -78,7 +78,7 @@ CONFIG = {
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
     "lr":            1e-4,
-    "optimizer":     "adamw",   # adam | adamw
+    "optimizer":     "adam",    # iter-77: adamw -> adam (cross-port from C iter-36 KEEP +0.09pp)
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
     # toward 0 and preventing them from growing. WD=0 lets alpha
@@ -113,7 +113,7 @@ CONFIG = {
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-71 KEEP (iter-72 narrower DISCARD, iter-73 wider near-flat)
     "bf_kernel":     7,   # iter-74 closed kernel=5 at -0.33pp
-    "bf_sigma_r":    0.02,   # iter-76: 0.01 -> 0.02 (looser range filter; bisection upper)
+    "bf_sigma_r":    0.01,   # iter-76 closed 0.02 at -0.94pp (BF basin tight at 0.01)
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,
