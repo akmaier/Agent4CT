@@ -114,7 +114,7 @@ CONFIG = {
     # Spawn-B's iter-13 explicit advice: "channel-mixing inside the
     # spatial pathway (e.g. NAFNet 1x1 MLP)" is more promising than
     # SE-gating on a c=32 residual stack. We try that now.
-    "unet_c":        32,               # NAFNet uses wider channels than UNet
+    "unet_c":        40,               # iter-39: widen c 32 -> 40 on iter-38 GELU substrate
     "img_denoiser":  "nafnet",         # NEW: NAFNet stack as image_denoiser
     "proj_denoiser": "nafnet",         # NEW: also use NAFNet for proj domain
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
