@@ -71,7 +71,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            5e-5,       # iter-51: 1e-4 -> 5e-5 (half; parallel to C iter-34 probing lower side of lr)
+    "lr":            2e-4,       # iter-52: 1e-4 -> 2e-4 (double; lower side closed iter-51 -2.55pp)
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
