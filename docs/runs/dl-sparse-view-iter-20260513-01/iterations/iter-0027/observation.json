@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:08:37Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 27,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "SWA (uniform mean, decay=0.0) over last 3 of 6 epochs on NAFNet c=32 ReLU dw baseline. Vectorised torch._foreach_mul_/add_ keeps training fast (314s vs iter-21 323s).",
+  "val_score": 0.2813,
+  "headroom": 0.5777,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4-7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0027/comparison.png",
+  "advice_for_others": "SWA over last half of training is a CONFIRMED +0.15pp lift on NAFNet c=32 (0.5762 -> 0.5777). Matches the iter-15/16 SWA lift on the K=2 UNet family \u2014 same +0.15pp magnitude. SWA mode (ema_decay=0.0, start_ep=epochs/2) is the safe default; iter-26 EMA-from-step-0 with decay=0.999 regressed -4.4pp because the shadow was polluted by early-training near-identity weights. Use vectorised torch._foreach_*_ over a pre-collected flat param/shadow list for ~1x baseline speed; named_parameters() lookup per step is 3-4x slower and times out.",
+  "commit": "4c5ec4a"
+}
