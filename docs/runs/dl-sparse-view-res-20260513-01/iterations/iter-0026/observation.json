@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:48:24Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 26,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Asymmetric depth on iter-14 baseline (alpha=0.1, wd=1e-4): proj_denoiser 6->4 blocks, img_denoiser 6->8 blocks. Total params identical (0.2247M). Hypothesis: streak artefacts are predominantly an image-domain post-FBP signature, so reallocating capacity from proj-side to img-side should help. First test of any asymmetric topology in this slug.",
+  "val_score": 0.6569392085075378,
+  "headroom": 0.5787,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.2247,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0026/comparison.png",
+  "advice_for_others": "Asymmetric 4+8 DID NOT HELP: hr 0.5870 -> 0.5787 (-0.83pp), ssim 0.6630 -> 0.6569 (-0.92pp). Diagnostic: same total params but worse outcome means the (4,8) split is strictly inferior to (6,6) symmetric. Train_time 350s -> 408s (+17%) suggests the 8-block image stack is also slower than symmetric. The bottleneck is NOT image-side capacity; proj-side pre-FBP denoise matters more than assumed. Asymmetric AXIS partially CLOSED for proj<img direction; (8,4) i.e. proj>img remains unexplored if a future iter wants to confirm.",
+  "commit": "af08c77"
+}
