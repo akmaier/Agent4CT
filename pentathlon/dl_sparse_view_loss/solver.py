@@ -119,7 +119,7 @@ CONFIG = {
     # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,
-    "batch_size":    1,        # iter-31 closed batch=2 at -2.75pp (under-training at fixed epoch budget)
+    "batch_size":    2,        # iter-49: retest batch=2 on batch-norm substrate (was -2.75pp on group)
     "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
@@ -228,7 +228,7 @@ CONFIG = {
     # the per-block scaling. Cross-port from Agent B iter-34 KEEP wd_split.
     # iter-29 (DISCARD, -1.97pp), iter-30 (DISCARD beta2=0.99, -0.87pp).
     # Revert all optimizer cruft. iter-31: batch_size 1 -> 2 (more stable grad)
-    "res_scale_init": 0.1,         # iter-48: retest alpha=0.1 on batch substrate (was -0.23pp on group)
+    "res_scale_init": 0.0,         # iter-48 closed alpha=0.1 on batch -1.87pp
     "wd_split":      False,
     "adamw_beta2":   0.999,
 
