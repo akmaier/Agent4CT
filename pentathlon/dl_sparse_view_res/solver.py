@@ -67,17 +67,19 @@ CONFIG = {
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
 
-    # iter-36: step-decay-at-epoch-7-only. Cut LR by 10x at the start of
-    # epoch 7 (i.e. last epoch runs at 1e-5) so the final pass fine-tunes
-    # with a much smaller step. With epochs=8 this means 6 epochs at 1e-4
-    # then 1 epoch at 1e-5 (the 0-indexed "start of epoch 7" is the 8th
-    # and last epoch). Operator's open-axis suggestion: anti-overfit during
-    # late training. Cheap probe; if late-epoch loss is plateaued near
-    # 0.00080 already on iter-34, a small LR may sharpen fine details
-    # without overshooting on a small data set. Set to None to disable
-    # (returns to iter-34 constant-LR baseline).
-    "lr_step_at_epoch": 7,       # 0-indexed: start of epoch 7 = 8th epoch
-    "lr_step_factor":   0.1,     # divide LR by 10x
+    # iter-37: SWA (Stochastic Weight Averaging, Izmailov 2018) — uniform
+    # mean of model weights over the last N epochs. Agent A's iter-34 KEEP
+    # used SWA last-4-of-6 for their biggest single lift (+0.14pp) on a
+    # very similar (NAFNet) substrate. Our iter-34 also has converged
+    # training loss by ep3 (loss=0.00039 flat through ep8), so the late
+    # epochs are basically wandering in a noise basin — averaging them
+    # should pick the centroid of that basin (Polyak-Ruppert style).
+    # swa_start_ep=4 means we average epoch-end weights for epochs 4..7
+    # (last 4 of 8). Set to None to disable. Cheap probe: shadow tensors
+    # are O(model_size), vectorised _foreach updates add ~5s per epoch.
+    "swa_enabled":   True,
+    "swa_start_ep":  4,          # last 4 of 8 epochs (0-indexed)
+    "swa_every":     1,          # update shadow every N training steps
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-2: 8 -> 6 to fit 5-min budget
@@ -308,25 +310,32 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     print(f"[solver-res] params = {params_total/1e6:.3f} M", flush=True)
 
     opt = make_optimizer(pipe, cfg)
-    # iter-36: step-decay-at-epoch-7-only. At the start of `lr_step_at_epoch`
-    # (0-indexed), multiply each param-group's LR by `lr_step_factor`.
-    lr_step_at = cfg.get("lr_step_at_epoch", None)
-    lr_step_factor = float(cfg.get("lr_step_factor", 1.0))
-    if lr_step_at is not None:
-        print(f"[solver-res] LR step-decay: at epoch {lr_step_at} (0-indexed) "
-              f"multiply LR by {lr_step_factor}",
+
+    # iter-37: SWA (Polyak-Ruppert / Izmailov 2018) — uniform-mean of
+    # weights over the last (epochs - swa_start_ep) epochs. Vectorised
+    # via torch._foreach_mul_ / _foreach_add_ (cheap per-step).
+    swa_enabled = bool(cfg.get("swa_enabled", False))
+    swa_start_ep = int(cfg.get("swa_start_ep", 0))
+    swa_every = int(cfg.get("swa_every", 1))
+    if swa_enabled:
+        swa_params = [p for p in pipe.parameters() if p.requires_grad]
+        swa_shadows = [torch.zeros_like(p.detach()) for p in swa_params]
+        swa_count = 0
+        n_shadow = sum(s.numel() for s in swa_shadows) / 1e6
+        print(f"[solver-res] SWA enabled  start_ep={swa_start_ep}  "
+              f"every={swa_every}  shadow={n_shadow:.3f}M  "
+              f"n_tensors={len(swa_shadows)}",
               flush=True)
+    else:
+        swa_params, swa_shadows = [], []
+        swa_count = 0
+
     t0 = time.time()
     for ep in range(cfg["epochs"]):
-        if lr_step_at is not None and ep == int(lr_step_at):
-            for pg in opt.param_groups:
-                pg["lr"] = pg["lr"] * lr_step_factor
-            print(f"[solver-res]   * applied LR step-decay at ep={ep}: "
-                  f"new lr={opt.param_groups[0]['lr']:.2e}",
-                  flush=True)
         pipe.train()
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
+        steps_per_epoch = max(1, train_noisy.shape[0] // cfg["batch_size"])
         for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
             batch = train_noisy[idx].to(device)
@@ -335,12 +344,29 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             losses["loss"].backward()
             opt.step()
             running += float(losses["loss"].detach().cpu())
+            # SWA shadow update: only after the warm-up epochs.
+            if swa_enabled and ep >= swa_start_ep:
+                step_idx = ep * steps_per_epoch + (i // cfg["batch_size"])
+                if step_idx % swa_every == 0:
+                    with torch.no_grad():
+                        cur = [p.detach() for p in swa_params]
+                        swa_count += 1
+                        swa_w = 1.0 / swa_count
+                        torch._foreach_mul_(swa_shadows, 1.0 - swa_w)
+                        torch._foreach_add_(swa_shadows, cur, alpha=swa_w)
         mean_loss = running / max(1, train_noisy.shape[0])
-        cur_lr = opt.param_groups[0]['lr']
-        print(f"[solver-res] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}  lr={cur_lr:.2e}",
+        print(f"[solver-res] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
               flush=True)
     train_time = time.time() - t0
     print(f"[solver-res] training took {train_time:.1f}s", flush=True)
+
+    # Swap SWA shadow weights into the model for validation.
+    if swa_enabled and swa_count > 0:
+        with torch.no_grad():
+            for p, s in zip(swa_params, swa_shadows):
+                p.data.copy_(s)
+        print(f"[solver-res] swapped SWA weights (n={swa_count}) into model for validation",
+              flush=True)
 
     pipe.eval()
     # Chunked validation so we don't OOM on smaller VRAM (Q5000 16GB) when
