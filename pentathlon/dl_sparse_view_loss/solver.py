@@ -142,16 +142,24 @@ CONFIG = {
     "aug_flip":      False,
     "aug_flip_seed": 1234,
 
-    # iter-10: MIXUP. Different aug mechanism — instead of flipping a
-    # single phantom (OOD), MIXUP samples two phantoms per training
-    # sample, mixes them at the *phantom* level with λ ~ Beta(α, α), then
-    # re-projects and simulates noise. The mixed phantom stays in the
-    # random-ellipse distribution (additive ellipses ≈ another valid
-    # phantom) so no OOD penalty. Acts as a label-smoothing regulariser
-    # in pixel space + cheap "more data" effect. α=0.4 per Zhang+ 2018.
-    "aug_mixup":     True,
+    # iter-10 (DISCARD, hr=0.5810 vs 0.5807): MIXUP near-neutral (+0.03pp).
+    # Doesn't hurt (unlike flips) but doesn't help. Random-ellipse phantoms
+    # already saturate sample diversity; gain elsewhere.
+    "aug_mixup":     False,
     "aug_mixup_alpha": 0.4,
     "aug_mixup_seed":  5678,
+
+    # iter-11: Stochastic Weight Averaging (SWA) over the last 2 epochs.
+    # After all augmentation strategies failed/neutral, pivot to OPTIMIZER
+    # land. SWA averages the model weights along a flat region of the
+    # loss landscape (Izmailov+ 2018) - reliably gives a small boost
+    # without extra training compute. Take snapshot at end of epoch 7
+    # and again at end of epoch 8; final model = mean. Costs ~0 compute,
+    # one extra forward pass for BN-stat refresh (we have GroupNorm, so
+    # no refresh needed — even simpler).
+    "swa":            True,
+    "swa_start_epoch": 7,    # 1-indexed; with 8 epochs total → snapshots at end of 7 and 8
+
 
     # Editable: model architecture.
     "unet_c":        16,
@@ -394,7 +402,14 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # — gentle regularisation, not heavy mixing.
     aug_mixup = bool(cfg.get("aug_mixup", False))
     aug_alpha = float(cfg.get("aug_mixup_alpha", 0.4))
-    print(f"[solver] train_loss={loss_name}  aug_mixup={aug_mixup} alpha={aug_alpha}",
+    # SWA: collect snapshots starting at swa_start_epoch (1-indexed) and
+    # average them at end of training. GroupNorm = no BN-stat refresh needed.
+    use_swa = bool(cfg.get("swa", False))
+    swa_start = int(cfg.get("swa_start_epoch", cfg["epochs"]))
+    swa_state = None
+    swa_count = 0
+    print(f"[solver] train_loss={loss_name}  aug_mixup={aug_mixup} alpha={aug_alpha} "
+          f"swa={use_swa} swa_start={swa_start}",
           flush=True)
     aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_mixup_seed", 5678)))
     t0 = time.time()
@@ -453,8 +468,28 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         else:
             print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
                   flush=True)
+        # SWA: snapshot at end of each epoch in [swa_start, last_epoch]
+        if use_swa and (ep + 1) >= swa_start:
+            cur = {k: v.detach().clone() for k, v in pipe.state_dict().items()}
+            if swa_state is None:
+                swa_state = cur
+                swa_count = 1
+            else:
+                swa_count += 1
+                for k in swa_state:
+                    if swa_state[k].is_floating_point():
+                        swa_state[k] = swa_state[k] + (cur[k] - swa_state[k]) / swa_count
+                    else:
+                        # buffers like num_batches_tracked: just keep latest
+                        swa_state[k] = cur[k]
+            print(f"[solver] SWA snapshot {swa_count} taken at end of epoch {ep+1}",
+                  flush=True)
     train_time = time.time() - t0
     print(f"[solver] training took {train_time:.1f}s", flush=True)
+    if use_swa and swa_state is not None:
+        pipe.load_state_dict(swa_state)
+        print(f"[solver] SWA: averaged {swa_count} snapshots -> validation",
+              flush=True)
 
     # --- Validation --------------------------------------------------- #
     pipe.eval()
