@@ -216,11 +216,12 @@ CONFIG = {
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
-    "res_n_bf":      1,            # iter-44: retry BF tail on Adam substrate (iter-26 closed on AdamW)
+    "res_n_bf":      0,             # BF axis closed cross-substrate (iter-26, iter-44)
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
-    "bf_sigma_r":    0.05,         # 0.05 sigma_r (iter-26 used 0.01; try looser)
+    "bf_sigma_r":    0.01,
+    "res_bias":      False,         # iter-45: disable biases (parallel to B iter-61)
     # iter-27 (DISCARD, -0.23pp): EDSR per-block alpha=0.1 alone fails on
     # this slug's wd=1e-3 substrate (alpha decayed to ~0 by wd).
     # iter-28: same alpha=0.1 + wd_split (alpha excluded from wd) to rescue
@@ -308,14 +309,15 @@ class ResBlock(nn.Module):
     """Standard residual block: conv -> norm -> act -> (drop) -> conv -> norm -> + alpha*h."""
     def __init__(self, c: int, kernel: int = 3, norm: str = "group",
                  act: str = "relu", dropout: float = 0.0,
-                 res_scale_init: float = 0.0):
+                 res_scale_init: float = 0.0,
+                 bias: bool = True):
         super().__init__()
         pad = kernel // 2
-        self.conv1 = nn.Conv2d(c, c, kernel, padding=pad)
+        self.conv1 = nn.Conv2d(c, c, kernel, padding=pad, bias=bias)
         self.n1 = _make_norm(norm, c)
         self.act1 = _make_act(act)
         self.drop = nn.Dropout2d(dropout) if dropout > 0 else nn.Identity()
-        self.conv2 = nn.Conv2d(c, c, kernel, padding=pad)
+        self.conv2 = nn.Conv2d(c, c, kernel, padding=pad, bias=bias)
         self.n2 = _make_norm(norm, c)
         self.alpha = nn.Parameter(torch.tensor(float(res_scale_init))) if res_scale_init > 0 else None
     def forward(self, x):
@@ -343,16 +345,18 @@ class ResidualStack(nn.Module):
                  norm: str = "group", act: str = "relu",
                  dropout: float = 0.0, residual: bool = True,
                  res_scale_init: float = 0.0,
-                 input_dropout: float = 0.0):
+                 input_dropout: float = 0.0,
+                 bias: bool = True):
         super().__init__()
         self.residual = residual
         pad = kernel // 2
         self.input_dropout = nn.Dropout2d(input_dropout) if input_dropout > 0 else nn.Identity()
-        self.head = nn.Conv2d(1, c, kernel, padding=pad)
+        self.head = nn.Conv2d(1, c, kernel, padding=pad, bias=bias)
         self.head_act = _make_act(act)
         self.blocks = nn.Sequential(*[
             ResBlock(c, kernel=kernel, norm=norm, act=act,
-                     dropout=dropout, res_scale_init=res_scale_init)
+                     dropout=dropout, res_scale_init=res_scale_init,
+                     bias=bias)
             for _ in range(n_blocks)
         ])
         self.tail = nn.Conv2d(c, 1, kernel, padding=pad)
@@ -403,6 +407,7 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
                 residual=cfg["res_residual"],
                 res_scale_init=float(cfg.get("res_scale_init", 0.0)),
                 input_dropout=float(cfg.get("input_dropout", 0.0)),
+                bias=bool(cfg.get("res_bias", True)),
             )
         proj_dn = make_res()
         img_dn = make_res()
