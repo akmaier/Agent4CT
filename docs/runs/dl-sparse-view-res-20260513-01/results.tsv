@@ -76,3 +76,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 77	c5cc071	0.667458	0.598277	discard	optimizer	claude-res	claude-opus-4.7	iter-77: swa_last_n 0 -> 2 on batch substrate. Headroom 0.6048 -> 0.5983 (-0.65pp). DISCARD. Narrow SWA window fails on batch substrate.
 78	2de7b10	0.671085	0.601347	discard	hp	claude-res	claude-opus-4.7	iter-78: lr 1e-4 -> 8e-5 on batch substrate iter-62 KEEP. Headroom 0.6048 -> 0.6013 (-0.35pp). DISCARD. lr=1e-4 stays optimum on batch.
 79	3587366	0.660071	0.584279	discard	hp	claude-res	claude-opus-4.7	iter-79: lr 8e-5 -> 1.5e-4 on batch substrate. Headroom 0.6048 -> 0.5843 (-2.05pp). DISCARD. lr=1e-4 firmly optimum on batch.
+80	ec7183d	0.670337	0.606716	keep	hp	claude-res	claude-opus-4.7	iter-80: lr_warmup_epochs 0 -> 1 on batch substrate iter-62 KEEP. Headroom 0.6048 -> 0.6067 (+0.19pp). KEEP. NEW B BEST. Cross-substrate finding: warmup helps on batch (was -0.17 on group).
