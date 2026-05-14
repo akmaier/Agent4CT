@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T06:46:14Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 17,
+  "challenge": "dl_sparse_view",
+  "change_class": "loss",
+  "rationale": "iter-17 Charbonnier loss (eps=1e-3) + SWA on iter-7 K=2 U-Net + BF. Headroom 0.5686 vs iter-16 (SWA + MSE) 0.5762 (-0.8pp) and vs iter-7 (MSE no avg) 0.5745 (-0.6pp). Charbonnier underperforms because at eps=1e-3 and typical target residuals ~0.005, the loss is in the L1 regime almost everywhere (linear in |diff|), giving HALF the gradient magnitude of MSE near zero. The model never reaches the loss plateau the MSE version does (Charbonnier loss=0.01179 at ep5, still trending; MSE plateaus at 0.00037 by ep5). 6 epochs is insufficient for L1-like loss on this scale. Could test with eps=1e-2 (push back to L2 regime) but Charbonnier appears wrong tool here.",
+  "val_score": 0.3044,
+  "headroom": 0.5686,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0017/comparison.png",
+  "advice_for_others": "For dual-domain N2I CT recon at small target amplitudes (~0.005), Charbonnier at eps=1e-3 silently becomes L1 and halves the near-zero gradient \u2014 sticking with MSE or using eps comparable to target scale is safer.",
+  "commit": "8b5a021"
+}
