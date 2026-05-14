@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T18:04:53Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 42,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-42: revert iter-40/41 schedule cruft + 1 BF tail on residual stack (cross-port from main/A NAFNet+BF). Headroom 0.5892 -> 0.5710 (-1.82pp). DISCARD. BF tail does NOT cross-substrate from NAFNet to resnet. Same finding as Agent C iter-26 (-1.23pp): BF compounding is NAFNet-specific (likely due to LN output statistics being more BF-amenable than resnet's noise-residual prediction).",
+  "val_score": 0.6430665254592896,
+  "headroom": 0.5710288840741556,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224721,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0042/comparison.png",
+  "advice_for_others": "CROSS-SUBSTRATE FINDING: BF tail (Wagner trainable bilateral) gives +0.04..+0.28pp on NAFNet substrate (main, A) but -1.82pp on resnet+res_scale substrate (this iter) and -1.23pp on plain resnet substrate (Agent C iter-26). Strong evidence BF is NAFNet-specific. Resnet family must find lifts elsewhere: attention modules also tested (iter-12/13 SE, iter-18 NAFNet MLP \u2014 all discard). Open axes: CBAM (full attention), NAFNet wholesale pivot, res_scale_init sweep.",
+  "commit": "0dbf040"
+}
