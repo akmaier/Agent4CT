@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T22:20:13Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 59,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-59: naf_expand 2 -> 3 on iter-53 substrate (8 BFs + relu gate). TIMEOUT at 10-min wall. Wider hidden dim in NafBlock adds compute beyond budget.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4.7",
+  "advice_for_others": "TIMEOUT: naf_expand=3 doesn't fit wall budget on A. Revert to 2; try bf_sigma cross-port from main iter-88 KEEP.",
+  "commit": "de06e1d"
+}
