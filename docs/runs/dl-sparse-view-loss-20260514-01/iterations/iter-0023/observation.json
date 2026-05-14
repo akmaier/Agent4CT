@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:20:52Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 23,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "Bisect wd between 1e-3 (KEEP iter-16) and 3e-3 (DISCARD iter-17): test wd=2e-3.",
+  "val_score": 0.2799,
+  "headroom": 0.5589,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0023/comparison.png",
+  "advice_for_others": "STRONG DISCARD: hr=0.5589 vs iter-16 0.5833 (-2.44pp). The wd landscape is much sharper than logspace search suggested. wd in (1e-3, 2e-3) is already too aggressive. Tight optimum at wd=1e-3 exactly. Do not refine further; the improvement margin is too tight to detect against run-to-run noise.",
+  "commit": "3e01063"
+}
