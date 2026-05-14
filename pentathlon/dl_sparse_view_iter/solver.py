@@ -146,7 +146,7 @@ CONFIG = {
     #   for higher emphasis on later epochs.
     # If discard: last-5 is the sweet spot, move to architecture knobs
     #   (c=40, SimpleGate).
-    "ema_start_ep":  0,                # iter-50 narrower window -0.06pp; revert to full
+    "ema_start_ep":  1,                # iter-54: 0 -> 1 (skip first 1 epoch; cross-port main iter-71)
     "ema_every":     1,
     # BF saturation curve on NAFNet substrate (each BF = 3 params, 1 unfold):
     #   n_bf=0 (iter-27, SWA-only):     hr=0.5777
