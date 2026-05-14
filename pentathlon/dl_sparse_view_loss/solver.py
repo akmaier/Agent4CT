@@ -134,6 +134,14 @@ CONFIG = {
     "charbonnier_eps": 1e-3,
     "huber_delta":   1e-3,
 
+    # iter-9: per-batch flip augmentation. iter-8 used per-epoch global
+    # flips → optimizer adapts to "the world is hflipped" then re-adapts
+    # next epoch (pure cancellation). Per-batch granularity gives genuine
+    # aug gradient. Re-projects only the flipped batch through the SAME
+    # geometry (image content changes, geometry fixed).
+    "aug_flip":      True,
+    "aug_flip_seed": 1234,
+
     # Editable: model architecture.
     "unet_c":        16,
     # "unet" | "unet_plus_bf" (Wagner 2022 BF tail) | "resnet"
@@ -364,15 +372,53 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     opt = make_optimizer(pipe.parameters(), cfg)
     loss_name = cfg.get("train_loss", "mse")
     loss_fn = _loss_fn(loss_name, cfg)
-    print(f"[solver] train_loss={loss_name}", flush=True)
+    # iter-9 (dl-sparse-view-loss): per-BATCH flip augmentation.
+    # iter-8 used per-epoch global flips → optimizer sees "world is hflipped"
+    # for a whole epoch then re-adapts on the next: pure cancellation, no
+    # genuine aug gradient. Per-batch flip applies a fresh random (hflip,
+    # vflip) to every (epoch × sample) pair → 8 ep × 400 samples × 4 flips
+    # ≈ 1600 effective unique (phantom, orientation) pairs. Re-projects the
+    # augmented phantom through the SAME geometry (only image content
+    # changes) and re-runs simulate_low_dose for the matching noisy sinogram.
+    aug_flip = bool(cfg.get("aug_flip", False))
+    print(f"[solver] train_loss={loss_name}  aug_flip={aug_flip}", flush=True)
+    aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_flip_seed", 1234)))
     t0 = time.time()
     for ep in range(cfg["epochs"]):
         pipe.train()
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
+        n_hflip = 0
+        n_vflip = 0
+        n_idn = 0
         for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
-            batch = train_noisy[idx].to(device)
+            if aug_flip:
+                # Fresh random (hflip, vflip) per batch. With batch_size=1
+                # this is per-sample. Re-projects only when at least one
+                # axis flips; identity case reuses the cached train_noisy.
+                hflip = bool(torch.rand((), generator=aug_rng).item() < 0.5)
+                vflip = bool(torch.rand((), generator=aug_rng).item() < 0.5)
+                if hflip or vflip:
+                    with torch.no_grad():
+                        ph_b = train_ph[idx]
+                        if hflip:
+                            ph_b = torch.flip(ph_b, dims=[-1])
+                            n_hflip += 1
+                        if vflip:
+                            ph_b = torch.flip(ph_b, dims=[-2])
+                            n_vflip += 1
+                        clean_b = R_full.forward_project(ph_b)
+                        batch = simulate_low_dose(
+                            clean_b,
+                            i0=cfg["noise_i0"], sigma_e=cfg["noise_sigma_e"],
+                            seed=cfg["seed"] + 30_000 + ep * 100_000 + i,
+                        )
+                else:
+                    batch = train_noisy[idx].to(device)
+                    n_idn += 1
+            else:
+                batch = train_noisy[idx].to(device)
             if loss_name == "mse":
                 losses = pipe.training_step(batch)
             else:
@@ -382,8 +428,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             opt.step()
             running += float(losses["loss"].detach().cpu())
         mean_loss = running / max(1, train_noisy.shape[0])
-        print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
-              flush=True)
+        if aug_flip:
+            print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}"
+                  f"  aug: h={n_hflip} v={n_vflip} idn={n_idn}", flush=True)
+        else:
+            print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
+                  flush=True)
     train_time = time.time() - t0
     print(f"[solver] training took {train_time:.1f}s", flush=True)
 
