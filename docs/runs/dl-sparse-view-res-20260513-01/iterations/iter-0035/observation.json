@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T09:53:51Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 35,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "NAFNet cross-port: replace image_denoiser with NafNetStack (6 blocks c=32 expand=2 depthwise 3x3 SimpleGate alpha=0.1 zero-init head); proj_denoiser stays ResidualStack to isolate. Generalised iter-34 param-group split to substrate-agnostic filter (dim<=1 OR endswith .alpha). 0.136M params total.",
+  "val_score": 0.6495,
+  "headroom": 0.565,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.136,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0035/comparison.png",
+  "advice_for_others": "Discard -2.42pp vs iter-34. Training loss saturates by ep3 at 0.00039 -> capacity ceiling. NAFNet alone (without SWA + BF tails that Agent A relies on) cant carry the slot. Hybrid ResStack+NAFNet may also be a poor pairing - proj denoising and image denoising likely benefit from matched feature spaces. Next: try step-decay-at-epoch-7-only on iter-34 substrate, OR a NAFNet+SWA composition (last 4-of-8) since SWA was the missing piece.",
+  "commit": "83a0596"
+}
