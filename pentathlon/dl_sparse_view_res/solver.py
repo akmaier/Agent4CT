@@ -240,10 +240,33 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
     return phantoms, clean, noisy
 
 
-def make_optimizer(params, cfg):
+def make_optimizer(model: nn.Module, cfg):
     if cfg["optimizer"] == "adam":
-        return torch.optim.Adam(params, lr=cfg["lr"])
-    return torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=cfg["weight_decay"])
+        return torch.optim.Adam(model.parameters(), lr=cfg["lr"])
+    # iter-34: split params into wd-regulated and wd-excluded groups.
+    # alpha (EDSR residual-scaling scalar, init 0.1) lives at module.alpha
+    # in ResBlock. AdamW WD pulls alpha toward 0 throughout training, which
+    # iter-21 (global wd=0) showed could free alpha but came at cost of
+    # under-regularised conv weights (-0.51pp). Targeted: keep WD on conv
+    # weights, exclude alpha (and biases, and norm scales — standard practice
+    # for the 1-D / per-channel params that don't benefit from L2 shrinkage).
+    no_wd_params, wd_params = [], []
+    for name, p in model.named_parameters():
+        if not p.requires_grad:
+            continue
+        if name.endswith(".alpha") or name.endswith("bias") or "n1" in name or "n2" in name:
+            no_wd_params.append(p)
+        else:
+            wd_params.append(p)
+    print(f"[solver-res] AdamW param-groups: wd={len(wd_params)} (wd={cfg['weight_decay']})  no_wd={len(no_wd_params)} (wd=0)",
+          flush=True)
+    return torch.optim.AdamW(
+        [
+            {"params": wd_params, "weight_decay": cfg["weight_decay"]},
+            {"params": no_wd_params, "weight_decay": 0.0},
+        ],
+        lr=cfg["lr"],
+    )
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
@@ -272,7 +295,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     params_total = sum(p.numel() for p in pipe.parameters() if p.requires_grad)
     print(f"[solver-res] params = {params_total/1e6:.3f} M", flush=True)
 
-    opt = make_optimizer(pipe.parameters(), cfg)
+    opt = make_optimizer(pipe, cfg)
     t0 = time.time()
     for ep in range(cfg["epochs"]):
         pipe.train()
