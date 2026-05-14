@@ -78,8 +78,8 @@ CONFIG = {
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
     "lr":            8e-5,    # iter-79 KEEP (iter-81 9e-5 near-flat -0.01pp)
-    "optimizer":     "adamw",   # iter-83: try AdamW + small wd=1e-5 (smaller than original 1e-4)
-    "weight_decay":  1e-5,
+    "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
+    "weight_decay":  2e-5,      # iter-84: 1e-5 -> 2e-5 (continue bisection upper)
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
     # toward 0 and preventing them from growing. WD=0 lets alpha
