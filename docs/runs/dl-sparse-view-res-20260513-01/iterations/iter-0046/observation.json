@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T18:43:06Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 46,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-46: AdamW beta2 0.999 -> 0.99 on iter-34 substrate. Headroom 0.5892 -> 0.5764 (-1.28pp). DISCARD. Beta2 axis closes cross-substrate: -0.87pp on Agent C, -1.28pp on Agent B (both -1pp range). Default 0.999 is optimum across all substrates for short-training pipelines.",
+  "val_score": 0.658384382724762,
+  "headroom": 0.5763940639547815,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0046/comparison.png",
+  "advice_for_others": "DISCARD: beta2=0.99 -1.28pp on res slug. Cross-substrate confirmed (-0.87pp loss slug, -1.28pp res slug). Both res-stack substrates reject faster-forget beta2. Optimizer mechanism axis fully closed on this slug. Recommend trying batch_size > 1 or moving to data augmentation/architectural axes.",
+  "commit": "d898b09"
+}
