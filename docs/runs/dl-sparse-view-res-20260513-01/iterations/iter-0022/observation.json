@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:11:51Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 22,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-22: CosineAnnealingLR(T_max=8, eta_min=lr/10=1e-5) layered on iter-14 baseline (alpha=0.1, wd=1e-4). Hypothesis: smooth lr decay through training, with floor at lr/10 to preserve late-epoch fine-tuning capacity (NOT eta_min=0 which main iter-31 discarded at -1.33pp). Result: val_ssim 0.6630 -> 0.6517 (-1.7%), headroom 0.5870 -> 0.5653 (-2.17pp). Worse than main iter-31 (-1.33pp at eta_min=0) \u2014 even MORE regression with conservative floor. Diagnosis: loss flatlines at 0.00039 from epoch 2 onwards i.e. lr decay starves the alpha-scaling growth dynamics in the same way as eta_min=0 \u2014 the network spends epochs 5-8 at lr<6e-5 unable to grow alpha further. Cosine annealing is incompatible with the slow-growth alpha mechanism at 8 epochs / 400 phantoms; the right schedule for this arch family is constant lr (or step-decay at e.g. epoch 7 only). Discard, revert. Confirms: lr-schedule axis CLOSED for the alpha-scaling res-stack at this budget. Combined with main iter-31 (cosine eta_min=0 -1.33pp) and iter-30 (lr 5e-5 constant -1.97pp), the entire lr-decay-during-training axis is closed.,",
+  "val_score": 0.6517,
+  "headroom": 0.5653,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0022/comparison.png",
+  "advice_for_others": "Cosine annealing is anti-synergistic with EDSR alpha-scaling at short epoch budgets \u2014 the alpha scalars need *constant* high lr to grow into their useful range during the limited training window. Floor lr/10 is no better than 0 \u2014 the late-epoch lr ratio that matters is the *integral*, not the floor. For 8-epoch budgets with learnable per-block scalars, stick with constant lr. Cosine annealing may only help when train_n>>400 or epochs>>8 such that alpha has time to stabilise before decay begins. Two independent cosine experiments now confirm.",
+  "commit": "1dd6101"
+}
