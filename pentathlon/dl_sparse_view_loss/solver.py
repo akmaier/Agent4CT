@@ -164,6 +164,17 @@ CONFIG = {
     "swa":            False,
     "swa_start_epoch": 7,
 
+    # iter-20: EMA (exponential moving average) of weights with decay
+    # 0.999. Maintained continuously throughout training (NOT just
+    # last-2 snapshots like iter-11 SWA), so it gives more weight to
+    # recent (well-trained) iterates. Standard in diffusion models,
+    # NAFNet, Restormer. With wd=1e-3 KEPT (iter-16) the loss landscape
+    # is flatter near optimum, so EMA averaging in that region is
+    # benign-to-helpful. Cross-agent: Agent A added EMA to NAFNet -
+    # data point on whether EMA transfers across architectures.
+    "ema":            True,
+    "ema_decay":      0.999,
+
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
     # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
     # epoch budget. Revert to constant LR.
@@ -180,13 +191,10 @@ CONFIG = {
     "img_denoiser":  "resnet",
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
-    # iter-19: widen channels 32 -> 48. 6 blocks @ 48ch ~ 0.5 M params,
-    # still <<10*400*512^2 anti-overfit cap. With wd=1e-3 KEPT (iter-16)
-    # regularization is calibrated for a larger model. Wider channels
-    # give more parallel features per layer; effective receptive field
-    # unchanged but representation capacity per scale ~2x.
+    # iter-19 (DISCARD, hr=0.5707): widen 32 -> 48 (0.225M -> 0.503M)
+    # -1.26pp. Capacity is NOT the bottleneck. Revert.
     "res_blocks":    6,
-    "res_channels":  48,
+    "res_channels":  32,
     "res_norm":      "group",   # group | batch | none
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # relu | gelu | swish
@@ -440,8 +448,16 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     swa_start = int(cfg.get("swa_start_epoch", cfg["epochs"]))
     swa_state = None
     swa_count = 0
+    # EMA: exponential moving average of weights, updated every step.
+    # shadow := decay*shadow + (1-decay)*current. At end, swap.
+    use_ema = bool(cfg.get("ema", False))
+    ema_decay = float(cfg.get("ema_decay", 0.999))
+    ema_state = None
+    if use_ema:
+        ema_state = {k: v.detach().clone()
+                     for k, v in pipe.state_dict().items()}
     print(f"[solver] train_loss={loss_name}  aug_mixup={aug_mixup} alpha={aug_alpha} "
-          f"swa={use_swa} swa_start={swa_start}",
+          f"swa={use_swa} swa_start={swa_start} ema={use_ema} ema_decay={ema_decay}",
           flush=True)
     aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_mixup_seed", 5678)))
     t0 = time.time()
@@ -492,6 +508,16 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             opt.zero_grad(set_to_none=True)
             losses["loss"].backward()
             opt.step()
+            if use_ema:
+                # EMA update: shadow = decay*shadow + (1-decay)*current
+                with torch.no_grad():
+                    cur_sd = pipe.state_dict()
+                    for k, v in cur_sd.items():
+                        if v.is_floating_point():
+                            ema_state[k].mul_(ema_decay).add_(v.detach(),
+                                                              alpha=1.0 - ema_decay)
+                        else:
+                            ema_state[k] = v.detach().clone()
             running += float(losses["loss"].detach().cpu())
         mean_loss = running / max(1, train_noisy.shape[0])
         cur_lr = opt.param_groups[0]["lr"]
@@ -524,6 +550,10 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     if use_swa and swa_state is not None:
         pipe.load_state_dict(swa_state)
         print(f"[solver] SWA: averaged {swa_count} snapshots -> validation",
+              flush=True)
+    if use_ema and ema_state is not None:
+        pipe.load_state_dict(ema_state)
+        print(f"[solver] EMA: swapped to shadow weights -> validation",
               flush=True)
 
     # --- Validation --------------------------------------------------- #
