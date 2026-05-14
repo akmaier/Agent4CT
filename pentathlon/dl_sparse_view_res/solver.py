@@ -77,8 +77,10 @@ CONFIG = {
     "res_kernel":    3,
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
-    "res_scale":     0.1,        # iter-14 KEEP (bisection complete: 0.05/-3.09pp, 0.2/-1.33pp)
-    "swa_last_n":    4,           # iter-45: per-step SWA over last 4 of 8 epochs (cross-port from main iter-60 +0.32pp)
+    "res_scale":     0.1,        # iter-14 KEEP
+    "swa_last_n":    0,           # iter-45 SWA -1.92pp; weight-smoothing axes closed on resnet substrate
+    # iter-46: AdamW beta2 0.999 -> 0.99 (faster forget of past grad stats; fresh axis)
+    "adamw_beta2":   0.99,
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
@@ -283,8 +285,10 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
 
 
 def make_optimizer(model: nn.Module, cfg):
+    beta2 = float(cfg.get("adamw_beta2", 0.999))
+    betas = (0.9, beta2)
     if cfg["optimizer"] == "adam":
-        return torch.optim.Adam(model.parameters(), lr=cfg["lr"])
+        return torch.optim.Adam(model.parameters(), lr=cfg["lr"], betas=betas)
     # iter-34: split params into wd-regulated and wd-excluded groups.
     # alpha (EDSR residual-scaling scalar, init 0.1) lives at module.alpha
     # in ResBlock. AdamW WD pulls alpha toward 0 throughout training, which
@@ -308,6 +312,7 @@ def make_optimizer(model: nn.Module, cfg):
             {"params": no_wd_params, "weight_decay": 0.0},
         ],
         lr=cfg["lr"],
+        betas=betas,
     )
 
 
