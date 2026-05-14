@@ -123,9 +123,9 @@ CONFIG = {
     "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
-    "lr":            1e-4,       # iter-34 closed 5e-5 at -0.96pp; LR axis fully bisected
+    "lr":            8e-5,       # iter-40: 1e-4 -> 8e-5 (fine bisection lower side on Adam substrate)
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
-    "optimizer":     "adamw",   # iter-39: switch back to AdamW with wd=5e-4 bisection
+    "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
     "adamw_eps":     1e-8,      # iter-38 closed eps=1e-10 on Adam at -1.80pp; revert
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
@@ -133,7 +133,7 @@ CONFIG = {
     # iter-23 (DISCARD, hr=0.5589): wd=2e-3 also too aggressive (-2.44pp).
     # Optimum is tight at wd=1e-3; sharper landscape than logspace
     # search suggested.
-    "weight_decay":  5e-4,       # iter-39: 1e-3 -> 5e-4 (bisect between Adam wd=0 KEEP and iter-16 AdamW wd=1e-3)
+    "weight_decay":  1e-3,       # iter-39 closed wd=5e-4 (Adam substrate is wd=0)
     # iter-22 (DISCARD, hr=0.5815): grad_clip=1.0 near-flat (-0.18pp).
     # AdamW grad norm rarely exceeds 1 on small residual net. Disable.
     "grad_clip":     0.0,
