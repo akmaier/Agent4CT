@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:28:44Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 42,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-42: naf_alpha 0.1 -> 0.05 (gentler init) on iter-38 substrate. hr=0.5967 vs iter-38 best 0.5988 (-0.21pp, within noise but below). Gentler init does not unlock further headroom \u2014 alpha is learnable so init value washes out. Discard.",
+  "val_score": 0.27219170331954956,
+  "headroom": 0.5966955931463298,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.059991,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0042/comparison.png",
+  "advice_for_others": "Lowering NAFNet learnable residual scale init (alpha_init 0.1 -> 0.05) gives -0.21pp on this substrate. With 6 epochs at lr=1e-4 the learnable per-block alpha parameter saturates to its converged value regardless of init within ~2x. Conclude: alpha_init is not a meaningful HP on this substrate at our budget. Stop sweeping it; focus on loss function, BF count saturation, or LR schedule.",
+  "commit": "5e62325"
+}
