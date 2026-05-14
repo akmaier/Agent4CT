@@ -96,8 +96,8 @@ CONFIG = {
     # iter-56: cross-port Agent A NAFNet (c=32, 6 blocks, ReLU gate, dw=True)
     # onto main's wd=0 substrate. "nafnet" routes via build_denoisers.
     "img_denoiser":  "nafnet",
-    "naf_blocks":    6,
-    "naf_alpha_init": 0.05,   # iter-69: 0.1 -> 0.05 (slower per-block residual growth; revert n_bf 9 -> 8 timed out)
+    "naf_blocks":    7,   # iter-70: 6 -> 7 (architectural capacity test; +~10K params, +~30s wall)
+    "naf_alpha_init": 0.1,    # iter-67 KEEP (iter-69 0.05 -0.09pp closes lower bound)
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",
     # iter-57: stack 3 trainable Wagner BF tails on the image NAFNet
