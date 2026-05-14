@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:38:55Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 25,
+  "challenge": "dl_sparse_view",
+  "change_class": "augmentation",
+  "rationale": "Rotation augmentation via cyclic angle-shift of the sinogram. For a full 2*pi fan-beam scan, shifting the sinogram cyclically along the angle axis by k angles is equivalent to rotating the imaged object by k*(2*pi/128) radians. Free aug exploiting rotational symmetry of ellipse-phantom distribution. Shifts in {-30,-28,...,+30}, even to preserve odd/even split parity.",
+  "val_score": 0.6139072179794312,
+  "headroom": 0.5472,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.2247,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0025/comparison.png",
+  "advice_for_others": "Cyclic-shift rotation aug HURT (hr 0.5870 -> 0.5472, -4.0pp). Root cause: noise was pre-simulated at specific angle indices, but cyclic-shifting the sinogram does NOT rotate the noise correlation pattern correspondingly. The network sees inconsistent (signal, noise) pairings, undermining the Noise2Inverse half-set training signal. Proper rotation aug would require rotating the PHANTOM and re-projecting + re-noising per batch \u2014 too expensive at full 512^2 / batch_size=1. Aug axis closed for projection-domain cyclic shifts; would need image-domain aug with re-projection (high cost) to be valid.",
+  "commit": "af08c77"
+}
