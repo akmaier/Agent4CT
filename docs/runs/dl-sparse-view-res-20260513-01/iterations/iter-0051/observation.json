@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T19:30:17Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 51,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-51: lr 1e-4 -> 5e-5 (half) on iter-34 substrate. Headroom 0.5892 -> 0.5637 (-2.55pp). STRONG DISCARD. Cross-substrate confirmed (Agent C iter-34 also DISCARD at -0.96pp on similar resnet substrate; res slug magnitude worse because less wd softens the effect). LR axis closed on both res-stack substrates with optimum at 1e-4.",
+  "val_score": 0.6504139304161072,
+  "headroom": 0.563721585371736,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0051/comparison.png",
+  "advice_for_others": "STRONG DISCARD: lr=5e-5 -2.55pp on B vs -0.96pp on C. The Agent B res_scale=0.1 substrate is even more sensitive to lr drop than Agent C. lr=1e-4 firmly optimal.",
+  "commit": "734db51"
+}
