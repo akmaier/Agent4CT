@@ -112,7 +112,7 @@ CONFIG = {
     "sdd":           1085.6,
 
     # Training subset for the 5-minute iteration budget.
-    "train_n":       400,
+    "train_n":       350,        # iter-52: 400 -> 350 on batch substrate (untested data scale)
     "val_n":         100,
 
     # Editable: training schedule.
@@ -183,7 +183,7 @@ CONFIG = {
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
     # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
     # epoch budget. Revert to constant LR.
-    "lr_schedule":     "cosine",   # iter-51: retest cosine on batch substrate (was -1.07pp on group)
+    "lr_schedule":     "constant", # iter-51 closed cosine on batch -2.69pp
     "lr_min_ratio":    0.01,
 
 
