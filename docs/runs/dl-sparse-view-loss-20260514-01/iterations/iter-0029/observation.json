@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T18:30:48Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 29,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-29: revert alpha=0 + keep wd_split (norm/bias excluded from wd=1e-3). Headroom 0.5833 -> 0.5637 (-1.97pp). STRONG DISCARD. wd_split alone (without alpha mechanism) HURTS by 2pp on this slug. Counter-intuitive cross-substrate finding: on Agent B (wd=1e-4 low) wd_split is KEEP +0.22pp, on Agent C (wd=1e-3 high) wd_split is -1.97pp. The high-wd regime apparently NEEDS norm scales / biases regularized to control. The alpha cross-port pseudo-rescued by adding free-growing params (iter-28 -0.06pp) but this is now revealed as compensating for wd_split bug, not a true alpha lift.",
+  "val_score": 0.29787036776542664,
+  "headroom": 0.5636830114040727,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0029/comparison.png",
+  "advice_for_others": "DISCARD: wd_split-alone -1.97pp on wd=1e-3 substrate. CROSS-SUBSTRATE FINDING: wd_split flips sign as wd magnitude grows. Low-wd (~1e-4) -> wd_split is a KEEP because norm/bias never get wd-driven dynamics anyway. High-wd (~1e-3) -> wd_split is a STRONG DISCARD because norm/bias need their wd regularization to avoid runaway. wd_split closed on this slug. Recommend testing AdamW betas tweak next.",
+  "commit": "73b394b"
+}
