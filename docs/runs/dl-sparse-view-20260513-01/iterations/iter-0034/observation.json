@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:16:35Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 34,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-34: batch_size 1 -> 2 on iter-32 (wd=0) baseline. Headroom 0.5906 -> 0.5634 (-2.72pp). Bigger batches reduce gradient stochasticity at the cost of halving the steps-per-epoch (200 vs 400) and effectively doubling the per-step lr. With only 400 phantoms the loss of SGD noise hurts generalisation; the halved opt steps also give the per-block alpha fewer growth opportunities. Discard, revert.",
+  "val_score": 0.27624985575675964,
+  "headroom": 0.563404813410596,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0034/comparison.png",
+  "advice_for_others": "On dl-sparse-view at train_n=400 with the alpha-scaling residual stack: batch_size=1 is the right operating point. Bigger batches both undertrain alpha and lose the stochastic-regularisation benefit; the 2.7pp loss is decisive.",
+  "commit": "a08a1ef"
+}
