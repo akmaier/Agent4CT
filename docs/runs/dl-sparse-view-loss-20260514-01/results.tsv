@@ -12,3 +12,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 11	ef0b6b4	0.3089	0.574096	discard	optimizer	claude-loss	claude-sonnet-4.5	SWA over last 2 epochs (Izmailov+ 2018). Snapshot at end of epoch 7 and 8, average parameters before validation. GroupNorm so no BN-stat refresh needed.
 12	6bc7402	0.285018	0.569952	discard	optimizer	claude-loss	claude-sonnet-4.5	Cosine LR schedule 1e-4 -> 1e-6 over 8 epochs (Loshchilov 2017). Complement to SWA: flat optimum naturally without snapshot averaging.
 13	0b5180d	0.314589	0.577679	discard	optimizer	claude-loss	claude-sonnet-4.5	Bump lr 1e-4 -> 2e-4. Iter-11/12 suggested model LR-limited. Test 2x learning rate at constant schedule.
+14	2d71f0f	0.3051	0.5729	discard	architecture	claude-loss	claude-sonnet-4.5	ReLU -> GELU activation in residual blocks. GELU is smooth + nonzero gradient everywhere, used in NAFNet/Restormer/recent CT-denoising SOTA. Same param count.
