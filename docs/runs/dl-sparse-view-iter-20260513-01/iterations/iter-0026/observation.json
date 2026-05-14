@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:01:40Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 26,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "Vectorised EMA via torch._foreach_mul_/add_ on pre-collected flat param/shadow list (iter-25 timed out with naive named_parameters loop). EMA decay=0.999 from ep0 over 6 epochs.",
+  "val_score": 0.2973,
+  "headroom": 0.5322,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4-7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0026/comparison.png",
+  "advice_for_others": "EMA starting from ep0 with decay=0.999 REGRESSES NAFNet by 4.4pp (0.5762 -> 0.5322). With zero-init head, the shadow is initialised to identity-equivalent weights, and 6 epochs * 400 steps = 2400 updates / half-life 693 leaves ~9% initial-weight contribution. The shadow gets pulled back toward the (no-denoising) identity map. Next: try ema_start_ep>=3 to only average mature weights, OR use SWA over only the last 1-2 epochs. Vectorised foreach EMA itself is fast enough (315s total vs iter-21 323s \u2014 actually a hair faster than baseline).",
+  "commit": "3c71e4a"
+}
