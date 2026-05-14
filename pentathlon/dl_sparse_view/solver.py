@@ -111,7 +111,7 @@ CONFIG = {
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
-    "swa_last_n":    4,   # iter-71: 6 -> 4 (skip first 2 epochs of averaging; iter-67 baseline = full 6-window)
+    "swa_last_n":    3,   # iter-72: 4 -> 3 (continue narrowing window; iter-71 +0.08pp at 4)
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,

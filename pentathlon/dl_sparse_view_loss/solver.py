@@ -119,7 +119,9 @@ CONFIG = {
     # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,
-    "batch_size":    2,        # iter-31: 1 -> 2 (more stable gradient on Q8000 48GB)
+    "batch_size":    1,        # iter-31 closed batch=2 at -2.75pp (under-training at fixed epoch budget)
+    # iter-32: input_dropout 0.0 -> 0.05 (small noise injection at head input)
+    "input_dropout": 0.05,
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            1e-4,
@@ -337,10 +339,12 @@ class ResidualStack(nn.Module):
     def __init__(self, n_blocks: int = 6, c: int = 32, kernel: int = 3,
                  norm: str = "group", act: str = "relu",
                  dropout: float = 0.0, residual: bool = True,
-                 res_scale_init: float = 0.0):
+                 res_scale_init: float = 0.0,
+                 input_dropout: float = 0.0):
         super().__init__()
         self.residual = residual
         pad = kernel // 2
+        self.input_dropout = nn.Dropout2d(input_dropout) if input_dropout > 0 else nn.Identity()
         self.head = nn.Conv2d(1, c, kernel, padding=pad)
         self.head_act = _make_act(act)
         self.blocks = nn.Sequential(*[
@@ -352,7 +356,8 @@ class ResidualStack(nn.Module):
         nn.init.zeros_(self.tail.weight)
         nn.init.zeros_(self.tail.bias)
     def forward(self, x):
-        h = self.head(x)
+        x_inp = self.input_dropout(x)
+        h = self.head(x_inp)
         h = self.head_act(h)
         h = self.blocks(h)
         y = self.tail(h)
@@ -394,6 +399,7 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
                 dropout=cfg["res_dropout"],
                 residual=cfg["res_residual"],
                 res_scale_init=float(cfg.get("res_scale_init", 0.0)),
+                input_dropout=float(cfg.get("input_dropout", 0.0)),
             )
         proj_dn = make_res()
         img_dn = make_res()

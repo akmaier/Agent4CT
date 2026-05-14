@@ -63,7 +63,8 @@ CONFIG = {
 
     # Editable: training schedule.
     "epochs":        8,          # iter-34 sweet spot; iter-39/40/41 LR schedule axis fully closed
-    "batch_size":    2,          # iter-47: 1 -> 2 (more stable gradient on Q8000 48GB; parallel to C iter-31)
+    "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
+    "input_dropout": 0.05,        # iter-48: 0.0 -> 0.05 (small noise injection at head input)
     "lr":            1e-4,
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
@@ -183,10 +184,12 @@ class ResidualStack(nn.Module):
     def __init__(self, n_blocks: int = 8, c: int = 48,
                  kernel: int = 3, norm: str = "group", act: str = "relu",
                  dropout: float = 0.0, residual: bool = True,
-                 res_scale: float | None = None):
+                 res_scale: float | None = None,
+                 input_dropout: float = 0.0):
         super().__init__()
         self.residual = residual
         pad = kernel // 2
+        self.input_dropout = nn.Dropout2d(input_dropout) if input_dropout > 0 else nn.Identity()
         self.head = nn.Conv2d(1, c, kernel, padding=pad)
         self.head_act = _make_act(act)
         self.blocks = nn.Sequential(*[
@@ -199,7 +202,8 @@ class ResidualStack(nn.Module):
         nn.init.zeros_(self.tail.bias)
 
     def forward(self, x):
-        h = self.head(x)
+        x_inp = self.input_dropout(x)
+        h = self.head(x_inp)
         h = self.head_act(h)
         h = self.blocks(h)
         y = self.tail(h)
@@ -242,6 +246,7 @@ def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
             dropout=cfg["res_dropout"],
             residual=cfg["residual"],
             res_scale=cfg.get("res_scale", None),
+            input_dropout=float(cfg.get("input_dropout", 0.0)),
         )
     proj_dn = make()
     img_dn = make()
