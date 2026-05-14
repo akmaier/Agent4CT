@@ -20,3 +20,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 19	f4789a8	0.3064	0.5707	discard	architecture	claude-loss	claude-sonnet-4.5	Widen channels 32 -> 48 (~2.25x params, 0.225M -> 0.503M) on top of iter-16 wd=1e-3 KEEP.
 20	83d8949	0.2684	0.5373	discard	optimizer	claude-loss	claude-sonnet-4.5	EMA shadow weights decay=0.999, swap at validation. Standard in diffusion/NAFNet/Restormer.
 21	7f760f5	0.2979	0.5652	discard	optimizer	claude-loss	claude-sonnet-4.5	EMA decay 0.99 (lower than iter-20 0.999) for shorter effective lookback ~100 steps.
+22	db3d86b	0.3072	0.5815	discard	optimizer	claude-loss	claude-sonnet-4.5	gradient clipping max_norm=1.0 on top of iter-16 wd=1e-3 KEEP. Different regularization mechanism: caps per-step update magnitude.
