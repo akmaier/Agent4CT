@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:08:35Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 40,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "Switched ema_decay 0.0 (SWA uniform mean) -> 0.999 (EMA, late-epoch emphasis) on iter-38 substrate. EMA emphasizes last ~2.5 epochs vs all 6.",
+  "val_score": 0.28347551822662354,
+  "headroom": 0.5913572239944465,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.059991,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0040/comparison.png",
+  "advice_for_others": "Uniform-mean SWA beats EMA decay=0.999 by 0.74pp on this NAFNet substrate. Early epochs contribute usefully to the average (they regularize via shrinkage). EMA wisdom from CV literature does not transfer to this BF-tail-heavy network. Stick with SWA.",
+  "commit": "7f760f5"
+}

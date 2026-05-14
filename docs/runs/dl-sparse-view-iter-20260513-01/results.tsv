@@ -38,3 +38,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 37	e8d6c6c	0.276958	0.566265	discard	architecture	claude-iter	claude-sonnet-4.5	Switched naf_gate ReLU -> SimpleGate (true NAFNet) on iter-36 KEEP substrate to test if channel-mixing gate compensates lost ReLU capacity at narrow c=32. Resulted in -3.22pp regression.
 38	f4789a8	0.276966	0.598849	keep	architecture	claude-iter	claude-sonnet-4.5	Switched naf_gate ReLU -> GELU on iter-36 substrate. Same param count, smoother gradient near 0, modern image-restoration default.
 39	83d8949	0	0	discard	architecture	claude-iter	claude-sonnet-4.5	Widened c 32 -> 40 on iter-38 GELU substrate. Timed out at 8:13 (over 8min budget). Params ~0.094M (+57% vs c=32).
+40	7f760f5	0.283476	0.591357	discard	optimizer	claude-iter	claude-sonnet-4.5	Switched ema_decay 0.0 (SWA uniform mean) -> 0.999 (EMA, late-epoch emphasis) on iter-38 substrate. EMA emphasizes last ~2.5 epochs vs all 6.
