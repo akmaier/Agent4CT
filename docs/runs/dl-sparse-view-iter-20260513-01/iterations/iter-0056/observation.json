@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T21:09:52Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 56,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-56: naf_alpha 0.1 -> 0.05 on iter-53 substrate (8 BFs + ReLU). Headroom 0.6065 -> 0.6060 (-0.05pp). Near-flat DISCARD. Smaller alpha doesnt help on A (consistent with main iter-69 same closure).",
+  "val_score": 0.2593505382537842,
+  "headroom": 0.6059501720243816,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.060006,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0056/comparison.png",
+  "advice_for_others": "Near-flat DISCARD: alpha=0.05 -0.05pp on A. Closes lower alpha direction. alpha=0.1 stays optimum cross-substrate (main, A).",
+  "commit": "42fb118"
+}
