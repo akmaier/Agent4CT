@@ -206,7 +206,7 @@ CONFIG = {
     # conv: 0.225M -> ~0.55M, still well under cap. Streak artifacts in
     # sparse-view FBP have spatial extent ~few pixels; kernel=5 may
     # capture them better. Stacks with iter-16 KEEP wd=1e-3.
-    "res_norm":      "group",   # group | batch | none
+    "res_norm":      "batch",   # iter-46: group -> batch (untested; parallel to B iter-62)
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # relu | gelu | swish
     "res_kernel":    3,         # iter-26: revert kernel 5 -> 3 (iter-25 timed out at kernel=5)
@@ -221,7 +221,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "res_bias":      False,         # iter-45: disable biases (parallel to B iter-61)
+    "res_bias":      True,          # iter-45 closed bias=False at -0.55pp
     # iter-27 (DISCARD, -0.23pp): EDSR per-block alpha=0.1 alone fails on
     # this slug's wd=1e-3 substrate (alpha decayed to ~0 by wd).
     # iter-28: same alpha=0.1 + wd_split (alpha excluded from wd) to rescue
