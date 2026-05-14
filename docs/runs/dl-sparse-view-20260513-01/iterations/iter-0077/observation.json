@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T19:59:03Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 77,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-77: optimizer adamw (wd=1e-4) -> adam (wd=0) on iter-71 substrate. Headroom 0.6052 -> 0.6053 (+0.01pp). Marginal KEEP (essentially tied with iter-71). Cross-port from C iter-36 confirms: Adam (wd=0) is non-worse than AdamW (wd=1e-4) on NAFNet substrate. The original wd=1e-4 was near-neutral; not regularising much.",
+  "val_score": 0.2604699730873108,
+  "headroom": 0.6052518915347982,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.060006,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0077/comparison.png",
+  "advice_for_others": "Near-flat KEEP: optimizer=adam +0.01pp. Cross-substrate: AdamW wd=1e-4 was near-neutral on NAFNet \u2014 switching to Adam (wd=0) doesnt hurt. Open question: does this suggest wd=0 is the true optimum on NAFNet? Worth testing AdamW wd=1e-5 / wd=5e-5 in future.",
+  "commit": "04ca084"
+}
