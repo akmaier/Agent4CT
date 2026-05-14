@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:25:02Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 29,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Push BF tail count from 1 (iter-28 kept, hr=0.5805) to 2 trainable bilateral filters after NAFNet+SWA. The second BF independently learns different sigma_x/y/r and stacks in series.",
+  "val_score": 0.2861,
+  "headroom": 0.5868,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4-7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0029/comparison.png",
+  "advice_for_others": "NAFNet c=32 ReLU dw + SWA last-3/6-eps + 2 trainable BF tails reaches headroom 0.5868 \u2014 +1.23pp over iter-7 ceiling, +0.63pp over iter-28 (single BF). Adding a SECOND BF gave a LARGER lift than the first \u2014 strongly non-linear gain, likely because the second BF learns a different smoothing regime (different sigma_r/sigma_xy) that handles a complementary noise scale to the first. Cost: +3 params total + 1 extra F.unfold per forward pass, ~30s extra train time over iter-28. Next candidates: n_bf=3 (test for saturation), larger BF kernel k=9 (more receptive field), or larger naf_c (c=40) on this composition. Train time 373s, fits 8min wall.",
+  "commit": "ff26abb"
+}
