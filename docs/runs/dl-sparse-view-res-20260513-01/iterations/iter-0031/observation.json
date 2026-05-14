@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T09:09:16Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 31,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Per-channel learnable alpha vector (shape (1,c,1,1), all init 0.1) replacing the scalar per-block alpha from iter-14. Tests channel-wise modulation of the EDSR residual scaling mechanism. Param cost negligible: 12 scalars -> 384 entries, total 0.2247M -> 0.2251M.",
+  "val_score": 0.645434558391571,
+  "headroom": 0.5655697861605913,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.22509,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0031/comparison.png",
+  "advice_for_others": "Discard. val_ssim 0.6630 -> 0.6454 (-2.7%), headroom 0.5870 -> 0.5656 (-2.14pp). Channel-wise alpha modulation hurts despite identical init. Diagnosis: at c=32 / 6 blocks / 8 epochs / 400 phantoms, per-channel alpha lets individual channels drift away from the 0.1 sweet spot during training (the 384 scalars all start equal but have no constraint to remain co-scaled), polluting the signal. Combined with iter-15 (-4.9pp at alpha=0.05) and iter-17 (-4.6pp at alpha=0.2), the conclusion is firm: the alpha-shape/init axis is closed \u2014 exactly 0.1 scalar per block is the local optimum. ALPHA-GATING AXIS NOW COMPLETELY CLOSED at this data/depth budget. Next directions to try: kernel-3->5 (iter-28, untested spatial-mixing axis), i0 noise jitter (iter-30), or larger structural swings (NAFNet cross-port).",
+  "commit": "d5edeaa"
+}
