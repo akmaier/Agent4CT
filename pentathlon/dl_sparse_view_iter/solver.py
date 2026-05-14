@@ -124,9 +124,9 @@ CONFIG = {
     "naf_expand":    2,                # iter-59 timed out at expand=3
     "bf_sigma_x":    2.0,              # iter-61 closed 2.5 marginal flat; 2.0 stays
     "bf_sigma_y":    2.0,
-    "bf_sigma_r":    0.002,            # iter-65: bisect 0.001 KEEP vs 0.005 KEEP (intermediate point)
+    "bf_sigma_r":    0.005,            # iter-62 KEEP (iter-64 0.0005 -4.76pp, iter-65 0.002 -2.51pp)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
-    "naf_gate":      "relu",           # iter-52: GELU -> ReLU (test gate reversion; no wall cost)
+    "naf_gate":      "gelu",           # iter-66: relu -> gelu retest on new sigma_r=0.005 substrate
                                          #  (alpha overridden by 0.05 in iter-56 above)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
     "share_weights": False,            # n/a at K=1
