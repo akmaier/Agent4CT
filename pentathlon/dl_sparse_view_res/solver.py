@@ -58,13 +58,13 @@ CONFIG = {
     "sdd":           1085.6,
 
     # Training subset for the 5-minute iteration budget.
-    "train_n":       450,         # iter-76: 400 -> 450 fine bisection (300 closed -1.74, 500 closed -0.59)
+    "train_n":       400,         # iter-76 closed 450 -4.67; data axis final-closed
     "val_n":         100,
 
     # Editable: training schedule.
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.0,        # iter-68 closed input_dropout on batch -4.43pp
+    "input_dropout": 0.0,        # iter-68 closed
     "lr_warmup_epochs": 0,
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
@@ -87,7 +87,7 @@ CONFIG = {
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
-    "swa_last_n":    0,           # iter-69 closed SWA on batch near-flat
+    "swa_last_n":    2,           # iter-77: 0 -> 2 (narrow SWA window; iter-69 was full 4)
     "adamw_beta2":   0.999,      # iter-46 closed beta2=0.99 axis (-1.28pp)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
