@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T20:23:43Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 52,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-52: naf_gate gelu -> relu on iter-49 substrate (9 BFs). TIMEOUT at 10-min wall. 9 BFs is consistently at wall edge; any dynamics change tips it over.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.06,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4.7",
+  "advice_for_others": "TIMEOUT: A's 9-BF substrate is too wall-constrained for additional knob exploration. Drop to 8 BFs (iter-48 KEEP at hr=0.6059) to free wall budget for further single-knob tests.",
+  "commit": "9b1831a"
+}
