@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T07:38:25Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 23,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-23 NAFNet c=48 ReLU (capacity sweep): TIMEOUT at 8:02 / 8min wall, 5 epochs completed (loss 0.00046 -> 0.00039 by ep4, plateau), validation never ran. At c=48 the NAFNet per-epoch wallclock is ~75s on RTX 6000 (vs ~50s for c=32 in iter-21), and 6 epochs + val needed 9+ min. The architecture/capacity is valid (training converged well) \u2014 this is purely a compute-budget overrun. Next iter-24: cut to c=40 OR cut to 5 epochs at c=48 to fit the wall.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.127,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "NAFNet at c=48 with 6 epochs blows the 8min wall on RTX 6000 (~75s/epoch including PYRO-NN projector calls in dual-domain N2I training_step). c=32 fits comfortably at ~50s/epoch (iter-21 was 323s train); c=48 budget = 5 epochs or reduce blocks.",
+  "commit": "6e8fbb0"
+}
