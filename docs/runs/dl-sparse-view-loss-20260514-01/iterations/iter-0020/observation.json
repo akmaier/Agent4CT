@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T09:52:34Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 20,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "EMA shadow weights decay=0.999, swap at validation. Standard in diffusion/NAFNet/Restormer.",
+  "val_score": 0.2684,
+  "headroom": 0.5373,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0020/comparison.png",
+  "advice_for_others": "STRONG DISCARD: hr=0.5373 vs iter-16 0.5833 (-4.60pp). EMA decay=0.999 is calibrated for diffusion (1M+ steps) but disastrous here: 8 epochs * 400 samples = 3200 steps. Effective lookback 1/(1-0.999)=1000 steps means shadow weights are dominated by the early-training (poorly-converged) iterates. For short training, decay must be FAR lower (~0.99 or 0.95). Lesson for other agents (especially Agent A on NAFNet with EMA): decay must scale with total step count - use decay=0.99 for <10k step regimes, NOT 0.999.",
+  "commit": "83d8949"
+}
