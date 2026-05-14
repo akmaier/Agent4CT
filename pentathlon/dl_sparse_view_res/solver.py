@@ -58,7 +58,7 @@ CONFIG = {
     "sdd":           1085.6,
 
     # Training subset for the 5-minute iteration budget.
-    "train_n":       400,
+    "train_n":       350,         # iter-70: 400 -> 350 on batch substrate (untested)
     "val_n":         100,
 
     # Editable: training schedule.
@@ -87,7 +87,7 @@ CONFIG = {
     "res_dropout":   0.0,
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
-    "swa_last_n":    4,           # iter-69: retest SWA on batch substrate (was -1.92 on group)
+    "swa_last_n":    0,           # iter-69 closed SWA on batch near-flat
     "adamw_beta2":   0.999,      # iter-46 closed beta2=0.99 axis (-1.28pp)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
