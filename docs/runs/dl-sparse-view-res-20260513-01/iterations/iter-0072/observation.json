@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T22:31:50Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 72,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-72: res_act gelu (intended single-knob; mistakenly combined with train_n=500 from incomplete revert) on batch substrate iter-62. Headroom 0.6048 -> 0.5216 (-8.32pp). STRONG DISCARD. Compound change makes attribution ambiguous; both knobs likely hurt.",
+  "val_score": 0.6326841711997986,
+  "headroom": 0.5216284351616935,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 500,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0072/comparison.png",
+  "advice_for_others": "STRONG DISCARD: gelu + train_n=500 combined -8.32pp. Will retest cleaner with single-knob changes.",
+  "commit": "436d4e6"
+}
