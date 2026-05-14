@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T22:39:44Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 73,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-73: res_dropout 0.0 -> 0.05 on batch substrate iter-62 KEEP. Headroom 0.6048 -> 0.5731 (-3.17pp). DISCARD. Worse than on group substrate. BN substrate is more sensitive to internal dropout. Closes dropout axis.",
+  "val_score": 0.6540713310241699,
+  "headroom": 0.573149474062758,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0073/comparison.png",
+  "advice_for_others": "DISCARD: res_dropout=0.05 on batch -3.17pp. Dropout closed cross-substrate. Try lr=1e-4 + bf_kernel sweep or other untested combo.",
+  "commit": "cbc37e9"
+}
