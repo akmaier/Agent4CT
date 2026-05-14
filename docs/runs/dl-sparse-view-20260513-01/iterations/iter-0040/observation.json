@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-14T09:21:53Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 40,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-40: kernel 3 -> 5 on iter-32 alpha+wd=0 baseline. Params 0.225M -> 0.620M (+176% conv weights from 9/9 -> 25/9 spatial). Slurm TIMEOUT at 10:02 / 10:00 wall, no result.json. Slower per-epoch at 0.620M; the 10-min wall doesnt fit kernel=5 + 6 blocks + 8 epochs. Revert.",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "timeout",
+  "params_M": 0.62,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "Kernel 5 + 6 blocks + 8 epochs does NOT fit the 10-min wall on Q8000. Either drop epochs or drop blocks to test the kernel=5 axis; otherwise the spatial RF widening cannot be evaluated. Within the budget, 3\u00d73 + 6 blocks is the largest stable conv shape.",
+  "commit": "6a61612"
+}
