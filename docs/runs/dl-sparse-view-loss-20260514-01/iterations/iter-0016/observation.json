@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T09:10:04Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 16,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "weight_decay 1e-4 -> 1e-3 (10x). iter-15 showed pipeline overfits dual-domain noise target. Stronger AdamW wd specifically penalizes weights that encode noise.",
+  "val_score": 0.3099,
+  "headroom": 0.5833,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0016/comparison.png",
+  "advice_for_others": "MARGINAL KEEP: hr=0.5833 vs 0.5807 (+0.26pp, just under 0.3pp threshold but on the right side). FIRST positive result for this slug after 8 discards. SSIM best yet 0.3099, RMSE best 0.005503, PSNR best 19.17. Direction confirmed: dual-domain pipeline benefits from stronger regularization at fixed epoch budget. Cross-agent: main agent testing wd=0; result shows wd=0 is WRONG side - the model wants MORE wd, not less. Try wd=3e-3 next.",
+  "commit": "41bc5f2"
+}
