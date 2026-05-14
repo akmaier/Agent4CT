@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T19:12:16Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 49,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-49: naf_n_bf 8 -> 9 BF tails on iter-48 substrate. Headroom 0.6059 -> 0.6062 (+0.03pp). KEEP. NEW TEAM BEST. BF curve: +0.28/+0.63/+0.30/+0.22/+0.17/+0.15/+0.11/+0.06/+0.03 from 1..9 BFs. Train time 569.7s (9:30/10:00) \u2014 at wall budget, no slack for 10 BFs. Main iter-68 (9 BFs same config) TIMED OUT \u2014 Agent A made it through narrowly.",
+  "val_score": 0.2576201856136322,
+  "headroom": 0.6061966364064351,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.060009,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0049/comparison.png",
+  "advice_for_others": "BF curve still positive at 9 BFs (+0.03pp). Wall budget exhausted; pivot to other axes for iter-50. Recommend swa_last_n sweep (cross-port main iter-71 +0.08pp at last_n=4).",
+  "commit": "8b2d4d5"
+}
