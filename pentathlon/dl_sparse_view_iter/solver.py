@@ -139,15 +139,16 @@ CONFIG = {
     # noise of iter-28.
     "ema":           True,
     "ema_decay":     0.0,              # SWA mode (uniform mean)
-    # Iter-34: widen SWA window from last-3-of-6 (start_ep=3) to last-4-of-6
-    # (start_ep=2). iter-27 introduced SWA last-3, iter-31 KEEP still uses
-    # last-3 (hr=0.5899). With BF tail at n_bf=3, the trainable BF sigmas are
-    # the slowest-converging part of the network; averaging one more epoch's
-    # worth of snapshots may stabilise them. Zero compute cost — same epoch
-    # count, same per-epoch wall (no extra BFs).
-    # Following iter-33 timeout (bf_kernel=9 too expensive), this is the
-    # next cheapest non-discarded knob in the iter-31 base.
-    "ema_start_ep":  2,                # iter-34: last 4 of 6 (was 3 = last-3)
+    # Iter-35: widen SWA window from last-4-of-6 (start_ep=2) to last-5-of-6
+    # (start_ep=1). iter-34 KEEP at last-4 (hr=0.5920) shows that widening the
+    # SWA window further was monotonically beneficial. Test if widening one
+    # more epoch further compounds, or if early-epoch noise re-enters the
+    # average and degrades the result. The trainable BF sigmas are slow to
+    # converge (3 BF tails @ n_bf=3) so the BF-driven slow signal may keep
+    # dominating. Zero compute cost — same epoch count, same per-epoch wall.
+    # If keep at +0.1pp or higher: try last-6 (start_ep=0).
+    # If discard: last-4 is the sweet spot, move to other knobs.
+    "ema_start_ep":  1,                # iter-35: last 5 of 6 (was 2 = last-4)
     "ema_every":     1,
     # Iter-31: push BF tail to 3. Saturation test. Curve so far on NAFNet:
     #   n_bf=0 (iter-27, SWA-only):     hr=0.5777
