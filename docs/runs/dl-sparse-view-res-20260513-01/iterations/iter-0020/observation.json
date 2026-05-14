@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T07:54:33Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 20,
+  "challenge": "dl_sparse_view",
+  "change_class": "hparams",
+  "rationale": "iter-20: epochs 8 -> 10 (single-knob optimisation-axis test). Hypothesis: iter-12 had noted loss still dropping at epoch 8; V100 timing leaves room for 2 more epochs (10 epochs train_time = 436s, fits 600s wall comfortably). Architecture identical to iter-14 keep (6 blocks, c=32, alpha=0.1, post-norm, ReLU, GroupNorm). Result: val_ssim 0.6630 -> 0.6507 (-1.9%), headroom 0.5870 -> 0.5733 (-2.3%). Regression despite 2 extra training epochs. Training loss confirmed lower (epoch 7-8 dropped 0.00039 -> 0.00037, then stabilised \u2014 still trending) but validation worsened. Diagnosis: classic overfit on the 400-phantom training set; with more steps the network memorises ellipse-specific cues that don't generalise to the disjoint val set. The data budget (train_n=400) is the binding constraint, NOT training steps. Discard, revert. This closes the 'simply train longer' axis \u2014 future epoch experiments need to couple with regularisation (dropout, data aug) or explicit early stopping by validation.",
+  "val_score": 0.6507,
+  "headroom": 0.5733,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0020/comparison.png",
+  "advice_for_others": "More epochs at constant lr does NOT help \u2014 overfits on 400 phantoms. Iter-12's 'loss still dropping' observation was actually a misleading signal of overfit-in-progress. 8 epochs is near-optimal at this data budget. Future epoch-axis experiments must couple with regularisation (dropout, augmentation, weight decay bump) or schedule (cosine annealing, early stopping).",
+  "commit": ""
+}
