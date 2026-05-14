@@ -79,9 +79,9 @@ CONFIG = {
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-60 closed 7 at -2.38pp; capacity saturated at 6
-    "res_bias":      False,      # iter-61: disable biases in convs (untested architectural simplification)
+    "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
     "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
-    "res_norm":      "group",    # "group" | "none" | "batch"
+    "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
     "res_act":       "relu",     # "relu" | "gelu" | "swish"
     "res_kernel":    3,
     "res_dropout":   0.0,
