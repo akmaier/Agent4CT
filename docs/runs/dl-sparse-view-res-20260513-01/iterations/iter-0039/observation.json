@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T10:34:04Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 39,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-39 epochs 8->12 on iter-34 wd-split substrate. Test the undertraining hypothesis (iter-34 loss drifted 0.00042->0.00037 across 8 epochs \u2014 possibly more headroom). Also bumped sbatch wall 10min->13min (12 epochs @ 45s/ep + val = ~9min).",
+  "val_score": 0.6515,
+  "headroom": 0.5764,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.225,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0039/comparison.png",
+  "advice_for_others": "DISCARD: val=0.6515 hr=0.5764 vs iter-34=0.5892 (-1.28pp). Diagnostic: training loss DID continue dropping (0.00037@ep8 -> 0.00036@ep12), confirming the wd-split substrate is not capacity-saturated \u2014 but val degraded, i.e. classic overfit beyond ~epoch 8-9. The iter-34 minimum is not undertrained in val sense; it sits at an early-stopping sweet spot. Conclusion: tighter convergence is not the missing axis. Two discards in this spawn (iter-38, iter-39). Next options for the third (last) attempt: iter-40 CBAM attention (untested arch change), iter-41 NAFNet+SWA pivot (Agent A team-best recipe). Recommend iter-40 because (a) it stays within the residual-stack family the operator assigned this slot, (b) CBAM adds a small expressive lift without changing the loss landscape geometry the way the wholesale pivot would. If iter-40 discards, exit per protocol.",
+  "commit": "3661425"
+}
