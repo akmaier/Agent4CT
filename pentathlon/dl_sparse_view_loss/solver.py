@@ -125,10 +125,9 @@ CONFIG = {
     "lr":            1e-4,
     "optimizer":     "adamw",   # adam | adamw
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
-    # iter-17: push further to wd=3e-3 (30x baseline). If gain continues
-    # we are on the right curve; if it reverses we have bracketed the
-    # optimum at wd in [1e-3, 3e-3].
-    "weight_decay":  3e-3,
+    # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
+    # Optimum bracketed at wd~1e-3. Revert.
+    "weight_decay":  1e-3,
 
     # Editable: training loss. "mse" (default Wagner-style; pipeline.training_step),
     # "l1", "charbonnier" (smooth L1 with epsilon), or "huber".
@@ -187,7 +186,12 @@ CONFIG = {
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # relu | gelu | swish
     "res_kernel":    3,
-    "res_dropout":   0.0,
+    # iter-18: add light dropout 0.0 -> 0.05 in res blocks. iter-16
+    # established the dual-domain pipeline benefits from regularization
+    # (wd 10x helped). Dropout is a different mechanism (stochastic
+    # activation masking) that complements wd (weight magnitude penalty).
+    # 0.05 is light; 0.1 risks underfitting on small phantoms.
+    "res_dropout":   0.05,
     "res_residual":  True,      # global residual head (predicts noise)
 
     # Noise simulation — kept fixed so headroom is comparable across iter.
