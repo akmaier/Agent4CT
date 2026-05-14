@@ -74,7 +74,7 @@ CONFIG = {
     "lr":            1e-4,       # iter-57 closed 1.2e-4 at -0.73pp
     "adamw_eps":     1e-10,      # iter-53 KEEP (iter-55/56 both DISCARD around it; basin shallow)
     "optimizer":     "adamw",   # iter-54 closed adam at -1.01pp; AdamW + wd_split is right for this slug
-    "weight_decay":  5e-5,       # iter-58: 1e-4 -> 5e-5 (half; bisect wd_split lower side)
+    "weight_decay":  2e-4,       # iter-59: 5e-5 -> 2e-4 (probe upper bisection; lower closed -1.68pp)
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
 
     # Editable: residual-stack model architecture.
