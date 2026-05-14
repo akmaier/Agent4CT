@@ -126,9 +126,10 @@ CONFIG = {
     "optimizer":     "adamw",   # adam | adamw
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
-    # iter-23: refine to wd=2e-3 (midway). If gain over iter-16, the
-    # optimum is in (1e-3, 2e-3); if loss, it's at 1e-3 exactly.
-    "weight_decay":  2e-3,
+    # iter-23 (DISCARD, hr=0.5589): wd=2e-3 also too aggressive (-2.44pp).
+    # Optimum is tight at wd=1e-3; sharper landscape than logspace
+    # search suggested.
+    "weight_decay":  1e-3,
     # iter-22 (DISCARD, hr=0.5815): grad_clip=1.0 near-flat (-0.18pp).
     # AdamW grad norm rarely exceeds 1 on small residual net. Disable.
     "grad_clip":     0.0,
@@ -203,9 +204,15 @@ CONFIG = {
     "res_dropout":   0.0,
     "res_residual":  True,      # global residual head (predicts noise)
 
-    # Noise simulation — kept fixed so headroom is comparable across iter.
+    # Noise simulation — kept fixed for VAL so headroom is comparable
+    # across iter. iter-24: jitter train-time i0 per batch within
+    # [i0_jitter_lo, i0_jitter_hi]. The network sees a range of noise
+    # levels and learns a more general denoiser. Val still uses i0=5e4.
     "noise_i0":      5e4,
     "noise_sigma_e": 5.0,
+    "noise_jitter":  True,
+    "i0_jitter_lo":  3e4,
+    "i0_jitter_hi":  8e4,
     "seed":          42,
 
     # Intensity calibration. CT images live on a standard scale (HU for
@@ -498,6 +505,21 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                             seed=cfg["seed"] + 30_000 + ep * 100_000 + i,
                         )
                     n_mix += 1
+            elif bool(cfg.get("noise_jitter", False)):
+                # iter-24: noise jitter. Re-simulate the cached clean
+                # sinogram for this batch with a random i0 in
+                # [i0_jitter_lo, i0_jitter_hi]. The denoiser sees a range
+                # of noise levels and generalizes better. Val keeps
+                # i0=noise_i0 so headroom comparable across iters.
+                lo = float(cfg.get("i0_jitter_lo", cfg["noise_i0"]))
+                hi = float(cfg.get("i0_jitter_hi", cfg["noise_i0"]))
+                i0_b = lo + (hi - lo) * float(torch.rand((), generator=aug_rng).item())
+                with torch.no_grad():
+                    clean_b = train_clean[idx]
+                    batch = simulate_low_dose(
+                        clean_b, i0=i0_b, sigma_e=cfg["noise_sigma_e"],
+                        seed=cfg["seed"] + 40_000 + ep * 100_000 + i,
+                    )
             else:
                 batch = train_noisy[idx].to(device)
             if loss_name == "mse":
