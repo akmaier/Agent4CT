@@ -653,10 +653,41 @@ def run_agent(slug: str, family: str, n_iters: int, *,
     max_steps = 60 * n_iters
     for step in range(max_steps):
         print(f"\n=== [{family}] step {step+1}/{max_steps} ===", flush=True)
-        resp = client.chat.completions.create(
-            model=model, messages=messages, tools=TOOLS_SCHEMA,
-            tool_choice="auto", temperature=0.2,
-        )
+        # Retry the chat-completion call on transient 5xx / connection
+        # errors. The FAU gateway sits behind litellm + per-model
+        # backends (vLLM hosts) that occasionally hiccup; one 500
+        # shouldn't take down a 5-iteration agent. Up to 6 retries with
+        # exponential backoff (2 -> 4 -> 8 -> 16 -> 32 -> 60 s, capped).
+        # If a model's backend is genuinely dead, the loop still gives
+        # up after ~2 min so the agent doesn't hang the whole night.
+        resp = None
+        last_err: Optional[Exception] = None
+        for attempt in range(6):
+            try:
+                resp = client.chat.completions.create(
+                    model=model, messages=messages, tools=TOOLS_SCHEMA,
+                    tool_choice="auto", temperature=0.2,
+                )
+                break
+            except Exception as e:  # InternalServerError, APIConnectionError, RateLimitError, ...
+                last_err = e
+                # Surface so the operator sees what's happening in the log.
+                emsg = str(e)[:200]
+                wait = min(60, 2 ** (attempt + 1))
+                print(f"[{family}] chat.completions FAILED (attempt {attempt+1}/6): "
+                      f"{type(e).__name__}: {emsg}\n[{family}] retrying in {wait}s",
+                      flush=True)
+                time.sleep(wait)
+        if resp is None:
+            print(f"[{family}] giving up after 6 retries; last error: {last_err}",
+                  flush=True)
+            # Try to record any outstanding work as a crash before exiting,
+            # so the journal still tells the truth.
+            for jid, st in list(ctx.get("pending", {}).items()):
+                if st != JOB_STATE_RECORDED:
+                    print(f"[{family}] orphaned job {jid} state={st} "
+                          f"will not get a record (agent died).", flush=True)
+            return 1
         msg = resp.choices[0].message
         content = msg.content or ""
         tool_calls = getattr(msg, "tool_calls", None) or []
