@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T07:10:12Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 20,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-20 candidate B: true unrolled LPD K=2 raw-adjoint with PROPERLY SCALED alpha_init=1e-4 (vs iter-1 alpha=0.1 raw-adjoint which DIVERGED and iter-2 alpha=0.5 FBP-precond which also diverged). Training was stable: loss converged to 0.00038 by ep3 matching iter-7 baseline trajectory. But headroom 0.5733 vs iter-7 0.5745 (-0.12pp) and learned_alphas barely moved from init (1.0099e-4 and 1.0174e-4 after 4 epochs) -- the DC term gradient is too small to be informative because (a) the data anchor g = R_half(x_in) is the projection of a DEGRADED FBP image, not the true measurement (DualDomainPipeline does not expose the half-set sinogram to the image_denoiser slot); and (b) at alpha=1e-4 the contribution of -alpha*R^T(R z - g) to x is ~10^-4 magnitude while the U-Net residual is ~10^-3, so DC is effectively zeroed out. Cutting epochs 6->4 to fit the LPD compute also gave up some U-Net training (loss=0.00038 vs iter-7 0.00037), explaining most of the regression.",
+  "val_score": 0.2906,
+  "headroom": 0.5733,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0020/comparison.png",
+  "advice_for_others": "In-image-denoiser LPD with a learnable alpha is structurally hamstrung when the data anchor is the reprojection of the already-degraded input image (not the true measurement). The DC step has no new information to pull on, alpha stays at init, and the LPD reduces to its U-Net regulariser at additional projector cost. Either route the true sinogram into the image_denoiser (architectural surgery on DualDomainPipeline) or stay with the iterated denoiser family.",
+  "commit": "c09b724"
+}
