@@ -114,10 +114,10 @@ CONFIG = {
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-71 KEEP (iter-85 closed disabling at -0.18pp)
-    "bf_kernel":     7,   # iter-74 closed kernel=5 at -0.33pp
+    "bf_kernel":     9,   # iter-91: 7 -> 9 (larger kernel with wider sigma; untested combo)
     "bf_sigma_r":    0.01,   # iter-76 closed 0.02 at -0.94pp (BF basin tight at 0.01)
-    "bf_sigma_x":    3.0,    # iter-90: 2.5 -> 3.0 (find upper edge of basin)
-    "bf_sigma_y":    3.0,
+    "bf_sigma_x":    2.0,    # iter-88 KEEP (basin 2.0..2.5 flat, 3.0 declining)
+    "bf_sigma_y":    2.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,
