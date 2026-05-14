@@ -124,8 +124,8 @@ CONFIG = {
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            1e-4,       # iter-34 closed 5e-5 at -0.96pp; LR axis fully bisected
-    "adamw_eps":     1e-6,       # iter-35: 1e-8 -> 1e-6 (more numerical stability in adaptive denom)
-    "optimizer":     "adamw",   # adam | adamw
+    "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
+    "optimizer":     "adam",    # iter-36: adamw -> adam (no wd; tests if L2-via-grad vs decoupled-wd matters)
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
     # iter-23 (DISCARD, hr=0.5589): wd=2e-3 also too aggressive (-2.44pp).
