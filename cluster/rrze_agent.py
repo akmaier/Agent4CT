@@ -55,7 +55,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
@@ -279,20 +279,56 @@ def _scp(src: str, dst: str, *, timeout_s: int = 60) -> subprocess.CompletedProc
     )
 
 
+JOB_STATE_SUBMITTED = "submitted"        # sbatch returned, waiting
+JOB_STATE_MUST_RECORD = "must_record"    # finished (ok or fail), agent owes a record
+JOB_STATE_RECORDED = "recorded"          # iter written to journal
+
+
+def _outstanding_record(ctx: dict) -> Optional[str]:
+    """Return the first job_id whose iteration must be recorded before the
+    agent is allowed to submit anything new. None if the pipeline is clean.
+    """
+    for jid, state in ctx.get("pending", {}).items():
+        if state == JOB_STATE_MUST_RECORD:
+            return jid
+    return None
+
+
+def _has_in_flight(ctx: dict) -> Optional[str]:
+    """Return the first job_id that's still submitted-but-not-polled-to-end."""
+    for jid, state in ctx.get("pending", {}).items():
+        if state == JOB_STATE_SUBMITTED:
+            return jid
+    return None
+
+
 def tool_submit_iteration(args: dict, ctx: dict) -> str:
     """Push solver.py to the cluster, submit the family's sbatch, return job id.
 
-    The agent calls this AFTER it has written the new solver.py. Path
-    is reconstructed from the family — the agent cannot point this at
-    arbitrary files or arbitrary sbatch templates.
-
-    BEFORE the scp, the solver is scanned for dangerous Python patterns
-    (subprocess, os.system, sockets, http clients, eval/exec, ...).
-    Any hit refuses the submission; the agent can rewrite and try
-    again.  Pure-torch / numpy / matplotlib code is the expected shape
-    of solver.py and contains none of those patterns.
+    INVARIANT (record-or-die): before submitting a NEW iteration the
+    agent must have called record_iteration for any previous submission
+    whose poll has surfaced a terminal state (result.json present, OR
+    Slurm job state COMPLETED/FAILED/TIMEOUT/CANCELLED without one).
+    The agent can't just keep submitting until something works — every
+    completed iteration, kept or discarded, gets a journal entry.
     """
     fam = ctx["family"]
+    # --- record-or-die gate ------------------------------------------
+    blocker = _outstanding_record(ctx)
+    if blocker:
+        return (f"REFUSED: cannot submit a new iteration while job "
+                f"{blocker} is still un-recorded. The record_iteration "
+                f"tool MUST be called first with kept=true/false, a "
+                f"rationale, and the metrics from /tmp/result-{fam}-"
+                f"{blocker}.json (if it exists) — or kept=false + a "
+                f"rationale describing why the job failed (if it does "
+                f"not). Once recorded, you can submit again.")
+    in_flight = _has_in_flight(ctx)
+    if in_flight:
+        return (f"REFUSED: job {in_flight} is still running / queued. "
+                f"Call poll_iteration(job_id=\"{in_flight}\") until it "
+                f"reports terminal state, then record_iteration, then "
+                f"submit a new one.")
     local_solver = REPO / f"pentathlon/dl_sparse_view_{fam}/solver.py"
     if not local_solver.exists():
         return f"ERROR: {local_solver.relative_to(REPO)} does not exist; write it first."
@@ -312,52 +348,106 @@ def tool_submit_iteration(args: dict, ctx: dict) -> str:
     sbatch_rel = f"cluster/slurm/dl_sparse_view_{fam}_5min.sbatch"
     p = _ssh(f"cd {CLUSTER_REPO} && sbatch {sbatch_rel}")
     out = (p.stdout + p.stderr).strip()
-    # Parse "Submitted batch job <jid>".
     m = re.search(r"Submitted batch job (\d+)", out)
     if not m:
         return f"sbatch FAILED: rc={p.returncode}\n{out[:600]}"
     jid = m.group(1)
-    return f"OK submitted job {jid}\n{out}"
+    ctx.setdefault("pending", {})[jid] = JOB_STATE_SUBMITTED
+    return (f"OK submitted job {jid}. Poll it with "
+            f"poll_iteration(job_id=\"{jid}\") until it reports a "
+            f"terminal state, then call record_iteration with "
+            f"job_id=\"{jid}\". You cannot submit another job until "
+            f"this one is recorded.\n{out}")
 
 
 def tool_poll_iteration(args: dict, ctx: dict) -> str:
-    """Check if a Slurm job's result.json exists yet; if so, fetch
-    result.json + comparison.png back to /tmp/. The agent calls this
-    repeatedly until it gets the result back (we cap waits at 10 s
-    per call so the LLM-side loop stays in control).
+    """Check the Slurm job state and pull result.json when present.
+
+    Three terminal outcomes the agent must distinguish:
+      1. result.json present  → STATUS=OK     (model + metrics ready)
+      2. job in {FAILED, TIMEOUT, CANCELLED, OUT_OF_MEMORY, NODE_FAIL,
+         COMPLETED} *without* result.json    → STATUS=FAILED
+      3. job still RUNNING / PENDING         → STATUS=WAITING
+
+    On (1) or (2) the agent MUST call record_iteration before submitting
+    another job — the tool layer will refuse the next submit until then.
     """
     fam = ctx["family"]
     jid = str(args["job_id"])
     if not jid.isdigit():
-        return f"ERROR: job_id must be numeric"
+        return "ERROR: job_id must be numeric"
     remote_out = f"{CLUSTER_REPO}/runs/iter-{fam}-{jid}"
-    # Probe queue + result.
-    p = _ssh(f"squeue -j {jid} -h 2>/dev/null; echo ---; "
-             f"test -f {remote_out}/result.json && echo HAVE_RESULT || echo NO_RESULT; "
-             f"tail -20 {CLUSTER_REPO}/results/slurm/ddssl-dlsv-{fam}-{jid}.out 2>/dev/null")
-    out = p.stdout
-    if "HAVE_RESULT" not in out:
-        return f"not ready yet:\n{out[-3000:]}"
-    # Fetch result + image.
-    local_result = f"/tmp/result-{fam}-{jid}.json"
-    local_image  = f"/tmp/comparison-{fam}-{jid}.png"
-    _scp(f"{CLUSTER_HOST}:{remote_out}/result.json", local_result)
-    _scp(f"{CLUSTER_HOST}:{remote_out}/comparison.png", local_image)
+    # One round-trip pulls sacct State + result-existence + slurm-stdout tail
+    # + slurm-stderr tail. Cheaper than multiple SSHs.
+    probe = _ssh(
+        f"echo '--SACCT--'; "
+        f"sacct -j {jid} -X --noheader --format=State -P 2>/dev/null | head -1; "
+        f"echo '--RESULT--'; "
+        f"test -f {remote_out}/result.json && echo HAVE_RESULT || echo NO_RESULT; "
+        f"echo '--STDOUT_TAIL--'; "
+        f"tail -25 {CLUSTER_REPO}/results/slurm/ddssl-dlsv-{fam}-{jid}.out 2>/dev/null; "
+        f"echo '--STDERR_TAIL--'; "
+        f"tail -15 {CLUSTER_REPO}/results/slurm/ddssl-dlsv-{fam}-{jid}.err 2>/dev/null"
+    )
+    out = probe.stdout
+    # Parse sacct State (between --SACCT-- and --RESULT--).
+    state = "UNKNOWN"
     try:
-        body = Path(local_result).read_text()
-    except FileNotFoundError:
-        return f"result.json reported present but scp failed:\n{out[-1500:]}"
-    return (f"OK job {jid} complete\n"
-            f"result.json at {local_result}\n"
-            f"comparison.png at {local_image}\n"
-            f"--- result.json ---\n{body[:4000]}")
+        chunk = out.split("--SACCT--", 1)[1].split("--RESULT--", 1)[0].strip()
+        if chunk:
+            state = chunk.splitlines()[0].strip().split()[0]
+    except Exception:
+        pass
+    have_result = "HAVE_RESULT" in out
+
+    TERMINAL = {"COMPLETED", "FAILED", "TIMEOUT", "CANCELLED",
+                "OUT_OF_MEMORY", "NODE_FAIL", "PREEMPTED", "BOOT_FAIL"}
+
+    pending = ctx.setdefault("pending", {})
+
+    if have_result:
+        # Success path: pull artifacts to /tmp/ and surface the body inline.
+        local_result = f"/tmp/result-{fam}-{jid}.json"
+        local_image  = f"/tmp/comparison-{fam}-{jid}.png"
+        _scp(f"{CLUSTER_HOST}:{remote_out}/result.json", local_result)
+        _scp(f"{CLUSTER_HOST}:{remote_out}/comparison.png", local_image)
+        try:
+            body = Path(local_result).read_text()
+        except FileNotFoundError:
+            return f"result.json reported present but scp failed:\n{out[-1500:]}"
+        pending[jid] = JOB_STATE_MUST_RECORD
+        return (f"STATUS=OK  job {jid} complete  (sacct State={state})\n"
+                f"result.json at {local_result}\n"
+                f"comparison.png at {local_image}\n"
+                f"NEXT: call record_iteration(job_id=\"{jid}\", iter=N, "
+                f"val_score=..., headroom=..., params_M=..., train_n=..., "
+                f"change_class=..., rationale='...', advice='...', kept=...). "
+                f"The tool layer will REFUSE submit_iteration until you "
+                f"record this one.\n"
+                f"--- result.json ---\n{body[:4000]}")
+    if state in TERMINAL:
+        pending[jid] = JOB_STATE_MUST_RECORD
+        return (f"STATUS=FAILED  job {jid} terminated (sacct State={state}) "
+                f"WITHOUT result.json. The solver crashed or timed out.\n"
+                f"NEXT: call record_iteration(job_id=\"{jid}\", iter=N, "
+                f"val_score=0, headroom=0, kept=false, "
+                f"change_class='architecture' (or whichever knob), "
+                f"rationale='describe the failure from the stdout/stderr "
+                f"tail below', advice='generalisable lesson'). "
+                f"The tool layer will REFUSE submit_iteration until you "
+                f"record this failure.\n"
+                f"--- stdout/stderr tail ---\n{out[-3000:]}")
+    # still running / queued
+    return (f"STATUS=WAITING  sacct State={state}. The job has not "
+            f"reached a terminal state yet — re-poll in ~30 seconds.\n"
+            f"--- progress tail ---\n{out[-2500:]}")
 
 
 def tool_record_iteration(args: dict, ctx: dict) -> str:
-    """Call agent4ct_record record with the agent's slug + family.
-
-    All free-form args (rationale, advice) are passed through; numeric
-    args are bounds-checked. The agent cannot record into another slug.
+    """Append the iteration to the agent's journal. Required after every
+    terminal poll (success or failure) before the agent can submit the
+    next iteration. The job_id arg connects the record to a previously-
+    submitted job so the tool layer can clear the must-record flag.
     """
     fam = ctx["family"]
     slug = ctx["slug"]
@@ -373,13 +463,11 @@ def tool_record_iteration(args: dict, ctx: dict) -> str:
     jid = str(args.get("job_id", "0"))
     comparison = f"/tmp/comparison-{fam}-{jid}.png"
     if not Path(comparison).exists():
-        comparison = ""   # the helper will skip it then
-    # current short HEAD
+        comparison = ""
     commit = subprocess.run(
         ["git", "rev-parse", "--short", "HEAD"],
         capture_output=True, text=True, cwd=str(REPO)
     ).stdout.strip()
-    # Build the agent4ct_record CLI invocation
     cmd = [
         str(REPO / ".venv" / "bin" / "python"),
         str(REPO / "scripts" / "agent4ct_record.py"), "record",
@@ -395,13 +483,20 @@ def tool_record_iteration(args: dict, ctx: dict) -> str:
         "--commit", commit,
         "--solver", f"pentathlon/dl_sparse_view_{fam}/solver.py",
     ]
+    if not kept and not val_score and not headroom:
+        # crash/timeout — pass the status so it gets the right badge
+        cmd += ["--status", "crash"]
     if comparison:
         cmd += ["--comparison", comparison]
     env = {**os.environ, "AGENT4CT_AGENT": fam, "AGENT4CT_MODEL": ctx["model"]}
     p = subprocess.run(cmd, capture_output=True, text=True,
                        cwd=str(REPO), env=env, timeout=120)
     out = p.stdout + (("\nSTDERR:\n" + p.stderr) if p.stderr else "")
-    return f"exit={p.returncode}\n{out[-3000:]}"
+    if p.returncode == 0 and jid in ctx.get("pending", {}):
+        ctx["pending"][jid] = JOB_STATE_RECORDED
+    return (f"exit={p.returncode}\n{out[-3000:]}\n"
+            f"(pending after this call: "
+            f"{[jid for jid, st in ctx.get('pending', {}).items() if st != JOB_STATE_RECORDED]})")
 
 
 TOOLS_SCHEMA = [
@@ -486,39 +581,49 @@ AVAILABLE TOOLS (bounded — there is NO arbitrary shell):
   * write_file(path, content)       — overwrite ONLY your solver.py.
   * submit_iteration()              — scp your solver.py to the cluster
                                       and submit the family's sbatch.
-                                      Returns Slurm job id as a string.
-  * poll_iteration(job_id)          — check if the job's result.json is
-                                      ready; when it is, scp result.json
-                                      + comparison.png to /tmp/ and
-                                      return the result.json body
-                                      inline. Call this repeatedly
-                                      every ~30 s until ready (jobs
-                                      finish in ~4–6 min).
+                                      Returns Slurm job id.
+  * poll_iteration(job_id)          — check Slurm state. Returns one of
+                                      three STATUS lines:
+                                        STATUS=WAITING — keep polling
+                                        STATUS=OK      — result.json
+                                                         fetched; record now
+                                        STATUS=FAILED  — terminal crash/
+                                                         timeout; record
+                                                         now with kept=false
   * record_iteration(...)           — append the iteration to your
-                                      journal + commit + push. All
-                                      free-form fields are passed
-                                      through; the slug + agent + model
+                                      journal + commit + push. REQUIRED
+                                      after every terminal poll (OK or
+                                      FAILED). The slug + agent + model
                                       labels are pinned to you.
+
+RECORD-OR-DIE INVARIANT (enforced at the tool layer):
+After a poll returns STATUS=OK or STATUS=FAILED, the *next*
+submit_iteration() will be REFUSED until you call record_iteration with
+the matching job_id. There is no way around this — your single output
+to the world is the journal, so every job (kept, discarded, or crashed)
+gets one record_iteration call before the next submit. For crashes,
+just pass val_score=0 headroom=0 kept=false and a rationale that
+describes what failed (from the stdout/stderr tail the poll returned).
 
 WORKFLOW per iteration:
   1. read_file pentathlon/dl_sparse_view/program.md + (iter > 1) your
      own previous observation.json under docs/runs/{slug}/iterations/.
   2. Decide ONE change to solver.py (architecture | optimizer | loss |
-     augmentation | other).
-  3. write_file {solver_dir}solver.py with the new content.
-  4. submit_iteration() → capture the job id.
-  5. Call poll_iteration(job_id) in a loop until you get the result.json
-     back. Each call returns "not ready yet" with a tail of the Slurm
-     stdout (so you can spot crashes early) or "OK job ... complete".
-  6. Parse val_score + headroom + params_M from the returned JSON.
-     Decide kept = true / false. (Discard if headroom did not improve
-     vs your last keep.)
-  7. record_iteration(iter=N, job_id=jid, val_score=..., headroom=...,
+     augmentation | other). DO NOT change the geometry (image_size=512,
+     n_angles=128, n_det=736, etc.) or train_n/val_n (400/100).
+  3. write_file {solver_dir}solver.py with the new content. The file
+     must keep the build_geometry/build_dataset/main signatures used by
+     the sbatch — the cluster runs `python {solver_dir}solver.py <out_dir>`.
+  4. submit_iteration() → returns Slurm job id.
+  5. poll_iteration(job_id) every ~30 s until STATUS=OK or STATUS=FAILED.
+  6. record_iteration(job_id=..., iter=N, val_score=..., headroom=...,
                       params_M=..., train_n=..., change_class=...,
                       rationale='...', advice='...', kept=...).
+     Required before submitting again (record-or-die).
+  7. Loop steps 2-6 for the next iteration.
 
-Be concise. Cite the knob you changed. Total budget: {iters} iterations,
-~30 tool calls each. After the last iteration, output the text 'DONE'.
+Iteration budget: {iters} iterations, ~60 tool calls each. After the
+last successful record, output the text 'DONE'.
 """
 
 
@@ -541,8 +646,11 @@ def run_agent(slug: str, family: str, n_iters: int, *,
          f"After each iteration, summarise val_score + headroom + delta. "
          f"After the last one, write 'DONE'."},
     ]
-    ctx = {"slug": slug, "family": family, "model": model}
-    max_steps = 30 * n_iters
+    ctx = {"slug": slug, "family": family, "model": model, "pending": {}}
+    # Bump per-iter budget. The prior bound (30) was eaten by polling
+    # loops; with the record-or-die invariant gating the next submit,
+    # the model can't burn a whole iter on polling without recording.
+    max_steps = 60 * n_iters
     for step in range(max_steps):
         print(f"\n=== [{family}] step {step+1}/{max_steps} ===", flush=True)
         resp = client.chat.completions.create(
@@ -566,6 +674,16 @@ def run_agent(slug: str, family: str, n_iters: int, *,
         })
         if not tool_calls:
             if "DONE" in content.upper():
+                # The invariant: don't accept DONE with un-recorded work.
+                unfinished = [j for j, st in ctx.get("pending", {}).items()
+                              if st != JOB_STATE_RECORDED]
+                if unfinished:
+                    messages.append({"role": "user", "content":
+                        (f"REFUSED 'DONE': you still have un-recorded "
+                         f"submissions: {unfinished}. For each one, "
+                         f"poll_iteration to terminal STATUS, then "
+                         f"record_iteration. Then say DONE.")})
+                    continue
                 print(f"[{family}] agent signalled DONE.", flush=True)
                 return 0
             messages.append({"role": "user",
