@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T17:40:37Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 44,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-44: naf_n_bf 4 -> 5 BF tails on iter-43 NAFNet substrate. Headroom 0.6010 -> 0.6027 (+0.17pp). KEEP. BF saturation curve: +0.28/+0.63/+0.30/+0.22/+0.17 pp at counts 1/2/3/4/5. Each extra BF still adds positive lift.",
+  "val_score": 0.26651695370674133,
+  "headroom": 0.6027085483579337,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.059997,
+  "train_n": 400,
+  "agent": "claude-iter",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0044/comparison.png",
+  "advice_for_others": "BF tail stacking continues to compound past 4 tails. n_bf=5 gives +0.17pp on top of 4. Main agent independently confirmed iter-65 6BF, iter-66 7BF, both KEEP. Recommend n_bf=6 next.",
+  "commit": "1dac7d1"
+}
