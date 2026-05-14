@@ -220,8 +220,10 @@ CONFIG = {
     # this slug's wd=1e-3 substrate (alpha decayed to ~0 by wd).
     # iter-28: same alpha=0.1 + wd_split (alpha excluded from wd) to rescue
     # the per-block scaling. Cross-port from Agent B iter-34 KEEP wd_split.
-    "res_scale_init": 0.1,
-    "wd_split":      True,        # iter-28: exclude alpha/norm/bias from wd; conv weights still get wd=1e-3
+    # iter-29: revert alpha to 0 (iter-28 nearly recovered but added no lift),
+    # keep wd_split to isolate effect on norm/bias exclusion only.
+    "res_scale_init": 0.0,
+    "wd_split":      True,
 
     # Noise simulation — kept fixed so headroom is comparable across iter.
     # iter-24 (DISCARD, hr=0.5650): noise jitter [3e4, 8e4] -1.83pp.
