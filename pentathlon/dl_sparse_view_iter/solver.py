@@ -121,8 +121,7 @@ CONFIG = {
     "naf_blocks":    6,                # 6 NAF blocks at c=32, full res
     "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
-    "naf_gate":      "relu",           # iter-21: ReLU (safer baseline first)
-                                         #          iter-22 plan: switch to "simple"
+    "naf_gate":      "simple",         # iter-37: SimpleGate (NAFNet true) on iter-36 KEEP substrate
     "naf_alpha":     0.1,              # EDSR-style learnable residual scaling
                                          #  (spawn-B iter-14 advice: cheap +0.15pp)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
