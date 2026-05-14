@@ -124,7 +124,7 @@ CONFIG = {
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            8e-5,       # iter-40 KEEP (iter-42 closed 9e-5 at -0.28pp)
-    "swa":           True,        # iter-50: retest SWA on batch-norm substrate
+    "swa":           False,       # iter-50 closed SWA on batch -0.03pp near-flat
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
@@ -183,7 +183,7 @@ CONFIG = {
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
     # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
     # epoch budget. Revert to constant LR.
-    "lr_schedule":     "constant", # "constant" (default) | "cosine"
+    "lr_schedule":     "cosine",   # iter-51: retest cosine on batch substrate (was -1.07pp on group)
     "lr_min_ratio":    0.01,
 
 
