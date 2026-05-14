@@ -122,19 +122,7 @@ CONFIG = {
     "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "gelu",           # iter-38: GELU on iter-36 KEEP substrate (smoother than ReLU)
-    # iter-42: alpha_init 0.1 -> 0.05 on iter-38 KEEP substrate (hr=0.5988).
-    # iter-41 (depth 6->7) regressed -0.56pp suggesting the substrate is NOT
-    # capacity-limited; rather, it may be init-sensitive. Each NAFNet block
-    # is residual y = x + alpha * Body(x). Starting alpha=0.1 means each block
-    # contributes 10% of its raw signal initially; alpha=0.05 starts each
-    # block at 5% contribution -> gentler chain of 6 blocks -> training begins
-    # much closer to the identity map (which is well-conditioned for FBP->FBP
-    # half-set denoising tasks). The alpha parameters are LEARNABLE (one per
-    # block), so they can grow if needed during training. Hypothesis: gentler
-    # init avoids early-epoch noise that gets baked into the SWA full-window
-    # average. If keep: try alpha_init=0.025 next. If discard: try
-    # naf_n_bf 3->4 (BF saturation curve) or Charbonnier loss.
-    "naf_alpha":     0.05,             # iter-42: gentler init (was 0.1)
+    "naf_alpha":     0.1,              # EDSR-style learnable residual scaling
                                          #  (spawn-B iter-14 advice: cheap +0.15pp)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
     "share_weights": False,            # n/a at K=1
@@ -164,15 +152,20 @@ CONFIG = {
     #   n_bf=0 (iter-27, SWA-only):     hr=0.5777
     #   n_bf=1 (iter-28):               hr=0.5805 (+0.28pp over 0)
     #   n_bf=2 (iter-29 KEEP):          hr=0.5868 (+0.63pp over 1, +0.91pp over 0)
-    #   n_bf=3 (iter-31, this try):     hr=??? — does the non-linear lift continue?
-    # Cost: +3 params, +1 BF unfold pass (~5-10s wall). Each BF can learn its
-    # own sigma_x/y/r so the third tail can specialise (e.g. very low sigma_r
-    # for hard-edge preservation, or very high sigma_x/y for residual streak
-    # smoothing). If +0.6pp holds we land near 0.5928 — would beat team-wide
-    # best iter-32 main (0.5906). If saturating at +0.1pp we land near 0.5878.
-    # Cross-agent intel says iter-30 wd=0 didn't help here, so this is the
-    # next most-likely lift on the existing substrate.
-    "naf_n_bf":      3,                # iter-31: 3 trainable BF tails (iter-29 used 2)
+    #   n_bf=3 (iter-31 KEEP):          hr=0.5898 (+0.30pp over 2)
+    #   ... iter-36 + iter-38 substrate gains (SWA full + GELU): hr=0.5988
+    #   n_bf=4 (iter-43, this try):     hr=??? — does the curve still climb?
+    # iter-43: push BF tail to 4 on iter-38 KEEP substrate. iter-41 (depth)
+    # and iter-42 (alpha_init) both regressed -> these are saturated. BF
+    # curve has been monotonically positive: +0.28pp, +0.63pp, +0.30pp.
+    # Each extra BF gets +0.05-0.3pp depending on whether the residual still
+    # has structure for it to specialise on. With 4 BFs each can target a
+    # different (sigma_x/y, sigma_r) regime — hard-edge, soft-edge, streak
+    # smoothing, low-frequency residual. Cost: +3 params, +1 BF unfold pass
+    # (~5-10s wall added). If keep: try BF=5 next. If discard: try
+    # Charbonnier loss as last single-axis bet (was harmful on ReLU; might
+    # work on GELU+full-SWA substrate).
+    "naf_n_bf":      4,                # iter-43: 4 trainable BF tails (was 3)
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,
