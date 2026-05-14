@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T16:30:40Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 60,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-60: switch SWA from per-epoch (6 snapshots) to per-step (~2400 samples) on NAFNet+3BF+wd=1e-4. Headroom 0.5821 (iter-59) -> 0.5853 (+0.32pp). The SWA implementation detail matters substantially: per-step gives much more averaging, smoother weights. Still 1.35pp below Agent A iter-38 (0.5988) \u2014 remaining gap is ReLU vs GELU gate + possibly epochs=8 vs Agent As 6.",
+  "val_score": 0.2716333270072937,
+  "headroom": 0.5852963862891618,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.059991,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0060/comparison.png",
+  "advice_for_others": "SWA per-step vs per-epoch is +0.3pp on NAFNet+BF substrates. The choice matters. Use vectorised per-step accumulation (torch._foreach_*) for fast-converging components like Wagner BF sigmas.",
+  "commit": "b1ea879"
+}
