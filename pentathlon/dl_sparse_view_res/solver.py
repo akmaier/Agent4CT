@@ -62,7 +62,7 @@ CONFIG = {
     "val_n":         100,
 
     # Editable: training schedule.
-    "epochs":        8,          # iter-34 sweet spot; iter-39/40/41 LR schedule axis fully closed
+    "epochs":        10,         # iter-74: 8 -> 10 retest on batch substrate (was -1.96 on group)
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-68 closed input_dropout on batch -4.43pp
     "lr_warmup_epochs": 0,
@@ -84,7 +84,7 @@ CONFIG = {
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
     "res_act":       "relu",     # iter-72 closed gelu+combined
     "res_kernel":    3,
-    "res_dropout":   0.05,        # iter-73: 0.0 -> 0.05 retest on batch (was -1.26 on group)
+    "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
     "swa_last_n":    0,           # iter-69 closed SWA on batch near-flat
