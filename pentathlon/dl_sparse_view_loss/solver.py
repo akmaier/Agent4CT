@@ -124,15 +124,11 @@ CONFIG = {
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            1e-4,
     "optimizer":     "adamw",   # adam | adamw
-    # iter-16: weight_decay 1e-4 -> 1e-3 (10x). iter-15 showed the
-    # pipeline OVERFITS the dual-domain noise target with more epochs.
-    # Stronger wd specifically combats noise-fitting: penalizes large
-    # weights that encode high-frequency noise pattern. AdamW decouples
-    # wd from gradient so this is true L2 regularization, not LR-scaled.
-    # Cross-agent context: main agent at iter-32 testing wd=0 (opposite
-    # direction); we test wd=10x to see which side of the optimum we're
-    # on. Free experiment - zero compute cost.
-    "weight_decay":  1e-3,
+    # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
+    # iter-17: push further to wd=3e-3 (30x baseline). If gain continues
+    # we are on the right curve; if it reverses we have bracketed the
+    # optimum at wd in [1e-3, 3e-3].
+    "weight_decay":  3e-3,
 
     # Editable: training loss. "mse" (default Wagner-style; pipeline.training_step),
     # "l1", "charbonnier" (smooth L1 with epsilon), or "huber".
