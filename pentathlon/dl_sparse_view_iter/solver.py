@@ -121,8 +121,8 @@ CONFIG = {
     "naf_blocks":    6,                # 6 NAF blocks at c=32, full res
     "naf_expand":    2,                # expand 1x1 (c -> 2c), squeeze (2c -> c)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
-    "naf_gate":      "gelu",           # iter-38: GELU on iter-36 KEEP substrate (smoother than ReLU)
-    "naf_alpha":     0.2,              # iter-51: 0.1 -> 0.2 (test upper side; main iter-69 closed 0.05 at -0.09pp)
+    "naf_gate":      "relu",           # iter-52: GELU -> ReLU (test gate reversion; no wall cost)
+    "naf_alpha":     0.1,              # iter-51 TIMED OUT (alpha=0.2 + 9 BFs > wall)
                                          #  (spawn-B iter-14 advice: cheap +0.15pp)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
     "share_weights": False,            # n/a at K=1
