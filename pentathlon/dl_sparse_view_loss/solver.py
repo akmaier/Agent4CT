@@ -123,7 +123,8 @@ CONFIG = {
     "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
-    "lr":            5e-5,       # iter-34: 1e-4 -> 5e-5 (half; iter-13 closed 2e-4, this probes lower side)
+    "lr":            1e-4,       # iter-34 closed 5e-5 at -0.96pp; LR axis fully bisected
+    "adamw_eps":     1e-6,       # iter-35: 1e-8 -> 1e-6 (more numerical stability in adaptive denom)
     "optimizer":     "adamw",   # adam | adamw
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
@@ -454,13 +455,14 @@ def make_optimizer(pipe_or_params, cfg):
     from wd-induced collapse in high-wd regimes)."""
     beta2 = float(cfg.get("adamw_beta2", 0.999))
     betas = (0.9, beta2)
+    eps = float(cfg.get("adamw_eps", 1e-8))
     if cfg["optimizer"] == "adam":
         params = list(pipe_or_params.parameters()) if hasattr(pipe_or_params, "parameters") else list(pipe_or_params)
-        return torch.optim.Adam(params, lr=cfg["lr"], betas=betas)
+        return torch.optim.Adam(params, lr=cfg["lr"], betas=betas, eps=eps)
     wd = float(cfg["weight_decay"])
     if not cfg.get("wd_split", False):
         params = list(pipe_or_params.parameters()) if hasattr(pipe_or_params, "parameters") else list(pipe_or_params)
-        return torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=wd, betas=betas)
+        return torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=wd, betas=betas, eps=eps)
     pipe = pipe_or_params
     decay, no_decay = [], []
     for n, p in pipe.named_parameters():
@@ -476,7 +478,7 @@ def make_optimizer(pipe_or_params, cfg):
     return torch.optim.AdamW(
         [{"params": decay, "weight_decay": wd},
          {"params": no_decay, "weight_decay": 0.0}],
-        lr=cfg["lr"], betas=betas)
+        lr=cfg["lr"], betas=betas, eps=eps)
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
