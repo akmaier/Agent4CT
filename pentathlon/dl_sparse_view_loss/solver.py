@@ -126,13 +126,12 @@ CONFIG = {
     "optimizer":     "adamw",   # adam | adamw
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
-    # Optimum bracketed at wd~1e-3.
-    "weight_decay":  1e-3,
-    # iter-22: gradient clipping max_norm=1.0. Different mechanism from
-    # wd. Caps per-step update magnitude; prevents rare large-gradient
-    # batches from kicking the model far from optimum. Cheap and
-    # orthogonal to wd. 0 = disabled.
-    "grad_clip":     1.0,
+    # iter-23: refine to wd=2e-3 (midway). If gain over iter-16, the
+    # optimum is in (1e-3, 2e-3); if loss, it's at 1e-3 exactly.
+    "weight_decay":  2e-3,
+    # iter-22 (DISCARD, hr=0.5815): grad_clip=1.0 near-flat (-0.18pp).
+    # AdamW grad norm rarely exceeds 1 on small residual net. Disable.
+    "grad_clip":     0.0,
 
     # Editable: training loss. "mse" (default Wagner-style; pipeline.training_step),
     # "l1", "charbonnier" (smooth L1 with epsilon), or "huber".
