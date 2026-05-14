@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-14T08:58:23Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 27,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Asymmetric depth REVERSED of iter-26: proj_denoiser 6->8 blocks, img_denoiser 6->4 blocks (was 4 proj / 8 img in iter-26). Total params identical (0.2247M) to iter-14 baseline. Hypothesis: iter-26 noted proj capacity matters more than expected (-0.83pp was the most balanced loss of recent 4 discards). Test heavier proj-side denoising \u2014 sinogram is where Poisson+Gaussian noise originates.",
+  "val_score": 0.6408677697181702,
+  "headroom": 0.5648850937778396,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0027/comparison.png",
+  "advice_for_others": "Discard. val_ssim 0.6630 -> 0.6409 (-2.2%), headroom 0.5870 -> 0.5649 (-2.21pp). Near-identical magnitude regression as iter-26 (-2.23pp at proj=4/img=8), confirming the symmetric 6+6 is the local optimum on this axis \u2014 both asymmetries lose ~equally. ASYMMETRIC-DEPTH AXIS NOW CLOSED for the res-stack at c=32 / 8 epochs / 400 phantoms. Combined with iter-26 finding, the proj/img split is balanced at 6+6 by virtue of structural symmetry; any depth reallocation hurts. Train time interestingly dropped to 287s (faster than 6+6 at 453s), indicating proj-side blocks are cheaper per block than img-side here. Next directions: iter-28 (kernel 3->5), iter-30 (i0 jitter), iter-31 (per-channel alpha) per spawn prompt.",
+  "commit": "587db0f"
+}
