@@ -64,8 +64,8 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.0,        # iter-109 STRONG DISCARD -5.38pp; iter-88 KEEP confirmed as variance artifact
-    "lr_warmup_epochs": 2,        # iter-117: 1 -> 2 retest on lr=1.1e-4 substrate (iter-95 was -8.05pp on lr=1e-4)
+    "input_dropout": 0.01,       # iter-118: 0.0 -> 0.01 (untested specific small dropout; iter-88 0.02 was variance)
+    "lr_warmup_epochs": 1,        # iter-117 closed warmup=2 -9.70pp on lr=1.1e-4 too; firm
     "adamw_beta1":   0.9,         # iter-96 closed 0.95 -4.46pp; iter-107 closed 0.85 -0.47pp; 0.9 firm
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
