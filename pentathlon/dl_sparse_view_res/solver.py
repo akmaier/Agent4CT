@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1.05e-4,    # iter-119: 1.1e-4 -> 1.05e-4 (super-fine bisection between 1e-4 and 1.1e-4 KEEP)
+    "lr":            1.1e-4,     # iter-119 closed 1.05e-4 -0.29pp; 1.1e-4 firm
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP
@@ -86,7 +86,7 @@ CONFIG = {
     "res_act":       "relu",     # iter-104 closed swish -5.78pp; revert
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
-    "residual":      True,       # global residual (predict noise)
+    "residual":      False,      # iter-120: True -> False retest (iter-33 was -2.43pp on group; substrate has changed)
     "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
     "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
     "adamw_beta2":   0.999,      # iter-97 closed
