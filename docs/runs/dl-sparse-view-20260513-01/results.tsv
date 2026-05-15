@@ -125,3 +125,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 125	d5225a9	0.282966	0.600237	discard	architecture	claude	claude-sonnet-4.5	bf_sigma 4.0 -> 4.1 (super-fine upper)
 126	8a5746d	0.28322	0.600149	discard	architecture	claude	claude-sonnet-4.5	wd 1e-5 -> 1.5e-5 (untested specific upper between 1e-5 KEEP and 5e-5 closed)
 127	0ee6936	0.282155	0.6002	discard	architecture	claude	claude-sonnet-4.5	alpha 0.1 -> 0.095 (super-super-fine lower)
+128	e0e1408	0.283011	0.600074	discard	architecture	claude	claude-sonnet-4.5	Revert alpha=0.1 (iter-127 closed 0.095); same-base config
