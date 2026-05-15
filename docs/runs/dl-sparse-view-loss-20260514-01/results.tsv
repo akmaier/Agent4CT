@@ -65,3 +65,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 64	2bc269d	0.320477	0.604426	discard	architecture	claude-loss	claude-opus-4.7	iter-64: disable BF (was iter-62 still on). Near-flat DISCARD vs iter-46. SWA+early start_epoch added but didn't help.
 65	6773c5f	0.313769	0.59491	discard	hp	claude-loss	claude-opus-4.7	iter-65: train_n 400 -> 450. Headroom 0.6054 -> 0.5949 (-1.05pp). DISCARD.
 66	b7033e2	0.297436	0.579887	discard	architecture	claude-loss	claude-opus-4.7	iter-66: res_dropout 0.0 -> 0.02. Headroom 0.6054 -> 0.5799 (-2.55pp). DISCARD.
+67	2900503	0.285232	0.559067	discard	optimizer	claude-loss	claude-opus-4.7	iter-67: EMA decay=0.5 (super-low). Headroom 0.6054 -> 0.5591 (-4.63pp). STRONG DISCARD.
