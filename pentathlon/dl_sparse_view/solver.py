@@ -77,9 +77,9 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
-    "lr":            7.8e-5,  # iter-122: 8e-5 -> 7.8e-5 (super-fine lower)
+    "lr":            8e-5,    # iter-122 closed 7.8e-5 -1.40pp; super-firm
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
-    "weight_decay":  1e-5,      # iter-118 closed 5e-6 -1.39pp; 1e-5 firm
+    "weight_decay":  8e-6,      # iter-123: 1e-5 -> 8e-6 (super-fine between 5e-6 closed and 1e-5 KEEP)
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
     # toward 0 and preventing them from growing. WD=0 lets alpha
