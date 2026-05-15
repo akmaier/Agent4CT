@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1.14e-4,    # iter-136: 1.125e-4 -> 1.14e-4 (continue bisection on iter-135 KEEP)
+    "lr":            1.115e-4,   # iter-137: 1.14e-4 -> 1.115e-4 (super-fine between 1.1 KEEP and 1.125 KEEP)
     "adamw_eps":     1e-10,      # iter-133 closed 2e-10 -0.28pp; firm
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-121/122 closed 4e-5 / 6e-5; 5e-5 firm
