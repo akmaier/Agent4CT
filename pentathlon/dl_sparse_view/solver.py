@@ -114,9 +114,9 @@ CONFIG = {
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
-    "swa_last_n":    3,   # iter-101: 4 -> 3 retest on wide-sigma substrate
+    "swa_last_n":    4,   # iter-71 KEEP
     "bf_kernel":     7,   # iter-94 near-flat; revert
-    "bf_sigma_r":    0.005,  # iter-93 KEEP marginal (was 0.01 baseline)
+    "bf_sigma_r":    0.002,  # iter-102: 0.005 -> 0.002
     "bf_sigma_x":    4.0,    # iter-98: 3.0 -> 4.0 find upper edge
     "bf_sigma_y":    4.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
