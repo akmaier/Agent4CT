@@ -106,3 +106,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 106	4d5f238	0.28242	0.602536	discard	architecture	claude	claude-sonnet-4.5	naf_alpha_init 0.1 -> 0.05 (smaller alpha, fine bisection lower side)
 107	9816e6d	0.282723	0.60281	discard	architecture	claude	claude-sonnet-4.5	swa_last_n 4 -> 5 (extend SWA window)
 108	e56f5e3	0.283824	0.599393	discard	architecture	claude	claude-sonnet-4.5	naf_n_bf 8 -> 7 (lower side bisection on saturation point)
+109	6fc56b8	0.281209	0.601386	discard	architecture	claude	claude-sonnet-4.5	lr 8e-5 -> 7e-5 (lower side bisection; iter-81 closed 9e-5 near-flat)
