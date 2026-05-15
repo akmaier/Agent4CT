@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-15T05:29:47Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 59,
+  "challenge": "dl_sparse_view",
+  "change_class": "augmentation",
+  "rationale": "iter-59: EMA decay=0.95 or mixup (config ambiguous due to scp timing). Headroom 0.6054 -> 0.5993 (-0.61pp). DISCARD.",
+  "val_score": 0.31409335136413574,
+  "headroom": 0.5992958805259148,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0059/comparison.png",
+  "advice_for_others": "DISCARD: -0.61pp. Either knob hurts.",
+  "commit": "0c540b9"
+}
