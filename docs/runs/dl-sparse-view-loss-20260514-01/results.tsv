@@ -74,3 +74,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 73	280949f	0.321369	0.605046	discard	augmentation	claude-loss	claude-opus-4.7	iter-73: aug_flip True on batch substrate. Headroom 0.6054 -> 0.6050 (-0.04pp). Near-flat DISCARD.
 74	48b997b	0.256421	0.521569	discard	architecture	claude	claude-sonnet-4.5	res_act relu -> swish (SiLU; smooth gate, parallel B test)
 75	5c5fe96	0.312096	0.60266	discard	architecture	claude	claude-sonnet-4.5	res_blocks 6 -> 5 (cross-port A iter-73 NAFNet KEEP)
+76	b6ab4d0	0.323898	0.608271	keep	architecture	claude	claude-sonnet-4.5	REVERT lr 8.5e-5 -> 8e-5 (iter-70 DISCARD was never reverted; substrate drift) + blocks=6
