@@ -179,8 +179,8 @@ CONFIG = {
     # iter-20/21 (DISCARD): EMA at both decay=0.999 and 0.99 hurts.
     # Combined with iter-11/12: ALL weight-smoothing interventions fail
     # on this baseline. Last iterate is the optimum here.
-    "ema":            True,        # iter-67: EMA decay=0.5 (super-low, untested)
-    "ema_decay":      0.5,
+    "ema":            False,       # iter-67 closed
+    "ema_decay":      0.99,
 
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
     # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
@@ -242,7 +242,7 @@ CONFIG = {
     "noise_jitter":  False,
     "i0_jitter_lo":  3e4,
     "i0_jitter_hi":  8e4,
-    "seed":          42,
+    "seed":          43,         # iter-68: seed shift for variance check
 
     # Intensity calibration. CT images live on a standard scale (HU for
     # real data; for the synthetic ellipse phantoms here the canonical
