@@ -101,8 +101,8 @@ CONFIG = {
     # ResStack ballpark (full-resolution conv but no down/up).
     "epochs":        6,
     "batch_size":    1,
-    "lr":            1e-4,             # iter-55 closed 8e-5 at -0.05pp (substrate-dependent lr)
-    "naf_alpha":     0.05,             # iter-76: 0.1 -> 0.05 (smaller alpha, untested lower side on blocks=5)
+    "lr":            9e-5,             # iter-77: 1e-4 -> 9e-5 (untested specific between 8e-5 closed and 1e-4 KEEP)
+    "naf_alpha":     0.1,              # iter-76 TIMEOUT (hardware); revert
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
     "weight_decay":  1e-4,
