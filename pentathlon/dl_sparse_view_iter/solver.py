@@ -124,8 +124,8 @@ CONFIG = {
     "naf_expand":    2,                # iter-75 closed 3 -7.52pp; 2 stays
     "bf_sigma_x":    2.0,              # iter-82 TIMEOUT (slow node); revert to KEEP base
     "bf_sigma_y":    2.0,
-    "bf_sigma_r":    0.006,            # iter-90: 0.005 -> 0.006 (super-fine upper, untested)
-    "naf_dw":        True,             # depthwise 3x3 mid-conv
+    "bf_sigma_r":    0.005,            # iter-90 closed 0.006 -0.28pp; firm
+    "naf_dw":        False,            # iter-92: True -> False (depthwise toggle untested)
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
     "bf_kernel":     5,                # iter-70: 7 -> 5 retest on new sigma substrate
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
