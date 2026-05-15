@@ -97,9 +97,9 @@ CONFIG = {
     # iter-56: cross-port Agent A NAFNet (c=32, 6 blocks, ReLU gate, dw=True)
     # onto main's wd=0 substrate. "nafnet" routes via build_denoisers.
     "img_denoiser":  "nafnet",
-    "naf_blocks":    5,   # iter-105: 6 -> 5 cross-port A iter-73 KEEP (+0.22pp)
+    "naf_blocks":    6,   # iter-105 closed 5 -1.42pp (transfer from A failed); 6 stays
     "naf_expand":    2,   # iter-92 timed out at 3; revert
-    "naf_alpha_init": 0.1,    # iter-100 closed; revert
+    "naf_alpha_init": 0.05,   # iter-106: 0.1 -> 0.05 (smaller alpha, fine bisection)
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert
     "naf_norm": "ln",     # iter-86 closed BN on NAFNet -2.12pp; LN is correct for NAFNet design

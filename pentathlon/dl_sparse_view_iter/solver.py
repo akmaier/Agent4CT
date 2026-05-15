@@ -120,8 +120,8 @@ CONFIG = {
     "img_denoiser":  "nafnet",         # NEW: NAFNet stack as image_denoiser
     "proj_denoiser": "nafnet",         # NEW: also use NAFNet for proj domain
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
-    "naf_blocks":    4,                # iter-74: 5 -> 4 continue bisection on iter-73 KEEP
-    "naf_expand":    2,                # iter-59 timed out at expand=3
+    "naf_blocks":    5,                # iter-74 closed 4 -0.41pp; iter-73 KEEP locked at 5
+    "naf_expand":    3,                # iter-75: 2 -> 3 (was timeout at blocks=6; blocks=5 may have headroom now)
     "bf_sigma_x":    2.0,              # iter-61 closed 2.5 marginal flat; 2.0 stays
     "bf_sigma_y":    2.0,
     "bf_sigma_r":    0.005,            # iter-72 TIMED OUT; revert
