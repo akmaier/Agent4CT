@@ -94,3 +94,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 94	61c218b	0.274237	0.609523	keep	architecture	claude	claude-sonnet-4.5	naf_n_bf 10 -> 6 (capacity-down per stage overfit -6.56pp)
 95	f114eed	0.273607	0.602287	keep	architecture	claude	claude-sonnet-4.5	naf_blocks 5 -> 4 (compound with n_bf=6 from iter-94)
 96	488c445	0.268187	0.616733	keep	architecture	claude	claude-sonnet-4.5	weight_decay 3e-5 -> 1e-4 (regularization-up per stage falsification of capacity-down)
+97	f62dec8	0.268672	0.616221	keep	architecture	claude	claude-sonnet-4.5	Variance retest at wd=1e-4 (Edit failed; intended 2e-4 didn't apply)
