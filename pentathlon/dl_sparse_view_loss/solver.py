@@ -130,7 +130,7 @@ CONFIG = {
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
-    "adamw_eps":     1e-8,      # iter-38 closed eps=1e-10 on Adam at -1.80pp; revert
+    "adamw_eps":     1e-9,      # iter-83: 1e-8 -> 1e-9 (untested specific between 1e-8 and 1e-10)
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
     # iter-23 (DISCARD, hr=0.5589): wd=2e-3 also too aggressive (-2.44pp).
