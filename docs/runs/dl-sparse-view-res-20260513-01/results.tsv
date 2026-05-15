@@ -91,3 +91,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 92	386f57a	0.656838	0.547625	discard	optimizer	claude-res	claude-opus-4.7	iter-92: adamw_eps 1e-10 -> 1e-9 on warmup+wd=5e-5 substrate iter-82. Headroom 0.6101 -> 0.5476 (-6.25pp). STRONG DISCARD. eps axis very unstable on new substrate.
 93	5e35ae9	0.682186	0.589794	discard	hp	claude-res	claude-opus-4.7	iter-93: lr 1e-4 -> 1.1e-4 on warmup+wd=5e-5 substrate. Headroom 0.6101 -> 0.5898 (-2.03pp). DISCARD. lr=1e-4 stays optimum.
 94	124716a	0.671776	0.606916	discard	optimizer	claude-res	claude-opus-4.7	iter-94: swa_last_n 0 -> 1 on iter-88 substrate. Headroom 0.6101 -> 0.6069 (-0.32pp). DISCARD.
+95	c4da723	0.638337	0.529589	discard	hp	claude-res	claude-opus-4.7	iter-95: lr_warmup_epochs 1 -> 2. Headroom 0.6101 -> 0.5296 (-8.05pp). STRONG DISCARD.
