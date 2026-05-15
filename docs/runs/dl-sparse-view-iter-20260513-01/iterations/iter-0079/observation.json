@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T09:18:29Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 79,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "naf_n_bf 9 -> 10 (push BF saturation upward; blocks=5 has headroom)",
+  "val_score": 0.2685258388519287,
+  "headroom": 0.6161456524811312,
+  "kept": true,
+  "status": "keep",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0079/comparison.png",
+  "advice_for_others": "Marginal KEEP +0.04pp (NEW BEST 0.6161 vs 0.6157). Within variance but tick above. Try n_bf 11 next to confirm saturation direction.",
+  "commit": "5ef401a"
+}
