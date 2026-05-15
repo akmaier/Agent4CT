@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T07:55:02Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 104,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "bf_sigma_x 4.0 -> 4.5 (push wider tail BFs)",
+  "val_score": 0.2830314636230469,
+  "headroom": 0.6000319945322282,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0104/comparison.png",
+  "advice_for_others": "DISCARD: bf_sigma_x=4.5 cost -1.44pp vs sigma_x=4.0 best. Sigma_x=4.0 confirmed near-optimum (4.5 too wide). Close this axis upper side; revert.",
+  "commit": "ebe0ecb"
+}
