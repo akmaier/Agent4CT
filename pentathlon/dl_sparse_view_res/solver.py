@@ -81,14 +81,14 @@ CONFIG = {
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-105 closed 5 -4.30pp; 6 stays
     "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
-    "res_channels":  24,         # iter-115: 32 -> 24 (capacity reduction; smaller may be more stable on noisy substrate)
+    "res_channels":  32,         # iter-114/115 closed 40/24 both sides; 32 firm
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
     "res_act":       "relu",     # iter-104 closed swish -5.78pp; revert
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
-    "swa_last_n":    0,           # SWA closed
+    "swa_last_n":    2,           # iter-116: 0 -> 2 (short SWA retest on lr=1.1e-4 substrate; might damp variance)
     "adamw_beta2":   0.999,      # iter-97 closed
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
