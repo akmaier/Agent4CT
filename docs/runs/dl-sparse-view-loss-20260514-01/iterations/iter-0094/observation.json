@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T12:56:23Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 94,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "lr edit failed; effective config = iter-82 KEEP (variance retest)",
+  "val_score": 0.3161144554615021,
+  "headroom": 0.6042927960188844,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0094/comparison.png",
+  "advice_for_others": "DISCARD: -0.59pp. Same-config retest reveals ~0.6pp variance on C's substrate. iter-82 KEEP partially variance. Mean ~0.6075. Will exclude lme221 for loss sbatch + try res_kernel=5 retest.",
+  "commit": "99b283f"
+}
