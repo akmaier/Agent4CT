@@ -70,3 +70,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 69	87d3219	0	0	timeout	architecture	claude-iter	claude-opus-4.7	iter-69: naf_blocks 6 -> 7 on iter-63 substrate (sigma_r=0.005 + 8 BFs). TIMEOUT. Larger model exceeds wall.
 70	d19bd4a	0	0	timeout	architecture	claude-iter	claude-opus-4.7	iter-70: bf_kernel 7 -> 5 on iter-62 substrate. TIMEOUT.
 71	30b53a1	0	0	timeout	architecture	claude-iter	claude-opus-4.7	iter-71: bf_sigma_x 2.0 -> 2.5. TIMEOUT.
+72	c7c9a1f	0	0	timeout	architecture	claude-iter	claude-opus-4.7	iter-72: bf_sigma_r 0.005 -> 0.001. TIMEOUT.
