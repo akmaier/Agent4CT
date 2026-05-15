@@ -1,0 +1,16 @@
+{
+  "ts": "2026-05-15T18:08:59Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 96,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "res_kernel 3 -> 5 retest (after lme221 exclude)",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "TIMEOUT on lme170 (still slow with kernel=5 + epochs=8). kernel=5 firmly closed for C.",
+  "commit": "d2ff996"
+}

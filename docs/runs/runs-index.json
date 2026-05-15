@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-15T17:47:13Z",
+  "updated": "2026-05-15T18:08:59Z",
   "runs": [
     {
       "slug": "demo-dl-reference-20260515-01",
@@ -12,7 +12,7 @@
       "best_score": 0.4454,
       "best_headroom": 0.5831,
       "agent": "reference",
-      "model": "demo-implementations"
+      "model": "TV-iterative"
     },
     {
       "slug": "demo-dl-reference-20260515-02",
@@ -24,7 +24,7 @@
       "best_score": 0.4454,
       "best_headroom": 0.5831,
       "agent": "reference",
-      "model": "demo-implementations"
+      "model": "ItNet"
     },
     {
       "slug": "demo-dl-sparse-view-20260513-01",
@@ -104,10 +104,10 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-14T06:10:23Z",
       "status": "running",
-      "n_iterations": 95,
+      "n_iterations": 96,
       "best_score": 0.33257,
       "best_headroom": 0.610239,
-      "agent": "claude-loss",
+      "agent": "claude",
       "model": "claude-sonnet-4.5"
     },
     {
@@ -117,8 +117,8 @@
       "started": "2026-05-13T23:50:28Z",
       "status": "running",
       "n_iterations": 5,
-      "best_score": 0.363459,
-      "best_headroom": 0.633917,
+      "best_score": 0.0,
+      "best_headroom": 0.0,
       "agent": "mistral",
       "model": "mistralai/Mistral-Medium-3.5-128B"
     },
