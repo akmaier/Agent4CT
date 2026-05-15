@@ -104,3 +104,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 104	ebe0ecb	0.283031	0.600032	discard	architecture	claude	claude-sonnet-4.5	bf_sigma_x 4.0 -> 4.5 (push wider tail BFs)
 105	c0887da	0.285577	0.600189	discard	architecture	claude	claude-sonnet-4.5	naf_blocks 6 -> 5 (cross-port A iter-73 KEEP onto main substrate)
 106	4d5f238	0.28242	0.602536	discard	architecture	claude	claude-sonnet-4.5	naf_alpha_init 0.1 -> 0.05 (smaller alpha, fine bisection lower side)
+107	9816e6d	0.282723	0.60281	discard	architecture	claude	claude-sonnet-4.5	swa_last_n 4 -> 5 (extend SWA window)
