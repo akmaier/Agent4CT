@@ -124,7 +124,7 @@ CONFIG = {
     "naf_expand":    2,                # iter-59 timed out at expand=3
     "bf_sigma_x":    2.0,              # iter-61 closed 2.5 marginal flat; 2.0 stays
     "bf_sigma_y":    2.0,
-    "bf_sigma_r":    0.005,            # iter-62 KEEP (iter-64 0.0005 -4.76pp, iter-65 0.002 -2.51pp)
+    "bf_sigma_r":    0.001,            # iter-72: 0.005 -> 0.001 retest (was -4.76 at 0.0005, -2.51 at 0.002)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
     "bf_kernel":     5,                # iter-70: 7 -> 5 retest on new sigma substrate

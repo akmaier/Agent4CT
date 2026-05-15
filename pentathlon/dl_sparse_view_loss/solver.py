@@ -239,7 +239,7 @@ CONFIG = {
     # Test-time mismatch: train across noise range hurts specific 5e4 perf.
     "noise_i0":      5e4,
     "noise_sigma_e": 5.0,
-    "noise_jitter":  False,
+    "noise_jitter":  True,         # iter-72: retest on batch substrate (was -1.83 on group)
     "i0_jitter_lo":  3e4,
     "i0_jitter_hi":  8e4,
     "seed":          42,         # iter-68 closed seed=43 (variance too high)

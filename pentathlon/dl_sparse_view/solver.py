@@ -116,7 +116,7 @@ CONFIG = {
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-71 KEEP
     "bf_kernel":     7,   # iter-94 near-flat; revert
-    "bf_sigma_r":    0.002,  # iter-102: 0.005 -> 0.002
+    "bf_sigma_r":    0.001,  # iter-103: 0.002 -> 0.001 continue tighter
     "bf_sigma_x":    4.0,    # iter-98: 3.0 -> 4.0 find upper edge
     "bf_sigma_y":    4.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
