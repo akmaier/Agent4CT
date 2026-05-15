@@ -117,3 +117,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 118	68fd77c	0.642549	0.54626	discard	architecture	claude	claude-sonnet-4.5	input_dropout 0.0 -> 0.01 (untested specific small dropout)
 119	327e2ad	0.672463	0.607702	discard	architecture	claude	claude-sonnet-4.5	lr 1.1e-4 -> 1.05e-4 (super-fine lower bisection on iter-110 KEEP)
 120	016cc04	0.453233	0.0410577	discard	architecture	claude	claude-sonnet-4.5	residual True -> False retest on batch+lr=1.1e-4 substrate (iter-33 was -2.43pp on group)
+121	73fbc94	0.673485	0.592539	discard	architecture	claude	claude-sonnet-4.5	weight_decay 5e-5 -> 4e-5 (super-fine bisection lower side)
