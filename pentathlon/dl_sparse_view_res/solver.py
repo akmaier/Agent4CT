@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
     "lr":            1e-4,       # iter-85 closed 8e-5
-    "adamw_eps":     1e-9,       # iter-92: 1e-10 -> 1e-9 (bisect between 1e-10 KEEP marginal and 1e-8 baseline)
+    "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
@@ -87,7 +87,7 @@ CONFIG = {
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
-    "swa_last_n":    0,           # SWA closed
+    "swa_last_n":    1,           # iter-94: 0 -> 1 (1-epoch SWA window untested specifically)
     "adamw_beta2":   0.999,      # iter-46 closed beta2=0.99 axis (-1.28pp)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet

@@ -99,7 +99,7 @@ CONFIG = {
     "img_denoiser":  "nafnet",
     "naf_blocks":    6,   # iter-67 KEEP (iter-70 7-blocks timed out)
     "naf_expand":    2,   # iter-92 timed out at 3; revert
-    "naf_alpha_init": 0.1,    # iter-95 closed alpha_init=0.05; revert
+    "naf_alpha_init": 0.15,   # iter-100: 0.1 -> 0.15 retest on wide-sigma substrate
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert
     "naf_norm": "ln",     # iter-86 closed BN on NAFNet -2.12pp; LN is correct for NAFNet design
