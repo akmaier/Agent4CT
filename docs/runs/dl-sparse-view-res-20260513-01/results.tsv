@@ -141,3 +141,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 142	859ddc2	0.666062	0.592951	discard	architecture	claude	claude-sonnet-4.5	Same config as iter-141/135 (Edit failed before submit)
 143	36d08e8	0.670158	0.605046	discard	architecture	claude	claude-sonnet-4.5	wd 5e-5 -> 5.5e-5 (super-fine upper)
 144	bb78f31	0.67998	0.610968	discard	architecture	claude	claude-sonnet-4.5	5th same-config sample (Edit failed again before submit; effectively lr=1.125e-4 + wd=5.5e-5)
+145	01273c4	0.676628	0.601747	discard	architecture	claude	claude-sonnet-4.5	wd 5.5e-5 -> 5e-5 (variance-window sample)

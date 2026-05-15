@@ -1,0 +1,16 @@
+{
+  "ts": "2026-05-15T14:55:55Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 145,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "wd 5.5e-5 -> 5e-5 (variance-window sample)",
+  "val_score": 0.676627516746521,
+  "headroom": 0.601746958754913,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "DISCARD: -1.03pp. 6th sample at near-same config (mean ~0.600, range 0.58-0.61).",
+  "commit": "01273c4"
+}
