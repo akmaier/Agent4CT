@@ -101,7 +101,7 @@ CONFIG = {
     # ResStack ballpark (full-resolution conv but no down/up).
     "epochs":        6,
     "batch_size":    1,
-    "lr":            1e-4,              # iter-83 TIMEOUT (slow node); revert
+    "lr":            1.1e-4,            # iter-85: lr=1.1e-4 retest (iter-83 was TIMEOUT on lme221; now excluded)
     "naf_alpha":     0.1,              # iter-76 TIMEOUT (hardware); revert
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",

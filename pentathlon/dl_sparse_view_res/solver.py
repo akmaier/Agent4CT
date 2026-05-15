@@ -66,7 +66,7 @@ CONFIG = {
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-118 closed 0.01 -6.43pp; 0.0 firm
     "lr_warmup_epochs": 1,        # iter-124 closed 0 -0.87pp; warmup=1 firm
-    "adamw_beta1":   0.9,         # iter-96 closed 0.95 -4.46pp; iter-107 closed 0.85 -0.47pp; 0.9 firm
+    "adamw_beta1":   0.92,        # iter-130: 0.9 -> 0.92 (super-fine between 0.9 KEEP and 0.95 closed)
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
@@ -89,7 +89,7 @@ CONFIG = {
     "residual":      True,       # iter-120 catastrophic DISCARD at False (-57pp); essential
     "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
     "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
-    "adamw_beta2":   0.9995,     # iter-129: 0.999 -> 0.9995 (untested specific upper)
+    "adamw_beta2":   0.999,      # iter-129 closed 0.9995 -1.14pp; firm
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
