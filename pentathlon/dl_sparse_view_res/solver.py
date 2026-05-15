@@ -65,7 +65,8 @@ CONFIG = {
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # revert; iter-88 KEEP at 0.02 was variance
-    "lr_warmup_epochs": 2,        # iter-95: 1 -> 2 retest on warmup+wd=5e-5 substrate
+    "lr_warmup_epochs": 1,        # iter-80 KEEP (iter-95 closed warmup=2)
+    "adamw_beta1":   0.95,        # iter-96: 0.9 -> 0.95 (slower momentum)
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
@@ -300,8 +301,9 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
 
 
 def make_optimizer(model: nn.Module, cfg):
+    beta1 = float(cfg.get("adamw_beta1", 0.9))
     beta2 = float(cfg.get("adamw_beta2", 0.999))
-    betas = (0.9, beta2)
+    betas = (beta1, beta2)
     eps = float(cfg.get("adamw_eps", 1e-8))
     if cfg["optimizer"] == "adam":
         return torch.optim.Adam(model.parameters(), lr=cfg["lr"], betas=betas, eps=eps)
