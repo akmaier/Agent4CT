@@ -77,7 +77,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
-    "lr":            8e-5,    # iter-109 closed 7e-5 -1.30pp; iter-81 near-flat 9e-5; 8e-5 firm
+    "lr":            7.5e-5,  # iter-116: 8e-5 -> 7.5e-5 (super-fine between iter-109 closed 7e-5 and 8e-5 KEEP)
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
     "weight_decay":  1e-5,      # iter-87 closed 5e-5 near-flat; revert
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
@@ -99,7 +99,7 @@ CONFIG = {
     "img_denoiser":  "nafnet",
     "naf_blocks":    6,   # iter-105 closed 5 -1.42pp (transfer from A failed); 6 stays
     "naf_expand":    2,   # iter-92 timed out at 3; revert
-    "naf_alpha_init": 0.125,  # iter-115: 0.1 -> 0.125 (untested specific between 0.1 KEEP and 0.15 closed)
+    "naf_alpha_init": 0.1,    # iter-114 closed 0.075 -1.32pp; iter-115 closed 0.125 -1.58pp; 0.1 firm
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert
     "naf_norm": "ln",     # iter-86 closed BN on NAFNet -2.12pp; LN is correct for NAFNet design
