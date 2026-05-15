@@ -77,7 +77,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
-    "lr":            7.5e-5,  # iter-116: 8e-5 -> 7.5e-5 (super-fine between iter-109 closed 7e-5 and 8e-5 KEEP)
+    "lr":            8e-5,    # iter-116 closed 7.5e-5 -1.35pp; 8e-5 firm
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
     "weight_decay":  1e-5,      # iter-87 closed 5e-5 near-flat; revert
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
@@ -117,8 +117,8 @@ CONFIG = {
     "swa_last_n":    4,   # iter-107 closed 5 -1.16pp; iter-101 closed 3; 4 firm
     "bf_kernel":     7,   # iter-111 TIMEOUT at 9; iter-94 near-flat at 5; 7 firm
     "bf_sigma_r":    0.002,  # iter-113 closed 0.0015 -1.97pp; 0.002 firm
-    "bf_sigma_x":    4.0,    # iter-110 closed 3.5 -1.41pp; 4.0 firm
-    "bf_sigma_y":    4.0,
+    "bf_sigma_x":    4.0,    # iter-117: asymmetric test (y=3.5 < x=4.0)
+    "bf_sigma_y":    3.5,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,

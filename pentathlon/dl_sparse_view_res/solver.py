@@ -65,7 +65,7 @@ CONFIG = {
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-118 closed 0.01 -6.43pp; 0.0 firm
-    "lr_warmup_epochs": 1,        # iter-117 closed warmup=2 -9.70pp on lr=1.1e-4 too; firm
+    "lr_warmup_epochs": 0,        # iter-124: 1 -> 0 (no warmup; iter-117 closed 2; warmup=0 untested on lr=1.1e-4)
     "adamw_beta1":   0.9,         # iter-96 closed 0.95 -4.46pp; iter-107 closed 0.85 -0.47pp; 0.9 firm
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
@@ -73,7 +73,7 @@ CONFIG = {
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
     "lr":            1.1e-4,     # iter-119 closed 1.05e-4 -0.29pp; 1.1e-4 firm
-    "adamw_eps":     5e-10,      # iter-123: 1e-10 -> 5e-10 (super-fine between 1e-10 KEEP and 1e-9 closed)
+    "adamw_eps":     1e-10,      # iter-123 closed 5e-10 -1.58pp; 1e-10 firm
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-121/122 closed 4e-5 / 6e-5; 5e-5 firm
     "lr_schedule":   "constant", # iter-112/113 closed cosine/step7; constant firm
