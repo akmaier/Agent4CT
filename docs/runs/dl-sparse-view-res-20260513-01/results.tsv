@@ -111,3 +111,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 112	bb6585a	0.665683	0.599553	discard	architecture	claude	claude-sonnet-4.5	lr_schedule constant -> cosine retest on iter-110 KEEP substrate
 113	3a9a84e	0.669428	0.606892	discard	architecture	claude	claude-sonnet-4.5	lr_schedule cosine -> step7 (decay at epoch 7)
 114	c1a134d	0.652543	0.588033	discard	architecture	claude	claude-sonnet-4.5	res_channels 32 -> 40 (capacity bump, untested specific)
+115	74d5893	0.663518	0.598138	discard	architecture	claude	claude-sonnet-4.5	res_channels 32 -> 24 (capacity reduction; might be more stable on noisy substrate)
