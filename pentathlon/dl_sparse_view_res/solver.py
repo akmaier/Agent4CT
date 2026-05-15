@@ -73,7 +73,7 @@ CONFIG = {
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
     "lr":            1.1e-4,     # iter-127 closed 1.075e-4 -1.14pp; firm
-    "adamw_eps":     1e-10,      # iter-123 closed 5e-10 -1.58pp; 1e-10 firm
+    "adamw_eps":     2e-10,      # iter-133: 1e-10 -> 2e-10 (super-super-fine bisection)
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-121/122 closed 4e-5 / 6e-5; 5e-5 firm
     "lr_schedule":   "constant", # iter-112/113 closed cosine/step7; constant firm
@@ -87,7 +87,7 @@ CONFIG = {
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # iter-120 catastrophic DISCARD at False (-57pp); essential
-    "res_scale":     0.12,       # iter-132: 0.08 -> 0.12 (upper super-fine; iter-64 closed 0.2)
+    "res_scale":     0.1,        # iter-132 closed 0.12 -0.02pp near-tied; firm
     "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
     "adamw_beta2":   0.999,      # iter-129 closed 0.9995 -1.14pp; firm
 
