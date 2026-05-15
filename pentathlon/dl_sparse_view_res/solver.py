@@ -84,7 +84,7 @@ CONFIG = {
     "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
     "res_act":       "relu",     # iter-72 closed gelu+combined
-    "res_kernel":    5,           # iter-102: 3 -> 5 retest on batch substrate
+    "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp

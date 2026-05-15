@@ -120,11 +120,11 @@ CONFIG = {
     "img_denoiser":  "nafnet",         # NEW: NAFNet stack as image_denoiser
     "proj_denoiser": "nafnet",         # NEW: also use NAFNet for proj domain
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
-    "naf_blocks":    7,                # iter-69: 6 -> 7 (capacity bump test)
+    "naf_blocks":    5,                # iter-73: 6 -> 5 less capacity untested
     "naf_expand":    2,                # iter-59 timed out at expand=3
     "bf_sigma_x":    2.0,              # iter-61 closed 2.5 marginal flat; 2.0 stays
     "bf_sigma_y":    2.0,
-    "bf_sigma_r":    0.001,            # iter-72: 0.005 -> 0.001 retest (was -4.76 at 0.0005, -2.51 at 0.002)
+    "bf_sigma_r":    0.005,            # iter-72 TIMED OUT; revert
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
     "bf_kernel":     5,                # iter-70: 7 -> 5 retest on new sigma substrate

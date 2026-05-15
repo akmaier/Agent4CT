@@ -116,9 +116,9 @@ CONFIG = {
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-71 KEEP
     "bf_kernel":     7,   # iter-94 near-flat; revert
-    "bf_sigma_r":    0.001,  # iter-103: 0.002 -> 0.001 continue tighter
-    "bf_sigma_x":    4.0,    # iter-98: 3.0 -> 4.0 find upper edge
-    "bf_sigma_y":    4.0,
+    "bf_sigma_r":    0.002,  # iter-102 KEEP optimum
+    "bf_sigma_x":    4.5,    # iter-104: 4.0 -> 4.5 fine bisection
+    "bf_sigma_y":    4.5,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,
