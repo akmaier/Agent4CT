@@ -100,3 +100,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 101	46d8d98	0.671863	0.591653	discard	hp	claude-res	claude-opus-4.7	iter-101: lr 1e-4 -> 9e-5. Headroom 0.6101 -> 0.5917 (-1.84pp). DISCARD.
 102	29e5663	0	0	timeout	architecture	claude-res	claude-opus-4.7	iter-102: res_kernel 3 -> 5 retest on batch. TIMEOUT.
 103	8fe39b4	0.637807	0.546184	discard	architecture	claude	claude-sonnet-4.5	revert res_kernel 5->3 + keep lr=9e-5, wd=5e-5 (post iter-102 timeout)
+104	64b4a09	0.639579	0.528339	discard	architecture	claude	claude-sonnet-4.5	res_act relu -> swish (SiLU; smooth gate, untested on batch substrate)
