@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
 #SBATCH --mem=24G
-#SBATCH --time=00:10:00            # 5-min iteration + ~5 min slack
-#SBATCH --exclude=lme222,lme223,lme49,lme50,lme51,lme52,lme171
+#SBATCH --time=00:15:00            # 5-min iteration + ~10 min slack (train_n up to 800)
+#SBATCH --exclude=lme222,lme223,lme49,lme50,lme51,lme52,lme53,lme171
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
 # One DL-Sparse-View iteration on the LOSS-FUNCTION / DATA-STRATEGY branch
