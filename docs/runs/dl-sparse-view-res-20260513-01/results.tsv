@@ -124,3 +124,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 125	6698fd2	0.642947	0.530809	discard	architecture	claude	claude-sonnet-4.5	res_n_bf 0 -> 1 retest (iter-63 closed BF on batch substrate)
 126	b0c8713	0.624636	0.512476	discard	architecture	claude	claude-sonnet-4.5	res_bias True -> False retest on fully-fixed substrate
 127	7d18524	0.668154	0.599229	discard	architecture	claude	claude-sonnet-4.5	lr 1.1e-4 -> 1.075e-4 (super-fine bisection)
+128	be6c072	0.65669	0.568388	discard	architecture	claude	claude-sonnet-4.5	adamw_beta2 0.999 -> 0.995 (untested specific lower; iter-97 closed 0.99)
