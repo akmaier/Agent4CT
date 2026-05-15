@@ -139,3 +139,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 140	8454fe4	0.676467	0.609675	discard	architecture	claude	claude-sonnet-4.5	wd=4.5e-5 retest (Edit failed before iter-139 submit; same config submitted twice)
 141	1cd22b4	0.663327	0.577373	discard	architecture	claude	claude-sonnet-4.5	wd 4.5e-5 -> 5e-5 + lr=1.125e-4 (same as iter-135 KEEP config)
 142	859ddc2	0.666062	0.592951	discard	architecture	claude	claude-sonnet-4.5	Same config as iter-141/135 (Edit failed before submit)
+143	36d08e8	0.670158	0.605046	discard	architecture	claude	claude-sonnet-4.5	wd 5e-5 -> 5.5e-5 (super-fine upper)
