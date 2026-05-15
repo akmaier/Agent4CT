@@ -168,7 +168,7 @@ CONFIG = {
     # learns its own (sigma_x/y, sigma_r) so 5 BFs partition the residual
     # into 5 (edge/streak/freq) regimes. If keep: try BF=6. If discard:
     # try Charbonnier loss (was harmful on ReLU; might work here).
-    "naf_n_bf":      10,               # iter-79: 9 -> 10 (push BF saturation; now blocks=5 has headroom)
+    "naf_n_bf":      11,               # iter-80: 10 -> 11 (continue pushing BF saturation on iter-79 KEEP)
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,
