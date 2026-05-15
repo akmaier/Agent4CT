@@ -200,7 +200,7 @@ CONFIG = {
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     # iter-19 (DISCARD, hr=0.5707): widen 32 -> 48 (0.225M -> 0.503M)
     # -1.26pp. Capacity is NOT the bottleneck.
-    "res_blocks":    7,           # iter-90: 6 -> 7 (capacity bump untested on C; may TIMEOUT)
+    "res_blocks":    6,           # iter-90 closed 7 -1.06pp; 6 firm
     "res_channels":  32,           # iter-86 closed 40 -2.17pp (parallel B iter-114 -2.26pp); 32 firm
     # iter-25: kernel 3 -> 5 in residual blocks. Different from widening:
     # increases receptive field (each block sees 2 more pixels each
@@ -214,7 +214,7 @@ CONFIG = {
     "res_kernel":    3,         # iter-87 TIMEOUT at 5; 3 firm
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
-    "res_dropout":   0.0,        # iter-66 closed
+    "res_dropout":   0.05,       # iter-91: 0.0 -> 0.05 retest on fixed substrate (iter-18 was -1.26pp on group/no-aug)
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.

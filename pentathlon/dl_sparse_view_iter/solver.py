@@ -101,7 +101,7 @@ CONFIG = {
     # ResStack ballpark (full-resolution conv but no down/up).
     "epochs":        6,
     "batch_size":    1,
-    "lr":            1.1e-4,            # iter-83: 1e-4 -> 1.1e-4 (cross-port B iter-110 KEEP direction; untested upper side on A)
+    "lr":            1e-4,              # iter-83 TIMEOUT (slow node); revert
     "naf_alpha":     0.1,              # iter-76 TIMEOUT (hardware); revert
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
@@ -168,7 +168,7 @@ CONFIG = {
     # learns its own (sigma_x/y, sigma_r) so 5 BFs partition the residual
     # into 5 (edge/streak/freq) regimes. If keep: try BF=6. If discard:
     # try Charbonnier loss (was harmful on ReLU; might work here).
-    "naf_n_bf":      11,               # iter-80 KEEP +0.01pp marginal; saturation effectively reached
+    "naf_n_bf":      10,               # iter-84: 11 -> 10 (reduce compute to avoid more timeouts on slow GPUs; iter-79 KEEP at 10)
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,

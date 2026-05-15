@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1.1e-4,     # iter-119 closed 1.05e-4 -0.29pp; 1.1e-4 firm
+    "lr":            1.075e-4,   # iter-127: 1.1e-4 -> 1.075e-4 (super-fine bisection between 1.05e-4 DISCARD and 1.1e-4 KEEP)
     "adamw_eps":     1e-10,      # iter-123 closed 5e-10 -1.58pp; 1e-10 firm
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-121/122 closed 4e-5 / 6e-5; 5e-5 firm
@@ -80,7 +80,7 @@ CONFIG = {
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-105 closed 5 -4.30pp; 6 stays
-    "res_bias":      False,      # iter-126: True -> False retest on fully-fixed substrate (iter-61 was on group/lr=1e-4)
+    "res_bias":      True,       # iter-126 closed False -9.81pp; essential
     "res_channels":  32,         # iter-114/115 closed 40/24 both sides; 32 firm
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
     "res_act":       "relu",     # iter-104 closed swish -5.78pp; revert
