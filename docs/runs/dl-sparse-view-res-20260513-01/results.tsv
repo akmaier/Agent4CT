@@ -109,3 +109,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 110	d8c8215	0.679166	0.610598	keep	architecture	claude	claude-sonnet-4.5	lr 1e-4 -> 1.1e-4 (upper side bisection on restored lr base)
 111	1de6395	0.636917	0.518053	discard	architecture	claude	claude-sonnet-4.5	lr 1.1e-4 -> 1.2e-4 (continue upper bisection on iter-110 KEEP)
 112	bb6585a	0.665683	0.599553	discard	architecture	claude	claude-sonnet-4.5	lr_schedule constant -> cosine retest on iter-110 KEEP substrate
+113	3a9a84e	0.669428	0.606892	discard	architecture	claude	claude-sonnet-4.5	lr_schedule cosine -> step7 (decay at epoch 7)
