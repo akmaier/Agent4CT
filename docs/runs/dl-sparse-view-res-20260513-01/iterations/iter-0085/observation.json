@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-15T05:01:08Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 85,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-85: lr 1e-4 -> 8e-5 on batch+warmup substrate. Headroom 0.6079 -> 0.6028 (-0.51pp). DISCARD. lr=1e-4 stays optimum even with warmup.",
+  "val_score": 0.6691225171089172,
+  "headroom": 0.602822678531305,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0085/comparison.png",
+  "advice_for_others": "DISCARD: lr=8e-5 on warmup -0.51pp. lr basin shifts down on warmup substrate slightly? Need bisect 9e-5.",
+  "commit": "a7e22e4"
+}
