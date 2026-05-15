@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T11:26:53Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 89,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "swa False -> True retest on fixed substrate (iter-69 was on drifted)",
+  "val_score": 0.3219486176967621,
+  "headroom": 0.6045231115186804,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0089/comparison.png",
+  "advice_for_others": "DISCARD: -0.57pp. SWA still hurts on fixed substrate. swa=False firm. Try res_blocks 6 -> 7 (untested on C; may TIMEOUT).",
+  "commit": "f875364"
+}
