@@ -9,6 +9,33 @@ verdicts belong in `docs/runs/<slug>/stages.tsv`. Things that belong here:
 **facts about the substrate or methodology that the next agent should not
 have to re-discover.**
 
+## 2026-05-16 — B epochs=10 confirmed at stage: new high-water mark 0.6248
+
+Followed up on B's "underfits at stage" finding by raising iter-base
+epochs 8 → 10 (iter-147 at epochs=12 dropped to 0.5864 at iter scale,
+so 10 is at or above the iter sweet spot). Ran a fresh B stage on
+iter-146 (epochs=10). Stage hr=**0.6248**, up +0.46pp from the previous
+B stage (0.6202 at epochs=8). Highest stage headroom on any agent.
+
+Caveat: the stage sbatch auto-scales epochs to `max(base*2, 16)`, so
+base=10 → 20 stage epochs vs base=8 → 16 stage epochs. The gain mixes
+"iter-base config matters" and "more stage epochs". Operational
+takeaway is clear: keep `epochs=10` for B going forward.
+
+## 2026-05-16 — A and main iter scores are insensitive to weight_decay
+
+After the iter-95 capacity-down failure, the next hypothesis was that
+regularisation (wd-up) might close A and main's iter→stage gap. Tested:
+
+| Agent | wd values tested | Samples | Iter hr range |
+|---|---|---|---|
+| A | 3e-5, 1e-4, 2e-4 | 5 | 0.6162–0.6167 (0.05pp) |
+| main | 1e-5, 5e-5, 1e-4 | 5 | 0.6001–0.6005 (0.04pp) |
+
+**Iter is essentially insensitive to wd** on both substrates. Doesn't
+mean wd is neutral at stage scale — only iter. main stage v2 (wd=1e-4)
+and a future A stage will test whether wd helps at scale.
+
 ## 2026-05-15 — capacity-down does NOT close A's iter-stage gap
 
 Hypothesis from the first round of stages: A's -6.56pp gap was overfit due
