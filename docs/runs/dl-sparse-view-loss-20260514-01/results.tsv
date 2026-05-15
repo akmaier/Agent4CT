@@ -75,3 +75,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 74	48b997b	0.256421	0.521569	discard	architecture	claude	claude-sonnet-4.5	res_act relu -> swish (SiLU; smooth gate, parallel B test)
 75	5c5fe96	0.312096	0.60266	discard	architecture	claude	claude-sonnet-4.5	res_blocks 6 -> 5 (cross-port A iter-73 NAFNet KEEP)
 76	b6ab4d0	0.323898	0.608271	keep	architecture	claude	claude-sonnet-4.5	REVERT lr 8.5e-5 -> 8e-5 (iter-70 DISCARD was never reverted; substrate drift) + blocks=6
+77	c809685	0.324845	0.605662	discard	architecture	claude	claude-sonnet-4.5	lr 8e-5 -> 7.5e-5 (lower side fine bisection on iter-76 KEEP)
