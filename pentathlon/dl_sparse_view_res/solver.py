@@ -75,7 +75,7 @@ CONFIG = {
     "lr":            1e-4,       # iter-85 closed 8e-5
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
-    "weight_decay":  5e-5,       # iter-82 KEEP
+    "weight_decay":  3e-5,       # iter-100: fine bisection
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
 
     # Editable: residual-stack model architecture.
@@ -103,7 +103,7 @@ CONFIG = {
     # Noise simulation — FIXED so headroom comparable across iter / runs.
     "noise_i0":      5e4,
     "noise_sigma_e": 5.0,
-    "seed":          43,         # iter-99: seed shift (variance check)
+    "seed":          42,         # iter-99 closed; revert
 }
 
 
