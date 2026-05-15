@@ -164,7 +164,7 @@ CONFIG = {
     # iter-10 (DISCARD, hr=0.5810 vs 0.5807): MIXUP near-neutral (+0.03pp).
     # Doesn't hurt (unlike flips) but doesn't help. Random-ellipse phantoms
     # already saturate sample diversity; gain elsewhere.
-    "aug_mixup":     True,         # iter-58: enable mixup on batch substrate (was iter-10 near-flat on group)
+    "aug_mixup":     False,        # iter-58 closed mixup -0.28pp on batch
     "aug_mixup_alpha": 0.4,
     "aug_mixup_seed":  5678,
 
@@ -179,8 +179,8 @@ CONFIG = {
     # iter-20/21 (DISCARD): EMA at both decay=0.999 and 0.99 hurts.
     # Combined with iter-11/12: ALL weight-smoothing interventions fail
     # on this baseline. Last iterate is the optimum here.
-    "ema":            False,
-    "ema_decay":      0.99,
+    "ema":            True,        # iter-59: EMA decay=0.95 on batch substrate (untested low decay)
+    "ema_decay":      0.95,
 
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
     # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
