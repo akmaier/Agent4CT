@@ -122,8 +122,8 @@ CONFIG = {
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
     "naf_blocks":    5,                # iter-74 closed 4 -0.41pp; iter-73 KEEP locked at 5
     "naf_expand":    2,                # iter-75 closed 3 -7.52pp; 2 stays
-    "bf_sigma_x":    1.5,              # iter-81: 2.0 -> 1.5 (untested lower side on blocks=5+n_bf=11 substrate)
-    "bf_sigma_y":    1.5,
+    "bf_sigma_x":    3.0,              # iter-82: 2.0 -> 3.0 (untested upper side; iter-81 TIMEOUT at 1.5)
+    "bf_sigma_y":    3.0,
     "bf_sigma_r":    0.005,            # iter-78 closed 0.003 -1.47pp; 0.005 firm on A
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
