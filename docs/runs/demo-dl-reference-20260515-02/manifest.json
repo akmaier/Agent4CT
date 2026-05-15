@@ -1,0 +1,10 @@
+{
+  "slug": "demo-dl-reference-20260515-02",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-reference",
+  "started": "2026-05-15T17:47:13Z",
+  "agent": "reference",
+  "model": "demo-implementations",
+  "status": "running",
+  "notes": "Reference reconstructions on synthetic phantoms"
+}

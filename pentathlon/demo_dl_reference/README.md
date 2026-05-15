@@ -23,8 +23,12 @@ All methods run on **synthetic random-ellipse phantoms** (stand-in for real AAPM
 - **Method**: Gradient descent on `0.5*||Rf-g||² + λ*TV(f)`
 - **Purpose**: Classical model-based iterative reconstruction (MBIR)
 - **Status**: First run diverged (LR=0.5 too high → RMSE=0.20, negative PSNR). Fixed with LR=0.01, λ=0.001, 200 iters, adaptive decay.
-- **Result**: Pending re-run (Job 760895)
-- **Expected**: Should improve over FBP but may underperform learned methods
+- **Result** (Job 760895):
+  - SSIM: 0.1281
+  - PSNR: 13.71 dB
+  - RMSE: 0.01032
+  - **Headroom: 0.2562** ← Solid improvement over FBP!
+- **Time**: ~57 seconds
 
 ### 3. Dual-Domain Denoising (`solver_dual_ddomain.py`)
 - **Method**: Wagner et al. 2023 — learned denoisers in projection + image domain, Noise2Inverse self-supervision

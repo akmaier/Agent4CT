@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T17:47:13Z",
+  "run_id": "demo-dl-reference-20260515-02",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "reference",
+  "rationale": "Dual-Domain Denoising (Wagner 2023): U-Net(c=16) in projection + image domain, Noise2Inverse self-supervised training.",
+  "val_score": 0.3055,
+  "headroom": 0.5831,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.466,
+  "train_n": 400,
+  "agent": "reference",
+  "model": "Dual-Domain",
+  "advice_for_others": "Dual-Domain N2I achieves headroom=0.583 on synthetic phantoms. Strong improvement over FBP. Uses dual-domain pipeline with split projections."
+}

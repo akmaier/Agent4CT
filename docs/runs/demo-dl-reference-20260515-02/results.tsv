@@ -2,4 +2,3 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 1		0.4454	0	keep	reference	reference	FBP-baseline	Pure PYRO-NN FBP baseline (no learning). Establishes headroom=0 reference point.
 2		0.3055	0.5831	keep	reference	reference	Dual-Domain	Dual-Domain Denoising (Wagner 2023): U-Net(c=16) in projection + image domain, Noise2Inverse self-supervised training.
 3		0.1369	0	keep	reference	reference	ItNet	ItNet-style iterative recon with data consistency (Sidky 2022 winner approach). Pretrained U-Net + 5 DC iterations. Underperforms on synthetic data - needs investigation.
-4		0.1281	0.2562	keep	reference	reference	TV-iterative	TV-regularized iterative reconstruction (fixed v2). Gradient descent with proper hyperparameters.
