@@ -114,3 +114,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 115	74d5893	0.663518	0.598138	discard	architecture	claude	claude-sonnet-4.5	res_channels 32 -> 24 (capacity reduction; might be more stable on noisy substrate)
 116	177acd6	0.648461	0.543612	discard	architecture	claude	claude-sonnet-4.5	swa_last_n 0 -> 2 (short SWA retest on lr=1.1e-4 substrate)
 117	2e81fad	0.623959	0.513628	discard	architecture	claude	claude-sonnet-4.5	lr_warmup_epochs 1 -> 2 retest on lr=1.1e-4 substrate
+118	68fd77c	0.642549	0.54626	discard	architecture	claude	claude-sonnet-4.5	input_dropout 0.0 -> 0.01 (untested specific small dropout)
