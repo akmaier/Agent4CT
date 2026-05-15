@@ -62,7 +62,7 @@ CONFIG = {
     "val_n":         100,
 
     # Editable: training schedule.
-    "epochs":        12,         # iter-147: 10 -> 12 (push training further; B underfits at stage)
+    "epochs":        10,         # iter-147 DISCARD at 12; iter-146 stage-pending; lock at 10 for next stage
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-138 closed 0.005 -4.54pp; firm
     "lr_warmup_epochs": 1,        # iter-124 closed 0 -0.87pp; warmup=1 firm
