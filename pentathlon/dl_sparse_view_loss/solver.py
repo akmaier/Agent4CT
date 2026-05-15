@@ -125,7 +125,7 @@ CONFIG = {
     "input_dropout": 0.0,      # iter-60 closed
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
-    "lr":            8.5e-5,     # iter-70: 8e-5 -> 8.5e-5 fine bisection
+    "lr":            8e-5,       # iter-76: REVERT iter-70 (8e-5 -> 8.5e-5 was DISCARD never reverted); restore iter-46 KEEP base
     "swa":           False,       # iter-69 closed
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
@@ -200,7 +200,7 @@ CONFIG = {
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     # iter-19 (DISCARD, hr=0.5707): widen 32 -> 48 (0.225M -> 0.503M)
     # -1.26pp. Capacity is NOT the bottleneck.
-    "res_blocks":    5,           # iter-75: 6 -> 5 cross-port A iter-73 NAFNet KEEP onto resnet substrate
+    "res_blocks":    6,           # iter-75 closed 5 -0.27pp near-flat; 6 stays
     "res_channels":  32,
     # iter-25: kernel 3 -> 5 in residual blocks. Different from widening:
     # increases receptive field (each block sees 2 more pixels each
