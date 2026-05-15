@@ -96,3 +96,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 95	81d7f51	0	0	discard	architecture	claude	claude-sonnet-4.5	res_kernel 3 -> 5 retest (after lme221 exclude in newer sbatch)
 96	d2ff996	0	0	discard	architecture	claude	claude-sonnet-4.5	res_kernel 3 -> 5 retest (after lme221 exclude)
 97	1d90c79	0.321651	0.608012	discard	architecture	claude	claude-sonnet-4.5	Revert res_kernel=3 (iter-96 TIMEOUT at 5)
+98	9750e42	0.319236	0.604536	keep	architecture	claude	claude-sonnet-4.5	adam -> adamw + wd=5e-5 cross-port from B (stage said C overfits -3.15pp)
