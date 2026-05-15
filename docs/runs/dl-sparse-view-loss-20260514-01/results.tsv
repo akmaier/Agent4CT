@@ -82,3 +82,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 81	19cf765	0.316424	0.599621	discard	architecture	claude	claude-sonnet-4.5	noise_jitter True -> False (retest on fixed lr=8e-5 substrate)
 82	40f35c9	0.323451	0.610239	keep	architecture	claude	claude-sonnet-4.5	aug_flip False -> True retest on fixed lr=8e-5 substrate (was iter-73 -0.04pp near-flat on drifted)
 83	cc3b2fd	0.323902	0.60963	discard	architecture	claude	claude-sonnet-4.5	adamw_eps 1e-8 -> 1e-9 (untested specific between 1e-8 and 1e-10)
+84	54f8919	0.309049	0.596293	discard	architecture	claude	claude-sonnet-4.5	aug_mixup False -> True retest on fixed lr=8e-5 substrate (was iter-58 -0.28pp on drifted)
