@@ -76,12 +76,12 @@ CONFIG = {
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP
-    "lr_schedule":   "step7",    # iter-113: cosine closed -1.10pp; try step7 (decay at epoch 7)
+    "lr_schedule":   "constant", # iter-112/113 closed cosine/step7; constant firm
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-105 closed 5 -4.30pp; 6 stays
     "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
-    "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
+    "res_channels":  40,         # iter-114: 32 -> 40 (capacity bump; iter-19 closed 48 on group; 40 untested specific)
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
     "res_act":       "relu",     # iter-104 closed swish -5.78pp; revert
     "res_kernel":    3,           # iter-102 timed out
