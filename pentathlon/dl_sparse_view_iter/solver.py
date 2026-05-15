@@ -102,7 +102,7 @@ CONFIG = {
     "epochs":        6,
     "batch_size":    1,
     "lr":            1e-4,              # iter-85 closed 1.1e-4 -0.11pp near-flat; firm
-    "naf_alpha":     0.08,             # iter-89: 0.1 -> 0.08 (untested specific lower; iter-76 was hw TIMEOUT)
+    "naf_alpha":     0.1,              # iter-89 closed 0.08 -0.10pp; firm
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
     "weight_decay":  3e-5,             # iter-88 KEEP marginal +0.0pp (essentially tied with iter-86); locked
@@ -124,7 +124,7 @@ CONFIG = {
     "naf_expand":    2,                # iter-75 closed 3 -7.52pp; 2 stays
     "bf_sigma_x":    2.0,              # iter-82 TIMEOUT (slow node); revert to KEEP base
     "bf_sigma_y":    2.0,
-    "bf_sigma_r":    0.005,            # iter-78 closed 0.003 -1.47pp; 0.005 firm on A
+    "bf_sigma_r":    0.006,            # iter-90: 0.005 -> 0.006 (super-fine upper, untested)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
     "bf_kernel":     5,                # iter-70: 7 -> 5 retest on new sigma substrate
