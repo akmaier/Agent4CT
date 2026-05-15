@@ -95,3 +95,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 94	99b283f	0.316114	0.604293	discard	architecture	claude	claude-sonnet-4.5	lr edit failed; effective config = iter-82 KEEP (variance retest)
 95	81d7f51	0	0	discard	architecture	claude	claude-sonnet-4.5	res_kernel 3 -> 5 retest (after lme221 exclude in newer sbatch)
 96	d2ff996	0	0	discard	architecture	claude	claude-sonnet-4.5	res_kernel 3 -> 5 retest (after lme221 exclude)
+97	1d90c79	0.321651	0.608012	discard	architecture	claude	claude-sonnet-4.5	Revert res_kernel=3 (iter-96 TIMEOUT at 5)
