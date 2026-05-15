@@ -103,3 +103,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 103	51f7df2	0.280325	0.588227	discard	architecture	claude-main	claude-opus-4.7	iter-103: bf_sigma_r 0.002 -> 0.001 on iter-102 substrate. Headroom 0.6144 -> 0.5882 (-2.62pp). STRONG DISCARD.
 104	ebe0ecb	0.283031	0.600032	discard	architecture	claude	claude-sonnet-4.5	bf_sigma_x 4.0 -> 4.5 (push wider tail BFs)
 105	c0887da	0.285577	0.600189	discard	architecture	claude	claude-sonnet-4.5	naf_blocks 6 -> 5 (cross-port A iter-73 KEEP onto main substrate)
+106	4d5f238	0.28242	0.602536	discard	architecture	claude	claude-sonnet-4.5	naf_alpha_init 0.1 -> 0.05 (smaller alpha, fine bisection lower side)
