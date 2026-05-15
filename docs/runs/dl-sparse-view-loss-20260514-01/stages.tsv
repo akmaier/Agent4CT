@@ -1,1 +1,2 @@
 iter	stage_val_score	stage_headroom	gap	verdict	notes
+97	0.296764	0.578696	0.0232364	overfit	Stage 0.5787 vs C iter best 0.6102 = -3.15pp overfit. NOT the resnet+batch UNDER-fit pattern of B (which scaled +0.82pp). Differences between C and B: C uses Adam wd=0 + aug_flip + noise_jitter; B uses AdamW wd=5e-5. The aug/regularizer choice or Adam-vs-AdamW likely explains the divergence. 38 min train at train_n=1200 epochs=16.
