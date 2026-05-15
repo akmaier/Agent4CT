@@ -92,3 +92,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 92	6122993	0	0	discard	architecture	claude	claude-sonnet-4.5	naf_dw True -> False (depthwise toggle)
 93	5814026	0.268293	0.616356	keep	architecture	claude	claude-sonnet-4.5	Revert naf_dw=True (iter-92 TIMEOUT)
 94	61c218b	0.274237	0.609523	keep	architecture	claude	claude-sonnet-4.5	naf_n_bf 10 -> 6 (capacity-down per stage overfit -6.56pp)
+95	f114eed	0.273607	0.602287	keep	architecture	claude	claude-sonnet-4.5	naf_blocks 5 -> 4 (compound with n_bf=6 from iter-94)
