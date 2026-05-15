@@ -118,9 +118,9 @@ CONFIG = {
     # Editable: training schedule.
     # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
-    "epochs":        8,        # iter-55 closed epochs=10 on batch -2.40pp
+    "epochs":        7,        # iter-80: 8 -> 7 (undertraining test; iter-55 closed 10 -2.40pp; 7 untested)
     "swa_start_epoch": 6,      # iter-69: 7 -> 6 untested specific (between 5 and 7)
-    "lr_warmup_epochs": 1,     # iter-79: 2 -> 1 (untested middle; iter-78 closed 3 -0.50pp)
+    "lr_warmup_epochs": 2,     # iter-79 closed 1 -1.91pp; iter-78 closed 3 -0.50pp; 2 firm
     "batch_size":    1,        # iter-49 closed batch=2 on batch
     "input_dropout": 0.0,      # iter-60 closed
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
