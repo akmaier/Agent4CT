@@ -158,7 +158,7 @@ CONFIG = {
     # per-batch flip) fail. Mechanism: flips create OOD orientations the
     # baseline never sees, hurts net's prior on the random-ellipse
     # phantom distribution. Disable.
-    "aug_flip":      False,
+    "aug_flip":      True,         # iter-82: False -> True (retest on fixed lr=8e-5; was -0.04pp near-flat on drifted substrate)
     "aug_flip_seed": 1234,
 
     # iter-10 (DISCARD, hr=0.5810 vs 0.5807): MIXUP near-neutral (+0.03pp).
@@ -239,7 +239,7 @@ CONFIG = {
     # Test-time mismatch: train across noise range hurts specific 5e4 perf.
     "noise_i0":      5e4,
     "noise_sigma_e": 5.0,
-    "noise_jitter":  False,        # iter-81: True -> False (was iter-72 -0.05pp on drifted lr=8.5e-5; retest on fixed lr=8e-5 substrate)
+    "noise_jitter":  True,         # iter-81 closed False -0.87pp; True firm
     "i0_jitter_lo":  3e4,
     "i0_jitter_hi":  8e4,
     "seed":          42,         # iter-68 closed seed=43 (variance too high)

@@ -76,7 +76,7 @@ CONFIG = {
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP
-    "lr_schedule":   "cosine",   # iter-112: constant -> cosine retest on current batch-norm substrate (iter-42 closed on different substrate)
+    "lr_schedule":   "step7",    # iter-113: cosine closed -1.10pp; try step7 (decay at epoch 7)
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-105 closed 5 -4.30pp; 6 stays
