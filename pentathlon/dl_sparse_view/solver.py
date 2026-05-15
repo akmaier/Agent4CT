@@ -117,8 +117,8 @@ CONFIG = {
     "swa_last_n":    4,   # iter-107 closed 5 -1.16pp; iter-101 closed 3; 4 firm
     "bf_kernel":     7,   # iter-111 TIMEOUT at 9; iter-94 near-flat at 5; 7 firm
     "bf_sigma_r":    0.002,  # iter-121 closed 0.0025 -1.06pp; firm
-    "bf_sigma_x":    4.0,    # iter-125 closed 4.1 -1.42pp; firm
-    "bf_sigma_y":    4.0,
+    "bf_sigma_x":    3.9,    # iter-129: 4.0 -> 3.9 (super-fine lower; variance sample on firm config)
+    "bf_sigma_y":    3.9,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,
