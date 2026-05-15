@@ -128,3 +128,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 128	e0e1408	0.283011	0.600074	discard	architecture	claude	claude-sonnet-4.5	Revert alpha=0.1 (iter-127 closed 0.095); same-base config
 129	26081d8	0.283046	0.600152	discard	architecture	claude	claude-sonnet-4.5	bf_sigma 4.0 -> 3.9 (super-fine lower)
 130	a8c7adc	0.282882	0.60053	discard	architecture	claude	claude-sonnet-4.5	Revert sigma=4.0 (iter-129 closed 3.9); same-base config
+131	f98e0a2	0.282428	0.600086	keep	architecture	claude	claude-sonnet-4.5	wd 1e-5 -> 5e-5 (regularization-up per stage -2.16pp overfit)
