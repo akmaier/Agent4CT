@@ -88,7 +88,7 @@ CONFIG = {
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
-    "swa_last_n":    5,           # iter-98: untested specific value
+    "swa_last_n":    0,           # SWA closed
     "adamw_beta2":   0.999,      # iter-97 closed
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
@@ -103,7 +103,7 @@ CONFIG = {
     # Noise simulation — FIXED so headroom comparable across iter / runs.
     "noise_i0":      5e4,
     "noise_sigma_e": 5.0,
-    "seed":          42,
+    "seed":          43,         # iter-99: seed shift (variance check)
 }
 
 
