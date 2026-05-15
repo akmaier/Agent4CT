@@ -119,13 +119,14 @@ CONFIG = {
     # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,        # iter-55 closed epochs=10 on batch -2.40pp
-    "swa_start_epoch": 5,      # iter-56: enable SWA with start_epoch=5 (untested combo with batch substrate)
+    "swa_start_epoch": 7,      # iter-56 closed SWA on batch
+    "lr_warmup_epochs": 1,     # iter-57: enable warmup=1 (cross-port B iter-80 +0.19pp)
     "batch_size":    1,        # iter-49 closed batch=2 on batch -1.36pp; final-closed
     "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            8e-5,       # iter-40 KEEP (iter-42 closed 9e-5 at -0.28pp)
-    "swa":           True,        # iter-56: try SWA with start_epoch=5 (untested combo on batch+adam)
+    "swa":           False,       # iter-56 closed
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
@@ -568,8 +569,14 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
           f"swa={use_swa} swa_start={swa_start} ema={use_ema} ema_decay={ema_decay}",
           flush=True)
     aug_rng = torch.Generator(device="cpu").manual_seed(int(cfg.get("aug_mixup_seed", 5678)))
+    warmup_epochs = int(cfg.get("lr_warmup_epochs", 0))
+    base_lr = float(cfg["lr"])
     t0 = time.time()
     for ep in range(cfg["epochs"]):
+        if warmup_epochs > 0 and ep < warmup_epochs:
+            cur_lr = base_lr * (ep + 1) / max(1, warmup_epochs)
+            for pg in opt.param_groups:
+                pg["lr"] = cur_lr
         pipe.train()
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
