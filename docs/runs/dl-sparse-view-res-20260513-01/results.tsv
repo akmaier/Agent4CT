@@ -83,3 +83,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 84	cd28904	0.669777	0.598758	discard	optimizer	claude-res	claude-opus-4.7	iter-84: wd 5e-5 -> 8e-5 on batch+warmup substrate. Headroom 0.6079 -> 0.5988 (-0.91pp). DISCARD. wd=5e-5 firmly optimum.
 85	a7e22e4	0.669123	0.602823	discard	hp	claude-res	claude-opus-4.7	iter-85: lr 1e-4 -> 8e-5 on batch+warmup substrate. Headroom 0.6079 -> 0.6028 (-0.51pp). DISCARD. lr=1e-4 stays optimum even with warmup.
 86	a1bfd0b	0.67285	0.605611	discard	optimizer	claude-res	claude-opus-4.7	iter-86: swa_last_n=4 on batch+warmup substrate iter-82. Headroom 0.6079 -> 0.6056 (-0.23pp). DISCARD. SWA still doesn't help even with warmup.
+87	2bb0a10	0.678629	0.606952	discard	optimizer	claude-res	claude-opus-4.7	iter-87: adamw_eps 1e-10 -> 1e-8 on warmup substrate. Headroom 0.6079 -> 0.6070 (-0.09pp). Near-flat DISCARD. eps=1e-10 still marginally better.
