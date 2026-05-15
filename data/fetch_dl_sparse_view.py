@@ -1,6 +1,18 @@
 """Fetch + stage the AAPM DL-Sparse-View CT 2021 challenge data.
 
-Source: Zenodo 13882980 (mirror of the AAPM challenge release).
+** CURRENTLY BROKEN — data is CodaLab-gated, no public mirror. **
+
+The earlier challenges/dl_sparse_view/README.md claim of "Zenodo 13882980"
+was wrong; that record is the DL-Spectral info record (0 files). The
+actual DL-Sparse-View dataset is hosted on the CodaLab competition portal
+and requires per-user registration:
+
+    https://dl-sparse-view-ct-challenge.eastus.cloudapp.azure.com/competitions/1
+
+Until access is sorted (register manually, accept rules, download via
+CodaLab UI), this script's network half cannot run.
+
+Original (aspirational) docstring follows:
 Size:   ~10-20 GB raw, ~8-15 GB staged (HDF5 with lz4/gzip).
 Splits: 3600 train, 400 val (held-out by us), 0 test (organisers' test set
         is not in the public release; if we get it later, stage as test_*).

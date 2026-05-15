@@ -61,13 +61,14 @@ that ships with the download.
 
 ## Download
 
-Two routes — try the AAPM page first, fall back to the report if files are
-gated:
+**Confirmed 2026-05-15: dataset is CodaLab-gated, no Zenodo mirror exists.**
+The "Zenodo 13882980" reference previously listed here was wrong — that's
+the DL-Spectral info record (0 files). The real download flow requires
+per-user CodaLab registration:
 
-1. AAPM Grand Challenge page → "data" link:
-   <https://www.aapm.org/GrandChallenge/DL-sparse-view-CT/>
-2. Zenodo mirror (some files restricted; request access if needed):
-   <https://zenodo.org/records/13882980>
+1. AAPM Grand Challenge page (overview only): <https://www.aapm.org/GrandChallenge/DL-sparse-view-CT/>
+2. CodaLab competition portal (registration required):
+   <https://dl-sparse-view-ct-challenge.eastus.cloudapp.azure.com/competitions/1>
 3. Report-paper supplementary: see the data-availability statement in Sidky
    et al. 2022.
 
