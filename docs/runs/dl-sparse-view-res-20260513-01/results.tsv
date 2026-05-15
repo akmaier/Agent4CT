@@ -143,3 +143,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 144	bb78f31	0.67998	0.610968	discard	architecture	claude	claude-sonnet-4.5	5th same-config sample (Edit failed again before submit; effectively lr=1.125e-4 + wd=5.5e-5)
 145	01273c4	0.676628	0.601747	discard	architecture	claude	claude-sonnet-4.5	wd 5.5e-5 -> 5e-5 (variance-window sample)
 146	702eae7	0.675149	0.607363	keep	architecture	claude	claude-sonnet-4.5	epochs 8 -> 10 (B stage said +0.82pp underfit; more training)
+147	ee28abe	0.659057	0.586363	discard	architecture	claude	claude-sonnet-4.5	epochs 10 -> 12 (push further; B stage said underfit at epochs=16)
