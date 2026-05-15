@@ -68,13 +68,14 @@ TCIA_API = "https://services.cancerimagingarchive.net/nbia-api/services/v1"
 # Valid L* IDs in the collection (100 abdomen cases) confirmed via
 # getPatient API 2026-05-15. Picked 10 spread across the ID range.
 WAGNER_PATIENT_IDS = [
-    "L004", "L033", "L067", "L107", "L143",
+    "L004", "L033", "L064", "L107", "L143",
     "L186", "L221", "L260", "L288", "L299",
 ]
-# Note: L067, L143, L186, L221, L260, L288, L299 are all real per the
-# getPatient listing. L067 returns empty if the collection name has the
-# wrong case ("...-Data" vs "...-data") -- this caused a silent failure
-# in the first run; fixed by lowercasing "data" in TCIA_COLLECTION.
+# Verified 2026-05-15: every ID above appears in the
+# getPatient?Collection=LDCT-and-Projection-data response. L067 looked
+# right but does NOT exist (valid L* IDs skip non-monotonically: L064 is
+# present, L067 is not, L071 is next). Collection name is case-sensitive:
+# "...data" not "...Data".
 
 # Wagner's split per the paper: 4 train, 1 val, 5 test.
 WAGNER_SPLITS = {
