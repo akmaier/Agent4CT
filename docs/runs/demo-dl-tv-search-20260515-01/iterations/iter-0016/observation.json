@@ -13,5 +13,6 @@
   "train_n": 0,
   "agent": "tv-search",
   "model": "random-search",
-  "advice_for_others": "TV lambda=0.000715, lr=0.052273 -> headroom=0.5674"
+  "advice_for_others": "TV lambda=0.000715, lr=0.052273 -> headroom=0.5674",
+  "comparison_image": "runs/demo-dl-tv-search-20260515-01/iterations/iter-0016/comparison.png"
 }

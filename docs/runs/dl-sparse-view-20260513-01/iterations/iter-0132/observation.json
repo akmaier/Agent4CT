@@ -1,0 +1,16 @@
+{
+  "ts": "2026-05-15T22:11:25Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 132,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "Variance retest at wd=5e-5 (Edit failed; intended 1e-4 didn't apply)",
+  "val_score": 0.28290557861328125,
+  "headroom": 0.6003180906689924,
+  "kept": true,
+  "status": "keep",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "0.6003 tied with iter-131 (0.6001). main's iter level at wd=5e-5 same as at wd=1e-5. Iter neutral; stage signal needed.",
+  "commit": "a850a0a"
+}
