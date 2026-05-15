@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-15T10:13:28Z",
+  "updated": "2026-05-15T10:13:34Z",
   "runs": [
     {
       "slug": "demo-dl-sparse-view-20260513-01",
@@ -56,9 +56,9 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T22:38:37Z",
       "status": "running",
-      "n_iterations": 79,
+      "n_iterations": 80,
       "best_score": 0.6568,
-      "best_headroom": 0.616146,
+      "best_headroom": 0.61616,
       "agent": "claude",
       "model": "claude-sonnet-4.5"
     },

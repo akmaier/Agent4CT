@@ -78,3 +78,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 77	25e0205	0.269287	0.614926	discard	architecture	claude	claude-sonnet-4.5	lr 1e-4 -> 9e-5 (untested specific between 8e-5 closed and 1e-4 KEEP)
 78	52800df	0.285551	0.60105	discard	architecture	claude	claude-sonnet-4.5	bf_sigma_r 0.005 -> 0.003 (fine bisection lower side; main found 0.002 optimum)
 79	5ef401a	0.268526	0.616146	keep	architecture	claude	claude-sonnet-4.5	naf_n_bf 9 -> 10 (push BF saturation upward; blocks=5 has headroom)
+80	aabf54f	0.266106	0.61616	keep	architecture	claude	claude-sonnet-4.5	naf_n_bf 10 -> 11 (continue push on iter-79 KEEP)
