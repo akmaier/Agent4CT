@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T09:08:46Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 81,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "noise_jitter True -> False (retest on fixed lr=8e-5 substrate)",
+  "val_score": 0.31642377376556396,
+  "headroom": 0.5996212205621391,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0081/comparison.png",
+  "advice_for_others": "DISCARD: -0.87pp. noise_jitter=True actually helps on fixed substrate (was -0.05pp near-flat on drifted substrate). Close: noise_jitter=True firm. Try aug_flip retest next.",
+  "commit": "19cf765"
+}
