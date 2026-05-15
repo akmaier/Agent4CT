@@ -110,11 +110,11 @@ CONFIG = {
     # iter-63: 3 -> 4 BF tails. Agent A had +0.28/+0.63/+0.31pp from
     # 1/2/3 BFs (compounding) and timed out testing iter-33 bf_kernel=9.
     # Push naf_n_bf to 4 (smaller compute cost than wider kernel).
-    "naf_n_bf":      8,    # iter-67 KEEP (iter-68 9 BFs timed out — BF saturation at 8)
+    "naf_n_bf":      7,    # iter-108: 8 -> 7 (lower side bisection; saturation point untested below 8)
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
-    "swa_last_n":    5,   # iter-107: 4 -> 5 (extend SWA window; iter-101 closed 3; iter-71 KEEP at 4)
+    "swa_last_n":    4,   # iter-107 closed 5 -1.16pp; iter-101 closed 3; 4 firm
     "bf_kernel":     7,   # iter-94 near-flat; revert
     "bf_sigma_r":    0.002,  # iter-102 KEEP optimum
     "bf_sigma_x":    4.0,    # iter-104 closed 4.5 -1.44pp; 4.0 stays

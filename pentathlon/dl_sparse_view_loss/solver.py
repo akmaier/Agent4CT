@@ -120,12 +120,12 @@ CONFIG = {
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,        # iter-55 closed epochs=10 on batch -2.40pp
     "swa_start_epoch": 6,      # iter-69: 7 -> 6 untested specific (between 5 and 7)
-    "lr_warmup_epochs": 2,     # iter-71: untested specific value
+    "lr_warmup_epochs": 3,     # iter-78: 2 -> 3 (push further; iter-71 closed warmup=2 ON drift substrate, iter-76 KEEP at warmup=2 on correct substrate)
     "batch_size":    1,        # iter-49 closed batch=2 on batch
     "input_dropout": 0.0,      # iter-60 closed
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
-    "lr":            7.5e-5,     # iter-77: 8e-5 -> 7.5e-5 (lower side fine bisection on iter-76 KEEP)
+    "lr":            8e-5,       # iter-77 closed 7.5e-5 -0.26pp; iter-70 closed 8.5e-5 -2.42pp; 8e-5 firm
     "swa":           False,       # iter-69 closed
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
