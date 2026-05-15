@@ -64,7 +64,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.0,        # iter-68 closed
+    "input_dropout": 0.02,       # iter-88: 0 -> 0.02 (smaller than 0.05 which closed)
     "lr_warmup_epochs": 1,        # iter-80 KEEP
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
     "lr":            1e-4,       # iter-85 closed 8e-5
-    "adamw_eps":     1e-8,       # iter-87: revert eps default on new substrate (was 1e-10 on old)
+    "adamw_eps":     1e-10,      # iter-87 closed eps=1e-8 marginal worse; revert
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
