@@ -124,7 +124,7 @@ CONFIG = {
     "naf_expand":    2,                # iter-75 closed 3 -7.52pp; 2 stays
     "bf_sigma_x":    2.0,              # iter-61 closed 2.5 marginal flat; 2.0 stays
     "bf_sigma_y":    2.0,
-    "bf_sigma_r":    0.003,            # iter-78: 0.005 -> 0.003 (fine bisection lower side; main found 0.002 optimum on its substrate)
+    "bf_sigma_r":    0.005,            # iter-78 closed 0.003 -1.47pp; 0.005 firm on A
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
     "bf_kernel":     5,                # iter-70: 7 -> 5 retest on new sigma substrate
@@ -168,7 +168,7 @@ CONFIG = {
     # learns its own (sigma_x/y, sigma_r) so 5 BFs partition the residual
     # into 5 (edge/streak/freq) regimes. If keep: try BF=6. If discard:
     # try Charbonnier loss (was harmful on ReLU; might work here).
-    "naf_n_bf":      9,                # iter-68: 8 -> 9 BFs on new sigma_r=0.005 substrate
+    "naf_n_bf":      10,               # iter-79: 9 -> 10 (push BF saturation; now blocks=5 has headroom)
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,
