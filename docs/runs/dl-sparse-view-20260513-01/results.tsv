@@ -100,3 +100,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 100	70f1faa	0.266129	0.61364	discard	architecture	claude-main	claude-opus-4.7	iter-100: naf_alpha_init 0.1 -> 0.15 on iter-98 substrate. Headroom 0.6139 -> 0.6136 (-0.03pp). Near-flat DISCARD. alpha=0.1 firmly optimum.
 101	1051993	0.265825	0.61356	discard	optimizer	claude-main	claude-opus-4.7	iter-101: swa_last_n 4 -> 3 on wide-sigma substrate. Headroom 0.6139 -> 0.6136 (-0.03pp). Near-flat DISCARD. swa_last_n=4 stays optimum.
 102	b9d8f0b	0.266664	0.614405	keep	architecture	claude-main	claude-opus-4.7	iter-102: bf_sigma_r 0.005 -> 0.002 on iter-98 wide-sigma_x=4 substrate. Headroom 0.6139 -> 0.6144 (+0.05pp). KEEP. NEW MAIN BEST and TEAM BEST. The wide-sigma_x substrate likes tighter sigma_r.
+103	51f7df2	0.280325	0.588227	discard	architecture	claude-main	claude-opus-4.7	iter-103: bf_sigma_r 0.002 -> 0.001 on iter-102 substrate. Headroom 0.6144 -> 0.5882 (-2.62pp). STRONG DISCARD.
