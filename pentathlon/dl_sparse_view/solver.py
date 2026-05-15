@@ -99,7 +99,7 @@ CONFIG = {
     "img_denoiser":  "nafnet",
     "naf_blocks":    6,   # iter-105 closed 5 -1.42pp (transfer from A failed); 6 stays
     "naf_expand":    2,   # iter-92 timed out at 3; revert
-    "naf_alpha_init": 0.05,   # iter-106: 0.1 -> 0.05 (smaller alpha, fine bisection)
+    "naf_alpha_init": 0.1,    # iter-106 closed 0.05 -1.19pp; iter-100 closed 0.15; 0.1 stays
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert
     "naf_norm": "ln",     # iter-86 closed BN on NAFNet -2.12pp; LN is correct for NAFNet design
@@ -114,7 +114,7 @@ CONFIG = {
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
-    "swa_last_n":    4,   # iter-71 KEEP
+    "swa_last_n":    5,   # iter-107: 4 -> 5 (extend SWA window; iter-101 closed 3; iter-71 KEEP at 4)
     "bf_kernel":     7,   # iter-94 near-flat; revert
     "bf_sigma_r":    0.002,  # iter-102 KEEP optimum
     "bf_sigma_x":    4.0,    # iter-104 closed 4.5 -1.44pp; 4.0 stays
