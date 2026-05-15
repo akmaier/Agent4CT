@@ -79,7 +79,7 @@ CONFIG = {
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
 
     # Editable: residual-stack model architecture.
-    "res_blocks":    5,          # iter-105: 6 -> 5 cross-port A iter-73 KEEP onto resnet substrate
+    "res_blocks":    6,          # iter-105 closed 5 -4.30pp; 6 stays
     "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
     "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
@@ -87,7 +87,7 @@ CONFIG = {
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
-    "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
+    "res_scale":     0.05,       # iter-106: 0.1 -> 0.05 (smaller residual; untested lower bisection side)
     "swa_last_n":    0,           # SWA closed
     "adamw_beta2":   0.999,      # iter-97 closed
 
