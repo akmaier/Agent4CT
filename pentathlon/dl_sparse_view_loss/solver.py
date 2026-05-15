@@ -139,7 +139,7 @@ CONFIG = {
     "weight_decay":  1e-3,       # iter-39 closed wd=5e-4 (Adam substrate is wd=0)
     # iter-22 (DISCARD, hr=0.5815): grad_clip=1.0 near-flat (-0.18pp).
     # AdamW grad norm rarely exceeds 1 on small residual net. Disable.
-    "grad_clip":     0.0,
+    "grad_clip":     1.0,           # iter-92: 0.0 -> 1.0 (never tested specific; may stabilize variance)
 
     # Editable: training loss. "mse" (default Wagner-style; pipeline.training_step),
     # "l1", "charbonnier" (smooth L1 with epsilon), or "huber".
@@ -214,7 +214,7 @@ CONFIG = {
     "res_kernel":    3,         # iter-87 TIMEOUT at 5; 3 firm
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
-    "res_dropout":   0.05,       # iter-91: 0.0 -> 0.05 retest on fixed substrate (iter-18 was -1.26pp on group/no-aug)
+    "res_dropout":   0.0,        # iter-91 closed 0.05 -3.67pp; firm
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
