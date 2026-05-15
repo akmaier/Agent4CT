@@ -65,7 +65,7 @@ CONFIG = {
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-118 closed 0.01 -6.43pp; 0.0 firm
-    "lr_warmup_epochs": 0,        # iter-124: 1 -> 0 (no warmup; iter-117 closed 2; warmup=0 untested on lr=1.1e-4)
+    "lr_warmup_epochs": 1,        # iter-124 closed 0 -0.87pp; warmup=1 firm
     "adamw_beta1":   0.9,         # iter-96 closed 0.95 -4.46pp; iter-107 closed 0.85 -0.47pp; 0.9 firm
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
@@ -93,11 +93,11 @@ CONFIG = {
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
-    "res_n_bf":      0,
+    "res_n_bf":      1,             # iter-125: 0 -> 1 retest on fully-fixed substrate (BF closed long ago)
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
-    "bf_sigma_r":    0.01,
+    "bf_sigma_r":    0.005,
 
 
     # Noise simulation — FIXED so headroom comparable across iter / runs.
