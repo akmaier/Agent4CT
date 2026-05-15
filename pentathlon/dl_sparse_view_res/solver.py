@@ -64,7 +64,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.005,      # iter-138: 0.0 -> 0.005 (super-small untested specific)
+    "input_dropout": 0.0,        # iter-138 closed 0.005 -4.54pp; firm
     "lr_warmup_epochs": 1,        # iter-124 closed 0 -0.87pp; warmup=1 firm
     "adamw_beta1":   0.9,         # iter-130 closed 0.92 -0.69pp; firm
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
@@ -75,7 +75,7 @@ CONFIG = {
     "lr":            1.125e-4,   # iter-137 closed 1.115e-4 -1.55pp; 1.125e-4 firm (iter-135 KEEP)
     "adamw_eps":     1e-10,      # iter-133 closed 2e-10 -0.28pp; firm
     "optimizer":     "adamw",   # iter-54 closed adam
-    "weight_decay":  5e-5,       # iter-121/122 closed 4e-5 / 6e-5; 5e-5 firm
+    "weight_decay":  4.5e-5,     # iter-139: 5e-5 -> 4.5e-5 (super-super-fine)
     "lr_schedule":   "constant", # iter-112/113 closed cosine/step7; constant firm
 
     # Editable: residual-stack model architecture.

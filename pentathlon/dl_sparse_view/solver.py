@@ -79,7 +79,7 @@ CONFIG = {
     "batch_size":    1,
     "lr":            8e-5,    # iter-122 closed 7.8e-5 -1.40pp; super-firm
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
-    "weight_decay":  1e-5,      # iter-123 closed 8e-6 -1.43pp; firm
+    "weight_decay":  1.5e-5,    # iter-126: 1e-5 -> 1.5e-5 (untested specific upper)
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
     # toward 0 and preventing them from growing. WD=0 lets alpha
@@ -117,8 +117,8 @@ CONFIG = {
     "swa_last_n":    4,   # iter-107 closed 5 -1.16pp; iter-101 closed 3; 4 firm
     "bf_kernel":     7,   # iter-111 TIMEOUT at 9; iter-94 near-flat at 5; 7 firm
     "bf_sigma_r":    0.002,  # iter-121 closed 0.0025 -1.06pp; firm
-    "bf_sigma_x":    4.1,    # iter-125: 4.0 -> 4.1 (super-fine upper between 4.0 KEEP and 4.5 closed)
-    "bf_sigma_y":    4.1,
+    "bf_sigma_x":    4.0,    # iter-125 closed 4.1 -1.42pp; firm
+    "bf_sigma_y":    4.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,
