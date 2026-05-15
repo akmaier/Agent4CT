@@ -1,1 +1,2 @@
 iter	stage_val_score	stage_headroom	gap	verdict	notes
+130	0.295543	0.592814	-0.0125327	overfit	Stage 0.5928 vs iter best 0.6144 = -2.16pp, vs iter median ~0.605 = -1.2pp. First stage data point on main; iter results were overstating real capability (consistent with characterized 1.4pp iter variance). 73 min train at train_n=1200 epochs=12.
