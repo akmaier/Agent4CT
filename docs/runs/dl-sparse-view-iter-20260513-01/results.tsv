@@ -87,3 +87,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 86	c8c6990	0.268904	0.616247	keep	architecture	claude	claude-sonnet-4.5	weight_decay 1e-4 -> 5e-5 (untested specific lower)
 87	409b17f	0.268957	0.615671	discard	architecture	claude	claude-sonnet-4.5	wd 5e-5 -> 2e-5 (continue lower bisection on iter-86 KEEP)
 88	48df0ce	0.267865	0.616248	keep	architecture	claude	claude-sonnet-4.5	wd 5e-5 -> 3e-5 (untested specific between 2e-5 closed and 5e-5 KEEP)
+89	3c1ab6c	0.267606	0.61523	discard	architecture	claude	claude-sonnet-4.5	naf_alpha 0.1 -> 0.08 (untested specific lower)
