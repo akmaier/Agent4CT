@@ -105,7 +105,7 @@ CONFIG = {
     "naf_alpha":     0.1,              # iter-76 TIMEOUT (hardware); revert
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
-    "weight_decay":  5e-5,             # iter-86: 1e-4 -> 5e-5 (untested specific lower)
+    "weight_decay":  2e-5,             # iter-87: 5e-5 -> 2e-5 (continue lower bisection on iter-86 KEEP)
 
     # Iter-21: switch architecture family from iterated-denoiser (iter-7
     # ceiling 0.5745) to NAFNet (Chen et al. 2022, "Simple Baselines for
