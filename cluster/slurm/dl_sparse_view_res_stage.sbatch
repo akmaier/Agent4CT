@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
 #SBATCH --mem=24G
-#SBATCH --time=01:10:00
+#SBATCH --time=01:55:00            # 1.5h stage budget at 2x epochs
 #SBATCH --exclude=lme171,lme221,lme222,lme223,lme49,lme50,lme51,lme52,lme53
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
@@ -36,7 +36,7 @@ cfg = dict(solver.CONFIG)
 cfg.update({
     "train_n": cfg["train_n"] * 3,
     "val_n":   cfg["val_n"]   * 3,
-    "epochs":  max(cfg["epochs"] * 4, 32),
+    "epochs":  max(cfg["epochs"] * 2, 16),
 })
 print(f"[stage-res] config override: train_n={cfg['train_n']}  "
       f"val_n={cfg['val_n']}  epochs={cfg['epochs']}", flush=True)
