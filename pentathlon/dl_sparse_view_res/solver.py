@@ -80,7 +80,7 @@ CONFIG = {
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-105 closed 5 -4.30pp; 6 stays
-    "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
+    "res_bias":      False,      # iter-126: True -> False retest on fully-fixed substrate (iter-61 was on group/lr=1e-4)
     "res_channels":  32,         # iter-114/115 closed 40/24 both sides; 32 firm
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
     "res_act":       "relu",     # iter-104 closed swish -5.78pp; revert
@@ -93,11 +93,11 @@ CONFIG = {
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
-    "res_n_bf":      1,             # iter-125: 0 -> 1 retest on fully-fixed substrate (BF closed long ago)
+    "res_n_bf":      0,             # iter-125 closed retest -7.98pp; BF firmly closed on resnet across substrates
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
-    "bf_sigma_r":    0.005,
+    "bf_sigma_r":    0.01,
 
 
     # Noise simulation — FIXED so headroom comparable across iter / runs.
