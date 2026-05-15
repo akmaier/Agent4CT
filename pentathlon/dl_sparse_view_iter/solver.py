@@ -102,10 +102,10 @@ CONFIG = {
     "epochs":        6,
     "batch_size":    1,
     "lr":            1e-4,              # iter-85 closed 1.1e-4 -0.11pp near-flat; firm
-    "naf_alpha":     0.1,              # iter-76 TIMEOUT (hardware); revert
+    "naf_alpha":     0.08,             # iter-89: 0.1 -> 0.08 (untested specific lower; iter-76 was hw TIMEOUT)
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
-    "weight_decay":  3e-5,             # iter-88: 5e-5 -> 3e-5 (untested specific between 2e-5 closed and 5e-5 KEEP)
+    "weight_decay":  3e-5,             # iter-88 KEEP marginal +0.0pp (essentially tied with iter-86); locked
 
     # Iter-21: switch architecture family from iterated-denoiser (iter-7
     # ceiling 0.5745) to NAFNet (Chen et al. 2022, "Simple Baselines for
