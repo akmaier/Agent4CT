@@ -85,3 +85,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 84	54f8919	0.309049	0.596293	discard	architecture	claude	claude-sonnet-4.5	aug_mixup False -> True retest on fixed lr=8e-5 substrate (was iter-58 -0.28pp on drifted)
 85	dd0cbb5	0.33257	0.603121	discard	architecture	claude	claude-sonnet-4.5	train_loss mse -> charbonnier retest on fixed substrate (iter-3 was 0.5606 on very different early substrate)
 86	168e763	0.31115	0.588456	discard	architecture	claude	claude-sonnet-4.5	res_channels 32 -> 40 (capacity bump, untested on batch+Adam wd=0 substrate)
+87	c7a5bcc	0	0	discard	architecture	claude	claude-sonnet-4.5	res_kernel 3 -> 5 retest (iter-25 was timeout long ago)

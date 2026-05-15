@@ -1,0 +1,16 @@
+{
+  "ts": "2026-05-15T11:09:04Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 87,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "res_kernel 3 -> 5 retest (iter-25 was timeout long ago)",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "TIMEOUT at 10:00 (slow node + heavier kernel). 2.78x conv params/layer; kernel=5 too expensive. Revert kernel=3 firm.",
+  "commit": "c7a5bcc"
+}
