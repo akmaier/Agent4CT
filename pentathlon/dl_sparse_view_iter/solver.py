@@ -101,7 +101,7 @@ CONFIG = {
     # ResStack ballpark (full-resolution conv but no down/up).
     "epochs":        6,
     "batch_size":    1,
-    "lr":            9e-5,             # iter-77: 1e-4 -> 9e-5 (untested specific between 8e-5 closed and 1e-4 KEEP)
+    "lr":            1e-4,             # iter-77 closed 9e-5 near-flat; 1e-4 firm
     "naf_alpha":     0.1,              # iter-76 TIMEOUT (hardware); revert
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
@@ -124,7 +124,7 @@ CONFIG = {
     "naf_expand":    2,                # iter-75 closed 3 -7.52pp; 2 stays
     "bf_sigma_x":    2.0,              # iter-61 closed 2.5 marginal flat; 2.0 stays
     "bf_sigma_y":    2.0,
-    "bf_sigma_r":    0.005,            # iter-72 TIMED OUT; revert
+    "bf_sigma_r":    0.003,            # iter-78: 0.005 -> 0.003 (fine bisection lower side; main found 0.002 optimum on its substrate)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
     "bf_kernel":     5,                # iter-70: 7 -> 5 retest on new sigma substrate
