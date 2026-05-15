@@ -78,3 +78,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 77	c809685	0.324845	0.605662	discard	architecture	claude	claude-sonnet-4.5	lr 8e-5 -> 7.5e-5 (lower side fine bisection on iter-76 KEEP)
 78	eadafaa	0.318873	0.603347	discard	architecture	claude	claude-sonnet-4.5	lr_warmup_epochs 2 -> 3 (push higher; iter-76 KEEP at warmup=2 on correct lr substrate)
 79	5979e6b	0.306729	0.589249	discard	architecture	claude	claude-sonnet-4.5	lr_warmup_epochs 2 -> 1 (untested middle value)
+80	9768fb2	0.310825	0.593832	discard	architecture	claude	claude-sonnet-4.5	epochs 8 -> 7 (undertraining test on iter-76 KEEP substrate)
