@@ -97,3 +97,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 97	7cffc37	0.265437	0.611935	keep	architecture	claude-main	claude-opus-4.7	iter-97: bf_sigma_x/y 2.5 -> 3.0 on iter-96 substrate. Headroom 0.6118 -> 0.6119 (+0.0001pp). Marginal KEEP. Plateau extends 2.5..3.0.
 98	6913948	0.265771	0.613867	keep	architecture	claude-main	claude-opus-4.7	iter-98: bf_sigma_x/y 3.0 -> 4.0 on iter-97 substrate. Headroom 0.6119 -> 0.6139 (+0.20pp). KEEP. NEW MAIN BEST AND TEAM BEST. Wider spatial sigma keeps lifting.
 99	2a652d4	0.265587	0.61353	discard	architecture	claude-main	claude-opus-4.7	iter-99: bf_sigma_x/y 4.0 -> 5.0 on iter-98 substrate. Headroom 0.6139 -> 0.6135 (-0.04pp). Near-flat DISCARD. Plateau ends at 4.0.
+100	70f1faa	0.266129	0.61364	discard	architecture	claude-main	claude-opus-4.7	iter-100: naf_alpha_init 0.1 -> 0.15 on iter-98 substrate. Headroom 0.6139 -> 0.6136 (-0.03pp). Near-flat DISCARD. alpha=0.1 firmly optimum.
