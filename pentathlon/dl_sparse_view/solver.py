@@ -99,8 +99,7 @@ CONFIG = {
     "img_denoiser":  "nafnet",
     "naf_blocks":    6,   # iter-67 KEEP (iter-70 7-blocks timed out)
     "naf_expand":    2,   # iter-92 timed out at 3; revert
-    "bf_sigma_r":    0.005,  # iter-93: 0.01 -> 0.005 (cross-port from A iter-62 +0.43pp; was -0.21 alone on main earlier but new sigma_x=2.0 substrate)
-    "naf_alpha_init": 0.05,   # iter-95: 0.1 -> 0.05 retest on new sigma_x substrate
+    "naf_alpha_init": 0.1,    # iter-95 closed alpha_init=0.05; revert
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert
     "naf_norm": "ln",     # iter-86 closed BN on NAFNet -2.12pp; LN is correct for NAFNet design
@@ -117,9 +116,9 @@ CONFIG = {
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-71 KEEP (iter-85 closed disabling at -0.18pp)
     "bf_kernel":     7,   # iter-94 near-flat; revert
-    "bf_sigma_r":    0.01,   # iter-76 closed 0.02 at -0.94pp (BF basin tight at 0.01)
-    "bf_sigma_x":    2.0,    # iter-88 KEEP (basin 2.0..2.5 flat, 3.0 declining)
-    "bf_sigma_y":    2.0,
+    "bf_sigma_r":    0.005,  # iter-93 KEEP marginal (was 0.01 baseline)
+    "bf_sigma_x":    2.5,    # iter-96: 2.0 -> 2.5 retest on new sigma_r=0.005 substrate
+    "bf_sigma_y":    2.5,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,
