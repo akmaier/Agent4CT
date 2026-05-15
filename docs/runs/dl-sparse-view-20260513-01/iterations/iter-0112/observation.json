@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T10:29:58Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 112,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "bf_sigma_r 0.002 -> 0.003 (untested specific between 0.002 KEEP and 0.005 prior)",
+  "val_score": 0.27903038263320923,
+  "headroom": 0.6069244996737785,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0112/comparison.png",
+  "advice_for_others": "DISCARD: -0.75pp. sigma_r=0.003 worse. 0.002 firm. Try super-fine 0.002 -> 0.0015 next (between iter-103 closed 0.001 and 0.002 KEEP).",
+  "commit": "ed5ccb1"
+}
