@@ -101,7 +101,7 @@ CONFIG = {
     # ResStack ballpark (full-resolution conv but no down/up).
     "epochs":        6,
     "batch_size":    1,
-    "lr":            1e-4,             # iter-77 closed 9e-5 near-flat; 1e-4 firm
+    "lr":            1.1e-4,            # iter-83: 1e-4 -> 1.1e-4 (cross-port B iter-110 KEEP direction; untested upper side on A)
     "naf_alpha":     0.1,              # iter-76 TIMEOUT (hardware); revert
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
@@ -122,8 +122,8 @@ CONFIG = {
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
     "naf_blocks":    5,                # iter-74 closed 4 -0.41pp; iter-73 KEEP locked at 5
     "naf_expand":    2,                # iter-75 closed 3 -7.52pp; 2 stays
-    "bf_sigma_x":    3.0,              # iter-82: 2.0 -> 3.0 (untested upper side; iter-81 TIMEOUT at 1.5)
-    "bf_sigma_y":    3.0,
+    "bf_sigma_x":    2.0,              # iter-82 TIMEOUT (slow node); revert to KEEP base
+    "bf_sigma_y":    2.0,
     "bf_sigma_r":    0.005,            # iter-78 closed 0.003 -1.47pp; 0.005 firm on A
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum

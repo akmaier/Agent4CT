@@ -179,7 +179,7 @@ CONFIG = {
     # iter-20/21 (DISCARD): EMA at both decay=0.999 and 0.99 hurts.
     # Combined with iter-11/12: ALL weight-smoothing interventions fail
     # on this baseline. Last iterate is the optimum here.
-    "ema":            False,       # iter-67 closed
+    "ema":            True,        # iter-88: False -> True retest on fixed lr=8e-5 + aug_flip substrate
     "ema_decay":      0.99,
 
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
@@ -211,7 +211,7 @@ CONFIG = {
     "res_norm":      "batch",   # iter-46: group -> batch (untested; parallel to B iter-62)
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # iter-74 closed swish -8.38pp; revert (cross-substrate)
-    "res_kernel":    5,         # iter-87: 3 -> 5 retest on current substrate (iter-25 was timeout on different early substrate; risky may TIMEOUT)
+    "res_kernel":    3,         # iter-87 TIMEOUT at 5; 3 firm
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
     "res_dropout":   0.0,        # iter-66 closed
