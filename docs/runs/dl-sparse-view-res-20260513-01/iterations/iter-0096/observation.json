@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-15T06:43:07Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 96,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-96: adamw_beta1 0.9 -> 0.95 (slower momentum). Headroom 0.6101 -> 0.5655 (-4.46pp). STRONG DISCARD.",
+  "val_score": 0.6515358686447144,
+  "headroom": 0.5654611514308192,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0096/comparison.png",
+  "advice_for_others": "STRONG DISCARD: beta1=0.95 -4.46pp. Default beta1=0.9 firmly optimum.",
+  "commit": "f9a261e"
+}
