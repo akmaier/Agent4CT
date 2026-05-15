@@ -1,25 +1,33 @@
 """Fetch + stage the AAPM CT-MAR 2024 challenge data.
 
-Source: github.com/xcist/example/tree/main/AAPM_datachallenge (public mirror).
-Size:   The xcist/example repo is small (<1 GB) but contains POINTERS to a
-        larger dataset. Inspect the README in that subdirectory to see
-        whether the actual sinograms+masks are inline (small) or hosted on
-        Box / Dropbox / AAPM (large). The estimate of 150-300 GB applies if
-        all 14000 cases × 5 tensors live on the mirror.
+Sources:
+  * RPI Box (full challenge dataset):
+      https://rpi.app.box.com/s/7p8tkqj5ewhtdad2h8kx975i9qg6b7a4
+      The shared link is authenticated-only even though it looks
+      public-shareable: every Box public-API endpoint (folder-zip download,
+      shared_items, static) returns 401/404/512 without an OAuth bearer
+      token. Programmatic download from this script requires one of:
+        (a) Box developer access token (Settings -> Developer Apps on
+            box.com, generate token, paste as $BOX_TOKEN env var), OR
+        (b) Operator-side browser session: open the link, click
+            "Download" to get the folder zip, upload to
+            /cluster/maier/Agent4CT/data/ct_mar/raw/ and re-run with
+            --skip-download.
+  * github.com/xcist/example/tree/main/AAPM_datachallenge — public mirror
+    with simulator code + a small set of example cases. Useful for
+    bootstrapping the parser before the full Box dataset lands.
 
-If the mirror only ships example data (a few cases for getting started),
-the full dataset may require a separate Box link with AAPM credentials.
-This script handles both cases: it first tries a shallow clone of the
-example repo, then walks any manifest the example points to.
+Size:   The full Box dataset is ~150-300 GB est. (14 000 cases x 5 tensors).
+        The xcist/example mirror is < 1 GB (example cases only).
 
 Layout produced:
     ct_mar/
         raw/
         staged/
-            train_sinograms.h5  (N, A, D) float32  — sino with metal
-            train_clean.h5      (N, A, D) float32  — sino without metal (target domain)
-            train_truth.h5      (N, H, W) float32  — clean image
-            train_mask.h5       (N, H, W) uint8    — metal pixel mask
+            train_sinograms.h5  (N, A, D) float32  -- sino with metal
+            train_clean.h5      (N, A, D) float32  -- sino without metal (target domain)
+            train_truth.h5      (N, H, W) float32  -- clean image
+            train_mask.h5       (N, H, W) uint8    -- metal pixel mask
             val_*.h5
             manifest.json
 """

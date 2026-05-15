@@ -13,6 +13,7 @@ metal mask.
 | Report | Haneda et al., *Med. Phys.* 2025, doi:[10.1002/mp.70050](https://doi.org/10.1002/mp.70050) |
 | AAPM page | <https://www.aapm.org/GrandChallenge/CT-MAR/> · [winners](https://www.aapm.org/GrandChallenge/CT-MAR/winners.asp) |
 | Public data mirror | [xcist/example/tree/main/AAPM_datachallenge](https://github.com/xcist/example/tree/main/AAPM_datachallenge) |
+| Challenge dataset (RPI Box) | <https://rpi.app.box.com/s/7p8tkqj5ewhtdad2h8kx975i9qg6b7a4> |
 | Simulator | [XCIST](https://github.com/xcist/main) (CatSim) |
 | Anatomy | Lung, abdomen, liver, head, pelvis |
 
