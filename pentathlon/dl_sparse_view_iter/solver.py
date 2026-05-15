@@ -127,7 +127,7 @@ CONFIG = {
     "bf_sigma_r":    0.005,            # iter-62 KEEP (iter-64 0.0005 -4.76pp, iter-65 0.002 -2.51pp)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
-    "bf_kernel":     9,                # iter-67: 7 -> 9 retest (main timed out but A has 8 BFs, less compute)
+    "bf_kernel":     7,                # iter-67 closed kernel=9 -0.12pp; revert
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
     "share_weights": False,            # n/a at K=1
     "n_bf":          0,                # iter-21: no tail BF on legacy paths
@@ -168,7 +168,7 @@ CONFIG = {
     # learns its own (sigma_x/y, sigma_r) so 5 BFs partition the residual
     # into 5 (edge/streak/freq) regimes. If keep: try BF=6. If discard:
     # try Charbonnier loss (was harmful on ReLU; might work here).
-    "naf_n_bf":      8,                # iter-53: drop from 9 BFs to free wall budget for other knobs
+    "naf_n_bf":      9,                # iter-68: 8 -> 9 BFs on new sigma_r=0.005 substrate
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,

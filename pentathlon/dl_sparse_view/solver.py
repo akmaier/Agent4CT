@@ -116,7 +116,7 @@ CONFIG = {
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-71 KEEP (iter-85 closed disabling at -0.18pp)
-    "bf_kernel":     7,   # iter-91 timed out at kernel=9
+    "bf_kernel":     5,   # iter-94: 7 -> 5 retest on new bf_sigma_x=2.0 substrate
     "bf_sigma_r":    0.01,   # iter-76 closed 0.02 at -0.94pp (BF basin tight at 0.01)
     "bf_sigma_x":    2.0,    # iter-88 KEEP (basin 2.0..2.5 flat, 3.0 declining)
     "bf_sigma_y":    2.0,
