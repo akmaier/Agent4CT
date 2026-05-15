@@ -9,6 +9,29 @@ each phantom comes with the Mayo-CT-PD projection format (matching their
 ~600 GB-1 TB — too big. But the **per-case** structure is naturally
 amenable to subsetting.
 
+## CVIT-Duke page (checked 2026-05-15)
+
+The challenge page <https://cvit.duke.edu/truth-based-ct-truect-reconstruction-challenge/>
+says:
+
+- Access is via **CodaLab registration** (links from the challenge page);
+  no direct file URLs are exposed.
+- Format is "Mayo Clinic standard sinogram format" with supplemental scan
+  geometry files.
+- The page claims "datasets made public" August 2022 but does NOT link to
+  a permanent mirror (no DOI, no Zenodo, no S3).
+- Contact: `cvit-inquire@duke.edu`.
+
+**Net:** there's no scraped-able fetch route. Two options:
+
+1. Register at CodaLab, accept the rules, download whatever the portal
+   serves. If it's a per-case archive list, we can subset; if it's a
+   single 600 GB tarball, we can't.
+2. Email `cvit-inquire@duke.edu` and ask for per-case URLs / DOI mirror.
+
+Either path requires a human in the loop before we can write a working
+fetch script.
+
 ## Where the data lives
 
 - **AAPM challenge page:** [aapm.org/GrandChallenge/TrueCT](https://www.aapm.org/GrandChallenge/TrueCT/)
