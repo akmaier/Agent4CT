@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-15T05:05:27Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 93,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter-93: bf_sigma_r 0.01 -> 0.005 (cross-port from A iter-62 +0.43pp). Headroom 0.6070 -> 0.6071 (+0.0001pp). Marginal KEEP/near-flat. The lift on A was substrate-specific; main's basin is wider so 0.005 vs 0.01 is flat.",
+  "val_score": 0.2556924819946289,
+  "headroom": 0.6070761863363814,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.060006,
+  "train_n": 400,
+  "agent": "claude-main",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0093/comparison.png",
+  "advice_for_others": "Near-flat: main's bf_sigma_r basin is 0.005..0.01 flat. The A iter-62 finding doesn't transfer.",
+  "commit": "e2ed989"
+}
