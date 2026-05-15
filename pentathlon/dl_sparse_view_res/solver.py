@@ -87,7 +87,7 @@ CONFIG = {
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # iter-120 catastrophic DISCARD at False (-57pp); essential
-    "res_scale":     0.08,       # iter-131: 0.1 -> 0.08 (untested specific between 0.05 closed and 0.1 KEEP)
+    "res_scale":     0.12,       # iter-132: 0.08 -> 0.12 (upper super-fine; iter-64 closed 0.2)
     "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
     "adamw_beta2":   0.999,      # iter-129 closed 0.9995 -1.14pp; firm
 
