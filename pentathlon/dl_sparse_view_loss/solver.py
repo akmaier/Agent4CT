@@ -149,7 +149,7 @@ CONFIG = {
     # Next loss to try: Huber with a *tiny* delta (1e-3 or smaller) so most
     # samples stay in the quadratic regime (preserving RMSE/headroom) and only
     # outliers get L1-treatment. Or: weighted MSE + small TV regulariser.
-    "train_loss":    "mse",
+    "train_loss":    "charbonnier", # iter-85: mse -> charbonnier retest on fixed lr=8e-5 + batch + aug_flip substrate (iter-3 was 0.5606 on very different group/no-aug early substrate)
     "charbonnier_eps": 1e-3,
     "huber_delta":   1e-3,
 
@@ -164,7 +164,7 @@ CONFIG = {
     # iter-10 (DISCARD, hr=0.5810 vs 0.5807): MIXUP near-neutral (+0.03pp).
     # Doesn't hurt (unlike flips) but doesn't help. Random-ellipse phantoms
     # already saturate sample diversity; gain elsewhere.
-    "aug_mixup":     True,         # iter-84: False -> True retest on fixed lr=8e-5 substrate (iter-58 -0.28pp on drifted)
+    "aug_mixup":     False,        # iter-84 closed True -1.39pp on fixed substrate; False firm
     "aug_mixup_alpha": 0.4,
     "aug_mixup_seed":  5678,
 
