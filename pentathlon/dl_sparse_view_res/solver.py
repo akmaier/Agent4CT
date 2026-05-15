@@ -66,7 +66,7 @@ CONFIG = {
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-118 closed 0.01 -6.43pp; 0.0 firm
     "lr_warmup_epochs": 1,        # iter-124 closed 0 -0.87pp; warmup=1 firm
-    "adamw_beta1":   0.92,        # iter-130: 0.9 -> 0.92 (super-fine between 0.9 KEEP and 0.95 closed)
+    "adamw_beta1":   0.9,         # iter-130 closed 0.92 -0.69pp; firm
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
@@ -87,7 +87,7 @@ CONFIG = {
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # iter-120 catastrophic DISCARD at False (-57pp); essential
-    "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
+    "res_scale":     0.08,       # iter-131: 0.1 -> 0.08 (untested specific between 0.05 closed and 0.1 KEEP)
     "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
     "adamw_beta2":   0.999,      # iter-129 closed 0.9995 -1.14pp; firm
 
