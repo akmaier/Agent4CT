@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-15T07:20:35Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 70,
+  "challenge": "dl_sparse_view",
+  "change_class": "hp",
+  "rationale": "iter-70: lr 8e-5 -> 8.5e-5 fine bisection. Headroom 0.6054 -> 0.5812 (-2.42pp). DISCARD.",
+  "val_score": 0.298820823431015,
+  "headroom": 0.5811618845759698,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0070/comparison.png",
+  "advice_for_others": "DISCARD: lr=8.5e-5 -2.42pp. Closes upper direction.",
+  "commit": "fb0f6f5"
+}

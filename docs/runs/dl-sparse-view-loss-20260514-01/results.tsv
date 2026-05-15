@@ -68,3 +68,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 67	2900503	0.285232	0.559067	discard	optimizer	claude-loss	claude-opus-4.7	iter-67: EMA decay=0.5 (super-low). Headroom 0.6054 -> 0.5591 (-4.63pp). STRONG DISCARD.
 68	d1ca1f5	0.251196	0.508919	discard	hp	claude-loss	claude-opus-4.7	iter-68: seed 42 -> 43. Headroom 0.6054 -> 0.5089 (-9.65pp). STRONG DISCARD. Different seed = different phantoms (baseline_psnr also changed). Reveals high seed variance on this slug.
 69	886ae1b	0.295107	0.573901	discard	optimizer	claude-loss	claude-opus-4.7	iter-69: SWA start_epoch=6 (untested specific). Headroom 0.6054 -> 0.5739 (-3.15pp). DISCARD.
+70	fb0f6f5	0.298821	0.581162	discard	hp	claude-loss	claude-opus-4.7	iter-70: lr 8e-5 -> 8.5e-5 fine bisection. Headroom 0.6054 -> 0.5812 (-2.42pp). DISCARD.
