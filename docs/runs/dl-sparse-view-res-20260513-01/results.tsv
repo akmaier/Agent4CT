@@ -95,3 +95,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 96	f9a261e	0.651536	0.565461	discard	optimizer	claude-res	claude-opus-4.7	iter-96: adamw_beta1 0.9 -> 0.95 (slower momentum). Headroom 0.6101 -> 0.5655 (-4.46pp). STRONG DISCARD.
 97	cf29853	0.665347	0.59741	discard	optimizer	claude-res	claude-opus-4.7	iter-97: adamw_beta2 0.999 -> 0.99 retest. Headroom 0.6101 -> 0.5974 (-1.27pp). DISCARD.
 98	b770727	0.666129	0.602311	discard	optimizer	claude-res	claude-opus-4.7	iter-98: swa_last_n 0 -> 5 (untested specific). Headroom 0.6101 -> 0.6023 (-0.78pp). DISCARD.
+99	050d36a	0.666482	0.596884	discard	hp	claude-res	claude-opus-4.7	iter-99: seed 42 -> 43. Headroom 0.6101 -> 0.5969 (-1.32pp). DISCARD. Seed variance reveals iter-88 KEEP partly luck-based.
