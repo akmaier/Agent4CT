@@ -46,7 +46,7 @@ from _common import (
 )
 
 CHALLENGE = "mayo_ldct"
-TCIA_COLLECTION = "LDCT-and-Projection-Data"
+TCIA_COLLECTION = "LDCT-and-Projection-data"  # case-sensitive ("data" lowercase per API)
 TCIA_API = "https://services.cancerimagingarchive.net/nbia-api/services/v1"
 
 # -----------------------------------------------------------------------------
@@ -65,10 +65,16 @@ TCIA_API = "https://services.cancerimagingarchive.net/nbia-api/services/v1"
 # exist in https://www.cancerimagingarchive.net/collection/ldct-and-projection-data/
 # (filter on Subject ID starts with "L"). Re-running with a new list will
 # only redownload the missing patients; existing ones are cached.
+# Valid L* IDs in the collection (100 abdomen cases) confirmed via
+# getPatient API 2026-05-15. Picked 10 spread across the ID range.
 WAGNER_PATIENT_IDS = [
-    "L067", "L096", "L109", "L143", "L192",
-    "L286", "L291", "L310", "L333", "L506",
+    "L004", "L033", "L067", "L107", "L143",
+    "L186", "L221", "L260", "L288", "L299",
 ]
+# Note: L067, L143, L186, L221, L260, L288, L299 are all real per the
+# getPatient listing. L067 returns empty if the collection name has the
+# wrong case ("...-Data" vs "...-data") -- this caused a silent failure
+# in the first run; fixed by lowercasing "data" in TCIA_COLLECTION.
 
 # Wagner's split per the paper: 4 train, 1 val, 5 test.
 WAGNER_SPLITS = {
