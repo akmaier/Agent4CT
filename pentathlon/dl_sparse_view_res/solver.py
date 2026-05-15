@@ -65,7 +65,7 @@ CONFIG = {
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # iter-109 STRONG DISCARD -5.38pp; iter-88 KEEP confirmed as variance artifact
-    "lr_warmup_epochs": 1,        # iter-80 KEEP (iter-95 closed warmup=2)
+    "lr_warmup_epochs": 2,        # iter-117: 1 -> 2 retest on lr=1.1e-4 substrate (iter-95 was -8.05pp on lr=1e-4)
     "adamw_beta1":   0.9,         # iter-96 closed 0.95 -4.46pp; iter-107 closed 0.85 -0.47pp; 0.9 firm
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
@@ -88,7 +88,7 @@ CONFIG = {
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
-    "swa_last_n":    2,           # iter-116: 0 -> 2 (short SWA retest on lr=1.1e-4 substrate; might damp variance)
+    "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
     "adamw_beta2":   0.999,      # iter-97 closed
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
