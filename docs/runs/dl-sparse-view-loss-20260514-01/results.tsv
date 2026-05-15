@@ -90,3 +90,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 89	f875364	0.321949	0.604523	discard	architecture	claude	claude-sonnet-4.5	swa False -> True retest on fixed substrate (iter-69 was on drifted)
 90	5199a88	0.315071	0.599561	discard	architecture	claude	claude-sonnet-4.5	res_blocks 6 -> 7 (capacity bump; iter-75 closed 5; 7 untested on C)
 91	d4ce4c4	0.294491	0.573534	discard	architecture	claude	claude-sonnet-4.5	res_dropout 0.0 -> 0.05 retest on fixed substrate (iter-18 -1.26pp)
+92	f385418	0.321686	0.606111	discard	architecture	claude	claude-sonnet-4.5	grad_clip 0.0 -> 1.0 (untested specific)
