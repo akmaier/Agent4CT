@@ -211,7 +211,7 @@ CONFIG = {
     "res_norm":      "batch",   # iter-46: group -> batch (untested; parallel to B iter-62)
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # iter-74 closed swish -8.38pp; revert (cross-substrate)
-    "res_kernel":    5,         # iter-95: 3 -> 5 retest (iter-87 TIMEOUT on lme221, now excluded)
+    "res_kernel":    3,         # iter-95/96 TIMEOUT at 5 even with exclude; firmly closed
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
     "res_dropout":   0.0,        # iter-91 closed 0.05 -3.67pp; firm
