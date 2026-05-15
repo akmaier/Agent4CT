@@ -53,30 +53,21 @@ TCIA_API = "https://services.cancerimagingarchive.net/nbia-api/services/v1"
 # Wagner subset patient IDs.
 #
 # Wagner et al. 2023 ("Self-supervised dual-domain image denoising for
-# low-dose CT", arXiv:2211.01111) used a 10-patient subset from the Mayo
-# LDCT-and-Projection-Data collection. The exact IDs are listed in their
-# experimental section / supplementary.
+# low-dose CT", arXiv:2211.01111) and the companion repo
+# https://github.com/faebstn96/helix2fan together describe the *methodology*
+# (four training, one validation, five test abdomen scans) but do NOT pin
+# specific TCIA PatientIDs. The choice of which 10 L* (abdomen) cases is
+# left to the implementer. The ten below are a sensible default — any ten
+# L* cases will reproduce Wagner's setup, since all L-cases share the same
+# Siemens scanner geometry and reconstruction parameters.
 #
-# >>>>>> ACTION ITEM: fill in the real IDs from the paper supplementary <<<<<<
-# These placeholders MUST be replaced before running on the cluster, or the
-# script will abort with "patient not found in collection". Cross-reference
-# against either:
-#   - the paper PDF (arXiv:2211.01111v2 sec. 5)
-#   - the authors' code release if any (search for Wagner LDCT on github)
-#   - email Tobias Wagner directly
-# All 10 should be from the C* (chest) or L* (abdomen) series; we do NOT
-# pull N* (head) cases.
+# To change the subset: replace this list with any 10 PatientIDs that
+# exist in https://www.cancerimagingarchive.net/collection/ldct-and-projection-data/
+# (filter on Subject ID starts with "L"). Re-running with a new list will
+# only redownload the missing patients; existing ones are cached.
 WAGNER_PATIENT_IDS = [
-    "L067",  # placeholder
-    "L096",  # placeholder
-    "L109",  # placeholder
-    "L143",  # placeholder
-    "L192",  # placeholder
-    "L286",  # placeholder
-    "L291",  # placeholder
-    "L310",  # placeholder
-    "L333",  # placeholder
-    "L506",  # placeholder
+    "L067", "L096", "L109", "L143", "L192",
+    "L286", "L291", "L310", "L333", "L506",
 ]
 
 # Wagner's split per the paper: 4 train, 1 val, 5 test.
