@@ -15,7 +15,11 @@ config/lme_cluster_agent_guide.md
 config/*_cluster_agent_guide.md
 !config/cluster_agent_guide.template.md
 /runs/
-/data/
+# /data/<challenge>/ holds large staged HDF5 datasets — never committed.
+# But data/*.py + data/*.md are the fetch scripts and ARE committed.
+/data/*
+!/data/*.py
+!/data/*.md
 /out/
 # docs/runs/ is the dashboard data and IS committed.
 *.egg-info/
