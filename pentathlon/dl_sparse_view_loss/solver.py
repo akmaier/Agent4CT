@@ -119,14 +119,14 @@ CONFIG = {
     # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,        # iter-55 closed epochs=10 on batch -2.40pp
-    "swa_start_epoch": 7,      # iter-56 closed SWA on batch
+    "swa_start_epoch": 6,      # iter-69: 7 -> 6 untested specific (between 5 and 7)
     "lr_warmup_epochs": 0,     # iter-57 closed warmup near-flat
     "batch_size":    1,        # iter-49 closed batch=2 on batch
     "input_dropout": 0.0,      # iter-60 closed
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            7e-5,       # iter-61: 8e-5 -> 7e-5 fine bisection
-    "swa":           False,       # iter-56 closed
+    "swa":           True,        # iter-69: enable SWA start_epoch=6
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
@@ -242,7 +242,7 @@ CONFIG = {
     "noise_jitter":  False,
     "i0_jitter_lo":  3e4,
     "i0_jitter_hi":  8e4,
-    "seed":          43,         # iter-68: seed shift for variance check
+    "seed":          42,         # iter-68 closed seed=43 (variance too high)
 
     # Intensity calibration. CT images live on a standard scale (HU for
     # real data; for the synthetic ellipse phantoms here the canonical
