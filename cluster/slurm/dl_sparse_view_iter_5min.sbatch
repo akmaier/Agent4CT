@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mem=24G
 #SBATCH --time=00:10:00            # iter-46: bumped from 8 to 10 min — 6 BFs need 9:00+ on NAFNet substrate (iter-45 timed out)
-#SBATCH --exclude=lme171,lme222,lme223,lme49,lme50,lme51,lme52,lme53  # bad-driver + slow-GPU nodes
+#SBATCH --exclude=lme171,lme221,lme222,lme223,lme49,lme50,lme51,lme52,lme53  # bad-driver + slow-GPU nodes (lme221 added after 4 consecutive A timeouts)
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
 # One DL-Sparse-View iteration on the UNROLLED-ITERATIVE branch
