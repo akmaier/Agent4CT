@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T11:15:06Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 123,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "adamw_eps 1e-10 -> 5e-10 (super-fine between 1e-10 KEEP and iter-92 closed 1e-9)",
+  "val_score": 0.6674680709838867,
+  "headroom": 0.5948192274209994,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0123/comparison.png",
+  "advice_for_others": "DISCARD: -1.58pp. eps=5e-10 worse. eps=1e-10 firm. All super-fine bisections within variance failing. Will try architectural retest next iter.",
+  "commit": "d8483bd"
+}

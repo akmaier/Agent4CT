@@ -119,3 +119,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 120	016cc04	0.453233	0.0410577	discard	architecture	claude	claude-sonnet-4.5	residual True -> False retest on batch+lr=1.1e-4 substrate (iter-33 was -2.43pp on group)
 121	73fbc94	0.673485	0.592539	discard	architecture	claude	claude-sonnet-4.5	weight_decay 5e-5 -> 4e-5 (super-fine bisection lower side)
 122	b03009f	0.676843	0.605457	discard	architecture	claude	claude-sonnet-4.5	weight_decay 5e-5 -> 6e-5 (super-fine upper bisection)
+123	d8483bd	0.667468	0.594819	discard	architecture	claude	claude-sonnet-4.5	adamw_eps 1e-10 -> 5e-10 (super-fine between 1e-10 KEEP and iter-92 closed 1e-9)
