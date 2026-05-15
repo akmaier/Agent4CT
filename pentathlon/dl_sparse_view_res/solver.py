@@ -89,7 +89,7 @@ CONFIG = {
     "residual":      True,       # iter-120 catastrophic DISCARD at False (-57pp); essential
     "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
     "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
-    "adamw_beta2":   0.995,      # iter-128: 0.999 -> 0.995 (untested specific; iter-97 closed 0.99)
+    "adamw_beta2":   0.9995,     # iter-129: 0.999 -> 0.9995 (untested specific upper)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
