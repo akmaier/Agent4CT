@@ -77,7 +77,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
-    "lr":            8e-5,    # iter-119 closed 8.5e-5 -1.49pp; firm
+    "lr":            7.8e-5,  # iter-122: 8e-5 -> 7.8e-5 (super-fine lower)
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
     "weight_decay":  1e-5,      # iter-118 closed 5e-6 -1.39pp; 1e-5 firm
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
@@ -116,7 +116,7 @@ CONFIG = {
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-107 closed 5 -1.16pp; iter-101 closed 3; 4 firm
     "bf_kernel":     7,   # iter-111 TIMEOUT at 9; iter-94 near-flat at 5; 7 firm
-    "bf_sigma_r":    0.0025, # iter-121: 0.002 -> 0.0025 (super-fine upper, untested specific)
+    "bf_sigma_r":    0.002,  # iter-121 closed 0.0025 -1.06pp; firm
     "bf_sigma_x":    4.0,    # iter-117 closed asymmetry -1.47pp; (4.0, 4.0) firm
     "bf_sigma_y":    4.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
