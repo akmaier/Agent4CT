@@ -130,7 +130,7 @@ CONFIG = {
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
-    "adamw_eps":     1e-9,      # iter-83: 1e-8 -> 1e-9 (untested specific between 1e-8 and 1e-10)
+    "adamw_eps":     1e-8,      # iter-83 closed 1e-9 near-flat; 1e-8 firm
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
     # iter-17 (DISCARD, hr=0.5741): wd=3e-3 too aggressive (-0.92pp).
     # iter-23 (DISCARD, hr=0.5589): wd=2e-3 also too aggressive (-2.44pp).
@@ -164,7 +164,7 @@ CONFIG = {
     # iter-10 (DISCARD, hr=0.5810 vs 0.5807): MIXUP near-neutral (+0.03pp).
     # Doesn't hurt (unlike flips) but doesn't help. Random-ellipse phantoms
     # already saturate sample diversity; gain elsewhere.
-    "aug_mixup":     False,        # iter-58 closed mixup -0.28pp on batch
+    "aug_mixup":     True,         # iter-84: False -> True retest on fixed lr=8e-5 substrate (iter-58 -0.28pp on drifted)
     "aug_mixup_alpha": 0.4,
     "aug_mixup_seed":  5678,
 

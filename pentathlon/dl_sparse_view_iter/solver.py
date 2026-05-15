@@ -122,8 +122,8 @@ CONFIG = {
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
     "naf_blocks":    5,                # iter-74 closed 4 -0.41pp; iter-73 KEEP locked at 5
     "naf_expand":    2,                # iter-75 closed 3 -7.52pp; 2 stays
-    "bf_sigma_x":    2.0,              # iter-61 closed 2.5 marginal flat; 2.0 stays
-    "bf_sigma_y":    2.0,
+    "bf_sigma_x":    1.5,              # iter-81: 2.0 -> 1.5 (untested lower side on blocks=5+n_bf=11 substrate)
+    "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.005,            # iter-78 closed 0.003 -1.47pp; 0.005 firm on A
     "naf_dw":        True,             # depthwise 3x3 mid-conv
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
@@ -168,7 +168,7 @@ CONFIG = {
     # learns its own (sigma_x/y, sigma_r) so 5 BFs partition the residual
     # into 5 (edge/streak/freq) regimes. If keep: try BF=6. If discard:
     # try Charbonnier loss (was harmful on ReLU; might work here).
-    "naf_n_bf":      11,               # iter-80: 10 -> 11 (continue pushing BF saturation on iter-79 KEEP)
+    "naf_n_bf":      11,               # iter-80 KEEP +0.01pp marginal; saturation effectively reached
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,

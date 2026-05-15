@@ -81,7 +81,7 @@ CONFIG = {
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-105 closed 5 -4.30pp; 6 stays
     "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
-    "res_channels":  40,         # iter-114: 32 -> 40 (capacity bump; iter-19 closed 48 on group; 40 untested specific)
+    "res_channels":  24,         # iter-115: 32 -> 24 (capacity reduction; smaller may be more stable on noisy substrate)
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
     "res_act":       "relu",     # iter-104 closed swish -5.78pp; revert
     "res_kernel":    3,           # iter-102 timed out
