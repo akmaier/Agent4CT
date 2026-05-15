@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T16:59:57Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 129,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "bf_sigma 4.0 -> 3.9 (super-fine lower)",
+  "val_score": 0.28304553031921387,
+  "headroom": 0.600151806545135,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0129/comparison.png",
+  "advice_for_others": "DISCARD: -1.43pp. Tied with iter-128 best-base rerun. main's lower-tail headroom ~0.60.",
+  "commit": "26081d8"
+}
