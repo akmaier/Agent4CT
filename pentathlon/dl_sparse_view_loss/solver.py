@@ -218,7 +218,7 @@ CONFIG = {
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
-    "res_n_bf":      1,             # iter-62: retest BF with sigma_r=0.005 cross-port from A iter-62
+    "res_n_bf":      0,             # iter-62 final-closed BF
     "bf_kernel":     7,
     "bf_sigma_x":    2.0,
     "bf_sigma_y":    2.0,
