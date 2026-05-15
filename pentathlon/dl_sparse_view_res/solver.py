@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
     "lr":            1e-4,       # iter-85 closed 8e-5
-    "adamw_eps":     1e-10,      # iter-87 closed eps=1e-8 marginal worse; revert
+    "adamw_eps":     1e-9,       # iter-92: 1e-10 -> 1e-9 (bisect between 1e-10 KEEP marginal and 1e-8 baseline)
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed

@@ -218,11 +218,11 @@ CONFIG = {
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
-    "res_n_bf":      0,             # iter-47 closed BF on batch -6.18pp; BF/resnet axis final-closed
+    "res_n_bf":      1,             # iter-62: retest BF with sigma_r=0.005 cross-port from A iter-62
     "bf_kernel":     7,
-    "bf_sigma_x":    1.5,
-    "bf_sigma_y":    1.5,
-    "bf_sigma_r":    0.01,
+    "bf_sigma_x":    2.0,
+    "bf_sigma_y":    2.0,
+    "bf_sigma_r":    0.005,
     "res_bias":      True,          # iter-45 closed bias=False at -0.55pp
     # iter-27 (DISCARD, -0.23pp): EDSR per-block alpha=0.1 alone fails on
     # this slug's wd=1e-3 substrate (alpha decayed to ~0 by wd).
