@@ -77,7 +77,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        6,    # iter-62: match Agent A
     "batch_size":    1,
-    "lr":            8e-5,    # iter-79 KEEP (iter-81 9e-5 near-flat -0.01pp)
+    "lr":            7e-5,    # iter-109: 8e-5 -> 7e-5 (untested lower side; iter-81 9e-5 near-flat)
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
     "weight_decay":  1e-5,      # iter-87 closed 5e-5 near-flat; revert
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
@@ -110,7 +110,7 @@ CONFIG = {
     # iter-63: 3 -> 4 BF tails. Agent A had +0.28/+0.63/+0.31pp from
     # 1/2/3 BFs (compounding) and timed out testing iter-33 bf_kernel=9.
     # Push naf_n_bf to 4 (smaller compute cost than wider kernel).
-    "naf_n_bf":      7,    # iter-108: 8 -> 7 (lower side bisection; saturation point untested below 8)
+    "naf_n_bf":      8,    # iter-108 closed 7 -1.50pp; iter-68 closed 9 timeout; 8 firm
     # iter-58: add SWA over the last 6-of-8 epoch-end snapshots
     # (full-window mode that won Agent A iter-36, +0.42pp). Tests
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
