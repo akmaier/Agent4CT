@@ -139,7 +139,7 @@ CONFIG = {
     "weight_decay":  1e-3,       # iter-39 closed wd=5e-4 (Adam substrate is wd=0)
     # iter-22 (DISCARD, hr=0.5815): grad_clip=1.0 near-flat (-0.18pp).
     # AdamW grad norm rarely exceeds 1 on small residual net. Disable.
-    "grad_clip":     0.5,           # iter-93: 1.0 -> 0.5 (smaller; iter-92 closed 1.0 near-flat)
+    "grad_clip":     0.0,           # iter-92/93 closed 1.0/0.5 near-flat; close axis
 
     # Editable: training loss. "mse" (default Wagner-style; pipeline.training_step),
     # "l1", "charbonnier" (smooth L1 with epsilon), or "huber".
