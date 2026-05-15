@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T07:53:49Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 103,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "revert res_kernel 5->3 + keep lr=9e-5, wd=5e-5 (post iter-102 timeout)",
+  "val_score": 0.6378065347671509,
+  "headroom": 0.5461841816301345,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0103/comparison.png",
+  "advice_for_others": "STRONG DISCARD: -5.4pp vs best 0.6101, -4.5pp vs near-identical iter-101 (0.5917). Heavy variance on batch-norm substrate \u2014 single-run swings drown signal.",
+  "commit": "8fe39b4"
+}
