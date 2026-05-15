@@ -73,9 +73,9 @@ CONFIG = {
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
     "lr":            1.1e-4,     # iter-119 closed 1.05e-4 -0.29pp; 1.1e-4 firm
-    "adamw_eps":     1e-10,      # iter-92 closed 1e-9
+    "adamw_eps":     5e-10,      # iter-123: 1e-10 -> 5e-10 (super-fine between 1e-10 KEEP and 1e-9 closed)
     "optimizer":     "adamw",   # iter-54 closed adam
-    "weight_decay":  6e-5,       # iter-122: 5e-5 -> 6e-5 (super-fine upper; iter-84 closed 8e-5)
+    "weight_decay":  5e-5,       # iter-121/122 closed 4e-5 / 6e-5; 5e-5 firm
     "lr_schedule":   "constant", # iter-112/113 closed cosine/step7; constant firm
 
     # Editable: residual-stack model architecture.
