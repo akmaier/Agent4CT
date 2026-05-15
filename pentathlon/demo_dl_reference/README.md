@@ -22,8 +22,8 @@ All methods run on **synthetic random-ellipse phantoms** (stand-in for real AAPM
 ### 2. TV-Regularized Iterative (`solver_tv_iterative.py`)
 - **Method**: Gradient descent on `0.5*||Rf-g||² + λ*TV(f)`
 - **Purpose**: Classical model-based iterative reconstruction (MBIR)
-- **Status**: First run diverged (LR too high). Fixed with LR=0.01, λ=0.001, 200 iters.
-- **Result**: Pending re-run (Job 760889)
+- **Status**: First run diverged (LR=0.5 too high → RMSE=0.20, negative PSNR). Fixed with LR=0.01, λ=0.001, 200 iters, adaptive decay.
+- **Result**: Pending re-run (Job 760895)
 - **Expected**: Should improve over FBP but may underperform learned methods
 
 ### 3. Dual-Domain Denoising (`solver_dual_ddomain.py`)
@@ -38,22 +38,29 @@ All methods run on **synthetic random-ellipse phantoms** (stand-in for real AAPM
   - Params: 0.47M
 - **Time**: ~175 seconds
 
-### 4. ItNet-Style Iterative (`solver_itnet.py`)
-- **Method**: Sidky 2022 winner — pretrained U-Net + iterative data consistency
-- **Architecture**: SmallUNet(c=16), 5 iterations, α=0.1
+### 4. ItNet-Style Iterative (`solver_itnet.py`) — v1 FAILED
+- **Method**: Sidky 2022 winner approach — pretrained U-Net + iterative data consistency
+- **Architecture**: SmallUNet(c=16), 5 iterations, fixed α=0.1
 - **Training**: 20 epochs pre-training on (FBP, truth)
 - **Result**:
-  - SSIM: 0.1369
-  - PSNR: 10.70 dB
-  - RMSE: 0.0146
-  - **Headroom: 0.0000** ← Underperforms (worse than FBP!)
-  - Params: 0.23M
-- **Issues**: 
-  - DC gradient step likely too aggressive
-  - Pre-training on noisy FBP may be poor
-  - Needs better initialization and step-size scheduling
-  - Real challenge data may behave differently
+  - SSIM: 0.1369, PSNR: 10.70 dB, RMSE: 0.0146
+  - **Headroom: 0.0000** ← WORSE than FBP!
+- **Root causes**:
+  1. DC step α=0.1 is **way too large** — causes divergence (>10x too big)
+  2. No learnable step size — cannot adapt to data
+  3. Pre-training loss→0 means denoiser learned **identity mapping**
+  4. Evaluated against FBP reference, not truth phantom
 - **Time**: ~129 seconds
+
+### 5. ItNet-Style v2 (`solver_itnet_v2.py`) — FIXES APPLIED
+- **Fixes**:
+  1. α=0.01 (10x smaller), **learnable** via softplus parameterization
+  2. Residual learning: predict (truth - fbp) instead of full image
+  3. Early stopping (patience=3) prevents identity collapse
+  4. Evaluate against **truth phantom** (not FBP)
+  5. Show residual error map in comparison figure
+- **Result**: Pending (Job 760896)
+- **Expected**: Headroom > 0, should beat FBP baseline
 
 ---
 
