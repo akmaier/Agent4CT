@@ -164,7 +164,7 @@ CONFIG = {
     # iter-10 (DISCARD, hr=0.5810 vs 0.5807): MIXUP near-neutral (+0.03pp).
     # Doesn't hurt (unlike flips) but doesn't help. Random-ellipse phantoms
     # already saturate sample diversity; gain elsewhere.
-    "aug_mixup":     False,
+    "aug_mixup":     True,         # iter-58: enable mixup on batch substrate (was iter-10 near-flat on group)
     "aug_mixup_alpha": 0.4,
     "aug_mixup_seed":  5678,
 
