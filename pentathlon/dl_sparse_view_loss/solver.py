@@ -126,7 +126,7 @@ CONFIG = {
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            8e-5,       # iter-77 closed 7.5e-5 -0.26pp; iter-70 closed 8.5e-5 -2.42pp; 8e-5 firm
-    "swa":           False,       # iter-69 closed
+    "swa":           True,        # iter-89: False -> True retest on fixed substrate (iter-69 was on drifted)
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
@@ -179,7 +179,7 @@ CONFIG = {
     # iter-20/21 (DISCARD): EMA at both decay=0.999 and 0.99 hurts.
     # Combined with iter-11/12: ALL weight-smoothing interventions fail
     # on this baseline. Last iterate is the optimum here.
-    "ema":            True,        # iter-88: False -> True retest on fixed lr=8e-5 + aug_flip substrate
+    "ema":            False,       # iter-88 closed True -0.87pp on fixed substrate; firm
     "ema_decay":      0.99,
 
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
