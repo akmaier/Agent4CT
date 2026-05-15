@@ -125,7 +125,7 @@ CONFIG = {
     "bf_sigma_x":    2.0,              # iter-82 TIMEOUT (slow node); revert to KEEP base
     "bf_sigma_y":    2.0,
     "bf_sigma_r":    0.005,            # iter-90 closed 0.006 -0.28pp; firm
-    "naf_dw":        False,            # iter-92: True -> False (depthwise toggle untested)
+    "naf_dw":        True,             # iter-92 TIMEOUT at False; revert (could mean dw=False is slower, ironic)
     "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
     "bf_kernel":     5,                # iter-70: 7 -> 5 retest on new sigma substrate
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
