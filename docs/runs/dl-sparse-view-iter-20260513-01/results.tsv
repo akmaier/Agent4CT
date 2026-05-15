@@ -89,3 +89,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 88	48df0ce	0.267865	0.616248	keep	architecture	claude	claude-sonnet-4.5	wd 5e-5 -> 3e-5 (untested specific between 2e-5 closed and 5e-5 KEEP)
 89	3c1ab6c	0.267606	0.61523	discard	architecture	claude	claude-sonnet-4.5	naf_alpha 0.1 -> 0.08 (untested specific lower)
 90	705c860	0.262859	0.613424	discard	architecture	claude	claude-sonnet-4.5	bf_sigma_r 0.005 -> 0.006 (super-fine upper)
+92	6122993	0	0	discard	architecture	claude	claude-sonnet-4.5	naf_dw True -> False (depthwise toggle)
