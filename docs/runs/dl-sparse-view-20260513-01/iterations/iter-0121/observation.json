@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T12:49:56Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 121,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "bf_sigma_r 0.002 -> 0.0025 (super-fine upper)",
+  "val_score": 0.28200763463974,
+  "headroom": 0.6037762433440512,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-20260513-01/iterations/iter-0121/comparison.png",
+  "advice_for_others": "DISCARD: -1.06pp. sigma_r=0.002 firm. Try lr 8e-5 -> 7.8e-5 (super-fine lower, untested specific).",
+  "commit": "4819ce4"
+}
