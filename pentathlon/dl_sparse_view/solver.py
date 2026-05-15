@@ -79,7 +79,7 @@ CONFIG = {
     "batch_size":    1,
     "lr":            8e-5,    # iter-122 closed 7.8e-5 -1.40pp; super-firm
     "optimizer":     "adamw",   # iter-83 KEEP marginal at wd=1e-5
-    "weight_decay":  5e-5,      # iter-131: 1e-5 -> 5e-5 (regularization-up per stage -2.16pp overfit)
+    "weight_decay":  1e-4,      # iter-133: 5e-5 -> 1e-4 (compound; iter-131/132 confirmed 5e-5 neutral on iter)
     # iter-32: weight_decay 1e-4 -> 0. Hypothesis: WD also decays the
     # learnable per-block alpha scalars (init 0.1), pulling them
     # toward 0 and preventing them from growing. WD=0 lets alpha
