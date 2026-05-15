@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-15T07:19:01Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 100,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-100: wd 5e-5 -> 3e-5 (likely ran with seed=43 still). Headroom 0.6101 -> 0.5846 (-2.55pp). DISCARD.",
+  "val_score": 0.6550143361091614,
+  "headroom": 0.5845990292157315,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0100/comparison.png",
+  "advice_for_others": "DISCARD: wd=3e-5 (compound seed=43) -2.55pp. Closes wd lower.",
+  "commit": "d2015da"
+}
