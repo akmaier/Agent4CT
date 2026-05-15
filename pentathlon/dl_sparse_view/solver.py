@@ -116,7 +116,7 @@ CONFIG = {
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-107 closed 5 -1.16pp; iter-101 closed 3; 4 firm
     "bf_kernel":     7,   # iter-111 TIMEOUT at 9; iter-94 near-flat at 5; 7 firm
-    "bf_sigma_r":    0.003,  # iter-112: 0.002 -> 0.003 (untested specific between 0.002 KEEP and 0.005 prior)
+    "bf_sigma_r":    0.0015, # iter-113: 0.002 -> 0.0015 (untested specific between iter-103 closed 0.001 and 0.002 KEEP)
     "bf_sigma_x":    4.0,    # iter-110 closed 3.5 -1.41pp; 4.0 firm
     "bf_sigma_y":    4.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
