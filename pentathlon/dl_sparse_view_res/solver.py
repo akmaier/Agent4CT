@@ -71,10 +71,10 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1e-4,       # revert
-    "adamw_eps":     1e-10,      # iter-53 KEEP (iter-55/56 both DISCARD around it; basin shallow)
-    "optimizer":     "adamw",   # iter-54 closed adam at -1.01pp; AdamW + wd_split is right for this slug
-    "weight_decay":  8e-5,       # iter-84: 2e-5 -> 8e-5 bisect upper
+    "lr":            8e-5,       # iter-85: 1e-4 -> 8e-5 fine bisection on warmup substrate
+    "adamw_eps":     1e-10,      # iter-53 KEEP
+    "optimizer":     "adamw",   # iter-54 closed adam
+    "weight_decay":  5e-5,       # iter-82 KEEP
     "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
 
     # Editable: residual-stack model architecture.
