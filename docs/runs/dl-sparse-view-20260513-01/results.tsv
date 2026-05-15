@@ -114,3 +114,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 114	0be7aa6	0.282829	0.601195	discard	architecture	claude	claude-sonnet-4.5	naf_alpha_init 0.1 -> 0.075 (untested specific between 0.05 closed and 0.1 KEEP)
 115	fdad736	0.284013	0.598631	discard	architecture	claude	claude-sonnet-4.5	naf_alpha_init 0.1 -> 0.125 (untested specific between 0.1 KEEP and 0.15 closed)
 116	34e0583	0.282388	0.600926	discard	architecture	claude	claude-sonnet-4.5	lr 8e-5 -> 7.5e-5 (super-fine between iter-109 closed 7e-5 and 8e-5 KEEP)
+117	08bbebd	0.283039	0.599739	discard	architecture	claude	claude-sonnet-4.5	bf_sigma_y 4.0 -> 3.5 (asymmetric test; sigma_x stays 4.0)
