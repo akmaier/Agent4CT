@@ -136,7 +136,7 @@ CONFIG = {
     # iter-23 (DISCARD, hr=0.5589): wd=2e-3 also too aggressive (-2.44pp).
     # Optimum is tight at wd=1e-3; sharper landscape than logspace
     # search suggested.
-    "weight_decay":  5e-5,       # iter-98: Adam substrate moved to AdamW; cross-port B's wd=5e-5
+    "weight_decay":  1e-4,       # iter-99: 5e-5 -> 1e-4 (stronger regularization on AdamW substrate)
     # iter-22 (DISCARD, hr=0.5815): grad_clip=1.0 near-flat (-0.18pp).
     # AdamW grad norm rarely exceeds 1 on small residual net. Disable.
     "grad_clip":     0.0,           # iter-92/93 closed 1.0/0.5 near-flat; close axis

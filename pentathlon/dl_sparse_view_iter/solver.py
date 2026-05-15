@@ -105,7 +105,7 @@ CONFIG = {
     "naf_alpha":     0.1,              # iter-89 closed 0.08 -0.10pp; firm
     "ema_every":     1,                # iter-58 closed every=2 at -0.01pp (near-flat)
     "optimizer":     "adamw",
-    "weight_decay":  3e-5,             # iter-88 KEEP marginal +0.0pp (essentially tied with iter-86); locked
+    "weight_decay":  1e-4,             # iter-96: 3e-5 -> 1e-4 (regularization-up per stage falsification; iter-86 had 1e-4 too)
 
     # Iter-21: switch architecture family from iterated-denoiser (iter-7
     # ceiling 0.5745) to NAFNet (Chen et al. 2022, "Simple Baselines for
