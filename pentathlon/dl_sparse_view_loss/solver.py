@@ -128,7 +128,7 @@ CONFIG = {
     "lr":            8e-5,       # iter-77 closed 7.5e-5 -0.26pp; iter-70 closed 8.5e-5 -2.42pp; 8e-5 firm
     "swa":           False,       # iter-89 closed True -0.57pp on fixed; SWA firm closed
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
-    "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
+    "optimizer":     "adamw",   # iter-98: adam->adamw to port B's regularizer (stage signal: C overfits -3.15pp)
     "adam_wd":       0.0,
     "adamw_eps":     1e-8,      # iter-83 closed 1e-9 near-flat; 1e-8 firm
     # iter-16 (KEEP, hr=0.5833 +0.26pp): wd 1e-4 -> 1e-3 worked.
@@ -136,7 +136,7 @@ CONFIG = {
     # iter-23 (DISCARD, hr=0.5589): wd=2e-3 also too aggressive (-2.44pp).
     # Optimum is tight at wd=1e-3; sharper landscape than logspace
     # search suggested.
-    "weight_decay":  1e-3,       # iter-39 closed wd=5e-4 (Adam substrate is wd=0)
+    "weight_decay":  5e-5,       # iter-98: Adam substrate moved to AdamW; cross-port B's wd=5e-5
     # iter-22 (DISCARD, hr=0.5815): grad_clip=1.0 near-flat (-0.18pp).
     # AdamW grad norm rarely exceeds 1 on small residual net. Disable.
     "grad_clip":     0.0,           # iter-92/93 closed 1.0/0.5 near-flat; close axis
