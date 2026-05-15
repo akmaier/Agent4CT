@@ -75,3 +75,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 74	8489b38	0.268899	0.611636	discard	architecture	claude	claude-sonnet-4.5	naf_blocks 5 -> 4 (continue bisection on iter-73 KEEP)
 75	9cc5517	0.260945	0.540504	discard	architecture	claude	claude-sonnet-4.5	naf_expand 2 -> 3 (more channel-mixing capacity with blocks=5)
 76	97782fc	0	0	discard	architecture	claude	claude-sonnet-4.5	naf_alpha 0.1 -> 0.05 (smaller alpha, untested lower side on blocks=5)
+77	25e0205	0.269287	0.614926	discard	architecture	claude	claude-sonnet-4.5	lr 1e-4 -> 9e-5 (untested specific between 8e-5 closed and 1e-4 KEEP)

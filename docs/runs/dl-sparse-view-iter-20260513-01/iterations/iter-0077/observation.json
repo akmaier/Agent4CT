@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T08:56:21Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 77,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "lr 1e-4 -> 9e-5 (untested specific between 8e-5 closed and 1e-4 KEEP)",
+  "val_score": 0.2692868113517761,
+  "headroom": 0.614926447130252,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-iter-20260513-01/iterations/iter-0077/comparison.png",
+  "advice_for_others": "Near-flat DISCARD: -0.08pp. lr=9e-5 essentially tied with 1e-4. Within variance. lr=1e-4 confirmed firm. Try bf_sigma_r 0.005 -> 0.003 next.",
+  "commit": "25e0205"
+}
