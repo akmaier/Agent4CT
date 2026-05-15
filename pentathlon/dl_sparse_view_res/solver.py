@@ -64,7 +64,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.01,       # iter-118: 0.0 -> 0.01 (untested specific small dropout; iter-88 0.02 was variance)
+    "input_dropout": 0.0,        # iter-118 closed 0.01 -6.43pp; 0.0 firm
     "lr_warmup_epochs": 1,        # iter-117 closed warmup=2 -9.70pp on lr=1.1e-4 too; firm
     "adamw_beta1":   0.9,         # iter-96 closed 0.95 -4.46pp; iter-107 closed 0.85 -0.47pp; 0.9 firm
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1.1e-4,     # iter-111 closed 1.2e-4 -9.25pp; 1.1e-4 firm
+    "lr":            1.05e-4,    # iter-119: 1.1e-4 -> 1.05e-4 (super-fine bisection between 1e-4 and 1.1e-4 KEEP)
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP

@@ -99,7 +99,7 @@ CONFIG = {
     "img_denoiser":  "nafnet",
     "naf_blocks":    6,   # iter-105 closed 5 -1.42pp (transfer from A failed); 6 stays
     "naf_expand":    2,   # iter-92 timed out at 3; revert
-    "naf_alpha_init": 0.1,    # iter-106 closed 0.05 -1.19pp; iter-100 closed 0.15; 0.1 stays
+    "naf_alpha_init": 0.075,  # iter-114: 0.1 -> 0.075 (untested specific between iter-106 closed 0.05 and 0.1 KEEP)
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert
     "naf_norm": "ln",     # iter-86 closed BN on NAFNet -2.12pp; LN is correct for NAFNet design
@@ -116,7 +116,7 @@ CONFIG = {
     # whether the SWA-on-NAFNet-BF composition transfers to mains wd=0.
     "swa_last_n":    4,   # iter-107 closed 5 -1.16pp; iter-101 closed 3; 4 firm
     "bf_kernel":     7,   # iter-111 TIMEOUT at 9; iter-94 near-flat at 5; 7 firm
-    "bf_sigma_r":    0.0015, # iter-113: 0.002 -> 0.0015 (untested specific between iter-103 closed 0.001 and 0.002 KEEP)
+    "bf_sigma_r":    0.002,  # iter-113 closed 0.0015 -1.97pp; 0.002 firm
     "bf_sigma_x":    4.0,    # iter-110 closed 3.5 -1.41pp; 4.0 firm
     "bf_sigma_y":    4.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").

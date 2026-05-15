@@ -201,7 +201,7 @@ CONFIG = {
     # iter-19 (DISCARD, hr=0.5707): widen 32 -> 48 (0.225M -> 0.503M)
     # -1.26pp. Capacity is NOT the bottleneck.
     "res_blocks":    6,           # iter-75 closed 5 -0.27pp near-flat; 6 stays
-    "res_channels":  40,           # iter-86: 32 -> 40 (capacity bump; iter-19 closed 48 on group; 40 untested on batch + Adam wd=0 substrate)
+    "res_channels":  32,           # iter-86 closed 40 -2.17pp (parallel B iter-114 -2.26pp); 32 firm
     # iter-25: kernel 3 -> 5 in residual blocks. Different from widening:
     # increases receptive field (each block sees 2 more pixels each
     # direction) without scaling depth. Params scale as 25/9 = 2.78x per
@@ -211,7 +211,7 @@ CONFIG = {
     "res_norm":      "batch",   # iter-46: group -> batch (untested; parallel to B iter-62)
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
     "res_act":       "relu",    # iter-74 closed swish -8.38pp; revert (cross-substrate)
-    "res_kernel":    3,         # iter-26: revert kernel 5 -> 3 (iter-25 timed out at kernel=5)
+    "res_kernel":    5,         # iter-87: 3 -> 5 retest on current substrate (iter-25 was timeout on different early substrate; risky may TIMEOUT)
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
     "res_dropout":   0.0,        # iter-66 closed
