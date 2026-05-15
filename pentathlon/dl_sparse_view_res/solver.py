@@ -72,11 +72,11 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1.2e-4,     # iter-111: 1.1e-4 -> 1.2e-4 (continue upper bisection on iter-110 KEEP)
+    "lr":            1.1e-4,     # iter-111 closed 1.2e-4 -9.25pp; 1.1e-4 firm
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP
-    "lr_schedule":   "constant", # iter-42: revert schedule cruft; LR axis closed
+    "lr_schedule":   "cosine",   # iter-112: constant -> cosine retest on current batch-norm substrate (iter-42 closed on different substrate)
 
     # Editable: residual-stack model architecture.
     "res_blocks":    6,          # iter-105 closed 5 -4.30pp; 6 stays
