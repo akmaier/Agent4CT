@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T14:23:32Z",
+  "run_id": "demo-dl-reference-20260515-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "reference",
+  "rationale": "Pure PYRO-NN FBP baseline (no learning). Establishes headroom=0 reference point.",
+  "val_score": 0.4454,
+  "headroom": 0.0,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 0,
+  "agent": "reference",
+  "model": "FBP-baseline",
+  "advice_for_others": "FBP baseline on synthetic phantoms: SSIM=0.445, RMSE=0.0139. Any learning must beat this."
+}
