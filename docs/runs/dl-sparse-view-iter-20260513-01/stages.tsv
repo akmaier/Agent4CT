@@ -1,1 +1,2 @@
 iter	stage_val_score	stage_headroom	gap	verdict	notes
+93	0.277635	0.550636	-0.00763507	overfit	Stage 0.5506 vs A iter best 0.6162 = -6.56pp GAP. A's NAFNet+BF-tail model massively overfits the 400-case iter subset. True capability ~0.55 not 0.62. 74 min train at train_n=1200 epochs=12.
