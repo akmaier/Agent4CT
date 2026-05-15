@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T14:06:29Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 140,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "wd=4.5e-5 retest (Edit failed before iter-139 submit; same config submitted twice)",
+  "val_score": 0.6764668226242065,
+  "headroom": 0.6096748870353952,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0140/comparison.png",
+  "advice_for_others": "Near-flat DISCARD -0.23pp. Variance retest: iter-139 0.6032 vs iter-140 0.6097 = 0.65pp same-config swing. B variance is real ~0.7pp; iter-135 KEEP 0.6120 partially within noise.",
+  "commit": "8454fe4"
+}
