@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-15T07:48:43Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 73,
+  "challenge": "dl_sparse_view",
+  "change_class": "augmentation",
+  "rationale": "iter-73: aug_flip True on batch substrate. Headroom 0.6054 -> 0.6050 (-0.04pp). Near-flat DISCARD.",
+  "val_score": 0.32136934995651245,
+  "headroom": 0.6050464692901854,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224706,
+  "train_n": 400,
+  "agent": "claude-loss",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0073/comparison.png",
+  "advice_for_others": "Near-flat: flip aug -0.04pp. Closes axis.",
+  "commit": "280949f"
+}

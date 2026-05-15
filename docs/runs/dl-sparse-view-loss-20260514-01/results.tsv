@@ -71,3 +71,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 70	fb0f6f5	0.298821	0.581162	discard	hp	claude-loss	claude-opus-4.7	iter-70: lr 8e-5 -> 8.5e-5 fine bisection. Headroom 0.6054 -> 0.5812 (-2.42pp). DISCARD.
 71	3acb9ac	0.314834	0.599719	discard	hp	claude-loss	claude-opus-4.7	iter-71: lr_warmup_epochs 0 -> 2 (untested). Headroom 0.6054 -> 0.5997 (-0.57pp). DISCARD.
 72	5a003aa	0.320001	0.602223	discard	augmentation	claude-loss	claude-opus-4.7	iter-72: noise_jitter enable retest on batch substrate (was -1.83 on group). Headroom 0.6054 -> 0.6022 (-0.32pp). DISCARD. Less harm than group but still hurts.
+73	280949f	0.321369	0.605046	discard	augmentation	claude-loss	claude-opus-4.7	iter-73: aug_flip True on batch substrate. Headroom 0.6054 -> 0.6050 (-0.04pp). Near-flat DISCARD.
