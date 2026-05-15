@@ -64,7 +64,7 @@ CONFIG = {
     # Editable: training schedule.
     "epochs":        8,          # iter-75 closed epochs=9, 10 DISCARD; 8 optimum
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
-    "input_dropout": 0.02,       # iter-109: RETEST iter-88 dropout at restored lr=1e-4 base (was suspected variance)
+    "input_dropout": 0.0,        # iter-109 STRONG DISCARD -5.38pp; iter-88 KEEP confirmed as variance artifact
     "lr_warmup_epochs": 1,        # iter-80 KEEP (iter-95 closed warmup=2)
     "adamw_beta1":   0.9,         # iter-96 closed 0.95 -4.46pp; iter-107 closed 0.85 -0.47pp; 0.9 firm
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1e-4,       # iter-108: REVERT iter-101 (1e-4 -> 9e-5 was DISCARD never reverted); restore iter-88 KEEP base
+    "lr":            1.1e-4,     # iter-110: 1e-4 -> 1.1e-4 (upper bisection; untested specific)
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP

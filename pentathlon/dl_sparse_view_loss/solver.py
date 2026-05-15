@@ -120,7 +120,7 @@ CONFIG = {
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
     "epochs":        8,        # iter-55 closed epochs=10 on batch -2.40pp
     "swa_start_epoch": 6,      # iter-69: 7 -> 6 untested specific (between 5 and 7)
-    "lr_warmup_epochs": 3,     # iter-78: 2 -> 3 (push further; iter-71 closed warmup=2 ON drift substrate, iter-76 KEEP at warmup=2 on correct substrate)
+    "lr_warmup_epochs": 1,     # iter-79: 2 -> 1 (untested middle; iter-78 closed 3 -0.50pp)
     "batch_size":    1,        # iter-49 closed batch=2 on batch
     "input_dropout": 0.0,      # iter-60 closed
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
