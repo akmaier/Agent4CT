@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1.075e-4,   # iter-127: 1.1e-4 -> 1.075e-4 (super-fine bisection between 1.05e-4 DISCARD and 1.1e-4 KEEP)
+    "lr":            1.1e-4,     # iter-127 closed 1.075e-4 -1.14pp; firm
     "adamw_eps":     1e-10,      # iter-123 closed 5e-10 -1.58pp; 1e-10 firm
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-121/122 closed 4e-5 / 6e-5; 5e-5 firm
@@ -89,7 +89,7 @@ CONFIG = {
     "residual":      True,       # iter-120 catastrophic DISCARD at False (-57pp); essential
     "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
     "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
-    "adamw_beta2":   0.999,      # iter-97 closed
+    "adamw_beta2":   0.995,      # iter-128: 0.999 -> 0.995 (untested specific; iter-97 closed 0.99)
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
