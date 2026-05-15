@@ -179,8 +179,8 @@ CONFIG = {
     # iter-20/21 (DISCARD): EMA at both decay=0.999 and 0.99 hurts.
     # Combined with iter-11/12: ALL weight-smoothing interventions fail
     # on this baseline. Last iterate is the optimum here.
-    "ema":            False,       # iter-65: disable EMA (was still on from iter-59)
-    "ema_decay":      0.99,
+    "ema":            True,        # iter-67: EMA decay=0.5 (super-low, untested)
+    "ema_decay":      0.5,
 
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
     # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
@@ -214,7 +214,7 @@ CONFIG = {
     "res_kernel":    3,         # iter-26: revert kernel 5 -> 3 (iter-25 timed out at kernel=5)
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
-    "res_dropout":   0.02,       # iter-66: 0.0 -> 0.02 (between 0 baseline and 0.05 closed)
+    "res_dropout":   0.0,        # iter-66 closed
     "res_residual":  True,      # iter-33 closed False at -2.43pp
     # iter-26 (DISCARD, hr=0.5710 -1.23pp): BF tail does NOT cross-port from
     # NAFNet substrate to resnet substrate. Disable.
