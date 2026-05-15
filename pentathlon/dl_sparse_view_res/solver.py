@@ -75,7 +75,7 @@ CONFIG = {
     "lr":            1.1e-4,     # iter-119 closed 1.05e-4 -0.29pp; 1.1e-4 firm
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
-    "weight_decay":  5e-5,       # iter-82 KEEP
+    "weight_decay":  4e-5,       # iter-121: 5e-5 -> 4e-5 (super-fine between iter-83 closed 2e-5 and 5e-5 KEEP)
     "lr_schedule":   "constant", # iter-112/113 closed cosine/step7; constant firm
 
     # Editable: residual-stack model architecture.
@@ -86,7 +86,7 @@ CONFIG = {
     "res_act":       "relu",     # iter-104 closed swish -5.78pp; revert
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
-    "residual":      False,      # iter-120: True -> False retest (iter-33 was -2.43pp on group; substrate has changed)
+    "residual":      True,       # iter-120 catastrophic DISCARD at False (-57pp); essential
     "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
     "swa_last_n":    0,           # iter-116 closed 2 -6.70pp; SWA firm closed
     "adamw_beta2":   0.999,      # iter-97 closed
