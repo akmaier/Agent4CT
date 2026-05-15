@@ -96,3 +96,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 96	488c445	0.268187	0.616733	keep	architecture	claude	claude-sonnet-4.5	weight_decay 3e-5 -> 1e-4 (regularization-up per stage falsification of capacity-down)
 97	f62dec8	0.268672	0.616221	keep	architecture	claude	claude-sonnet-4.5	Variance retest at wd=1e-4 (Edit failed; intended 2e-4 didn't apply)
 98	081792b	0.268103	0.616671	keep	architecture	claude	claude-sonnet-4.5	wd 1e-4 -> 2e-4 (compound regularization)
+99	0fdee68	0	0	discard	architecture	claude	claude-sonnet-4.5	wd=2e-4 variance retest
