@@ -125,8 +125,8 @@ CONFIG = {
     "input_dropout": 0.0,      # iter-60 closed
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
-    "lr":            7e-5,       # iter-61: 8e-5 -> 7e-5 fine bisection
-    "swa":           True,        # iter-69: enable SWA start_epoch=6
+    "lr":            8.5e-5,     # iter-70: 8e-5 -> 8.5e-5 fine bisection
+    "swa":           False,       # iter-69 closed
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
