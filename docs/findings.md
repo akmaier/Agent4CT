@@ -9,6 +9,29 @@ verdicts belong in `docs/runs/<slug>/stages.tsv`. Things that belong here:
 **facts about the substrate or methodology that the next agent should not
 have to re-discover.**
 
+## 2026-05-15 — capacity-down does NOT close A's iter-stage gap
+
+Hypothesis from the first round of stages: A's -6.56pp gap was overfit due
+to capacity (BF tail + 5 NAFNet blocks memorise the 400-case iter subset).
+Tested by cutting capacity: `naf_n_bf` 10→6 + `naf_blocks` 5→4 (model
+shrinks 0.050M → 0.040M params). Iter score dropped -1.39pp (expected if
+overfit shrunk). **Then ran a second stage check on the capacity-down
+config: stage hr DROPPED 0.5506 → 0.4991, gap GREW from -6.56pp to
+-10.32pp.** Hypothesis falsified.
+
+What we know now:
+- The iter-stage gap on A is real but it is **not** "overfit due to
+  capacity". Cutting capacity hurts both iter and stage.
+- The gap must come from something else: maybe training-dynamics
+  mismatch (12 epochs vs 6, larger val set), maybe optimiser/LR not
+  tuned for longer training, maybe the BF tail's α parameters benefit
+  disproportionately from longer training, maybe the iter-phase val
+  set is genuinely easier than the stage val set.
+
+Reverted A's solver to iter-86 KEEP base. Next probes for closing the
+gap should look like **regularisation** (dropout, weight decay, schedule)
+or **training-time fixes** (longer LR warmup, lower lr), not capacity.
+
 ## 2026-05-15 — iter vs stage gap signs differ by architecture
 
 First four stage checks ran on DL-Sparse-View (with synthetic phantom data,

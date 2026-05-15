@@ -120,7 +120,7 @@ CONFIG = {
     "img_denoiser":  "nafnet",         # NEW: NAFNet stack as image_denoiser
     "proj_denoiser": "nafnet",         # NEW: also use NAFNet for proj domain
     # NAFNet block hyperparameters (iter-21 baseline: safe / no SimpleGate).
-    "naf_blocks":    4,                # iter-95: 5 -> 4 retest with n_bf=6 (was -0.41pp at n_bf=9 / iter-74; stage-overfit motivated retry)
+    "naf_blocks":    5,                # iter-95 STAGE FAILED: capacity-down hurt; revert (stage 0.4991 < prev stage 0.5506)
     "naf_expand":    2,                # iter-75 closed 3 -7.52pp; 2 stays
     "bf_sigma_x":    2.0,              # iter-82 TIMEOUT (slow node); revert to KEEP base
     "bf_sigma_y":    2.0,
@@ -168,7 +168,7 @@ CONFIG = {
     # learns its own (sigma_x/y, sigma_r) so 5 BFs partition the residual
     # into 5 (edge/streak/freq) regimes. If keep: try BF=6. If discard:
     # try Charbonnier loss (was harmful on ReLU; might work here).
-    "naf_n_bf":      6,                # iter-94: reduce BF tail 10 -> 6 (stage signal: A overfits -6.56pp; capacity-down probe)
+    "naf_n_bf":      10,               # iter-94 STAGE FAILED: capacity-down hurt; revert to iter-86 KEEP base
     "loss_type":     "mse",
     "lr_schedule":   "constant",
     "lr_min":        1e-5,
