@@ -126,7 +126,7 @@ CONFIG = {
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            8e-5,       # iter-77 closed 7.5e-5 -0.26pp; iter-70 closed 8.5e-5 -2.42pp; 8e-5 firm
-    "swa":           True,        # iter-89: False -> True retest on fixed substrate (iter-69 was on drifted)
+    "swa":           False,       # iter-89 closed True -0.57pp on fixed; SWA firm closed
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
@@ -200,7 +200,7 @@ CONFIG = {
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     # iter-19 (DISCARD, hr=0.5707): widen 32 -> 48 (0.225M -> 0.503M)
     # -1.26pp. Capacity is NOT the bottleneck.
-    "res_blocks":    6,           # iter-75 closed 5 -0.27pp near-flat; 6 stays
+    "res_blocks":    7,           # iter-90: 6 -> 7 (capacity bump untested on C; may TIMEOUT)
     "res_channels":  32,           # iter-86 closed 40 -2.17pp (parallel B iter-114 -2.26pp); 32 firm
     # iter-25: kernel 3 -> 5 in residual blocks. Different from widening:
     # increases receptive field (each block sees 2 more pixels each
