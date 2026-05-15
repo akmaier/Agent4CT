@@ -97,7 +97,7 @@ CONFIG = {
     # iter-56: cross-port Agent A NAFNet (c=32, 6 blocks, ReLU gate, dw=True)
     # onto main's wd=0 substrate. "nafnet" routes via build_denoisers.
     "img_denoiser":  "nafnet",
-    "naf_blocks":    6,   # iter-67 KEEP (iter-70 7-blocks timed out)
+    "naf_blocks":    5,   # iter-105: 6 -> 5 cross-port A iter-73 KEEP (+0.22pp)
     "naf_expand":    2,   # iter-92 timed out at 3; revert
     "naf_alpha_init": 0.1,    # iter-100 closed; revert
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
@@ -117,8 +117,8 @@ CONFIG = {
     "swa_last_n":    4,   # iter-71 KEEP
     "bf_kernel":     7,   # iter-94 near-flat; revert
     "bf_sigma_r":    0.002,  # iter-102 KEEP optimum
-    "bf_sigma_x":    4.5,    # iter-104: 4.0 -> 4.5 fine bisection
-    "bf_sigma_y":    4.5,
+    "bf_sigma_x":    4.0,    # iter-104 closed 4.5 -1.44pp; 4.0 stays
+    "bf_sigma_y":    4.0,
     # Editable: residual-stack architecture (only used when img_denoiser="resnet").
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     "res_blocks":    6,

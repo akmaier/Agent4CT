@@ -83,7 +83,7 @@ CONFIG = {
     "res_bias":      True,       # iter-61 closed bias=False at -1.89pp
     "res_channels":  32,         # iter-2: 48 -> 32 (saves ~2.2x flops)
     "res_norm":      "batch",    # iter-62: group -> batch (untested; group iter-2 KEEP, none iter-9 DISCARD)
-    "res_act":       "relu",     # iter-72 closed gelu+combined
+    "res_act":       "swish",    # iter-104: relu -> swish (SiLU; smooth gate, untested on batch substrate)
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)

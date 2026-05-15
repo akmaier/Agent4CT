@@ -210,7 +210,7 @@ CONFIG = {
     # capture them better. Stacks with iter-16 KEEP wd=1e-3.
     "res_norm":      "batch",   # iter-46: group -> batch (untested; parallel to B iter-62)
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
-    "res_act":       "relu",    # relu | gelu | swish
+    "res_act":       "swish",   # iter-74: relu -> swish (SiLU; smooth gate, parallel to B iter-104)
     "res_kernel":    3,         # iter-26: revert kernel 5 -> 3 (iter-25 timed out at kernel=5)
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
