@@ -88,8 +88,8 @@ CONFIG = {
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
     "res_scale":     0.1,        # iter-64 closed alpha=0.2 on batch -0.79pp
-    "swa_last_n":    1,           # iter-94: 0 -> 1 (1-epoch SWA window untested specifically)
-    "adamw_beta2":   0.99,       # iter-97: 0.999 -> 0.99 retest on new substrate
+    "swa_last_n":    5,           # iter-98: untested specific value
+    "adamw_beta2":   0.999,      # iter-97 closed
 
     # iter-42 (DISCARD, -1.82pp): BF tail does NOT cross-port from NAFNet
     # to resnet substrate. Same finding as Agent C iter-26. Disable.
