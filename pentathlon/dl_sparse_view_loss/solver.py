@@ -122,10 +122,10 @@ CONFIG = {
     "swa_start_epoch": 7,      # iter-56 closed SWA on batch
     "lr_warmup_epochs": 0,     # iter-57 closed warmup near-flat
     "batch_size":    1,        # iter-49 closed batch=2 on batch
-    "input_dropout": 0.02,     # iter-60: cross-port B iter-88 +0.22pp
+    "input_dropout": 0.0,      # iter-60 closed
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
-    "lr":            8e-5,       # iter-40 KEEP (iter-42 closed 9e-5 at -0.28pp)
+    "lr":            7e-5,       # iter-61: 8e-5 -> 7e-5 fine bisection
     "swa":           False,       # iter-56 closed
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
