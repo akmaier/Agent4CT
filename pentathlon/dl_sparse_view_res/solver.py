@@ -66,7 +66,7 @@ CONFIG = {
     "batch_size":    1,          # iter-47 closed batch=2 at -2.75pp (cross-substrate)
     "input_dropout": 0.0,        # revert; iter-88 KEEP at 0.02 was variance
     "lr_warmup_epochs": 1,        # iter-80 KEEP (iter-95 closed warmup=2)
-    "adamw_beta1":   0.9,         # iter-96 closed; revert
+    "adamw_beta1":   0.85,        # iter-107: 0.9 -> 0.85 (faster momentum, untested lower side; iter-96 closed 0.95)
     "res_n_bf":      0,            # iter-63 closed BF on batch substrate too
     "bf_kernel":     7,
     "bf_sigma_x":    1.5,
@@ -87,7 +87,7 @@ CONFIG = {
     "res_kernel":    3,           # iter-102 timed out
     "res_dropout":   0.0,         # iter-73 closed res_dropout on batch -3.17pp
     "residual":      True,       # global residual (predict noise)
-    "res_scale":     0.05,       # iter-106: 0.1 -> 0.05 (smaller residual; untested lower bisection side)
+    "res_scale":     0.1,        # iter-106 closed 0.05 -0.96pp + iter-64 closed 0.2 -0.79pp; 0.1 stays
     "swa_last_n":    0,           # SWA closed
     "adamw_beta2":   0.999,      # iter-97 closed
 
