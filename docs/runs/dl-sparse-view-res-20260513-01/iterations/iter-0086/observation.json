@@ -1,0 +1,19 @@
+{
+  "ts": "2026-05-15T05:08:57Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 86,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "iter-86: swa_last_n=4 on batch+warmup substrate iter-82. Headroom 0.6079 -> 0.6056 (-0.23pp). DISCARD. SWA still doesn't help even with warmup.",
+  "val_score": 0.6728501915931702,
+  "headroom": 0.6056106511888915,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.224718,
+  "train_n": 400,
+  "agent": "claude-res",
+  "model": "claude-opus-4.7",
+  "comparison_image": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0086/comparison.png",
+  "advice_for_others": "DISCARD: SWA on batch+warmup -0.23pp. SWA axis fully closed cross-substrate cross-config.",
+  "commit": "a1bfd0b"
+}
