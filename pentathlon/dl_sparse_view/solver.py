@@ -98,7 +98,8 @@ CONFIG = {
     # onto main's wd=0 substrate. "nafnet" routes via build_denoisers.
     "img_denoiser":  "nafnet",
     "naf_blocks":    6,   # iter-67 KEEP (iter-70 7-blocks timed out)
-    "naf_expand":    3,   # iter-92: 2 (default) -> 3 (wider hidden dim; A timed out but main has lower BF load)
+    "naf_expand":    2,   # iter-92 timed out at 3; revert
+    "bf_sigma_r":    0.005,  # iter-93: 0.01 -> 0.005 (cross-port from A iter-62 +0.43pp; was -0.21 alone on main earlier but new sigma_x=2.0 substrate)
     "naf_alpha_init": 0.1,    # iter-78 closed 0.15 at -0.14pp
     # iter-61: gate ReLU -> GELU (Agent A iter-38 change, +0.04pp on their substrate).
     "naf_gate": "gelu",   # iter-82 closed relu at -0.02pp; revert

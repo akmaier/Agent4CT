@@ -126,8 +126,8 @@ CONFIG = {
     "bf_sigma_y":    2.0,
     "bf_sigma_r":    0.005,            # iter-62 KEEP (iter-64 0.0005 -4.76pp, iter-65 0.002 -2.51pp)
     "naf_dw":        True,             # depthwise 3x3 mid-conv
-    "naf_gate":      "gelu",           # iter-66: relu -> gelu retest on new sigma_r=0.005 substrate
-                                         #  (alpha overridden by 0.05 in iter-56 above)
+    "naf_gate":      "relu",           # iter-66 closed gelu -5.65pp; relu firmly optimum
+    "bf_kernel":     9,                # iter-67: 7 -> 9 retest (main timed out but A has 8 BFs, less compute)
     "n_unroll":      1,                # NAFNet is single-pass (not iterated)
     "share_weights": False,            # n/a at K=1
     "n_bf":          0,                # iter-21: no tail BF on legacy paths

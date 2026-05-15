@@ -118,13 +118,14 @@ CONFIG = {
     # Editable: training schedule.
     # iter-15 (DISCARD, hr=0.5611): epochs 10 OVERFITS the dual-domain
     # noise target (-1.96pp). 8 is at the sweet spot. DO NOT increase.
-    "epochs":        10,       # iter-55: 8 -> 10 retest on batch substrate (was -1.96 on group)
+    "epochs":        8,        # iter-55 closed epochs=10 on batch -2.40pp
+    "swa_start_epoch": 5,      # iter-56: enable SWA with start_epoch=5 (untested combo with batch substrate)
     "batch_size":    1,        # iter-49 closed batch=2 on batch -1.36pp; final-closed
     "input_dropout": 0.0,           # iter-32 closed 0.05 at -1.12pp
     # iter-13 (DISCARD, hr=0.5777): lr=2e-4 near-flat. LR is not the
     # bottleneck in [1e-4, 2e-4]; revert to 1e-4 known baseline.
     "lr":            8e-5,       # iter-40 KEEP (iter-42 closed 9e-5 at -0.28pp)
-    "swa":           False,       # iter-50 closed SWA on batch -0.03pp near-flat
+    "swa":           True,        # iter-56: try SWA with start_epoch=5 (untested combo on batch+adam)
     "adamw_eps":     1e-8,       # iter-35 closed 1e-6 at -1.68pp
     "optimizer":     "adam",    # iter-36 KEEP (revert iter-39 DISCARD)
     "adam_wd":       0.0,
