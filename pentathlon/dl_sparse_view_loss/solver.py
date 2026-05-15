@@ -200,7 +200,7 @@ CONFIG = {
     # Default to spawn agent B iter-2 winner (6 blocks, c=32, GroupNorm, ReLU).
     # iter-19 (DISCARD, hr=0.5707): widen 32 -> 48 (0.225M -> 0.503M)
     # -1.26pp. Capacity is NOT the bottleneck.
-    "res_blocks":    6,
+    "res_blocks":    5,           # iter-75: 6 -> 5 cross-port A iter-73 NAFNet KEEP onto resnet substrate
     "res_channels":  32,
     # iter-25: kernel 3 -> 5 in residual blocks. Different from widening:
     # increases receptive field (each block sees 2 more pixels each
@@ -210,7 +210,7 @@ CONFIG = {
     # capture them better. Stacks with iter-16 KEEP wd=1e-3.
     "res_norm":      "batch",   # iter-46: group -> batch (untested; parallel to B iter-62)
     # iter-14 (DISCARD, hr=0.5729): GELU -0.78pp. Revert to ReLU.
-    "res_act":       "swish",   # iter-74: relu -> swish (SiLU; smooth gate, parallel to B iter-104)
+    "res_act":       "relu",    # iter-74 closed swish -8.38pp; revert (cross-substrate)
     "res_kernel":    3,         # iter-26: revert kernel 5 -> 3 (iter-25 timed out at kernel=5)
     # iter-18 (DISCARD, hr=0.5707): dropout 0.05 conflicts with the
     # dual-domain self-supervised target (-1.26pp). No dropout.
