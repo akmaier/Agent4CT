@@ -72,7 +72,7 @@ CONFIG = {
     "bf_sigma_x":    1.5,
     "bf_sigma_y":    1.5,
     "bf_sigma_r":    0.01,
-    "lr":            1.1e-4,     # iter-110: 1e-4 -> 1.1e-4 (upper bisection; untested specific)
+    "lr":            1.2e-4,     # iter-111: 1.1e-4 -> 1.2e-4 (continue upper bisection on iter-110 KEEP)
     "adamw_eps":     1e-10,      # iter-92 closed 1e-9
     "optimizer":     "adamw",   # iter-54 closed adam
     "weight_decay":  5e-5,       # iter-82 KEEP
