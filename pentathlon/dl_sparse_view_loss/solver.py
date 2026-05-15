@@ -112,7 +112,7 @@ CONFIG = {
     "sdd":           1085.6,
 
     # Training subset for the 5-minute iteration budget.
-    "train_n":       400,        # iter-53 closed train_n=500 on batch
+    "train_n":       450,        # iter-65: 400 -> 450 (B iter-76 closed at -4.67pp on res but C may differ)
     "val_n":         100,
 
     # Editable: training schedule.
@@ -179,8 +179,8 @@ CONFIG = {
     # iter-20/21 (DISCARD): EMA at both decay=0.999 and 0.99 hurts.
     # Combined with iter-11/12: ALL weight-smoothing interventions fail
     # on this baseline. Last iterate is the optimum here.
-    "ema":            True,        # iter-59: EMA decay=0.95 on batch substrate (untested low decay)
-    "ema_decay":      0.95,
+    "ema":            False,       # iter-65: disable EMA (was still on from iter-59)
+    "ema_decay":      0.99,
 
     # iter-12 (DISCARD, hr=0.5700): cosine LR 1e-4 -> 1e-6 starved
     # late-training learning rate (-1.07pp). Model is LR-LIMITED at this
