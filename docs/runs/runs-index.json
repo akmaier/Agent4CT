@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-15T08:04:35Z",
+  "updated": "2026-05-15T08:06:29Z",
   "runs": [
     {
       "slug": "demo-dl-sparse-view-20260513-01",
@@ -80,11 +80,11 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-14T06:10:23Z",
       "status": "running",
-      "n_iterations": 73,
+      "n_iterations": 74,
       "best_score": 0.325674,
       "best_headroom": 0.60537,
-      "agent": "claude-loss",
-      "model": "claude-opus-4.7"
+      "agent": "claude",
+      "model": "claude-sonnet-4.5"
     },
     {
       "slug": "dl-sparse-view-mistral-20260513-01",
