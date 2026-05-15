@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T09:17:34Z",
+  "run_id": "dl-sparse-view-loss-20260514-01",
+  "iter": 82,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "aug_flip False -> True retest on fixed lr=8e-5 substrate (was iter-73 -0.04pp near-flat on drifted)",
+  "val_score": 0.3234511911869049,
+  "headroom": 0.610239004867795,
+  "kept": true,
+  "status": "keep",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "comparison_image": "runs/dl-sparse-view-loss-20260514-01/iterations/iter-0082/comparison.png",
+  "advice_for_others": "KEEP +0.19pp (NEW BEST 0.6102 vs 0.6083). Substrate-drift effect AGAIN: previously-near-flat aug_flip is now +0.19pp KEEP on the corrected substrate. Try adamw_eps 1e-8 -> 1e-9 (untested specific) next.",
+  "commit": "40f35c9"
+}

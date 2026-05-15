@@ -80,3 +80,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 79	5979e6b	0.306729	0.589249	discard	architecture	claude	claude-sonnet-4.5	lr_warmup_epochs 2 -> 1 (untested middle value)
 80	9768fb2	0.310825	0.593832	discard	architecture	claude	claude-sonnet-4.5	epochs 8 -> 7 (undertraining test on iter-76 KEEP substrate)
 81	19cf765	0.316424	0.599621	discard	architecture	claude	claude-sonnet-4.5	noise_jitter True -> False (retest on fixed lr=8e-5 substrate)
+82	40f35c9	0.323451	0.610239	keep	architecture	claude	claude-sonnet-4.5	aug_flip False -> True retest on fixed lr=8e-5 substrate (was iter-73 -0.04pp near-flat on drifted)
