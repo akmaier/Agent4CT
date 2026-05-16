@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.547491	0.80609	keep	architecture	uswin-search	random-search	uswin-search: epochs=12, lr=0.00065912, batch_size=4, uswin_c=24, swin_window=8, swin_heads=4
+2		0.61963	0.785768	keep	architecture	uswin-search	random-search	uswin-search: epochs=13, lr=0.00014171, batch_size=4, uswin_c=24, swin_window=8, swin_heads=4
+3		0.576743	0.782624	keep	architecture	uswin-search	random-search	uswin-search: epochs=9, lr=0.00046258, batch_size=4, uswin_c=24, swin_window=16, swin_heads=4
+4		0.619321	0.761343	keep	architecture	uswin-search	random-search	uswin-search: epochs=7, lr=0.00017986, batch_size=4, uswin_c=24, swin_window=8, swin_heads=8
+5		0.647073	0.740392	keep	architecture	uswin-search	random-search	uswin-search: epochs=14, lr=0.00058798, batch_size=8, uswin_c=32, swin_window=8, swin_heads=2
+6		0.622975	0.749073	keep	architecture	uswin-search	random-search	uswin-search: epochs=13, lr=0.00013699, batch_size=4, uswin_c=32, swin_window=8, swin_heads=2
+7		0.589345	0.703118	keep	architecture	uswin-search	random-search	uswin-search: epochs=6, lr=0.00032381, batch_size=4, uswin_c=32, swin_window=8, swin_heads=4
+8		0.626541	0.763394	keep	architecture	uswin-search	random-search	uswin-search: epochs=6, lr=0.00033139, batch_size=4, uswin_c=24, swin_window=4, swin_heads=2
+9		0.553618	0.783983	keep	architecture	uswin-search	random-search	uswin-search: epochs=9, lr=0.0008122, batch_size=4, uswin_c=24, swin_window=8, swin_heads=4
+10		0.774022	0.810304	keep	architecture	uswin-search	random-search	uswin-search: epochs=11, lr=0.00030196, batch_size=2, uswin_c=24, swin_window=8, swin_heads=8
+11		0.665103	0.747376	keep	architecture	uswin-search	random-search	uswin-search: epochs=11, lr=0.00030625, batch_size=8, uswin_c=16, swin_window=8, swin_heads=4
+12		0.56475	0.696345	keep	architecture	uswin-search	random-search	uswin-search: epochs=8, lr=0.00010749, batch_size=4, uswin_c=16, swin_window=16, swin_heads=2
+13		0.395124	0.752476	keep	architecture	uswin-search	random-search	uswin-search: epochs=10, lr=0.00017834, batch_size=4, uswin_c=32, swin_window=16, swin_heads=8
+14		0.588393	0.753019	keep	architecture	uswin-search	random-search	uswin-search: epochs=10, lr=0.0002997, batch_size=4, uswin_c=32, swin_window=8, swin_heads=8
+15		0.5444	0.703287	keep	architecture	uswin-search	random-search	uswin-search: epochs=6, lr=0.00043313, batch_size=8, uswin_c=32, swin_window=16, swin_heads=2
+16		0.543311	0.755711	keep	architecture	uswin-search	random-search	uswin-search: epochs=12, lr=0.00024762, batch_size=4, uswin_c=32, swin_window=4, swin_heads=4
+17		0.559875	0.721108	keep	architecture	uswin-search	random-search	uswin-search: epochs=8, lr=0.00033928, batch_size=8, uswin_c=16, swin_window=4, swin_heads=2
+18		0.401707	0.752151	keep	architecture	uswin-search	random-search	uswin-search: epochs=10, lr=0.00032108, batch_size=4, uswin_c=32, swin_window=16, swin_heads=8
+19		0.676037	0.757387	keep	architecture	uswin-search	random-search	uswin-search: epochs=14, lr=0.00074014, batch_size=8, uswin_c=32, swin_window=4, swin_heads=4
+20		0.667589	0.749995	keep	architecture	uswin-search	random-search	uswin-search: epochs=10, lr=0.00013382, batch_size=2, uswin_c=16, swin_window=16, swin_heads=2

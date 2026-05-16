@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-16T17:24:18Z",
+  "updated": "2026-05-16T23:27:47Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -12,6 +12,18 @@
       "best_score": 0.319442,
       "best_headroom": 0.61909,
       "agent": "bf-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-diffusion-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T19:56:12Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.325581,
+      "best_headroom": 0.0,
+      "agent": "diffusion-search",
       "model": "random-search"
     },
     {
@@ -36,6 +48,18 @@
       "best_score": 0.359245,
       "best_headroom": 0.526303,
       "agent": "hammernik-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-hammernik-vn-search-20260516-02",
+      "short_id": "20260516-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T20:18:14Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.494294,
+      "best_headroom": 0.611318,
+      "agent": "hammernik-vn-search",
       "model": "random-search"
     },
     {
@@ -72,6 +96,18 @@
       "best_score": 0.723799,
       "best_headroom": 0.821517,
       "agent": "itnet-v3-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-r2gaussian-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T19:21:21Z",
+      "status": "running",
+      "n_iterations": 18,
+      "best_score": 0.865439,
+      "best_headroom": 0.505353,
+      "agent": "r2gaussian-search",
       "model": "random-search"
     },
     {
@@ -120,6 +156,18 @@
       "best_score": 0.4804,
       "best_headroom": 0.6033,
       "agent": "tv-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-uswin-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T18:26:22Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.774022,
+      "best_headroom": 0.810304,
+      "agent": "uswin-search",
       "model": "random-search"
     },
     {

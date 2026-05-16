@@ -1,0 +1,20 @@
+{
+  "slug": "demo-dl-uswin-search-20260516-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-uswin-search",
+  "started": "2026-05-16T18:26:22Z",
+  "agent": "uswin-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "uswin hyperparameter random search",
+  "finished": "2026-05-16T19:21:20Z",
+  "best_params": {
+    "epochs": 11,
+    "lr": 0.0003019582181582526,
+    "batch_size": 2,
+    "uswin_c": 24,
+    "swin_window": 8,
+    "swin_heads": 8
+  },
+  "best_headroom": 0.8103039891209128
+}

@@ -1,0 +1,11 @@
+{
+  "slug": "demo-dl-diffusion-search-20260516-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-diffusion-search",
+  "started": "2026-05-16T19:56:12Z",
+  "agent": "diffusion-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "diffusion hyperparameter random search",
+  "finished": "2026-05-16T20:18:12Z"
+}

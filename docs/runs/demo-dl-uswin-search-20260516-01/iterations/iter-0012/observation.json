@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-16T18:54:49Z",
+  "run_id": "demo-dl-uswin-search-20260516-01",
+  "iter": 12,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "uswin-search: epochs=8, lr=0.00010749, batch_size=4, uswin_c=16, swin_window=16, swin_heads=2",
+  "val_score": 0.5647497773170471,
+  "headroom": 0.6963453881891302,
+  "kept": true,
+  "status": "keep",
+  "params_M": 1.759617,
+  "train_n": 200,
+  "agent": "uswin-search",
+  "model": "random-search",
+  "advice_for_others": "uswin-search: epochs=8, lr=0.00010749, batch_size=4, uswin_c=16, swin_window=16, swin_heads=2 -> hr=0.6963",
+  "comparison_image": "runs/demo-dl-uswin-search-20260516-01/iterations/iter-0012/comparison.png"
+}

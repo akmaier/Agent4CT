@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-16T20:05:23Z",
+  "run_id": "demo-dl-diffusion-search-20260516-01",
+  "iter": 4,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "diffusion-search: diff_mode=mcg, diff_sample_steps=80, diff_eta=1.3905, diff_init=fbp",
+  "val_score": 0.07534587383270264,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.958051,
+  "train_n": 1000,
+  "agent": "diffusion-search",
+  "model": "random-search",
+  "advice_for_others": "diffusion-search: diff_mode=mcg, diff_sample_steps=80, diff_eta=1.3905, diff_init=fbp -> hr=0.0000",
+  "comparison_image": "runs/demo-dl-diffusion-search-20260516-01/iterations/iter-0004/comparison.png"
+}

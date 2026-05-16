@@ -1,0 +1,10 @@
+{
+  "slug": "demo-dl-r2gaussian-search-20260516-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-r2gaussian-search",
+  "started": "2026-05-16T19:21:21Z",
+  "agent": "r2gaussian-search",
+  "model": "random-search",
+  "status": "running",
+  "notes": "r2gaussian hyperparameter random search"
+}

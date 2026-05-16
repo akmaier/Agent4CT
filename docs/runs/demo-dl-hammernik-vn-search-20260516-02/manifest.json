@@ -1,0 +1,22 @@
+{
+  "slug": "demo-dl-hammernik-vn-search-20260516-02",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-hammernik-vn-search",
+  "started": "2026-05-16T20:18:14Z",
+  "agent": "hammernik-vn-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "Hammernik-VN (MRI VN adapted to CT) hyperparameter random search: T, N_k, kernel, lr, lambda, init, epochs, batch",
+  "finished": "2026-05-16T23:24:16Z",
+  "best_params": {
+    "epochs": 17,
+    "lr": 0.00021707124177585216,
+    "batch_size": 2,
+    "vn_T": 3,
+    "vn_n_filters": 16,
+    "vn_kernel": 7,
+    "vn_lambda_init": 0.007977355307817081,
+    "vn_init": "fbp"
+  },
+  "best_headroom": 0.6113178704741298
+}

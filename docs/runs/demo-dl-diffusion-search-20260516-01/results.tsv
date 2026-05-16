@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.0602941	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=80, diff_eta=3.9105, diff_init=noise
+2		0.325578	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=120, diff_eta=0.18082, diff_init=noise
+3		0.325578	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=120, diff_eta=0.47353, diff_init=noise
+4		0.0753459	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=80, diff_eta=1.3905, diff_init=fbp
+5		0.00327894	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=30, diff_eta=2.7839, diff_init=noise
+6		0.075647	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=80, diff_eta=0.72464, diff_init=noise
+7		0.0104877	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=50, diff_eta=1.019, diff_init=fbp
+8		0.325009	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=120, diff_eta=1.0386, diff_init=fbp
+9		0.075436	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=dps, diff_sample_steps=80, diff_eta=0.42327, diff_init=noise
+10		0.00327889	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=30, diff_eta=0.76565, diff_init=noise
+11		0.00327888	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=30, diff_eta=0.11864, diff_init=noise
+12		0.0756468	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=80, diff_eta=0.47068, diff_init=noise
+13		0.0105397	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=50, diff_eta=0.55898, diff_init=noise
+14		0.0756471	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=80, diff_eta=0.98933, diff_init=noise
+15		0.0105396	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=50, diff_eta=0.11305, diff_init=noise
+16		0.0105254	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=dps, diff_sample_steps=50, diff_eta=0.28221, diff_init=noise
+17		0.325581	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=120, diff_eta=3.5265, diff_init=noise
+18		0.00327043	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=30, diff_eta=1.2067, diff_init=fbp
+19		0.325579	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=mcg, diff_sample_steps=120, diff_eta=0.9981, diff_init=noise
+20		0.325034	0	discard	architecture	diffusion-search	random-search	diffusion-search: diff_mode=dps, diff_sample_steps=120, diff_eta=0.20365, diff_init=fbp
