@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
 #SBATCH --mem=24G
-#SBATCH --time=00:15:00            # iter-101 still timed out at 12 min on lme170; bumped to 15
-#SBATCH --exclude=lme170,lme171,lme221,lme222,lme223,lme49,lme50,lme51,lme52,lme53  # lme170 added after 3 consecutive A timeouts
+#SBATCH --time=00:15:00            # 15-min wall (iter-101/102 hit 12-min limit on lme170)
+#SBATCH --exclude=lme171,lme221,lme222,lme223,lme49,lme50,lme51,lme52,lme53  # exclude bad-driver/slow GPUs only (re-allowing lme170 — excluding all q8000 left no schedulable nodes)
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
 # One DL-Sparse-View iteration on the UNROLLED-ITERATIVE branch

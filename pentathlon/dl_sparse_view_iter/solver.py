@@ -99,7 +99,7 @@ CONFIG = {
     # Training schedule. Iter-21 reverts epochs 4 -> 6 because the LPD
     # projector overhead is gone and NAFNet's per-pass cost is in the
     # ResStack ballpark (full-resolution conv but no down/up).
-    "epochs":        8,                # iter-100: 6 -> 8 (training-dynamics probe; closing iter-stage gap not via regularization)
+    "epochs":        6,                # revert to base epochs (epochs=8 caused 12-min timeouts repeatedly)
     "batch_size":    1,
     "lr":            1e-4,              # iter-85 closed 1.1e-4 -0.11pp near-flat; firm
     "naf_alpha":     0.1,              # iter-89 closed 0.08 -0.10pp; firm
