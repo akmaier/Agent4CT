@@ -99,3 +99,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 98	9750e42	0.319236	0.604536	keep	architecture	claude	claude-sonnet-4.5	adam -> adamw + wd=5e-5 cross-port from B (stage said C overfits -3.15pp)
 99	3956a19	0.320391	0.607313	keep	architecture	claude	claude-sonnet-4.5	wd 5e-5 -> 1e-4 on AdamW substrate (stronger regularization)
 100	cf59ff6	0.312974	0.602461	discard	architecture	claude	claude-sonnet-4.5	AdamW+wd=1e-4 substrate variance sample
+101	26008d9	0.321114	0.604832	discard	architecture	claude	claude-sonnet-4.5	AdamW+wd=1e-4 substrate variance sample
