@@ -19,29 +19,33 @@ All challenge data lives under `/cluster/maier/Agent4CT/data/<challenge>/`
 on the LME cluster (`maier@cluster.i5.informatik.uni-erlangen.de`).
 Subsequent agents can find what's already on disk here:
 
-| Challenge | On-cluster path | Raw size | Staged HDF5 | Notes |
-|---|---|---:|---|---|
-| `ct_mar` | `data/ct_mar/raw/` | **110 GB** | ⚠️ code ready, run pending | 15 tar.gz (`body{1..13}.tar.gz` + `head{1,2}.tar.gz`), `info/`, `README_training_data.txt`. Source: RPI Box <https://rpi.app.box.com/s/7p8tkqj5ewhtdad2h8kx975i9qg6b7a4> via developer-token API. 14 000 cases. `stage_h5()` streams Target/no-metal images from tar.gz (no extraction) into truth-only HDF5; harness forward-projects via challenge geometry. |
-| `dl_spectral` | `data/dl_spectral/raw/` | **3.3 GB** | ⚠️ code ready, run pending | 1000 cases @ (512,512) per case. Phantom maps × 3 materials + transmission sinograms × 2 kVp + `starting_kit.tgz`. Source: Zenodo 14262737. `stage_h5()` packs multi-channel truth (N,3,H,W) + sinograms (N,2,A,D). |
-| `mayo_ldct` | `data/mayo_ldct/raw/` | **69 GB** (done) | ⚠️ code ready, run pending | Wagner 10-patient subset: `L004, L033, L064, L107, L143, L186, L221, L260, L288, L299` (L067 doesn't exist in TCIA's `LDCT-and-Projection-data` collection — replaced with L064). Per patient: 100 Full-Dose Images + 100 Low-Dose Images + 32787 projection frames per kVp. `stage_h5()` packs full-dose recon images converted to μ mm⁻¹ — sinograms are forward-projected at train time. Re-running the fetcher is idempotent. |
-| `dl_sparse_view` | — | — | **BLOCKED** | CodaLab-gated <https://dl-sparse-view-ct-challenge.eastus.cloudapp.azure.com/competitions/1>. No public Zenodo mirror (the README's old "Zenodo 13882980" claim is wrong; that record is DL-Spectral info, 0 files). |
-| `truect` | — | — | **BLOCKED** | CodaLab-gated, contact `cvit-inquire@duke.edu`. See `data/INVESTIGATE_truect.md`. |
+| Challenge | On-cluster path | Raw | Staged HDF5 | Splits (train/val/test) | Notes |
+|---|---|---:|---:|---:|---|
+| `ct_mar` | `data/ct_mar/raw/` + `data/ct_mar/staged/` | 110 GB | **6.0 GB** ✅ | 4000 / 1000 / 1000 | 15 tar.gz from RPI Box <https://rpi.app.box.com/s/7p8tkqj5ewhtdad2h8kx975i9qg6b7a4> (developer-token API, 14k cases). `stage_h5()` streams Target/no-metal images from tar.gz (no extraction) and converts HU→μ mm⁻¹. Sinograms are forward-projected at train time via the challenge geometry. |
+| `dl_spectral` | `data/dl_spectral/raw/` + `staged/` | 3.3 GB | **2.1 GB** ✅ | 800 / 100 / 100 | 1000 cases from Zenodo 14262737. `stage_h5()` packs multi-channel truth `(N,3,H,W)` + sinograms `(N,2,A,D)`. Channels = adipose / fibroglandular / calcification (truth) and high-kVp / low-kVp (sino). Decompresses .npy.gz to a temp dir then mmaps to keep RAM under 30 MB. |
+| `mayo_ldct` | `data/mayo_ldct/raw/` + `staged/` | 69 GB | **0.8 GB** ✅ | 672 / 99 / 607 | Wagner 10-patient subset: `L004, L033, L064, L107, L143, L186, L221, L260, L288, L299` (L067 doesn't exist in TCIA's `LDCT-and-Projection-data` collection — replaced with L064). `stage_h5()` parses Full-Dose Images DICOM series and converts HU→μ mm⁻¹. Sinograms are forward-projected at train time (the projection-data series shipped in TCIA is per-frame DICOM-CT-PD and would need a separate parser if anyone needs measured-noise sinograms). Re-running the fetcher is idempotent. |
+| `dl_sparse_view` | — | — | — | — | **BLOCKED**. CodaLab-gated <https://dl-sparse-view-ct-challenge.eastus.cloudapp.azure.com/competitions/1>. No public Zenodo mirror (the README's old "Zenodo 13882980" claim is wrong; that record is DL-Spectral info, 0 files). |
+| `truect` | — | — | — | — | **BLOCKED**. CodaLab-gated, contact `cvit-inquire@duke.edu`. See `data/INVESTIGATE_truect.md`. |
 
-**Staging code is now in place** for the three downloaded datasets
-(`stage_h5()` in each `fetch_*.py`). To execute on the cluster:
+All three staged datasets share **μ mm⁻¹** as the image-value convention
+(water = 0.02 mm⁻¹, matching `ddssl_ldct.phantoms.random_ellipses_phantom`).
+DL-Spectral truth is the 3-channel material decomposition `(adipose,
+fibroglandular, calcification)` in `[0, 1]` and uses a separate convention
+that future spectral solvers must convert as needed.
+
+To re-stage from scratch (e.g. after editing `stage_h5()`):
 
 ```bash
 ssh maier@cluster.i5.informatik.uni-erlangen.de
 cd /cluster/maier/Agent4CT && source .venv/bin/activate
-python data/fetch_ct_mar.py    --skip-download
-python data/fetch_mayo_ldct.py --skip-download
-python data/fetch_dl_spectral.py --skip-download
+rm -rf data/<challenge>/staged
+python data/fetch_<challenge>.py --skip-download   # uses existing raw/
 ```
 
-Each call re-uses the already-downloaded raw and only writes the staged
-HDF5s. Until those runs finish, the iter harness keeps using the synthetic
-random-ellipse phantoms from `ddssl_ldct/phantoms.py` — the `train_n=400`
-samples seen by every iteration so far are NOT real challenge data.
+Note the iter solvers currently still train on the synthetic phantoms from
+`ddssl_ldct/phantoms.py`. To switch to real data, swap the solver's
+`build_dataset()` call for `StagedTruthDataset + RotatingSubsetDataset`
+(see the example in the next section).
 
 Verify what's on the cluster:
 
