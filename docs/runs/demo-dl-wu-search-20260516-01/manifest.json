@@ -1,0 +1,19 @@
+{
+  "slug": "demo-dl-wu-search-20260516-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-wu-search",
+  "started": "2026-05-16T13:02:44Z",
+  "agent": "wu-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "Wu 2015 hyperparameter random search: n_bands, n_outer, motion_range, motion_window, soft_thresh",
+  "finished": "2026-05-16T13:05:52Z",
+  "best_params": {
+    "wu_n_bands": 8,
+    "wu_n_outer": 2,
+    "wu_motion_range": 5,
+    "wu_motion_window": 1,
+    "wu_soft_thresh": 0.004379942863472668
+  },
+  "best_headroom": 0.4100501170771671
+}

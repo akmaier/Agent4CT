@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-16T13:04:46Z",
+  "run_id": "demo-dl-wu-search-20260516-01",
+  "iter": 13,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "Wu 2015 search: n_bands=8, n_outer=2, motion_range=5, motion_window=1, soft_thresh=0.00438",
+  "val_score": 0.17965911328792572,
+  "headroom": 0.4100501170771671,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 0,
+  "agent": "wu-search",
+  "model": "random-search",
+  "advice_for_others": "Wu 2015 bands=8 outer=2 mrange=5 thresh=0.0044 -> hr=0.4101",
+  "comparison_image": "runs/demo-dl-wu-search-20260516-01/iterations/iter-0013/comparison.png"
+}

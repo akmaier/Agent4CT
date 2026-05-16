@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-16T10:41:27Z",
+  "updated": "2026-05-16T13:06:53Z",
   "runs": [
     {
       "slug": "demo-dl-dual_domain-20260515-01",
@@ -72,6 +72,18 @@
       "best_score": 0.4804,
       "best_headroom": 0.6033,
       "agent": "tv-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-wu-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T13:02:44Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.182602,
+      "best_headroom": 0.41005,
+      "agent": "wu-search",
       "model": "random-search"
     },
     {

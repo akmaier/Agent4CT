@@ -262,7 +262,16 @@ def wu_2015_reconstruct(proj: PyronnFanBeamProjector,
 
 # ---------------------------------------------------------------------------
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
-    cfg = {**CONFIG, **(cfg or {})}
+    # Allow env override (set by random-search agent — see
+    # scripts/wu_search_agent_standalone.py).
+    import os
+    env_path = os.environ.get("WU_CONFIG_PATH")
+    if env_path and Path(env_path).exists():
+        env_cfg = json.loads(Path(env_path).read_text())
+        cfg = {**CONFIG, **env_cfg, **(cfg or {})}
+        print(f"[solver] Loaded config from {env_path}", flush=True)
+    else:
+        cfg = {**CONFIG, **(cfg or {})}
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"

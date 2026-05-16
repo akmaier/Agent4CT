@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.134844	0.356005	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=12, n_outer=3, motion_range=8, motion_window=2, soft_thresh=0.00134
+2		0.130802	0.387989	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=12, n_outer=1, motion_range=3, motion_window=2, soft_thresh=0.00101
+3		0.125177	0.395289	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=12, n_outer=1, motion_range=12, motion_window=2, soft_thresh=0.00171
+4		0.146135	0.379159	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=4, n_outer=2, motion_range=3, motion_window=2, soft_thresh=0.00487
+5		0.133246	0.364136	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=3, motion_range=8, motion_window=4, soft_thresh=0.00222
+6		0.121053	0.398553	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=1, motion_range=12, motion_window=1, soft_thresh=0.00132
+7		0.13045	0.388099	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=1, motion_range=3, motion_window=4, soft_thresh=0.00108
+8		0.136135	0.383397	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=2, motion_range=3, motion_window=4, soft_thresh=0.00146
+9		0.175244	0.409814	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=12, n_outer=1, motion_range=3, motion_window=1, soft_thresh=0.00406
+10		0.135932	0.391487	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=2, motion_range=8, motion_window=2, soft_thresh=0.00105
+11		0.182602	0.401521	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=1, motion_range=12, motion_window=2, soft_thresh=0.00455
+12		0.144212	0.37861	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=2, motion_range=8, motion_window=4, soft_thresh=0.00055
+13		0.179659	0.41005	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=2, motion_range=5, motion_window=1, soft_thresh=0.00438
+14		0.133876	0.345259	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=4, n_outer=3, motion_range=5, motion_window=2, soft_thresh=0.00089
+15		0.166361	0.387945	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=3, motion_range=8, motion_window=2, soft_thresh=0.00407
+16		0.15549	0.340717	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=3, motion_range=12, motion_window=4, soft_thresh=0.00055
+17		0.178745	0.395939	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=6, n_outer=2, motion_range=12, motion_window=4, soft_thresh=0.00478
+18		0.150816	0.352383	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=8, n_outer=3, motion_range=5, motion_window=2, soft_thresh=0.00076
+19		0.125535	0.385281	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=4, n_outer=1, motion_range=3, motion_window=2, soft_thresh=0.00161
+20		0.145757	0.380423	keep	optimizer	wu-search	random-search	Wu 2015 search: n_bands=12, n_outer=3, motion_range=5, motion_window=2, soft_thresh=0.00330
