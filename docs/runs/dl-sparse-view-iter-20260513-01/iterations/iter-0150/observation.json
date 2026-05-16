@@ -1,0 +1,16 @@
+{
+  "ts": "2026-05-16T10:41:27Z",
+  "run_id": "dl-sparse-view-iter-20260513-01",
+  "iter": 150,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "final iter at locked config",
+  "val_score": 0.2683292031288147,
+  "headroom": 0.6163000893900574,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "A reached iter-150 target",
+  "commit": "0c2b8d0"
+}
