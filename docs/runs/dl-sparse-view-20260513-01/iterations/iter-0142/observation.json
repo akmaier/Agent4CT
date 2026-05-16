@@ -1,0 +1,16 @@
+{
+  "ts": "2026-05-16T01:47:31Z",
+  "run_id": "dl-sparse-view-20260513-01",
+  "iter": 142,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "variance sample",
+  "val_score": 0.2827620506286621,
+  "headroom": 0.600096237465576,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "stable",
+  "commit": "a7d3d1c"
+}
