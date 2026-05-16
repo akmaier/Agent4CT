@@ -77,14 +77,14 @@ SOLVERS = {
         "slug_prefix": "demo-dl-hammernik-vn-search",
         "agent_name": "hammernik-vn-search",
         "space": {
-            "epochs":          (8, 16, "int"),
-            "lr":              (1e-4, 1e-3, "log"),
-            "batch_size":      ([2, 4], "choice"),
-            "vn_T":            ([5, 7, 10], "choice"),
-            "vn_n_filters":    ([24, 32, 48], "choice"),
+            "epochs":          (10, 18, "int"),
+            "lr":              (5e-5, 3e-4, "log"),       # tightened: avoid divergence
+            "batch_size":      ([2], "choice"),           # gradient-ckpt fits batch=2
+            "vn_T":            ([3, 5, 7], "choice"),     # capped at 7 (T=10 OOMs)
+            "vn_n_filters":    ([16, 24, 32], "choice"),  # capped at 32 (N_k=48 OOMs)
             "vn_kernel":       ([7, 9, 11], "choice"),
             "vn_lambda_init":  (1e-4, 1e-2, "log"),
-            "vn_init":         (["fbp", "backproj"], "choice"),
+            "vn_init":         (["fbp"], "choice"),       # backproj diverges; fix to fbp
         },
     },
     "uswin": {
@@ -107,12 +107,13 @@ SOLVERS = {
         "slug_prefix": "demo-dl-naf-search",
         "agent_name": "naf-search",
         "space": {
-            "naf_n_freqs":   ([6, 8, 10, 12], "choice"),
-            "naf_hidden":    ([96, 128, 192], "choice"),
-            "naf_layers":    ([3, 4, 5], "choice"),
-            "naf_n_iter":    (300, 1000, "int"),
-            "naf_lr":        (1e-3, 2e-2, "log"),
-            "naf_tv_weight": (1e-5, 1e-3, "log"),
+            "naf_n_freqs":      ([6, 8, 10, 12, 14], "choice"),
+            "naf_hidden":       ([128, 192, 256], "choice"),
+            "naf_layers":       ([4, 5, 6], "choice"),
+            "naf_n_iter":       (1500, 4000, "int"),       # was [300, 1000]
+            "naf_lr":           (5e-4, 1e-2, "log"),       # narrower for stability
+            "naf_tv_weight":    (1e-6, 1e-3, "log"),       # extend low end (was 1e-5)
+            "naf_outer_wall_s": ([2400], "choice"),        # 40 min per outer iter
         },
     },
     "r2gaussian": {
