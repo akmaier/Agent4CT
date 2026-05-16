@@ -220,7 +220,9 @@ def run_solver(solver_path, env_var, params, out_dir):
     env["PYTHONPATH"] = (
         str(REPO_ROOT) + (":" + env["PYTHONPATH"] if "PYTHONPATH" in env else "")
     )
-    res = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=900)
+    # Subprocess timeout must exceed the solver's internal per-iter wall.
+    # NAF / R2Gaussian use 40-min outer walls; 1 h subprocess cap leaves margin.
+    res = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=3600)
     if res.returncode != 0:
         print(f"[agent] solver failed (rc={res.returncode}):", file=sys.stderr)
         print(res.stderr[-2000:], file=sys.stderr)

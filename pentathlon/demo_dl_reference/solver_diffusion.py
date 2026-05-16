@@ -48,8 +48,8 @@ CONFIG = {
     "val_n": 20, "noise_i0": 1e5, "noise_sigma_e": 10.0, "seed": 42,
     "display_min": 0.0, "display_max": 0.05,
     "diff_mode": "dps",                # "dps" or "mcg"
-    "diff_n_train_phantoms": 1000,
-    "diff_train_epochs": 8,
+    "diff_n_train_phantoms": 3000,     # was 1000; need more to learn ellipse stats
+    "diff_train_epochs": 25,           # was 8 — under-trained → hr=0 in v1
     "diff_train_batch": 8,
     "diff_train_lr": 2e-4,
     "diff_n_steps": 1000,              # DDPM training noise schedule length
@@ -57,7 +57,10 @@ CONFIG = {
     "diff_eta": 1.0,                   # data-fidelity guidance weight
     "diff_init": "fbp",                # init x_T from FBP or pure noise
     "diff_ch": 32,                     # tiny UNet base channels
-    "diff_ckpt": "/cluster/maier/Agent4CT/checkpoints/ddpm_ellipses.pt",
+    "diff_out_scale": 0.05,            # μ-units scale; DDPM trains in x/scale ∈ [0,1]
+    "diff_train_wall_s": 1800,         # 30-min cap on the one-time DDPM pretrain
+    # v2 checkpoint (v1 was trained un-normalised and useless).
+    "diff_ckpt": "/cluster/maier/Agent4CT/checkpoints/ddpm_ellipses_v2.pt",
 }
 
 
@@ -150,7 +153,9 @@ class NoiseSchedule:
         self.beta = 1 - self.alpha
 
 
-def train_ddpm(model, sched, train_imgs, epochs, batch, lr, device):
+def train_ddpm(model, sched, train_imgs, epochs, batch, lr, device,
+                wall_s=1800):
+    """Train ε-prediction DDPM. `train_imgs` must already be normalised to ~[0, 1]."""
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     N = train_imgs.shape[0]; T = sched.T
     t0 = time.time()
@@ -168,10 +173,12 @@ def train_ddpm(model, sched, train_imgs, epochs, batch, lr, device):
             loss = F.mse_loss(pred, noise)
             opt.zero_grad(); loss.backward(); opt.step()
             running += float(loss.detach().cpu()); nb += 1
-            if time.time() - t0 > 360:
-                print(f"[train] 6-min wall hit, exiting at ep={ep}", flush=True)
+            if time.time() - t0 > wall_s:
+                print(f"[train] {wall_s}s wall hit at ep={ep+1} step={i+batch}",
+                      flush=True)
                 return
-        print(f"[train] ep {ep+1}/{epochs}  loss={running/max(1,nb):.4f}", flush=True)
+        print(f"[train] ep {ep+1}/{epochs}  loss={running/max(1,nb):.4f}  "
+              f"elapsed={time.time()-t0:.1f}s", flush=True)
 
 
 # ---------------------------------------------------------------------------
@@ -189,17 +196,22 @@ def ddim_step(xt, eps_pred, sched, t_now, t_next):
 
 
 def sample_guided(model, sched, proj, sino, fbp_init, mode, n_steps,
-                  eta, init_kind, device):
-    """One DDIM sample with DC guidance. sino: (1,1,A,D). fbp_init: (1,1,H,W)."""
+                  eta, init_kind, device, out_scale=0.05):
+    """One DDIM sample with DC guidance — operates in the normalised x/out_scale
+    space the DDPM was trained on, scaling x̂₀ back to μ-units before each
+    projector call so the sinogram residual is in the right units.
+
+    sino, fbp_init: in μ-units (mm⁻¹).  Returns μ-units image.
+    """
     T = sched.T
     times = torch.linspace(T, 1, n_steps + 1).long().tolist()
-    # x_T init.
+    # Work in normalised space.
+    fbp_norm = (fbp_init / out_scale).clamp(0.0, 1.0)
     if init_kind == "fbp":
-        # Inject FBP as approximation to x_0 at scale of full noise.
         ab_T = sched.alpha_bar[T]
-        x = ab_T.sqrt() * fbp_init + (1 - ab_T).sqrt() * torch.randn_like(fbp_init)
+        x = ab_T.sqrt() * fbp_norm + (1 - ab_T).sqrt() * torch.randn_like(fbp_norm)
     else:
-        x = torch.randn_like(fbp_init)
+        x = torch.randn_like(fbp_norm)
 
     for k in range(n_steps):
         t_now = times[k]; t_next = times[k + 1] if k + 1 < len(times) else 0
@@ -208,23 +220,26 @@ def sample_guided(model, sched, proj, sino, fbp_init, mode, n_steps,
         with torch.enable_grad():
             eps = model(x_req, t_tensor)
             ab_now = sched.alpha_bar[t_now]
-            x0_hat = x0_from_eps(x_req, eps, ab_now).clamp(0.0, 0.05)
-            sino_pred = proj.forward_project(x0_hat)
+            x0_hat = x0_from_eps(x_req, eps, ab_now)           # normalised x̂₀
+            # Scale back to μ-units for the projector; no hard clamp (kills grad).
+            x0_mu = x0_hat * out_scale
+            sino_pred = proj.forward_project(x0_mu)
             if mode == "dps":
                 loss = ((sino_pred - sino) ** 2).mean()
                 grad = torch.autograd.grad(loss, x_req)[0]
             elif mode == "mcg":
-                # pseudo-inverse residual via FBP
+                # ‖A†(A x̂₀ − y)‖² — pseudo-inverse approx A† via FBP.
                 resid = sino_pred - sino
                 back = proj.fbp(resid)
-                loss = ((x0_hat - x0_hat.detach() + back) ** 2).mean()
+                loss = (back ** 2).mean()
                 grad = torch.autograd.grad(loss, x_req)[0]
             else:
                 raise ValueError(mode)
         with torch.no_grad():
             x_clean = ddim_step(x.detach(), eps.detach(), sched, t_now, t_next)
             x = x_clean - eta * grad.detach()
-    return x.detach().clamp(0.0, 0.05)
+    # Final denorm + clip (only at the very end, after grad work is done).
+    return (x.detach() * out_scale).clamp(0.0, out_scale)
 
 
 # ---------------------------------------------------------------------------
@@ -273,14 +288,18 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             ckpt.unlink()
     if not ckpt.exists():
         print(f"[solver] Training DDPM ({cfg['diff_n_train_phantoms']} phantoms, "
-              f"{cfg['diff_train_epochs']} ep)…", flush=True)
+              f"{cfg['diff_train_epochs']} ep, wall {cfg['diff_train_wall_s']}s)…",
+              flush=True)
         train_phs, _, _ = build_dataset(geom, cfg["diff_n_train_phantoms"],
                                         cfg["seed"] + 100_000,
                                         cfg["noise_i0"], cfg["noise_sigma_e"],
                                         device)
+        # Normalise into [0, 1] so DDPM noise injection has the right SNR.
+        train_phs = (train_phs / cfg["diff_out_scale"]).clamp(0.0, 1.0)
         t0 = time.time()
         train_ddpm(model, sched, train_phs, cfg["diff_train_epochs"],
-                   cfg["diff_train_batch"], cfg["diff_train_lr"], device)
+                   cfg["diff_train_batch"], cfg["diff_train_lr"], device,
+                   wall_s=cfg["diff_train_wall_s"])
         print(f"[solver] DDPM train time {time.time()-t0:.1f}s", flush=True)
         ckpt.parent.mkdir(parents=True, exist_ok=True)
         torch.save({"model": model.state_dict(), "ch": cfg["diff_ch"]}, ckpt)
@@ -301,7 +320,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         pred_i = sample_guided(model, sched, proj,
                                 val_noisy[i:i + 1], val_fbp[i:i + 1],
                                 cfg["diff_mode"], cfg["diff_sample_steps"],
-                                cfg["diff_eta"], cfg["diff_init"], device)
+                                cfg["diff_eta"], cfg["diff_init"], device,
+                                out_scale=cfg["diff_out_scale"])
         preds.append(pred_i)
         if (i + 1) % 5 == 0:
             print(f"[sample] {i+1}/{cfg['val_n']}  elapsed={time.time()-t0:.1f}s",
