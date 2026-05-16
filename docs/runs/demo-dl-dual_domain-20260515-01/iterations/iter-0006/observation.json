@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-15T23:59:49Z",
+  "run_id": "demo-dl-dual_domain-20260515-01",
+  "iter": 6,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual_domain search: epochs=5, lr=0.0037436, batch_size=1, unet_c=21, train_n=200",
+  "val_score": 0.28583675622940063,
+  "headroom": 0.5992218604251022,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.800942,
+  "train_n": 200,
+  "agent": "dual_domain-search",
+  "model": "random-search",
+  "advice_for_others": "dual_domain params: epochs=5, lr=0.0037436, batch_size=1, unet_c=21, train_n=200 -> headroom=0.5992",
+  "comparison_image": "runs/demo-dl-dual_domain-20260515-01/iterations/iter-0006/comparison.png"
+}

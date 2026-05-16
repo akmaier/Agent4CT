@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.107056	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=7, pretrain_lr=0.00013954, itnet_k=8, unet_c=22, itnet_alpha_init=0.006103, residual_learning=True, train_n=200
+2		0.0350417	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=7, pretrain_lr=0.0047391, itnet_k=7, unet_c=9, itnet_alpha_init=0.0032352, residual_learning=True, train_n=200
+3		0.115498	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=3, pretrain_lr=0.0010166, itnet_k=6, unet_c=18, itnet_alpha_init=0.043977, residual_learning=True, train_n=200
+4		0.192123	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=7, pretrain_lr=0.00040179, itnet_k=4, unet_c=14, itnet_alpha_init=0.0475, residual_learning=True, train_n=200
+5		0.315166	0.54323	keep	architecture	itnet-search	random-search	itnet search: pretrain_epochs=4, pretrain_lr=0.0020033, itnet_k=6, unet_c=11, itnet_alpha_init=0.02722, residual_learning=False, train_n=200
+6		0.255979	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=3, pretrain_lr=0.0015241, itnet_k=4, unet_c=19, itnet_alpha_init=0.0034971, residual_learning=True, train_n=200
+7		0.308702	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=7, pretrain_lr=0.00012395, itnet_k=7, unet_c=11, itnet_alpha_init=0.001028, residual_learning=False, train_n=200
+8		0.253082	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=7, pretrain_lr=0.00053745, itnet_k=4, unet_c=12, itnet_alpha_init=0.0042759, residual_learning=True, train_n=200
+9		0.299622	0.262304	keep	architecture	itnet-search	random-search	itnet search: pretrain_epochs=4, pretrain_lr=0.00010454, itnet_k=5, unet_c=15, itnet_alpha_init=0.0081438, residual_learning=False, train_n=200
+10		0.291774	0.293691	keep	architecture	itnet-search	random-search	itnet search: pretrain_epochs=6, pretrain_lr=0.0041692, itnet_k=8, unet_c=12, itnet_alpha_init=0.048525, residual_learning=False, train_n=200
+11		0.104834	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=7, pretrain_lr=0.0037757, itnet_k=6, unet_c=17, itnet_alpha_init=0.03327, residual_learning=True, train_n=200
+12		0.051179	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=4, pretrain_lr=0.00033139, itnet_k=6, unet_c=14, itnet_alpha_init=0.0015174, residual_learning=True, train_n=200
+13		0.269952	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=3, pretrain_lr=0.0046209, itnet_k=6, unet_c=22, itnet_alpha_init=0.035878, residual_learning=False, train_n=200
+14		0.278929	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=8, pretrain_lr=0.001734, itnet_k=8, unet_c=24, itnet_alpha_init=0.01574, residual_learning=False, train_n=200
+15		0.329573	0.409261	keep	architecture	itnet-search	random-search	itnet search: pretrain_epochs=3, pretrain_lr=0.00076088, itnet_k=4, unet_c=17, itnet_alpha_init=0.001003, residual_learning=False, train_n=200
+16		0.228857	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=5, pretrain_lr=0.00038252, itnet_k=7, unet_c=13, itnet_alpha_init=0.003251, residual_learning=False, train_n=200
+17		0.0807594	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=5, pretrain_lr=0.0021394, itnet_k=6, unet_c=16, itnet_alpha_init=0.029213, residual_learning=True, train_n=200
+18		0.313003	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=8, pretrain_lr=0.00075698, itnet_k=6, unet_c=13, itnet_alpha_init=0.0041937, residual_learning=False, train_n=200
+19		0.297203	0.200969	keep	architecture	itnet-search	random-search	itnet search: pretrain_epochs=3, pretrain_lr=0.00013253, itnet_k=5, unet_c=21, itnet_alpha_init=0.0047472, residual_learning=False, train_n=200
+20		0.277489	0	discard	architecture	itnet-search	random-search	itnet search: pretrain_epochs=3, pretrain_lr=0.0014438, itnet_k=8, unet_c=11, itnet_alpha_init=0.0016777, residual_learning=False, train_n=200

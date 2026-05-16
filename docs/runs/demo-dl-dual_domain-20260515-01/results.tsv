@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.259868	0.592799	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=4, lr=0.00018809, batch_size=1, unet_c=9, train_n=200
+2		0.279448	0.57708	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=6, lr=0.00054059, batch_size=3, unet_c=11, train_n=200
+3		0.292115	0.589413	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=7, lr=0.00021392, batch_size=3, unet_c=15, train_n=200
+4		0.232078	0.555195	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=3, lr=0.00010378, batch_size=3, unet_c=15, train_n=200
+5		0.29437	0.592482	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=5, lr=0.00025704, batch_size=2, unet_c=23, train_n=200
+6		0.285837	0.599222	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=5, lr=0.0037436, batch_size=1, unet_c=21, train_n=200
+7		0.295163	0.59723	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=7, lr=0.00044233, batch_size=1, unet_c=15, train_n=200
+8		0.274557	0.588517	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=5, lr=0.00017913, batch_size=2, unet_c=24, train_n=200
+9		0.279847	0.597808	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=3, lr=0.002153, batch_size=3, unet_c=9, train_n=200
+10		0.282495	0.599645	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=3, lr=0.00045136, batch_size=1, unet_c=9, train_n=200
+11		0.274496	0.594515	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=3, lr=0.0028232, batch_size=4, unet_c=12, train_n=200
+12		0.286309	0.593617	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=5, lr=0.00054715, batch_size=4, unet_c=16, train_n=200
+13		0.278415	0.59172	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=4, lr=0.00011971, batch_size=3, unet_c=23, train_n=200
+14		0.27155	0.589737	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=4, lr=0.00022321, batch_size=4, unet_c=15, train_n=200
+15		0.292294	0.593925	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=7, lr=0.00020137, batch_size=1, unet_c=20, train_n=200
+16		0.267361	0.583267	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=3, lr=0.00038558, batch_size=3, unet_c=9, train_n=200
+17		0.285966	0.600842	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=6, lr=0.00040713, batch_size=2, unet_c=19, train_n=200
+18		0.281688	0.59545	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=4, lr=0.00080732, batch_size=3, unet_c=15, train_n=200
+19		0.286635	0.598098	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=3, lr=0.00087435, batch_size=2, unet_c=24, train_n=200
+20		0.297316	0.596127	keep	architecture	dual_domain-search	random-search	dual_domain search: epochs=5, lr=0.0045223, batch_size=3, unet_c=12, train_n=200

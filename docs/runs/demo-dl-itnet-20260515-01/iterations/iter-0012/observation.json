@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-16T00:03:32Z",
+  "run_id": "demo-dl-itnet-20260515-01",
+  "iter": 12,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "itnet search: pretrain_epochs=4, pretrain_lr=0.00033139, itnet_k=6, unet_c=14, itnet_alpha_init=0.0015174, residual_learning=True, train_n=200",
+  "val_score": 0.051179010421037674,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.178488,
+  "train_n": 200,
+  "agent": "itnet-search",
+  "model": "random-search",
+  "advice_for_others": "itnet params: pretrain_epochs=4, pretrain_lr=0.00033139, itnet_k=6, unet_c=14, itnet_alpha_init=0.0015174, residual_learning=True, train_n=200 -> headroom=0.0000",
+  "comparison_image": "runs/demo-dl-itnet-20260515-01/iterations/iter-0012/comparison.png"
+}

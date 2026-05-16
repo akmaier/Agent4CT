@@ -1,7 +1,31 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-16T00:32:45Z",
+  "updated": "2026-05-16T00:38:09Z",
   "runs": [
+    {
+      "slug": "demo-dl-dual_domain-20260515-01",
+      "short_id": "20260515-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-15T23:51:25Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.297316,
+      "best_headroom": 0.600842,
+      "agent": "dual_domain-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-itnet-20260515-01",
+      "short_id": "20260515-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-15T23:54:15Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.329573,
+      "best_headroom": 0.54323,
+      "agent": "itnet-search",
+      "model": "random-search"
+    },
     {
       "slug": "demo-dl-reference-20260515-01",
       "short_id": "20260515-01",
@@ -56,7 +80,7 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T20:21:16Z",
       "status": "running",
-      "n_iterations": 134,
+      "n_iterations": 135,
       "best_score": 0.6537,
       "best_headroom": 0.614405,
       "agent": "claude",
