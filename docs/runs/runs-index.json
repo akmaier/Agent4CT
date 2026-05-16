@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-16T03:29:49Z",
+  "updated": "2026-05-16T03:33:56Z",
   "runs": [
     {
       "slug": "demo-dl-dual_domain-20260515-01",
@@ -80,7 +80,7 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-13T20:21:16Z",
       "status": "running",
-      "n_iterations": 148,
+      "n_iterations": 149,
       "best_score": 0.6537,
       "best_headroom": 0.614405,
       "agent": "claude",
