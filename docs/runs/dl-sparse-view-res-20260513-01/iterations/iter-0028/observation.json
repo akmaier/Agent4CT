@@ -1,0 +1,16 @@
+{
+  "ts": "2026-05-16T08:31:40Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 28,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "[backfill] iter record lost during rapid-fire submission; placeholder val/hr=0",
+  "val_score": 0.0,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "backfilled",
+  "commit": "8037e76"
+}
