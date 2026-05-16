@@ -1,0 +1,11 @@
+{
+  "slug": "demo-dl-bf-20260516-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-bf",
+  "started": "2026-05-16T13:20:23Z",
+  "agent": "bf-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "Dual-domain bilateral filter hyperparameter search, 20 iterations",
+  "ended": "2026-05-16T14:12:06Z"
+}

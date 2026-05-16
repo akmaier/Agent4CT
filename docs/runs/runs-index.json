@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-16T13:06:53Z",
+  "updated": "2026-05-16T14:18:55Z",
   "runs": [
     {
       "slug": "demo-dl-dual_domain-20260515-01",
@@ -181,6 +181,18 @@
       "best_headroom": 0.611967,
       "agent": "claude",
       "model": "claude-sonnet-4.5"
+    },
+    {
+      "slug": "demo-dl-bf-20260516-01",
+      "short_id": "bf-20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T13:20:23Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.319442,
+      "best_headroom": 0.61909,
+      "agent": "bf-search",
+      "model": "random-search"
     }
   ]
 }

@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-16T14:06:36Z",
+  "run_id": "demo-dl-bf-20260516-01",
+  "iter": 18,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "BF search: pk=7, psx=2.34, psy=2.13, psr=0.096, ik=3, isx=1.27, isy=0.70, isr=0.079, ep=14, lr=0.0010",
+  "val_score": 0.27725914120674133,
+  "headroom": 0.5785778638824001,
+  "kept": true,
+  "status": "keep",
+  "params_M": 6e-06,
+  "train_n": 400,
+  "agent": "bf-search",
+  "model": "random-search",
+  "advice_for_others": "BF params: pk=7, psx=2.34, psy=2.13, psr=0.096, ik=3, isx=1.27, isy=0.70, isr=0.079, ep=14, lr=0.0010 -> headroom=0.5786",
+  "comparison_image": "runs/demo-dl-bf-20260516-01/iterations/iter-0018/comparison.png"
+}
