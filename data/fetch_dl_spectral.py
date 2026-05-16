@@ -38,22 +38,20 @@ ZENODO_RECORD = "14262737"
 # Until then, the script downloads everything in the record and warns.
 FILES: dict[str, str] = {}
 
-# Geometry: 2D fan-beam, two kVp settings. Re-verify from challenge
-# `parameters.txt` after first download.
+# Geometry confirmed from data inspection 2026-05-16: 256 source angles,
+# 1024 detector elements per sinogram. Phantom volumes are 512x512.
 GEOMETRY = {
     "image_size": 512,
-    "pixel_spacing": 0.7,                   # TODO confirm
-    "n_angles": 128,                        # sparse-view; confirm
-    "n_det": 1024,                          # confirm
-    "det_spacing": 1.2858,                  # confirm
-    "sod": 595.0,                           # confirm
-    "sdd": 1085.6,                          # confirm
-    "n_spectra": 2,                         # two kVp
+    "n_angles": 256,
+    "n_det": 1024,
+    "n_spectra": 2,                         # high-kVp + low-kVp
     "n_tissues": 3,                         # adipose, fibroglandular, calc
+    "note": "spectral challenge; sinograms in transmission units (post-log NOT applied)",
 }
 
-# Final splits are challenge-defined; we hold out a val from train.
-SPLIT_SIZES = {"train": None, "val": None}  # filled in after raw inspection
+# Splits are chosen on the fly from the 1000 cases in the Zenodo record:
+# 80/10/10 cases for train/val/test.
+DEFAULT_SPLITS = {"train": 800, "val": 100, "test": 100}
 
 
 def fetch_raw(raw_dir: Path) -> list[Path]:
@@ -73,14 +71,80 @@ def fetch_raw(raw_dir: Path) -> list[Path]:
     return local
 
 
-def stage_h5(raw_paths: list[Path], staged_dir: Path) -> None:
-    raise NotImplementedError(
-        "Per-challenge conversion not implemented yet. Once a sample of the "
-        f"Zenodo record {ZENODO_RECORD} is on disk, inspect a file to "
-        "determine the array layout (raw float32 vs MAT vs HDF5 already), "
-        "then fill in this function. Output must match the docstring layout "
-        "exactly so ddssl_ldct.staged_dataset.StagedH5Dataset can read it."
-    )
+def _load_npy_gz(path: Path) -> "np.ndarray":
+    import gzip
+    import numpy as np
+    with gzip.open(path) as g:
+        return np.load(g, allow_pickle=False)
+
+
+def stage_h5(raw_paths: list[Path], staged_dir: Path, *,
+             splits: dict | None = None,
+             shuffle_seed: int = 20260516) -> dict:
+    """Pack 3-tissue phantoms + 2-kVp sinograms into per-split multi-channel
+    HDF5 files.
+
+    Layout:
+        train_truth.h5      'image' shape (N_train, 3, 512, 512) float32
+                              channels = [adipose, fibroglandular, calcification]
+        train_sinograms.h5  'sino'  shape (N_train, 2, 256, 1024) float32
+                              channels = [highkVp, lowkVp] transmission
+        val_*.h5 / test_*.h5 likewise
+    """
+    import numpy as np
+    from _common import pack_h5
+
+    staged_dir.mkdir(parents=True, exist_ok=True)
+    raw_dir = raw_paths[0].parent if raw_paths else None
+    if raw_dir is None or not raw_dir.exists():
+        raise RuntimeError("dl_spectral raw_dir not found")
+
+    print("[stage] loading phantom and sinogram arrays…", flush=True)
+    adi = _load_npy_gz(raw_dir / "Phantom_Adipose.npy.gz")
+    fib = _load_npy_gz(raw_dir / "Phantom_Fibroglandular.npy.gz")
+    cal = _load_npy_gz(raw_dir / "Phantom_Calcification.npy.gz")
+    hi = _load_npy_gz(raw_dir / "highkVpTransmission.npy.gz")
+    lo = _load_npy_gz(raw_dir / "lowkVpTransmission.npy.gz")
+    n_total = adi.shape[0]
+    for arr, name in [(fib, "fib"), (cal, "cal"), (hi, "hi"), (lo, "lo")]:
+        if arr.shape[0] != n_total:
+            raise RuntimeError(
+                f"{name} N={arr.shape[0]} != adipose N={n_total}; "
+                f"Zenodo record changed?"
+            )
+
+    splits = splits or DEFAULT_SPLITS
+    total_requested = sum(splits.values())
+    if total_requested > n_total:
+        raise RuntimeError(
+            f"requested splits sum {total_requested} > {n_total} cases")
+
+    rng = np.random.default_rng(np.uint64(shuffle_seed))
+    perm = rng.permutation(n_total)
+    cursor = 0
+    splits_out: dict[str, int] = {}
+    for split, n_split in splits.items():
+        idx = perm[cursor:cursor + n_split].tolist()
+        cursor += n_split
+
+        truth = np.stack([adi[idx], fib[idx], cal[idx]], axis=1).astype("float32")
+        sino = np.stack([hi[idx], lo[idx]], axis=1).astype("float32")
+
+        def truth_emitter(t=truth):
+            for i in range(t.shape[0]):
+                yield i, t[i]
+
+        def sino_emitter(s=sino):
+            for i in range(s.shape[0]):
+                yield i, s[i]
+
+        pack_h5(staged_dir / f"{split}_truth.h5", name="image",
+                shape=truth.shape, dtype="float32", cases=truth_emitter())
+        pack_h5(staged_dir / f"{split}_sinograms.h5", name="sino",
+                shape=sino.shape, dtype="float32", cases=sino_emitter())
+        splits_out[split] = n_split
+        print(f"[stage] {split}: {n_split} cases", flush=True)
+    return splits_out
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -114,12 +178,15 @@ def main(argv: list[str] | None = None) -> int:
     if staged_dir.exists() and (staged_dir / "manifest.json").exists():
         print(f"[stage] {staged_dir}/manifest.json present — skip.")
     else:
-        stage_h5(raw_paths, staged_dir)
+        splits = stage_h5(raw_paths, staged_dir)
         write_manifest(
             staged_dir,
             source=f"https://zenodo.org/records/{ZENODO_RECORD}",
             geometry=GEOMETRY,
-            splits=SPLIT_SIZES,
+            splits=splits,
+            extra={"layout": "multi-channel: truth (N,3,H,W); sino (N,2,A,D)",
+                   "phantom_channels": ["adipose", "fibroglandular", "calcification"],
+                   "sino_channels": ["highkVp", "lowkVp"]},
         )
 
     return 0

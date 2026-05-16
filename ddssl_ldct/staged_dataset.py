@@ -3,21 +3,40 @@
 Layout (produced by `data/fetch_<challenge>.py`):
 
     data/<challenge>/staged/
-        train_sinograms.h5      # dataset 'sino', shape (N, A, D), float32
-        train_truth.h5          # dataset 'image', shape (N, H, W), float32
+        train_sinograms.h5      # dataset 'sino', shape (N_pool, A, D), float32
+                                #   (omitted when the harness forward-projects
+                                #   from truth on the fly — see StagedTruthDataset)
+        train_truth.h5          # dataset 'image', shape (N_pool, H, W), float32
         val_*.h5
         test_*.h5
-        manifest.json           # {geometry, splits, files[], fetched_at_utc}
+        manifest.json           # {geometry, splits, files[], fetched_at_utc, ...}
 
-Usage:
+`N_pool` is the FULL training pool (typically much larger than `train_n=400`,
+the per-epoch budget for 5-min iter runs). `RotatingSubsetDataset` rotates
+which `train_n` samples each epoch sees so that, across many epochs, the
+agent visits the whole pool.
 
-    from ddssl_ldct.staged_dataset import StagedH5Dataset, FanBeamGeometryFromManifest
-    train = StagedH5Dataset(
-        root=Path("/cluster/maier/Agent4CT/data/dl_sparse_view/staged"),
-        split="train", n=400,
+Usage (truth + stored sinograms — e.g. CT-MAR which ships both):
+
+    from ddssl_ldct.staged_dataset import (
+        StagedH5Dataset, RotatingSubsetDataset, FanBeamGeometryFromManifest,
     )
-    geom = FanBeamGeometryFromManifest(train.manifest_path, device=device)
-    loader = DataLoader(train, batch_size=1, num_workers=4)
+    train_pool = StagedH5Dataset(
+        root=Path("/cluster/maier/Agent4CT/data/ct_mar/staged"),
+        split="train",                              # full pool
+    )
+    train = RotatingSubsetDataset(train_pool, n_per_epoch=400, seed=cfg["seed"])
+    geom = FanBeamGeometryFromManifest(train_pool.manifest_path)
+    for ep in range(cfg["epochs"]):
+        train.set_epoch(ep)                         # rotates the subset
+        for batch in DataLoader(train, batch_size=cfg["batch_size"]):
+            ...
+
+Usage (truth-only — Mayo / DL-Spectral / any image source where the harness
+forward-projects through the challenge geometry on the fly):
+
+    pool = StagedTruthDataset(root=..., split="train")
+    train = RotatingSubsetDataset(pool, n_per_epoch=400, seed=cfg["seed"])
 
 Design notes (cf. docs/performance.md):
 
@@ -26,9 +45,24 @@ Design notes (cf. docs/performance.md):
   and crash on parallel reads.
 - Chunks are `(1, A, D)` / `(1, H, W)`, so each `__getitem__` is a single
   chunk read — O(1) random access on the page cache.
-- `n` selects the FIRST n cases deterministically. The harness uses a fixed
-  seed and depends on consistent subset selection across iter and stage
-  runs.
+
+Reproducibility contract for agents using this loader
+-----------------------------------------------------
+1. **Fix `cfg["seed"]`.** The same seed must yield the same per-epoch
+   subset on every machine. `RotatingSubsetDataset` derives the per-epoch
+   RNG state from `(seed, epoch)` — no global RNG calls.
+2. **Call `train.set_epoch(ep)` once per epoch BEFORE the inner DataLoader
+   loop.** Otherwise every epoch sees the same subset.
+3. **Do NOT shuffle inside `RotatingSubsetDataset` and also inside
+   DataLoader.** The rotation already drew a fresh subset; let DataLoader
+   shuffle WITHIN that subset if you want batch-level diversity (pass a
+   torch.Generator seeded from `(cfg["seed"], ep)` for full reproducibility).
+4. **`n_per_epoch <= len(pool)` always.** Staging must produce pools
+   large enough for the configured `train_n`; otherwise the rotation
+   degenerates to drawing the same set every epoch.
+5. **Pool ordering is the contract; don't rely on slice/patient locality.**
+   Stagers may reshuffle their inputs before packing to break per-patient
+   clustering — sample 0 and sample 1 are NOT guaranteed adjacent slices.
 """
 from __future__ import annotations
 import json
@@ -109,6 +143,117 @@ class StagedH5Dataset(Dataset):
         sino = torch.from_numpy(np.asarray(sino_ds[i])).to(self.dtype)
         truth = torch.from_numpy(np.asarray(img_ds[i])).to(self.dtype)
         return sino, truth
+
+
+class StagedTruthDataset(Dataset):
+    """Truth-only variant: returns just the ground-truth image per item.
+
+    Use this with datasets whose challenge geometry differs from the
+    sparse-view geometry our solvers train against — the harness
+    forward-projects each truth through `FanBeamGeometryFromManifest` at
+    train time, simulating its own noisy sinograms. Mayo and DL-Spectral
+    are typical examples.
+    """
+
+    def __init__(self, root: Path, split: str = "train",
+                 *, dtype=torch.float32):
+        self.root = Path(root)
+        self.split = split
+        self.dtype = dtype
+
+        self.manifest_path = self.root / "manifest.json"
+        if not self.manifest_path.exists():
+            raise FileNotFoundError(
+                f"No manifest.json in {self.root}. Run "
+                f"`python data/fetch_<challenge>.py` first."
+            )
+        self.manifest = json.loads(self.manifest_path.read_text())
+        self.geometry: dict = self.manifest["geometry"]
+        splits: dict = self.manifest["splits"]
+        if split not in splits:
+            raise ValueError(
+                f"split={split!r} not in manifest splits {list(splits.keys())}"
+            )
+        self.n_total = splits[split]
+
+        self._truth_path = self.root / f"{split}_truth.h5"
+        if not self._truth_path.exists():
+            raise FileNotFoundError(self._truth_path)
+        self._truth_f: h5py.File | None = None
+
+    def _open(self) -> h5py.File:
+        if self._truth_f is None:
+            self._truth_f = h5py.File(self._truth_path, "r", libver="latest")
+        return self._truth_f
+
+    def __len__(self) -> int:
+        return self.n_total
+
+    def __getitem__(self, i: int) -> torch.Tensor:
+        if i < 0 or i >= self.n_total:
+            raise IndexError(i)
+        tf = self._open()
+        img_ds = tf["image"] if "image" in tf else next(iter(tf.values()))
+        return torch.from_numpy(np.asarray(img_ds[i])).to(self.dtype)
+
+
+class RotatingSubsetDataset(Dataset):
+    """Wraps a pool dataset and exposes a different `n_per_epoch` subset
+    per epoch, drawn deterministically from `(seed, epoch)`.
+
+    The subset is selected without replacement WITHIN an epoch and is
+    independent across epochs. Two runs with the same `seed` produce
+    identical sequences of subsets — this is the reproducibility contract
+    the harness depends on.
+
+    Notes
+    -----
+    * `set_epoch(ep)` must be called before each epoch's DataLoader pass.
+      The constructor sets `epoch=0`.
+    * The wrapped `base` is consulted lazily by index; works with both
+      `StagedH5Dataset` and `StagedTruthDataset`.
+    * If `n_per_epoch >= len(base)`, every epoch reuses the whole pool
+      in a permuted order (still seeded), and the warning is logged once.
+    """
+
+    def __init__(self, base: Dataset, n_per_epoch: int, seed: int):
+        self.base = base
+        self.n_per_epoch = int(n_per_epoch)
+        self.seed = int(seed)
+        self._pool_size = len(base)
+        if self.n_per_epoch > self._pool_size:
+            print(
+                f"[RotatingSubsetDataset] n_per_epoch={self.n_per_epoch} > "
+                f"pool size={self._pool_size}; falling back to whole-pool "
+                f"permutation per epoch.",
+                flush=True,
+            )
+        self.epoch = 0
+        self._idx: np.ndarray | None = None
+        self._refresh()
+
+    def set_epoch(self, ep: int) -> None:
+        self.epoch = int(ep)
+        self._refresh()
+
+    def _refresh(self) -> None:
+        rng = np.random.default_rng(np.uint64(self.seed * 1_000_003 + self.epoch))
+        if self.n_per_epoch >= self._pool_size:
+            self._idx = rng.permutation(self._pool_size)
+        else:
+            self._idx = rng.choice(self._pool_size, size=self.n_per_epoch,
+                                   replace=False)
+
+    def __len__(self) -> int:
+        return int(min(self.n_per_epoch, self._pool_size))
+
+    def __getitem__(self, i):
+        assert self._idx is not None
+        return self.base[int(self._idx[i])]
+
+    @property
+    def pool_size(self) -> int:
+        return self._pool_size
 
 
 def FanBeamGeometryFromManifest(manifest_path: Path, *,

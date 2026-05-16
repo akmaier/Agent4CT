@@ -38,10 +38,13 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
+import numpy as np
+
 from _common import (
     assert_budget,
     data_root,
     download,
+    pack_h5,
     write_manifest,
 )
 
@@ -85,16 +88,26 @@ WAGNER_SPLITS = {
 }
 
 # Mayo Siemens SOMATOM Definition AS, rebinned to the fan-beam geometry our
-# pipeline uses. See ddssl_ldct/geometry.py for cross-references.
+# pipeline uses. See ddssl_ldct/geometry.py for cross-references. The staged
+# truth images are 512x512 with PixelSpacing ~0.586 mm — DICOM-native; the
+# harness forward-projects through its OWN sparse-view geometry at train time.
 GEOMETRY = {
     "image_size": 512,
-    "pixel_spacing": 0.7,
+    "pixel_spacing_dicom_mm": 0.5859375,
     "n_angles": 1152,
     "n_det": 736,
     "det_spacing": 1.2858,
     "sod": 595.0,
     "sdd": 1085.6,
 }
+
+# DICOM SOP Class UID for axial CT Image Storage. The projection-data series
+# (1.2.840.10008.5.1.4.1.1.66 = Raw Data Storage) is also present but we use
+# the reconstructed full-dose images as the clean truth — sparse-view
+# sinograms are simulated by the harness via forward projection through
+# `ddssl_ldct.geometry.FanBeamGeometry`.
+SOP_CT_IMAGE = "1.2.840.10008.5.1.4.1.1.2"
+MU_WATER_PER_MM = 0.02       # convention shared by ddssl_ldct.phantoms
 
 
 # -----------------------------------------------------------------------------
@@ -152,38 +165,120 @@ def fetch_raw(raw_dir: Path) -> dict[str, list[Path]]:
 
 
 # -----------------------------------------------------------------------------
-def stage_h5(raw_per_patient: dict[str, list[Path]], staged_dir: Path) -> None:
-    """Convert Mayo DICOM-CT-PD per-patient series into the staged layout.
+def _hu_to_mu(hu: np.ndarray) -> np.ndarray:
+    """Hounsfield Units -> linear attenuation (mm^-1). Convention matches
+    ddssl_ldct.phantoms.random_ellipses_phantom (water = 0.02 mm^-1)."""
+    return MU_WATER_PER_MM * (1.0 + hu.astype(np.float32) / 1000.0)
 
-    Each patient ships two series:
-      (a) reconstructed images (regular DICOM, axial slices)
-      (b) projection data (DICOM-CT-PD, one frame per view; helical fan-beam)
 
-    We need to:
-      1. Identify which series is which (Modality tag: 'CT' for images,
-         'CT' with manufacturer-specific tags for projection data).
-      2. Rebin the (a) image series to (H, W) = (512, 512).
-      3. Rebin the (b) projection data to the (n_angles, n_det) of our
-         FanBeamGeometry via either:
-           - a published rebinning function (Sidky's `mayo_rebin.py` if we
-             vendor it), or
-           - a forward-project of the reconstructed image through
-             FanBeamGeometry (the simpler route for the iter-phase
-             "surrogate" mode — used for initial integration).
-      4. Pack into HDF5 with chunks=(1, A, D) / (1, H, W).
+def _find_fulldose_image_series(patient_dir: Path):
+    """Return (sorted_dicom_paths, sample_ds) for the Full-Dose Images
+    series, or (None, None) if not present. Sort key is ImagePositionPatient[2]
+    (z) so slices come out in axial order."""
+    import pydicom
+    for series_dir in sorted(patient_dir.iterdir()):
+        if not series_dir.is_dir():
+            continue
+        # Read the first file to identify the series.
+        sample = next(series_dir.iterdir(), None)
+        if sample is None:
+            continue
+        try:
+            ds = pydicom.dcmread(str(sample), stop_before_pixels=True)
+        except Exception:
+            continue
+        if getattr(ds, "SOPClassUID", "") != SOP_CT_IMAGE:
+            continue
+        desc = getattr(ds, "SeriesDescription", "").lower()
+        if "full" not in desc or "image" not in desc:
+            continue
+        # Sort slices by z position.
+        files: list[tuple[float, Path]] = []
+        for fp in series_dir.iterdir():
+            try:
+                meta = pydicom.dcmread(str(fp), stop_before_pixels=True)
+                z = float(meta.ImagePositionPatient[2])
+            except Exception:
+                continue
+            files.append((z, fp))
+        files.sort()
+        return [fp for _, fp in files], ds
+    return None, None
 
-    Per-patient output: one ndarray per slice → many slices per H5.
+
+def _load_slice_mu(path: Path) -> np.ndarray:
+    """Read one DICOM slice and return (H, W) float32 μ in mm^-1."""
+    import pydicom
+    ds = pydicom.dcmread(str(path))
+    pixels = ds.pixel_array.astype(np.float32)
+    slope = float(getattr(ds, "RescaleSlope", 1.0))
+    intercept = float(getattr(ds, "RescaleIntercept", 0.0))
+    hu = pixels * slope + intercept
+    return _hu_to_mu(hu)
+
+
+def _collect_split(patient_ids: list[str], raw_dir: Path,
+                   max_slices_per_patient: int | None = None
+                   ) -> list[tuple[str, int, Path]]:
+    """For each patient in a split, list the (pid, slice_idx, path) triples
+    we will pack."""
+    out: list[tuple[str, int, Path]] = []
+    for pid in patient_ids:
+        pdir = raw_dir / pid
+        files, ds0 = _find_fulldose_image_series(pdir)
+        if not files:
+            print(f"[stage] {pid}: no Full-Dose Images series found, skip.",
+                  flush=True)
+            continue
+        if max_slices_per_patient is not None:
+            files = files[:max_slices_per_patient]
+        print(f"[stage] {pid}: {len(files)} full-dose slices", flush=True)
+        for k, fp in enumerate(files):
+            out.append((pid, k, fp))
+    return out
+
+
+def stage_h5(raw_per_patient: dict[str, list[Path]], staged_dir: Path, *,
+             shuffle_seed: int = 20260516) -> dict:
+    """Pack full-dose recon images (in μ mm^-1) into per-split truth HDF5s.
+
+    Sinograms are NOT pre-computed — the harness forward-projects each
+    truth through its challenge geometry at train time. This keeps the
+    staged size small (~1 GB total) and lets the same staged data serve
+    multiple sparse-view geometries.
+
+    Returns the splits dict suitable for `write_manifest`.
     """
-    raise NotImplementedError(
-        "Mayo DICOM-CT-PD parsing is the hard half of this script and is not "
-        "yet implemented. Two implementations are possible:\n"
-        "  (a) Direct DICOM-CT-PD: requires the Mayo-PD parser (see Sidky's "
-        "    code or the AAPM Mayo doc shipped with the dataset).\n"
-        "  (b) Surrogate path: read only the reconstructed-image DICOMs and "
-        "    forward-project through FanBeamGeometry to synthesise sinograms.\n"
-        "Recommendation: implement (b) first to unblock training, then add "
-        "(a) when we want the real sinogram noise distribution."
-    )
+    staged_dir.mkdir(parents=True, exist_ok=True)
+    splits_out: dict[str, int] = {}
+    for split, pids in WAGNER_SPLITS.items():
+        triples = _collect_split(pids, raw_per_patient_to_raw_dir(raw_per_patient))
+        if not triples:
+            raise RuntimeError(f"split={split!r}: no slices collected")
+        rng = np.random.default_rng(np.uint64(shuffle_seed + hash(split) % (1 << 31)))
+        perm = rng.permutation(len(triples))
+        triples_ordered = [triples[i] for i in perm]
+
+        def emitter(t=triples_ordered):
+            for i, (_pid, _k, fp) in enumerate(t):
+                yield i, _load_slice_mu(fp)
+
+        out = staged_dir / f"{split}_truth.h5"
+        pack_h5(out, name="image",
+                shape=(len(triples_ordered), 512, 512), dtype="float32",
+                cases=emitter())
+        splits_out[split] = len(triples_ordered)
+        print(f"[stage] {split}: {len(triples_ordered)} slices -> {out.name}",
+              flush=True)
+    return splits_out
+
+
+def raw_per_patient_to_raw_dir(raw_per_patient: dict) -> Path:
+    """Pull the parent raw/ dir out of an arbitrary raw_per_patient entry."""
+    for series_list in raw_per_patient.values():
+        for s in series_list:
+            return Path(s).parent.parent
+    raise RuntimeError("raw_per_patient is empty; cannot derive raw_dir")
 
 
 # -----------------------------------------------------------------------------
@@ -223,14 +318,17 @@ def main(argv: list[str] | None = None) -> int:
     if staged_dir.exists() and (staged_dir / "manifest.json").exists():
         print(f"[stage] {staged_dir}/manifest.json present — skip.")
     else:
-        stage_h5(raw_per_patient, staged_dir)
+        splits = stage_h5(raw_per_patient, staged_dir)
         write_manifest(
             staged_dir,
             source=f"https://doi.org/10.7937/9NPB-2637 ({TCIA_COLLECTION})",
             geometry=GEOMETRY,
-            splits={k: len(v) for k, v in WAGNER_SPLITS.items()},
+            splits=splits,
             extra={"wagner_patient_ids": WAGNER_PATIENT_IDS,
-                   "wagner_splits": WAGNER_SPLITS},
+                   "wagner_splits": WAGNER_SPLITS,
+                   "layout": "truth-only μ (mm^-1); harness forward-projects",
+                   "sop_class_used": SOP_CT_IMAGE,
+                   "series_description_filter": "Full Dose Images"},
         )
 
     return 0
