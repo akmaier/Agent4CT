@@ -92,8 +92,20 @@ IMG_NAME_RE = re.compile(
 )
 
 
+MU_WATER_PER_MM = 0.02   # convention shared with mayo_ldct + ddssl_ldct.phantoms
+
+
+def _hu_to_mu(hu: np.ndarray) -> np.ndarray:
+    """Hounsfield Units -> linear attenuation (mm^-1), water = 0.02 mm^-1."""
+    return MU_WATER_PER_MM * (1.0 + hu.astype(np.float32) / 1000.0)
+
+
 def _iter_target_images(tar_path: Path, limit: int):
-    """Yield (case_id, image_array) for every nometal image in a tar.gz."""
+    """Yield (case_id, image_array_in_mu) for every nometal image in a tar.gz.
+
+    Source images are in HU; we convert to mu (mm^-1) at staging time so
+    all challenges share the same unit convention as the synthetic phantoms.
+    """
     with tarfile.open(tar_path, "r:gz") as tf:
         yielded = 0
         for member in tf:
@@ -108,8 +120,8 @@ def _iter_target_images(tar_path: Path, limit: int):
             if buf is None:
                 continue
             raw = buf.read()
-            arr = np.frombuffer(raw, dtype="<f4").reshape(512, 512).copy()
-            yield int(m.group(3)), arr
+            hu = np.frombuffer(raw, dtype="<f4").reshape(512, 512).copy()
+            yield int(m.group(3)), _hu_to_mu(hu)
             yielded += 1
 
 

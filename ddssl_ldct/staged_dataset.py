@@ -80,6 +80,14 @@ except ImportError as e:
         "h5py is required for StagedH5Dataset. Install with: pip install h5py"
     ) from e
 
+# Register the lz4 HDF5 filter at import time so files packed with
+# hdf5plugin LZ4 (the staging default) are readable. Without this, reads
+# raise OSError "can't open directory (/usr/local/lib/plugin)".
+try:
+    import hdf5plugin                                                # noqa: F401
+except ImportError:
+    pass
+
 from .geometry import FanBeamGeometry
 
 
