@@ -118,3 +118,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 117	17764e3	0.323821	0.60413	discard	architecture	claude	claude-sonnet-4.5	variance sample
 118	a724b82	0.321725	0.603973	discard	architecture	claude	claude-sonnet-4.5	variance sample
 119	7baf2a1	0.3159	0.603918	discard	architecture	claude	claude-sonnet-4.5	variance sample
+120	c2ff57d	0.322986	0.60781	discard	architecture	claude	claude-sonnet-4.5	variance sample
