@@ -23,7 +23,7 @@ Subsequent agents can find what's already on disk here:
 |---|---|---:|---|---|
 | `ct_mar` | `data/ct_mar/raw/` | **110 GB** | ❌ not yet staged | 15 tar.gz (`body{1..13}.tar.gz` + `head{1,2}.tar.gz`), `info/`, `README_training_data.txt`. Source: RPI Box <https://rpi.app.box.com/s/7p8tkqj5ewhtdad2h8kx975i9qg6b7a4> via developer-token API. 14 000 cases. |
 | `dl_spectral` | `data/dl_spectral/raw/` | **3.3 GB** | ❌ not yet staged | Phantom maps (adipose / fibroglandular / calcification) + sinograms + `starting_kit.tgz`. Source: Zenodo 14262737. |
-| `mayo_ldct` | `data/mayo_ldct/raw/` | **in progress** (~40 GB target) | ❌ not yet staged | Wagner 10-patient subset: `L004, L033, L067, L107, L143, L186, L221, L260, L288, L299`. Source: TCIA NBIA `getSeries`/`getImage` API, anonymous. **Slow ingress (~3 MB/s).** Resumes by re-running the script — already-extracted series are skipped. |
+| `mayo_ldct` | `data/mayo_ldct/raw/` | **69 GB** (done) | ❌ not yet staged | Wagner 10-patient subset: `L004, L033, L064, L107, L143, L186, L221, L260, L288, L299` (L067 doesn't exist in TCIA's `LDCT-and-Projection-data` collection — replaced with L064). Source: TCIA NBIA `getSeries`/`getImage` API, anonymous. Re-running the script is idempotent — already-extracted series are skipped. |
 | `dl_sparse_view` | — | — | **BLOCKED** | CodaLab-gated <https://dl-sparse-view-ct-challenge.eastus.cloudapp.azure.com/competitions/1>. No public Zenodo mirror (the README's old "Zenodo 13882980" claim is wrong; that record is DL-Spectral info, 0 files). |
 | `truect` | — | — | **BLOCKED** | CodaLab-gated, contact `cvit-inquire@duke.edu`. See `data/INVESTIGATE_truect.md`. |
 
