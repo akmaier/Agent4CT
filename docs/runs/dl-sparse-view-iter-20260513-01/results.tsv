@@ -138,3 +138,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 91	8037e76	0	0	discard	architecture	claude	claude-sonnet-4.5	[backfill] iter record lost during rapid-fire submission; placeholder val/hr=0
 138	9d40876	0.268376	0.616753	discard	architecture	claude	claude-sonnet-4.5	variance sample at locked config
 139	06ec35c	0.26916	0.61543	discard	architecture	claude	claude-sonnet-4.5	variance sample at locked config
+140	64b7abb	0.268292	0.616983	discard	architecture	claude	claude-sonnet-4.5	variance sample at locked config
