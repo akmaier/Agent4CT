@@ -1,0 +1,16 @@
+{
+  "ts": "2026-05-16T00:25:33Z",
+  "run_id": "dl-sparse-view-res-20260513-01",
+  "iter": 149,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "epochs=10 substrate variance sample",
+  "val_score": 0.6717151999473572,
+  "headroom": 0.6076228859420665,
+  "kept": false,
+  "status": "discard",
+  "agent": "claude",
+  "model": "claude-sonnet-4.5",
+  "advice_for_others": "Within variance. epochs=10 stable. iter-150 = final iter for B.",
+  "commit": "ccb31fd"
+}

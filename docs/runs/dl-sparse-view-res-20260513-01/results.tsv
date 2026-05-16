@@ -145,3 +145,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 146	702eae7	0.675149	0.607363	keep	architecture	claude	claude-sonnet-4.5	epochs 8 -> 10 (B stage said +0.82pp underfit; more training)
 147	ee28abe	0.659057	0.586363	discard	architecture	claude	claude-sonnet-4.5	epochs 10 -> 12 (push further; B stage said underfit at epochs=16)
 148	b301e8c	0.668869	0.604019	discard	architecture	claude	claude-sonnet-4.5	epochs=10 substrate variance sample
+149	ccb31fd	0.671715	0.607623	discard	architecture	claude	claude-sonnet-4.5	epochs=10 substrate variance sample
