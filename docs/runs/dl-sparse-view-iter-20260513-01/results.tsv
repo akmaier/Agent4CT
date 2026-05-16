@@ -98,3 +98,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 98	081792b	0.268103	0.616671	keep	architecture	claude	claude-sonnet-4.5	wd 1e-4 -> 2e-4 (compound regularization)
 99	0fdee68	0	0	discard	architecture	claude	claude-sonnet-4.5	wd=2e-4 variance retest
 100	2669540	0	0	discard	architecture	claude	claude-sonnet-4.5	epochs 6 -> 8 probe
+101	bb56570	0	0	discard	architecture	claude	claude-sonnet-4.5	wd=2e-4 + epochs=8
