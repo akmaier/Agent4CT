@@ -1,0 +1,19 @@
+{
+  "slug": "demo-dl-itnet-v2-search-20260516-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-itnet-v2-search",
+  "started": "2026-05-16T13:28:16Z",
+  "agent": "itnet-v2-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "ItNet v2 hyperparameter random search: pretrain_epochs, lr, k, unet_c, alpha, residual",
+  "finished": "2026-05-16T13:45:57Z",
+  "best_params": {
+    "pretrain_epochs": 6,
+    "pretrain_lr": 0.00029175978138422674,
+    "itnet_k": 3,
+    "itnet_alpha_init": 0.03781650112723009,
+    "residual_learning": false
+  },
+  "best_headroom": 0.4806336313963816
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "demo-dl-itnet-v3-search-20260516-02",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-itnet-v3-search",
+  "started": "2026-05-16T14:33:21Z",
+  "agent": "itnet-v3-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "ItNet v3 hyperparameter random search: epochs, lr, batch, unet_c, k, alpha",
+  "finished": "2026-05-16T15:04:10Z",
+  "best_params": {
+    "epochs": 10,
+    "lr": 0.00042113879806871007,
+    "batch_size": 10,
+    "unet_c": 12,
+    "itnet_k": 3,
+    "alpha_init": 0.0090978500495007
+  },
+  "best_headroom": 0.8215169345350379
+}

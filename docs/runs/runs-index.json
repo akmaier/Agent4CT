@@ -1,7 +1,19 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-16T14:18:55Z",
+  "updated": "2026-05-16T17:24:18Z",
   "runs": [
+    {
+      "slug": "demo-dl-bf-20260516-01",
+      "short_id": "bf-20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T13:20:23Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.319442,
+      "best_headroom": 0.61909,
+      "agent": "bf-search",
+      "model": "random-search"
+    },
     {
       "slug": "demo-dl-dual_domain-20260515-01",
       "short_id": "20260515-01",
@@ -15,6 +27,18 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-dl-hammernik-search-20260516-02",
+      "short_id": "20260516-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T14:33:21Z",
+      "status": "done",
+      "n_iterations": 19,
+      "best_score": 0.359245,
+      "best_headroom": 0.526303,
+      "agent": "hammernik-search",
+      "model": "random-search"
+    },
+    {
       "slug": "demo-dl-itnet-20260515-01",
       "short_id": "20260515-01",
       "challenge": "dl_sparse_view",
@@ -24,6 +48,30 @@
       "best_score": 0.329573,
       "best_headroom": 0.54323,
       "agent": "itnet-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-itnet-v2-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T13:28:16Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.369432,
+      "best_headroom": 0.480634,
+      "agent": "itnet-v2-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-itnet-v3-search-20260516-02",
+      "short_id": "20260516-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T14:33:21Z",
+      "status": "done",
+      "n_iterations": 18,
+      "best_score": 0.723799,
+      "best_headroom": 0.821517,
+      "agent": "itnet-v3-search",
       "model": "random-search"
     },
     {
@@ -181,18 +229,6 @@
       "best_headroom": 0.611967,
       "agent": "claude",
       "model": "claude-sonnet-4.5"
-    },
-    {
-      "slug": "demo-dl-bf-20260516-01",
-      "short_id": "bf-20260516-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-16T13:20:23Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.319442,
-      "best_headroom": 0.61909,
-      "agent": "bf-search",
-      "model": "random-search"
     }
   ]
 }

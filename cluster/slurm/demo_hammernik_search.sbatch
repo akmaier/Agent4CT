@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:q8000:1
 #SBATCH --exclude=lme171,lme222,lme223,lme49,lme50,lme51,lme52
 #SBATCH --mem=24G
-#SBATCH --time=01:00:00
+#SBATCH --time=02:30:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
 
