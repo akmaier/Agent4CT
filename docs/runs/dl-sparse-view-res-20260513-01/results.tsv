@@ -149,3 +149,4 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 150	8308c9e	0.674242	0.605491	discard	architecture	claude	claude-sonnet-4.5	Final iter for B (target reached). epochs=10 substrate.
 28	8037e76	0	0	discard	architecture	claude	claude-sonnet-4.5	[backfill] iter record lost during rapid-fire submission; placeholder val/hr=0
 29	8037e76	0	0	discard	architecture	claude	claude-sonnet-4.5	[backfill] iter record lost during rapid-fire submission; placeholder val/hr=0
+30	8037e76	0	0	discard	architecture	claude	claude-sonnet-4.5	[backfill] iter record lost during rapid-fire submission; placeholder val/hr=0
