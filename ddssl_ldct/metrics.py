@@ -19,12 +19,19 @@ def _gaussian_window(size: int, sigma: float, device, dtype) -> torch.Tensor:
 
 
 def ssim(pred: torch.Tensor, target: torch.Tensor,
-         data_range: float | None = None,
-         window_size: int = 11, sigma: float = 1.5) -> torch.Tensor:
+          data_range: float | None = None,
+          window_size: int = 11, sigma: float = 1.5) -> torch.Tensor:
+    """SSIM for calibrated floating-point images.
+
+    C1 and C2 are set to 0 because the images are calibrated attenuation
+    coefficients (not 8-bit or windowed display values).  See discussion in
+    Wang et al., IEEE Trans. IP 2004 – the stabilising constants are only
+    needed when the dynamic range is quantised and unknown.
+    """
     if data_range is None:
         data_range = float(target.amax() - target.amin())
-    C1 = (0.01 * data_range) ** 2
-    C2 = (0.03 * data_range) ** 2
+    C1 = 0.0
+    C2 = 0.0
     w = _gaussian_window(window_size, sigma, pred.device, pred.dtype)[None, None]
     pad = window_size // 2
     mu_x = F.conv2d(pred, w, padding=pad)

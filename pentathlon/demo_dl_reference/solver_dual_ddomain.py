@@ -68,7 +68,18 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
-    cfg = {**CONFIG, **(cfg or {})}
+    # Check for environment-based config override
+    import os
+    env_config_path = os.environ.get("DD_CONFIG_PATH")
+    if env_config_path and Path(env_config_path).exists():
+        with open(env_config_path) as f:
+            env_cfg = json.load(f)
+        cfg = {**CONFIG, **env_cfg}
+        print(f"[solver] Loaded config from {env_config_path}")
+    elif cfg is not None:
+        cfg = {**CONFIG, **cfg}
+    else:
+        cfg = CONFIG.copy()
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -129,11 +140,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         pred = torch.cat(preds, dim=0)
 
     data_range = cfg["display_max"] - cfg["display_min"]
-    val_psnr = float(psnr(pred, val_ref, data_range=data_range).cpu())
-    val_ssim = float(ssim(pred, val_ref, data_range=data_range).cpu())
-    val_rmse = float(((pred - val_ref) ** 2).mean().sqrt().cpu())
-    baseline_psnr = float(psnr(ld_fbp, val_ref, data_range=data_range).cpu())
-    baseline_rmse = float(((ld_fbp - val_ref) ** 2).mean().sqrt().cpu())
+    # Compare against ground truth phantom (not noiseless FBP reference)
+    val_psnr = float(psnr(pred, val_ph, data_range=data_range).cpu())
+    val_ssim = float(ssim(pred, val_ph, data_range=data_range).cpu())
+    val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())
+    baseline_psnr = float(psnr(ld_fbp, val_ph, data_range=data_range).cpu())
+    baseline_rmse = float(((ld_fbp - val_ph) ** 2).mean().sqrt().cpu())
     headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
     val_score = val_ssim
 
@@ -148,14 +160,14 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             ax = ax[None]
         vmin, vmax = cfg["display_min"], cfg["display_max"]
         for i in range(n_show):
-            ax[i, 0].imshow(val_ref[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 0].set_title("reference" if i == 0 else "")
+            ax[i, 0].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
+            ax[i, 0].set_title("phantom (truth)" if i == 0 else "")
             ax[i, 1].imshow(ld_fbp[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 1].set_title(f"FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
             ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 2].set_title(f"dual-domain  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})" if i == 0 else "")
-            ax[i, 3].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 3].set_title("phantom" if i == 0 else "")
+            ax[i, 3].imshow(val_ref[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
+            ax[i, 3].set_title("noiseless FBP" if i == 0 else "")
             for a in ax[i]:
                 a.set_axis_off()
         plt.tight_layout()

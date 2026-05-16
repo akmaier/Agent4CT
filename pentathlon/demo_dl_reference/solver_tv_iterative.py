@@ -143,11 +143,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     train_time = time.time() - t0
 
     data_range = cfg["display_max"] - cfg["display_min"]
-    val_psnr = float(psnr(pred, val_ref, data_range=data_range).cpu())
-    val_ssim = float(ssim(pred, val_ref, data_range=data_range).cpu())
-    val_rmse = float(((pred - val_ref) ** 2).mean().sqrt().cpu())
-    baseline_psnr = float(psnr(fbp_init, val_ref, data_range=data_range).cpu())
-    baseline_rmse = float(((fbp_init - val_ref) ** 2).mean().sqrt().cpu())
+    # Compare against ground truth phantom (not noiseless FBP reference)
+    val_psnr = float(psnr(pred, val_ph, data_range=data_range).cpu())
+    val_ssim = float(ssim(pred, val_ph, data_range=data_range).cpu())
+    val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())
+    baseline_psnr = float(psnr(fbp_init, val_ph, data_range=data_range).cpu())
+    baseline_rmse = float(((fbp_init - val_ph) ** 2).mean().sqrt().cpu())
     headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
     val_score = val_ssim
 

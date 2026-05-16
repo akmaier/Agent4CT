@@ -201,11 +201,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     params_total = sum(p.numel() for p in itnet.parameters() if p.requires_grad)
 
     data_range = cfg["display_max"] - cfg["display_min"]
-    val_psnr = float(psnr(pred, val_ref, data_range=data_range).cpu())
-    val_ssim = float(ssim(pred, val_ref, data_range=data_range).cpu())
-    val_rmse = float(((pred - val_ref) ** 2).mean().sqrt().cpu())
-    baseline_psnr = float(psnr(val_fbp, val_ref, data_range=data_range).cpu())
-    baseline_rmse = float(((val_fbp - val_ref) ** 2).mean().sqrt().cpu())
+    # Compare against ground truth phantom (not noiseless FBP reference)
+    val_psnr = float(psnr(pred, val_ph, data_range=data_range).cpu())
+    val_ssim = float(ssim(pred, val_ph, data_range=data_range).cpu())
+    val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())
+    baseline_psnr = float(psnr(val_fbp, val_ph, data_range=data_range).cpu())
+    baseline_rmse = float(((val_fbp - val_ph) ** 2).mean().sqrt().cpu())
     headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
     val_score = val_ssim
 
