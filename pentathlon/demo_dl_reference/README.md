@@ -68,15 +68,34 @@ All methods run on **synthetic random-ellipse phantoms** (stand-in for real AAPM
 
 ---
 
+### 6. Wu 2015 Classical FBP (`solver_wu_2015.py`)
+- **Method**: Wu, Maier, Yang, Fahrig 2015 — radius-dependent frequency-split
+  ramp filter (aliasing-free FBP) + feature-preserving symmetric
+  motion-compensated sinogram interpolation, 2 outer residual-restoration
+  iterations with soft thresholding. No learning. See
+  [literature/wu_2015_sparse_view_fbp.md](../../literature/wu_2015_sparse_view_fbp.md).
+- **Architecture**: 4 triangular frequency bands (paper uses 8), ±5-pixel
+  symmetric motion search with ±2-pixel L1 window, soft threshold 0.0015 μ.
+- **Result** (Job 761107):
+  - SSIM: 0.1285
+  - PSNR: 14.74 dB
+  - RMSE: 0.00916
+  - **Headroom: 0.3786** ← strongest classical baseline on this geometry
+  - Params: 0 (no learning)
+- **Time**: ~1.1 seconds — by far the cheapest non-trivial method.
+
+---
+
 ## Key Findings
 
 ### On Synthetic Phantoms:
-| Method | Headroom | Notes |
-|--------|----------|-------|
-| FBP | 0.0000 | Baseline |
-| Dual-Domain | **0.5831** | Best performance |
-| TV | TBD | Classical approach |
-| ItNet | 0.0000 | Needs debugging |
+| Method | Headroom | SSIM | Notes |
+|--------|---------:|-----:|-------|
+| FBP | 0.0000 | 0.4454 | Baseline (defines headroom=0) |
+| TV iterative | 0.2562 | 0.1281 | Classical MBIR |
+| **Wu 2015** | **0.3786** | **0.1285** | Strongest classical, ~1 s wall |
+| Dual-Domain | 0.5831 | 0.3055 | Best learned method (Wagner 2023) |
+| ItNet v1 | 0.0000 | 0.1369 | Broken; needs debugging |
 
 ### Lessons:
 1. **Dual-Domain denoising is strongest** on synthetic data (0.58 headroom)
