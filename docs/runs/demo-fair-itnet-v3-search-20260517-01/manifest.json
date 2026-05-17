@@ -1,0 +1,21 @@
+{
+  "slug": "demo-fair-itnet-v3-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-itnet-v3-search",
+  "started": "2026-05-17T15:47:05Z",
+  "agent": "itnet-v3-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "fair re-run: itnet_v3 hyperparameter random search under CONVENTIONS.md",
+  "finished": "2026-05-17T16:18:21Z",
+  "sampler": "random",
+  "best_params": {
+    "epochs": 10,
+    "lr": 0.00042113879806871007,
+    "batch_size": 10,
+    "unet_c": 12,
+    "itnet_k": 3,
+    "alpha_init": 0.0090978500495007
+  },
+  "best_headroom": 0.818714952118064
+}

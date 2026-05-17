@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.453693	0.3934	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0017552, tv_iterations=214, tv_lr=0.040485, tv_clip_max=0.035913, tv_decay=0.019552
+2		0.436399	0.532583	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.001526, tv_iterations=90, tv_lr=0.0456, tv_clip_max=0.073269, tv_decay=0.0014495
+3		0.263184	0.348529	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.00066376, tv_iterations=166, tv_lr=0.0039546, tv_clip_max=0.04834, tv_decay=0.010459
+4		0.33363	0.301389	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0021809, tv_iterations=311, tv_lr=0.0028686, tv_clip_max=0.0341, tv_decay=0.010338
+5		0.281052	0.288679	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0001565, tv_iterations=101, tv_lr=0.0087078, tv_clip_max=0.035484, tv_decay=0.021225
+6		0.466838	0.663375	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.007661, tv_iterations=462, tv_lr=0.081192, tv_clip_max=0.079381, tv_decay=0.044912
+7		0.450422	0.646419	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0093631, tv_iterations=500, tv_lr=0.080872, tv_clip_max=0.076596, tv_decay=0.04995
+8		0.272312	0.364204	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.007283, tv_iterations=489, tv_lr=0.0010175, tv_clip_max=0.064412, tv_decay=0.046138
+9		0.27463	0.367819	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.00039197, tv_iterations=367, tv_lr=0.018583, tv_clip_max=0.060483, tv_decay=0.037054
+10		0.433165	0.48765	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.003763, tv_iterations=397, tv_lr=0.017772, tv_clip_max=0.049605, tv_decay=0.03522
+11		0.485336	0.67154	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0048465, tv_iterations=418, tv_lr=0.092505, tv_clip_max=0.079239, tv_decay=0.03401
+12		0.492262	0.679318	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0048005, tv_iterations=405, tv_lr=0.07745, tv_clip_max=0.079842, tv_decay=0.034544
+13		0.496124	0.648675	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0035562, tv_iterations=382, tv_lr=0.099389, tv_clip_max=0.068964, tv_decay=0.0306
+14		0.471668	0.615442	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0038279, tv_iterations=322, tv_lr=0.033896, tv_clip_max=0.079919, tv_decay=0.027039
+15		0.305515	0.39191	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.00087503, tv_iterations=430, tv_lr=0.019762, tv_clip_max=0.070437, tv_decay=0.040987
+16		0.353824	0.441417	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0044829, tv_iterations=250, tv_lr=0.0076361, tv_clip_max=0.057639, tv_decay=0.03093
+17		0.268836	0.360217	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0001125, tv_iterations=339, tv_lr=0.058394, tv_clip_max=0.065869, tv_decay=0.037981
+18		0.299201	0.383558	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.00039804, tv_iterations=422, tv_lr=0.027393, tv_clip_max=0.072531, tv_decay=0.023706
+19		0.494539	0.554163	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0055865, tv_iterations=275, tv_lr=0.057249, tv_clip_max=0.052224, tv_decay=0.016821
+20		0.360647	0.400585	keep	architecture	tv-search-tpe	random-search	tv-search-tpe: tv_lambda=0.0022597, tv_iterations=458, tv_lr=0.011484, tv_clip_max=0.043203, tv_decay=0.032353

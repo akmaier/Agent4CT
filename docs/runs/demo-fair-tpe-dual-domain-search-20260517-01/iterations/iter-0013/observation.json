@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T18:24:41Z",
+  "run_id": "demo-fair-tpe-dual-domain-search-20260517-01",
+  "iter": 13,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual-domain-search-tpe: epochs=7, lr=0.0001831, batch_size=1, unet_c=24",
+  "val_score": 0.31168243288993835,
+  "headroom": 0.5892843032816347,
+  "kept": true,
+  "status": "keep",
+  "params_M": 1.045394,
+  "train_n": 400,
+  "agent": "dual-domain-search-tpe",
+  "model": "random-search",
+  "advice_for_others": "dual-domain-search-tpe: epochs=7, lr=0.0001831, batch_size=1, unet_c=24 -> hr=0.5893",
+  "comparison_image": "runs/demo-fair-tpe-dual-domain-search-20260517-01/iterations/iter-0013/comparison.png"
+}

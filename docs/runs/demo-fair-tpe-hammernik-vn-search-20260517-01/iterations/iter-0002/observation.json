@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T17:53:34Z",
+  "run_id": "demo-fair-tpe-hammernik-vn-search-20260517-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "hammernik-vn-search-tpe: epochs=12, lr=9.6469e-05, batch_size=2, vn_T=5, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.00016571, vn_init=fbp",
+  "val_score": 0.2936958372592926,
+  "headroom": 0.5290920706248667,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.012165,
+  "train_n": 200,
+  "agent": "hammernik-vn-search-tpe",
+  "model": "random-search",
+  "advice_for_others": "hammernik-vn-search-tpe: epochs=12, lr=9.6469e-05, batch_size=2, vn_T=5, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.00016571, vn_init=fbp -> hr=0.5291",
+  "comparison_image": "runs/demo-fair-tpe-hammernik-vn-search-20260517-01/iterations/iter-0002/comparison.png"
+}

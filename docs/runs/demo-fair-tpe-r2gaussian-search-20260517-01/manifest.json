@@ -1,0 +1,10 @@
+{
+  "slug": "demo-fair-tpe-r2gaussian-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-tpe-r2gaussian-search",
+  "started": "2026-05-17T17:33:45Z",
+  "agent": "r2gaussian-search-tpe",
+  "model": "optuna-tpe",
+  "status": "running",
+  "notes": "packed-tpe: R2Gaussian (Optuna TPE)"
+}

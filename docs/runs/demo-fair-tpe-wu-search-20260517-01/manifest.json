@@ -1,0 +1,20 @@
+{
+  "slug": "demo-fair-tpe-wu-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-tpe-wu-search",
+  "started": "2026-05-17T17:33:42Z",
+  "agent": "wu-search-tpe",
+  "model": "optuna-tpe",
+  "status": "done",
+  "notes": "packed-tpe: Wu 2015 (Optuna TPE)",
+  "finished": "2026-05-17T17:38:38Z",
+  "sampler": "tpe",
+  "best_params": {
+    "wu_n_bands": 12,
+    "wu_n_outer": 1,
+    "wu_motion_range": 3,
+    "wu_motion_window": 1,
+    "wu_soft_thresh": 0.003161073813755784
+  },
+  "best_headroom": 0.41231594038315356
+}

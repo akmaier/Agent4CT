@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-17T16:53:57Z",
+  "updated": "2026-05-17T18:59:50Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -255,6 +255,18 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-fair-itnet-v3-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T15:47:05Z",
+      "status": "done",
+      "n_iterations": 18,
+      "best_score": 0.726088,
+      "best_headroom": 0.818715,
+      "agent": "itnet-v3-search",
+      "model": "random-search"
+    },
+    {
       "slug": "demo-fair-naf-search-20260517-01",
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
@@ -277,6 +289,114 @@
       "best_headroom": 0.358925,
       "agent": "r2gaussian-search",
       "model": "random-search"
+    },
+    {
+      "slug": "demo-fair-tpe-dual-domain-bf-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T17:33:45Z",
+      "status": "done",
+      "n_iterations": 14,
+      "best_score": 0.30698,
+      "best_headroom": 0.610612,
+      "agent": "dual-domain-bf-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-dual-domain-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T17:33:42Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.316394,
+      "best_headroom": 0.601915,
+      "agent": "dual-domain-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-hammernik-vn-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T17:33:45Z",
+      "status": "done",
+      "n_iterations": 8,
+      "best_score": 0.500999,
+      "best_headroom": 0.594641,
+      "agent": "hammernik-vn-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-itnet-v2-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T17:33:42Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.373017,
+      "best_headroom": 0.57613,
+      "agent": "itnet-v2-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-itnet-v3-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T18:15:22Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.748331,
+      "best_headroom": 0.837826,
+      "agent": "itnet-v3-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-r2gaussian-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T17:33:45Z",
+      "status": "done",
+      "n_iterations": 6,
+      "best_score": 0.826014,
+      "best_headroom": 0.361727,
+      "agent": "r2gaussian-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-tv-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T17:33:42Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.496124,
+      "best_headroom": 0.679318,
+      "agent": "tv-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-uswin-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T16:18:21Z",
+      "status": "done",
+      "n_iterations": 19,
+      "best_score": 0.813089,
+      "best_headroom": 0.818013,
+      "agent": "uswin-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-wu-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T17:33:42Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.193444,
+      "best_headroom": 0.412316,
+      "agent": "wu-search-tpe",
+      "model": "optuna-tpe"
     },
     {
       "slug": "demo-fair-tv-search-20260517-01",

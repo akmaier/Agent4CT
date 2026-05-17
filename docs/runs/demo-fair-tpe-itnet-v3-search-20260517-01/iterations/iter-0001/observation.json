@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T18:17:01Z",
+  "run_id": "demo-fair-tpe-itnet-v3-search-20260517-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "itnet-v3-search-tpe: epochs=11, lr=0.00029884, batch_size=10, unet_c=16, itnet_k=2, alpha_init=0.0018087",
+  "val_score": 0.6591700315475464,
+  "headroom": 0.8145732908625977,
+  "kept": true,
+  "status": "keep",
+  "params_M": 3.698994,
+  "train_n": 200,
+  "agent": "itnet-v3-search-tpe",
+  "model": "random-search",
+  "advice_for_others": "itnet-v3-search-tpe: epochs=11, lr=0.00029884, batch_size=10, unet_c=16, itnet_k=2, alpha_init=0.0018087 -> hr=0.8146",
+  "comparison_image": "runs/demo-fair-tpe-itnet-v3-search-20260517-01/iterations/iter-0001/comparison.png"
+}

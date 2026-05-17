@@ -1,0 +1,21 @@
+{
+  "slug": "demo-fair-tpe-uswin-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-tpe-uswin-search",
+  "started": "2026-05-17T16:18:21Z",
+  "agent": "uswin-search-tpe",
+  "model": "optuna-tpe",
+  "status": "done",
+  "notes": "uswin hyperparameter random search",
+  "finished": "2026-05-17T17:05:38Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 12,
+    "lr": 0.00018045729311738355,
+    "batch_size": 2,
+    "uswin_c": 24,
+    "swin_window": 4,
+    "swin_heads": 2
+  },
+  "best_headroom": 0.8180125365499906
+}

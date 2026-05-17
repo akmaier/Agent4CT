@@ -1,0 +1,19 @@
+{
+  "slug": "demo-fair-tpe-dual-domain-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-tpe-dual-domain-search",
+  "started": "2026-05-17T17:33:42Z",
+  "agent": "dual-domain-search-tpe",
+  "model": "optuna-tpe",
+  "status": "done",
+  "notes": "packed-tpe: DD U-Net (Optuna TPE)",
+  "finished": "2026-05-17T18:47:02Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 6,
+    "lr": 0.0004177028940034296,
+    "batch_size": 1,
+    "unet_c": 24
+  },
+  "best_headroom": 0.6019154004512197
+}
