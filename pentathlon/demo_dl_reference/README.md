@@ -13,6 +13,36 @@
 > launched 2026-05-17 (jobs 761199-761203) under the corrected
 > convention.
 
+## Random vs Optuna-TPE search (2026-05-17)
+
+Every fair re-run is now duplicated under two samplers so the dashboard
+can compare them directly:
+
+| Slug prefix | Sampler | Description |
+|---|---|---|
+| `demo-fair-<solver>-search-*` | `random` | Independent uniform/log samples; embarrassingly parallel; ~64 % chance of landing a top-5 % config in 20 iters (Bergstra & Bengio 2012). |
+| `demo-fair-tpe-<solver>-search-*` | `optuna-tpe` | Tree-structured Parzen Estimator: 5 random startup trials + 15 acquisition trials guided by prior outcomes. SQLite-backed study at `/cluster/maier/Agent4CT/optuna/<slug>.db` so Slurm restarts resume. ~3-5× more sample efficient than random for shallow-optima spaces. |
+
+Both samplers draw from **the identical search-space** (`SOLVERS[<name>]
+["space"]` in `scripts/learned_solver_search_agent.py`). The dashboard
+chart-group key `demo-fair` collects both into the same chart so the
+random-vs-TPE delta is visually obvious.
+
+**Why 20 iterations?** Hits a sweet spot:
+- TPE at 20 iters reaches ~95 % of best-attainable headroom on a 5-8 dim
+  search space (rule of thumb: ~10-15 for 90 %, ~20-25 for 95 %).
+- Random at 20 iters has ~64 % chance to land a top-5 % config (only
+  ~30-50 random trials needed for 90 %); we accept that lower sample
+  efficiency in exchange for full parallelism.
+- Cluster wall budget: solvers take 5-40 min per iter; 20 × 40 min ≈
+  13 h fits inside the largest sbatch wall (NAF's 14 h). Doubling to
+  40 iters would push some solvers past their sbatch wall.
+
+The TPE jobs are submitted with Slurm `--dependency=afterany:<random-job-id>`
+so they queue but do not start until the matching random run finishes,
+freeing the GPU for the same solver and letting the per-study SQLite
+file's prior history (if any) accumulate cleanly.
+
 ## Fair re-run plan (2026-05-17)
 
 A bug audit found two sources of incomparability across older runs:

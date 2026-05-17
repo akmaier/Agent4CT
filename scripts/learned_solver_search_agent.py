@@ -272,7 +272,7 @@ def make_slug(prefix):
     return f"{prefix}-{today}-{seq:02d}"
 
 
-def create_run(slug_prefix, agent_name, notes):
+def create_run(slug_prefix, agent_name, notes, model="random-search"):
     DOCS_RUNS.mkdir(parents=True, exist_ok=True)
     slug = make_slug(slug_prefix)
     run_dir = DOCS_RUNS / slug
@@ -281,7 +281,7 @@ def create_run(slug_prefix, agent_name, notes):
     manifest = {
         "slug": slug, "challenge": "dl_sparse_view",
         "slug_prefix": slug_prefix,
-        "started": utc_now_iso(), "agent": agent_name, "model": "random-search",
+        "started": utc_now_iso(), "agent": agent_name, "model": model,
         "status": "running", "notes": notes,
     }
     (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
@@ -296,6 +296,7 @@ def create_run(slug_prefix, agent_name, notes):
 
 
 def sample_params(space, rng):
+    """Random-search sampler (legacy)."""
     out = {}
     for key, spec in space.items():
         if isinstance(spec, tuple) and len(spec) == 3:
@@ -310,6 +311,29 @@ def sample_params(space, rng):
                 raise ValueError(mode)
         elif isinstance(spec, tuple) and len(spec) == 2 and spec[1] == "choice":
             out[key] = rng.choice(spec[0])
+        else:
+            raise ValueError(f"Bad spec for {key}: {spec}")
+    return out
+
+
+def _optuna_suggest(trial, space):
+    """Translate our search-space spec into Optuna trial.suggest_* calls.
+    Mirrors sample_params semantics so the random and TPE runs are
+    drawing from the exact same support."""
+    out = {}
+    for key, spec in space.items():
+        if isinstance(spec, tuple) and len(spec) == 3:
+            lo, hi, mode = spec
+            if mode == "int":
+                out[key] = trial.suggest_int(key, int(lo), int(hi))
+            elif mode == "log":
+                out[key] = trial.suggest_float(key, float(lo), float(hi), log=True)
+            elif mode == "linear":
+                out[key] = trial.suggest_float(key, float(lo), float(hi))
+            else:
+                raise ValueError(mode)
+        elif isinstance(spec, tuple) and len(spec) == 2 and spec[1] == "choice":
+            out[key] = trial.suggest_categorical(key, list(spec[0]))
         else:
             raise ValueError(f"Bad spec for {key}: {spec}")
     return out
@@ -446,42 +470,93 @@ def main():
     p.add_argument("--seed", type=int, default=20260516)
     p.add_argument("--notes", default="")
     p.add_argument("--out-base", default="/cluster/maier/Agent4CT/runs")
+    p.add_argument("--sampler", choices=["random", "tpe"], default="random",
+                   help="random = legacy uniform/log; tpe = Optuna's "
+                        "Tree-structured Parzen Estimator (adaptive)")
+    p.add_argument("--tpe-storage",
+                   default="/cluster/maier/Agent4CT/optuna",
+                   help="Directory for the per-study SQLite db (TPE only)")
+    p.add_argument("--tpe-startup", type=int, default=5,
+                   help="Random startup trials before TPE kicks in")
     args = p.parse_args()
 
     spec = SOLVERS[args.solver]
+    # When using a non-default sampler, suffix both slug prefix and agent
+    # name so the runs are clearly tagged but still group under the same
+    # chart on the dashboard (chartGroupKey uses first 2 hyphen segments).
+    if args.sampler == "tpe":
+        spec = dict(spec)
+        # demo-fair-uswin-search -> demo-fair-tpe-uswin-search
+        spec["slug_prefix"] = spec["slug_prefix"].replace(
+            "demo-fair-", "demo-fair-tpe-")
+        spec["agent_name"] = spec["agent_name"] + "-tpe"
+        model_label = "optuna-tpe"
+    else:
+        model_label = "random-search"
+
     rng = random.Random(args.seed)
     slug, run_dir = create_run(
         spec["slug_prefix"], spec["agent_name"],
-        args.notes or f"{args.solver} hyperparameter random search"
+        args.notes or f"{args.solver} hyperparameter {args.sampler} search",
+        model=model_label,
     )
 
-    print(f"[agent] === {args.solver} search → {slug} ===")
+    print(f"[agent] === {args.solver} {args.sampler} search → {slug} ===")
     print(f"[agent] space keys: {list(spec['space'].keys())}")
+
+    # Lazy-import Optuna so the random-search path doesn't require it.
+    study = None
+    if args.sampler == "tpe":
+        try:
+            import optuna
+        except ImportError as e:
+            raise SystemExit(
+                "TPE sampler requested but Optuna is not installed. "
+                "Run: pip install optuna"
+            ) from e
+        Path(args.tpe_storage).mkdir(parents=True, exist_ok=True)
+        storage = f"sqlite:///{args.tpe_storage}/{slug}.db"
+        study = optuna.create_study(
+            study_name=slug, storage=storage, direction="maximize",
+            sampler=optuna.samplers.TPESampler(
+                seed=args.seed, n_startup_trials=args.tpe_startup),
+            load_if_exists=True,
+        )
+        print(f"[agent] Optuna TPE study persisted at {storage} "
+              f"(n_startup={args.tpe_startup}, seed={args.seed})", flush=True)
 
     best_hr = 0.0
     best_params = None
     for i in range(1, args.iterations + 1):
-        params = sample_params(spec["space"], rng)
-        print(f"\n[agent] iter {i}/{args.iterations}: {json.dumps(params)}", flush=True)
+        if args.sampler == "tpe":
+            trial = study.ask()
+            params = _optuna_suggest(trial, spec["space"])
+        else:
+            params = sample_params(spec["space"], rng)
+        print(f"\n[agent] iter {i}/{args.iterations}: {json.dumps(params)}",
+              flush=True)
         out_dir = Path(args.out_base) / f"{slug}-iter-{i:04d}"
         result = run_solver(spec["solver"], spec["env_var"], params, out_dir)
+        hr = (result or {}).get("headroom", 0.0)
         if result is None:
-            print(f"[agent] iter {i} FAILED, continuing")
-            continue
-        hr = result.get("headroom", 0.0)
-        print(f"[agent] hr={hr:.4f} SSIM={result.get('val_score', 0):.4f} "
-              f"params_M={result.get('params_M', 0):.3f} "
-              f"time={result.get('train_time_s', 0):.1f}s")
-        if hr > best_hr:
-            best_hr = hr
-            best_params = params.copy()
-            print(f"[agent] *** NEW BEST: hr={best_hr:.4f} ***")
-        record_iteration(run_dir, i, params, result, spec["agent_name"], out_dir)
+            print(f"[agent] iter {i} FAILED")
+        else:
+            print(f"[agent] hr={hr:.4f} SSIM={result.get('val_score', 0):.4f} "
+                  f"params_M={result.get('params_M', 0):.3f} "
+                  f"time={result.get('train_time_s', 0):.1f}s")
+            if hr > best_hr:
+                best_hr = hr; best_params = params.copy()
+                print(f"[agent] *** NEW BEST: hr={best_hr:.4f} ***")
+            record_iteration(run_dir, i, params, result, spec["agent_name"],
+                              out_dir)
+        if args.sampler == "tpe":
+            study.tell(trial, hr)        # 0.0 on failure tells TPE this region is bad
 
     manifest_path = run_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text())
     manifest["status"] = "done"
     manifest["finished"] = utc_now_iso()
+    manifest["sampler"] = args.sampler
     if best_params is not None:
         manifest["best_params"] = best_params
         manifest["best_headroom"] = best_hr
@@ -489,7 +564,8 @@ def main():
 
     update_index()
     print("\n" + "=" * 60)
-    print(f"[agent] {args.solver} SEARCH COMPLETE — best hr={best_hr:.4f}")
+    print(f"[agent] {args.solver} {args.sampler.upper()} SEARCH COMPLETE — "
+          f"best hr={best_hr:.4f}")
     if best_params:
         for k, v in best_params.items():
             print(f"  {k}: {v}")
