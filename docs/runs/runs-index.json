@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-17T19:14:52Z",
+  "updated": "2026-05-17T20:10:21Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -24,6 +24,18 @@
       "best_score": -0.00276021,
       "best_headroom": 0.99724,
       "agent": "ddpm-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-diffusion-recon-constrained-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T18:53:13Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.251815,
+      "best_headroom": 0.0,
+      "agent": "diffusion-recon-constrained-search",
       "model": "random-search"
     },
     {

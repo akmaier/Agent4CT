@@ -1,0 +1,12 @@
+{
+  "slug": "demo-dl-diffusion-recon-constrained-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-diffusion-recon-constrained-search",
+  "started": "2026-05-17T18:53:13Z",
+  "agent": "diffusion-recon-constrained-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "diffusion_recon_constrained hyperparameter random search",
+  "finished": "2026-05-17T19:26:23Z",
+  "sampler": "random"
+}
