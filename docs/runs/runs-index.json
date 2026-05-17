@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-17T13:05:55Z",
+  "updated": "2026-05-17T13:11:14Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -219,6 +219,18 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-fair-hammernik-vn-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T11:12:39Z",
+      "status": "running",
+      "n_iterations": 12,
+      "best_score": 0.53596,
+      "best_headroom": 0.600499,
+      "agent": "hammernik-vn-search",
+      "model": "random-search"
+    },
+    {
       "slug": "demo-fair-itnet-v2-search-20260517-01",
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
@@ -228,6 +240,30 @@
       "best_score": 0.382786,
       "best_headroom": 0.632952,
       "agent": "itnet-v2-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-fair-naf-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T09:20:48Z",
+      "status": "running",
+      "n_iterations": 7,
+      "best_score": 0.821593,
+      "best_headroom": 0.541929,
+      "agent": "naf-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-fair-r2gaussian-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T11:12:39Z",
+      "status": "running",
+      "n_iterations": 9,
+      "best_score": 0.841834,
+      "best_headroom": 0.0114448,
+      "agent": "r2gaussian-search",
       "model": "random-search"
     },
     {

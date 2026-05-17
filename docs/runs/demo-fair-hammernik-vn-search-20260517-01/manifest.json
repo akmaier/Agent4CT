@@ -1,0 +1,10 @@
+{
+  "slug": "demo-fair-hammernik-vn-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-hammernik-vn-search",
+  "started": "2026-05-17T11:12:39Z",
+  "agent": "hammernik-vn-search",
+  "model": "random-search",
+  "status": "running",
+  "notes": "packed-random: Hammernik-VN under CONVENTIONS"
+}

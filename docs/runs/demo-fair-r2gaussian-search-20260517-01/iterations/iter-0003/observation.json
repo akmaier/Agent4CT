@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T11:52:13Z",
+  "run_id": "demo-fair-r2gaussian-search-20260517-01",
+  "iter": 3,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "r2gaussian-search: gs_n_gaussians=512, gs_n_iter=430, gs_lr_pos=0.0011403, gs_lr_scale=0.037025, gs_lr_amp=0.048706, gs_amp_init=0.011289, gs_scale_init=0.062772, gs_tv_weight=4.4942e-05",
+  "val_score": 0.756418764591217,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.003072,
+  "train_n": 0,
+  "agent": "r2gaussian-search",
+  "model": "random-search",
+  "advice_for_others": "r2gaussian-search: gs_n_gaussians=512, gs_n_iter=430, gs_lr_pos=0.0011403, gs_lr_scale=0.037025, gs_lr_amp=0.048706, gs_amp_init=0.011289, gs_scale_init=0.062772, gs_tv_weight=4.4942e-05 -> hr=0.0000",
+  "comparison_image": "runs/demo-fair-r2gaussian-search-20260517-01/iterations/iter-0003/comparison.png"
+}

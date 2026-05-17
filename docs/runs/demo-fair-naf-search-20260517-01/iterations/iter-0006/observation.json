@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T12:48:01Z",
+  "run_id": "demo-fair-naf-search-20260517-01",
+  "iter": 6,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "naf-search: naf_n_freqs=6, naf_hidden=256, naf_layers=5, naf_n_iter=3010, naf_lr=0.0038005, naf_tv_weight=1.9368e-05, naf_outer_wall_s=2400",
+  "val_score": 0.8215927481651306,
+  "headroom": 0.5419291551861907,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.204545,
+  "train_n": 0,
+  "agent": "naf-search",
+  "model": "random-search",
+  "advice_for_others": "naf-search: naf_n_freqs=6, naf_hidden=256, naf_layers=5, naf_n_iter=3010, naf_lr=0.0038005, naf_tv_weight=1.9368e-05, naf_outer_wall_s=2400 -> hr=0.5419",
+  "comparison_image": "runs/demo-fair-naf-search-20260517-01/iterations/iter-0006/comparison.png"
+}

@@ -1,0 +1,10 @@
+{
+  "slug": "demo-fair-r2gaussian-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-r2gaussian-search",
+  "started": "2026-05-17T11:12:39Z",
+  "agent": "r2gaussian-search",
+  "model": "random-search",
+  "status": "running",
+  "notes": "packed-random: R2Gaussian under CONVENTIONS"
+}

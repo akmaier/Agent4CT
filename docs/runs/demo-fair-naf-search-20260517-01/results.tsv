@@ -1,0 +1,8 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.715954	0.454549	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=256, naf_layers=5, naf_n_iter=3029, naf_lr=0.0018086, naf_tv_weight=0.00069873, naf_outer_wall_s=2400
+2		0.70263	0.509795	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=128, naf_layers=5, naf_n_iter=2745, naf_lr=0.0018023, naf_tv_weight=3.843e-06, naf_outer_wall_s=2400
+3		0.624324	0.381239	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=256, naf_layers=5, naf_n_iter=1919, naf_lr=0.0010732, naf_tv_weight=0.00035558, naf_outer_wall_s=2400
+4		0.745848	0.376791	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=192, naf_layers=6, naf_n_iter=3689, naf_lr=0.0050112, naf_tv_weight=0.00011475, naf_outer_wall_s=2400
+5		0.743156	0.519741	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=256, naf_layers=5, naf_n_iter=2059, naf_lr=0.0017741, naf_tv_weight=6.2352e-05, naf_outer_wall_s=2400
+6		0.821593	0.541929	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=6, naf_hidden=256, naf_layers=5, naf_n_iter=3010, naf_lr=0.0038005, naf_tv_weight=1.9368e-05, naf_outer_wall_s=2400
+7		0.507155	0.415043	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=192, naf_layers=4, naf_n_iter=1678, naf_lr=0.00092062, naf_tv_weight=0.00026103, naf_outer_wall_s=2400
