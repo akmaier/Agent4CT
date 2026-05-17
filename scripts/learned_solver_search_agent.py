@@ -144,6 +144,55 @@ SOLVERS = {
             "diff_init":          (["fbp", "noise"], "choice"),
         },
     },
+    # ----- DDPM training (unconstrained variant — pick best hyperparams here) ----
+    "ddpm": {
+        "solver": "pentathlon/demo_dl_reference/solver_ddpm.py",
+        "env_var": "DDPM_CONFIG_PATH",
+        "slug_prefix": "demo-dl-ddpm-search",
+        "agent_name": "ddpm-search",
+        "space": {
+            "ddpm_mode":         (["unconstrained"], "choice"),  # constrained reuses
+                                                                  # best hyperparams later
+            "ddpm_n_train":      ([1000, 2000, 3000], "choice"),
+            "ddpm_ch":           ([24, 32, 48], "choice"),
+            "ddpm_n_steps":      ([500, 1000], "choice"),
+            "ddpm_epochs":       (15, 40, "int"),
+            "ddpm_batch":        ([4, 8, 16], "choice"),
+            "ddpm_lr":           (5e-5, 5e-4, "log"),
+            "ddpm_weight_decay": ([0.0, 1e-5, 1e-4], "choice"),
+            # Cap each iter's training to 20 min so 20 iters fit in 7 h.
+            "ddpm_train_wall_s": ([1200], "choice"),
+        },
+    },
+    # ----- Diffusion-recon searches: load a frozen DDPM, vary sampling hyperparams ---
+    "diffusion_recon_unconstrained": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-dl-diffusion-recon-unconstrained-search",
+        "agent_name": "diffusion-recon-unconstrained-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_unconstrained_final.pt"], "choice"),
+            "recon_mode":          (["dps", "mcg"], "choice"),
+            "recon_sample_steps":  ([30, 50, 80, 120, 200], "choice"),
+            "recon_eta":           (1e-4, 5e-1, "log"),    # scale-sensitive; small for DPS
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([True, False], "choice"),
+        },
+    },
+    "diffusion_recon_constrained": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-dl-diffusion-recon-constrained-search",
+        "agent_name": "diffusion-recon-constrained-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt"], "choice"),
+            "recon_mode":          (["dps", "mcg"], "choice"),
+            "recon_sample_steps":  ([30, 50, 80, 120, 200], "choice"),
+            "recon_eta":           (1e-4, 5e-1, "log"),
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([True, False], "choice"),
+        },
+    },
 }
 
 
