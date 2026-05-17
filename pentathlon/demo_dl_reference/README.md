@@ -9,7 +9,7 @@
 > before metric computation, `data_range = display_max-display_min`
 > passed explicitly to PSNR/SSIM. Past `demo-dl-<solver>-search-*`
 > entries that pre-date this enforcement are kept for historical
-> visibility but are superseded by the **`demo-dl-fair-*` slugs**
+> visibility but are superseded by the **`demo-fair-*` slugs**
 > launched 2026-05-17 (jobs 761199-761203) under the corrected
 > convention.
 
@@ -29,17 +29,17 @@ solver has been patched. The dashboard now hosts both:
 
 | Old slug (buggy) | Fair re-run slug (2026-05-17) | Job |
 |---|---|---|
-| `demo-dl-uswin-search-20260516-01` | `demo-dl-fair-uswin-search-20260517-01` | 761199 |
-| `demo-dl-naf-search-20260516-02` | `demo-dl-fair-naf-search-20260517-01` | 761200 |
-| `demo-dl-r2gaussian-search-20260516-01` | `demo-dl-fair-r2gaussian-search-20260517-01` | 761201 |
-| `demo-dl-hammernik-search-20260516-02` | `demo-dl-fair-hammernik-search-20260517-01` | 761202 |
-| `demo-dl-hammernik-vn-search-20260516-02` | `demo-dl-fair-hammernik-vn-search-20260517-01` | 761203 |
-| `demo-dl-itnet-v2-search-20260516-01` | `demo-dl-fair-itnet-v2-search-20260517-01` | 761204 |
-| `demo-dl-itnet-v3-search-20260516-02` | `demo-dl-fair-itnet-v3-search-20260517-01` | 761205 |
-| `demo-dl-dual_domain-20260515-01` | `demo-dl-fair-dual-domain-search-20260517-01` | 761206 |
-| (DD-Bilateral: no prior search slug; first official run) | `demo-dl-fair-dual-domain-bf-search-20260517-01` | 761207 |
-| `demo-dl-tv-search-20260515-01` | `demo-dl-fair-tv-search-20260517-01` | 761208 |
-| `demo-dl-wu-search-20260516-01` | `demo-dl-fair-wu-search-20260517-01` | 761209 |
+| `demo-dl-uswin-search-20260516-01` | `demo-fair-uswin-search-20260517-01` | 761199 |
+| `demo-dl-naf-search-20260516-02` | `demo-fair-naf-search-20260517-01` | 761200 |
+| `demo-dl-r2gaussian-search-20260516-01` | `demo-fair-r2gaussian-search-20260517-01` | 761201 |
+| `demo-dl-hammernik-search-20260516-02` | `demo-fair-hammernik-search-20260517-01` | 761202 |
+| `demo-dl-hammernik-vn-search-20260516-02` | `demo-fair-hammernik-vn-search-20260517-01` | 761203 |
+| `demo-dl-itnet-v2-search-20260516-01` | `demo-fair-itnet-v2-search-20260517-01` | 761204 |
+| `demo-dl-itnet-v3-search-20260516-02` | `demo-fair-itnet-v3-search-20260517-01` | 761205 |
+| `demo-dl-dual_domain-20260515-01` | `demo-fair-dual-domain-search-20260517-01` | 761206 |
+| (DD-Bilateral: no prior search slug; first official run) | `demo-fair-dual-domain-bf-search-20260517-01` | 761207 |
+| `demo-dl-tv-search-20260515-01` | `demo-fair-tv-search-20260517-01` | 761208 |
+| `demo-dl-wu-search-20260516-01` | `demo-fair-wu-search-20260517-01` | 761209 |
 
 Unaffected (their old slugs remain the official leaderboard):
 

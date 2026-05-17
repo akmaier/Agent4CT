@@ -118,5 +118,29 @@ Old `docs/runs/demo-dl-*` entries (dated 2026-05-15 / 16) may reflect
 results computed BEFORE these conventions were enforced. They are kept
 for historical visibility but **must not be cited as the official
 leaderboard** going forward. The official leaderboard lives in the
-`demo-dl-fair-*` slugs (date `2026-05-17` onwards) which were generated
+`demo-fair-*` slugs (date `2026-05-17` onwards) which were generated
 under this convention.
+
+## Dashboard chart-group note
+
+`docs/assets/dashboard.js` groups runs into separate charts using
+**the first two hyphen-segments of the slug-prefix** (see
+`chartGroupKey`). To make the fair re-runs appear as a SEPARATE chart
+from the legacy buggy ones, the fair runs use the slug-prefix
+`demo-fair-*` (chart group `demo-fair`) rather than `demo-dl-fair-*`
+(which would still group under `demo-dl`).
+
+**Migration shortcut**: if a run is already in flight under the old
+prefix when you realise this, *do not cancel it*. Let it finish, then:
+
+```bash
+# 1. Rename the local docs/runs dir
+git mv docs/runs/demo-dl-fair-<slug>  docs/runs/demo-fair-<slug>
+# 2. Edit manifest.json: slug + slug_prefix
+# 3. For every iter, edit observation.json: run_id + comparison_image path
+# 4. Update docs/runs/runs-index.json
+# 5. Commit + push
+```
+
+The `scripts/rename_run_slug.py` helper (TBD) automates this. The same
+approach applies to any future regrouping needs.

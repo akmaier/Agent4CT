@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=demo-dl-fair-dual-domain-search
+#SBATCH --job-name=demo-fair-dual-domain-search
 #SBATCH --partition=main
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4

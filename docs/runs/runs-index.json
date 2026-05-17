@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-17T09:15:14Z",
+  "updated": "2026-05-17T09:21:09Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -39,7 +39,7 @@
       "model": "random-search"
     },
     {
-      "slug": "demo-dl-fair-uswin-search-20260517-01",
+      "slug": "demo-fair-uswin-search-20260517-01",
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-17T08:12:14Z",

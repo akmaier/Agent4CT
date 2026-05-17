@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=demo-dl-fair-wu-2015-search
+#SBATCH --job-name=demo-fair-wu-2015-search
 #SBATCH --partition=main
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4

@@ -33,7 +33,7 @@ SOLVERS = {
     "itnet_v2": {
         "solver": "pentathlon/demo_dl_reference/solver_itnet_v2.py",
         "env_var": "ITNET_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-itnet-v2-search",
+        "slug_prefix": "demo-fair-itnet-v2-search",
         "agent_name": "itnet-v2-search",
         "space": {
             "pretrain_epochs":     (3, 8, "int"),
@@ -46,7 +46,7 @@ SOLVERS = {
     "itnet_v3": {
         "solver": "pentathlon/demo_dl_reference/solver_itnet_v3.py",
         "env_var": "ITNET_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-itnet-v3-search",
+        "slug_prefix": "demo-fair-itnet-v3-search",
         "agent_name": "itnet-v3-search",
         "space": {
             "epochs":         (5, 15, "int"),
@@ -61,7 +61,7 @@ SOLVERS = {
     "dual_domain": {
         "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain.py",
         "env_var": "DD_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-dual-domain-search",
+        "slug_prefix": "demo-fair-dual-domain-search",
         "agent_name": "dual-domain-search",
         "space": {
             "epochs":     (3, 8, "int"),
@@ -73,7 +73,7 @@ SOLVERS = {
     "dual_domain_bilateral": {
         "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral.py",
         "env_var": "DD_BF_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-dual-domain-bf-search",
+        "slug_prefix": "demo-fair-dual-domain-bf-search",
         "agent_name": "dual-domain-bf-search",
         "space": {
             "epochs":     (10, 30, "int"),
@@ -91,7 +91,7 @@ SOLVERS = {
     "tv_iterative": {
         "solver": "pentathlon/demo_dl_reference/solver_tv_search.py",
         "env_var": "TV_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-tv-search",
+        "slug_prefix": "demo-fair-tv-search",
         "agent_name": "tv-search",
         "space": {
             "tv_lambda":     (1e-4, 1e-2, "log"),
@@ -104,7 +104,7 @@ SOLVERS = {
     "wu_2015": {
         "solver": "pentathlon/demo_dl_reference/solver_wu_2015.py",
         "env_var": "WU_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-wu-search",
+        "slug_prefix": "demo-fair-wu-search",
         "agent_name": "wu-search",
         "space": {
             "wu_n_bands":        ([4, 6, 8, 12], "choice"),
@@ -117,7 +117,7 @@ SOLVERS = {
     "hammernik": {
         "solver": "pentathlon/demo_dl_reference/solver_hammernik_2017.py",
         "env_var": "HAMMERNIK_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-hammernik-search",
+        "slug_prefix": "demo-fair-hammernik-search",
         "agent_name": "hammernik-search",
         "space": {
             "epochs":          (10, 30, "int"),
@@ -131,7 +131,7 @@ SOLVERS = {
     "hammernik_vn": {
         "solver": "pentathlon/demo_dl_reference/solver_hammernik_vn.py",
         "env_var": "HAMMERNIK_VN_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-hammernik-vn-search",
+        "slug_prefix": "demo-fair-hammernik-vn-search",
         "agent_name": "hammernik-vn-search",
         "space": {
             "epochs":          (10, 18, "int"),
@@ -147,7 +147,7 @@ SOLVERS = {
     "uswin": {
         "solver": "pentathlon/demo_dl_reference/solver_uswin.py",
         "env_var": "USWIN_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-uswin-search",
+        "slug_prefix": "demo-fair-uswin-search",
         "agent_name": "uswin-search",
         "space": {
             "epochs":      (6, 14, "int"),
@@ -161,7 +161,7 @@ SOLVERS = {
     "naf": {
         "solver": "pentathlon/demo_dl_reference/solver_naf.py",
         "env_var": "NAF_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-naf-search",
+        "slug_prefix": "demo-fair-naf-search",
         "agent_name": "naf-search",
         "space": {
             "naf_n_freqs":      ([6, 8, 10, 12, 14], "choice"),
@@ -176,7 +176,7 @@ SOLVERS = {
     "r2gaussian": {
         "solver": "pentathlon/demo_dl_reference/solver_r2gaussian.py",
         "env_var": "R2G_CONFIG_PATH",
-        "slug_prefix": "demo-dl-fair-r2gaussian-search",
+        "slug_prefix": "demo-fair-r2gaussian-search",
         "agent_name": "r2gaussian-search",
         "space": {
             "gs_n_gaussians": ([512, 1024, 2048], "choice"),
