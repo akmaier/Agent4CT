@@ -197,8 +197,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # Compute FBPs
     proj = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
-        train_fbp = proj.fbp(train_noisy)
-        val_fbp = proj.fbp(val_noisy)
+        train_fbp = torch.clamp(proj.fbp(train_noisy), min=0.0)
+        val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
 
     # Model
     denoiser = UNet5(c=cfg["unet_c"], residual=True)

@@ -12,6 +12,7 @@ Based on Sidky 2022 winner: Robust-and-stable's ItNet approach.
 from __future__ import annotations
 import argparse
 import json
+import math
 import sys
 import time
 from pathlib import Path
@@ -150,7 +151,18 @@ def pretrain_denoiser(denoiser, fbp_images, truth_images, epochs, lr, patience, 
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
-    cfg = {**CONFIG, **(cfg or {})}
+    # Check for environment-based config override
+    import os
+    env_config_path = os.environ.get("ITNET_CONFIG_PATH")
+    if env_config_path and Path(env_config_path).exists():
+        with open(env_config_path) as f:
+            env_cfg = json.load(f)
+        cfg = {**CONFIG, **env_cfg}
+        print(f"[solver] Loaded config from {env_config_path}")
+    elif cfg is not None:
+        cfg = {**CONFIG, **cfg}
+    else:
+        cfg = CONFIG.copy()
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -172,8 +184,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # Compute FBPs
     proj = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
-        train_fbp = proj.fbp(train_noisy)
-        val_fbp = proj.fbp(val_noisy)
+        train_fbp = torch.clamp(proj.fbp(train_noisy), min=0.0)
+        val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
         val_ref = proj.fbp(val_clean)  # noiseless reference
 
     t0 = time.time()

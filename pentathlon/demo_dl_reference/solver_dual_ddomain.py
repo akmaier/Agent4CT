@@ -100,7 +100,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     with torch.no_grad():
         R_full = PyronnFanBeamProjector(geom).to(device)
         val_ref = R_full.fbp(val_clean)
-        ld_fbp = R_full.fbp(val_noisy)
+        ld_fbp = torch.clamp(R_full.fbp(val_noisy), min=0.0)
 
     # Build denoisers
     c = cfg["unet_c"]

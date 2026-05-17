@@ -180,7 +180,7 @@ def main(out_dir: Path, cfg_override: dict | None = None) -> dict:
 
     proj = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
-        val_fbp = proj.fbp(val_noisy)
+        val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
         val_ref = proj.fbp(val_clean)
 
     # TV reconstruction

@@ -293,7 +293,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     dense_proj = _build_dense_projector(geom, factor=2, device=device)
     with torch.no_grad():
         val_ref = proj.fbp(val_clean)
-        fbp_init = proj.fbp(val_noisy)
+        fbp_init = torch.clamp(proj.fbp(val_noisy), min=0.0)
 
     t0 = time.time()
     pred = wu_2015_reconstruct(

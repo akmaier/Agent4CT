@@ -128,7 +128,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     proj = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
         val_ref = proj.fbp(val_clean)
-        fbp_init = proj.fbp(val_noisy)
+        fbp_init = torch.clamp(proj.fbp(val_noisy), min=0.0)
 
     # Run TV reconstruction
     t0 = time.time()

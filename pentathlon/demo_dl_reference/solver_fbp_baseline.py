@@ -80,16 +80,18 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     R_full = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
         val_ref = R_full.fbp(val_clean)   # reference (noiseless FBP)
-        pred = R_full.fbp(val_noisy)       # our "recon" = standard FBP
+        pred = torch.clamp(R_full.fbp(val_noisy), min=0.0)  # our "recon" = standard FBP
     train_time = time.time() - t0
 
+    # CORRECT: Compare against ground truth phantom (not noiseless FBP)
     data_range = cfg["display_max"] - cfg["display_min"]
-    val_psnr = float(psnr(pred, val_ref, data_range=data_range).cpu())
-    val_ssim = float(ssim(pred, val_ref, data_range=data_range).cpu())
-    val_rmse = float(((pred - val_ref) ** 2).mean().sqrt().cpu())
-    baseline_psnr = val_psnr  # same as our recon since baseline IS FBP
-    baseline_rmse = val_rmse
-    headroom = 0.0  # baseline by definition
+    val_psnr = float(psnr(pred, val_ph, data_range=data_range).cpu())
+    val_ssim = float(ssim(pred, val_ph, data_range=data_range).cpu())
+    val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())
+    # Baseline: noisy FBP vs phantom (actual challenge baseline)
+    baseline_psnr = float(psnr(ld_fbp, val_ph, data_range=data_range).cpu())
+    baseline_rmse = float(((ld_fbp - val_ph) ** 2).mean().sqrt().cpu())
+    headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
     val_score = val_ssim
 
     # Comparison figure
