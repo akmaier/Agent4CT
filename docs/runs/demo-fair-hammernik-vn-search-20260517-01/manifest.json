@@ -5,6 +5,19 @@
   "started": "2026-05-17T11:12:39Z",
   "agent": "hammernik-vn-search",
   "model": "random-search",
-  "status": "running",
-  "notes": "packed-random: Hammernik-VN under CONVENTIONS"
+  "status": "done",
+  "notes": "packed-random: Hammernik-VN under CONVENTIONS",
+  "finished": "2026-05-17T14:23:25Z",
+  "sampler": "random",
+  "best_params": {
+    "epochs": 17,
+    "lr": 0.00021707124177585216,
+    "batch_size": 2,
+    "vn_T": 3,
+    "vn_n_filters": 16,
+    "vn_kernel": 7,
+    "vn_lambda_init": 0.007977355307817081,
+    "vn_init": "fbp"
+  },
+  "best_headroom": 0.6061370422467964
 }
