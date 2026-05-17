@@ -108,8 +108,18 @@ def sample_guided(model, sched, proj, sino, fbp_init, *, mode, n_steps,
                 raise ValueError(mode)
             grad = torch.autograd.grad(loss, x_req)[0]
         with torch.no_grad():
+            # Normalise grad so eta has a consistent scale across all configs.
+            # Without this, the absolute magnitude of grad varies by orders
+            # of magnitude with out_scale and the projector spectral norm,
+            # making any fixed eta either no-op or saturating — which is why
+            # the v1 search collapsed all 20 iters to uniform-white output.
+            gn = grad.flatten(1).norm(dim=1).clamp(min=1e-12)
+            grad_unit = grad / gn.view(-1, 1, 1, 1)
             x_clean = ddim_step(x.detach(), eps.detach(), sched, t_now, t_next)
-            x = x_clean - eta * grad.detach()
+            x = x_clean - eta * grad_unit.detach()
+            # Always clamp to the DDPM's training range. eta_clamp now only
+            # toggles whether the clamp is INSIDE (after each step) vs
+            # ONLY at the end; default (clamp inside) is safer.
             if eta_clamp:
                 x = x.clamp(0.0, 1.0)
     return (x.detach() * out_scale).clamp(0.0, out_scale)

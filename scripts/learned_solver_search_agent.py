@@ -122,9 +122,11 @@ SOLVERS = {
         "space": {
             "epochs":          (10, 30, "int"),
             "lr":              (1e-4, 2e-3, "log"),
-            "vn_T":            ([3, 5, 7], "choice"),
-            "vn_n_filters":    ([16, 24, 32], "choice"),
-            "vn_kernel":       ([7, 9, 11, 13], "choice"),
+            # OOM-tightened: vn_T=7 + vn_n_filters=32 + vn_kernel=13 trio
+            # exceeds 16 GB GPU memory. v2 caps these knobs to safe ranges.
+            "vn_T":            ([3, 5], "choice"),
+            "vn_n_filters":    ([16, 24], "choice"),
+            "vn_kernel":       ([7, 9, 11], "choice"),
             "vn_lambda_init":  (1e-4, 1e-2, "log"),
         },
     },
@@ -230,10 +232,13 @@ SOLVERS = {
         "space": {
             "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_unconstrained_final.pt"], "choice"),
             "recon_mode":          (["dps", "mcg"], "choice"),
-            "recon_sample_steps":  ([30, 50, 80, 120, 200], "choice"),
-            "recon_eta":           (1e-4, 5e-1, "log"),    # scale-sensitive; small for DPS
+            "recon_sample_steps":  ([50, 80, 120, 200], "choice"),
+            # v2 grad-normalised: eta is now a per-step step-size in [0, 1] space.
+            # 0.01-0.5 explores from "gentle nudge" to "rapid descent".
+            "recon_eta":           (1e-2, 5e-1, "log"),
             "recon_init":          (["fbp", "noise"], "choice"),
-            "recon_eta_clamp":     ([True, False], "choice"),
+            # Always clamp inside the loop (safer); keep both choices for ablation.
+            "recon_eta_clamp":     ([True], "choice"),
         },
     },
     "diffusion_recon_constrained": {
@@ -244,10 +249,10 @@ SOLVERS = {
         "space": {
             "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt"], "choice"),
             "recon_mode":          (["dps", "mcg"], "choice"),
-            "recon_sample_steps":  ([30, 50, 80, 120, 200], "choice"),
-            "recon_eta":           (1e-4, 5e-1, "log"),
+            "recon_sample_steps":  ([50, 80, 120, 200], "choice"),
+            "recon_eta":           (1e-2, 5e-1, "log"),
             "recon_init":          (["fbp", "noise"], "choice"),
-            "recon_eta_clamp":     ([True, False], "choice"),
+            "recon_eta_clamp":     ([True], "choice"),
         },
     },
 }
