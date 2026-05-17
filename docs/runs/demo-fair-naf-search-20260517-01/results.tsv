@@ -6,3 +6,16 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 5		0.743156	0.519741	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=256, naf_layers=5, naf_n_iter=2059, naf_lr=0.0017741, naf_tv_weight=6.2352e-05, naf_outer_wall_s=2400
 6		0.821593	0.541929	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=6, naf_hidden=256, naf_layers=5, naf_n_iter=3010, naf_lr=0.0038005, naf_tv_weight=1.9368e-05, naf_outer_wall_s=2400
 7		0.507155	0.415043	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=192, naf_layers=4, naf_n_iter=1678, naf_lr=0.00092062, naf_tv_weight=0.00026103, naf_outer_wall_s=2400
+8		0.619336	0.318436	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=192, naf_layers=5, naf_n_iter=3465, naf_lr=0.001223, naf_tv_weight=2.088e-05, naf_outer_wall_s=2400
+9		0.630861	0.245689	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=192, naf_layers=6, naf_n_iter=1663, naf_lr=0.0080746, naf_tv_weight=2.7164e-05, naf_outer_wall_s=2400
+10		0.613071	0.328996	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=128, naf_layers=6, naf_n_iter=2231, naf_lr=0.0011067, naf_tv_weight=7.6741e-05, naf_outer_wall_s=2400
+11		0.682137	0.313115	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=192, naf_layers=6, naf_n_iter=3526, naf_lr=0.0035409, naf_tv_weight=8.1255e-05, naf_outer_wall_s=2400
+12		0.7395	0.404233	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=192, naf_layers=6, naf_n_iter=2819, naf_lr=0.0036268, naf_tv_weight=0.00052521, naf_outer_wall_s=2400
+13		0.754048	0.452565	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=128, naf_layers=6, naf_n_iter=3749, naf_lr=0.0038585, naf_tv_weight=0.00088765, naf_outer_wall_s=2400
+14		0.786156	0.53038	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=256, naf_layers=6, naf_n_iter=3173, naf_lr=0.0029263, naf_tv_weight=0.0004636, naf_outer_wall_s=2400
+15		0.733768	0.435302	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=256, naf_layers=5, naf_n_iter=2018, naf_lr=0.0051429, naf_tv_weight=5.4519e-06, naf_outer_wall_s=2400
+16		0.605842	0.388226	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=128, naf_layers=4, naf_n_iter=2727, naf_lr=0.0019984, naf_tv_weight=2.7636e-05, naf_outer_wall_s=2400
+17		0.681123	0.503967	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=128, naf_layers=5, naf_n_iter=2200, naf_lr=0.0017116, naf_tv_weight=1.2466e-06, naf_outer_wall_s=2400
+18		0.547514	0.431811	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=14, naf_hidden=192, naf_layers=4, naf_n_iter=3150, naf_lr=0.0010003, naf_tv_weight=0.00037035, naf_outer_wall_s=2400
+19		0.654849	0.326338	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=192, naf_layers=4, naf_n_iter=3235, naf_lr=0.0054842, naf_tv_weight=0.00010999, naf_outer_wall_s=2400
+20		0.666858	0.384792	keep	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=128, naf_layers=4, naf_n_iter=1942, naf_lr=0.0046553, naf_tv_weight=0.00010865, naf_outer_wall_s=2400

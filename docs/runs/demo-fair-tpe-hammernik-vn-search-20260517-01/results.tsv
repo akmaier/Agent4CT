@@ -7,3 +7,5 @@ iter	commit	val_score	headroom	status	change_class	agent	model	rationale
 6		0.500999	0.593468	keep	architecture	hammernik-vn-search-tpe	random-search	hammernik-vn-search-tpe: epochs=18, lr=0.00025703, batch_size=2, vn_T=5, vn_n_filters=24, vn_kernel=9, vn_lambda_init=0.0093606, vn_init=fbp
 7		0.499056	0.594641	keep	architecture	hammernik-vn-search-tpe	random-search	hammernik-vn-search-tpe: epochs=18, lr=0.00027615, batch_size=2, vn_T=5, vn_n_filters=24, vn_kernel=9, vn_lambda_init=0.0089292, vn_init=fbp
 8		0.268058	0.495268	keep	architecture	hammernik-vn-search-tpe	random-search	hammernik-vn-search-tpe: epochs=18, lr=0.00029261, batch_size=2, vn_T=7, vn_n_filters=16, vn_kernel=9, vn_lambda_init=0.0022902, vn_init=fbp
+9		0.319265	0.584453	keep	architecture	hammernik-vn-search-tpe	random-search	hammernik-vn-search-tpe: epochs=16, lr=0.00018864, batch_size=2, vn_T=5, vn_n_filters=24, vn_kernel=7, vn_lambda_init=0.0020754, vn_init=fbp
+10		0.342052	0.578472	keep	architecture	hammernik-vn-search-tpe	random-search	hammernik-vn-search-tpe: epochs=16, lr=0.00017231, batch_size=2, vn_T=5, vn_n_filters=24, vn_kernel=9, vn_lambda_init=0.0027131, vn_init=fbp
