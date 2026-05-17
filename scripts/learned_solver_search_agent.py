@@ -122,8 +122,10 @@ SOLVERS = {
         "space": {
             "epochs":          (10, 30, "int"),
             "lr":              (1e-4, 2e-3, "log"),
-            # OOM-tightened: vn_T=7 + vn_n_filters=32 + vn_kernel=13 trio
-            # exceeds 16 GB GPU memory. v2 caps these knobs to safe ranges.
+            # v3: batch_size=2 forced (default 4 OOMs even on q6000/24GB
+            # because the RBF-bump activation loop keeps T·N_k·n_bumps
+            # tensors live for autograd).
+            "batch_size":      ([2], "choice"),
             "vn_T":            ([3, 5], "choice"),
             "vn_n_filters":    ([16, 24], "choice"),
             "vn_kernel":       ([7, 9, 11], "choice"),

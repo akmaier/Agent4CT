@@ -5,6 +5,19 @@
   "started": "2026-05-17T17:33:45Z",
   "agent": "hammernik-vn-search-tpe",
   "model": "optuna-tpe",
-  "status": "running",
-  "notes": "packed-tpe: Hammernik-VN (Optuna TPE)"
+  "status": "done",
+  "notes": "packed-tpe: Hammernik-VN (Optuna TPE)",
+  "finished": "2026-05-17T20:50:25Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 18,
+    "lr": 0.0002995632811736526,
+    "batch_size": 2,
+    "vn_T": 5,
+    "vn_n_filters": 24,
+    "vn_kernel": 9,
+    "vn_lambda_init": 0.009203234778439812,
+    "vn_init": "fbp"
+  },
+  "best_headroom": 0.5960646157738526
 }
