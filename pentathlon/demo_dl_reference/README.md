@@ -34,13 +34,18 @@ solver has been patched. The dashboard now hosts both:
 | `demo-dl-r2gaussian-search-20260516-01` | `demo-dl-fair-r2gaussian-search-20260517-01` | 761201 |
 | `demo-dl-hammernik-search-20260516-02` | `demo-dl-fair-hammernik-search-20260517-01` | 761202 |
 | `demo-dl-hammernik-vn-search-20260516-02` | `demo-dl-fair-hammernik-vn-search-20260517-01` | 761203 |
+| `demo-dl-itnet-v2-search-20260516-01` | `demo-dl-fair-itnet-v2-search-20260517-01` | 761204 |
+| `demo-dl-itnet-v3-search-20260516-02` | `demo-dl-fair-itnet-v3-search-20260517-01` | 761205 |
+| `demo-dl-dual_domain-20260515-01` | `demo-dl-fair-dual-domain-search-20260517-01` | 761206 |
+| (DD-Bilateral: no prior search slug; first official run) | `demo-dl-fair-dual-domain-bf-search-20260517-01` | 761207 |
+| `demo-dl-tv-search-20260515-01` | `demo-dl-fair-tv-search-20260517-01` | 761208 |
+| `demo-dl-wu-search-20260516-01` | `demo-dl-fair-wu-search-20260517-01` | 761209 |
 
 Unaffected (their old slugs remain the official leaderboard):
 
-- FBP baseline / TV iterative / TV search
-- Dual-Domain U-Net / Dual-Domain Bilateral
-- ItNet v1 / v2 / v3 / v3 (search 20260516-02)
-- Wu 2015 (`demo-dl-wu-search-20260516-01`)
+- FBP baseline (`solver_fbp_baseline.py` — no learnable knobs; convention-compliant by default)
+- TV iterative reference (`solver_tv_iterative.py` — single-config, no search)
+- ItNet v1 (deprecated, kept for the failed-baseline narrative only)
 
 The original-vs-fair deltas will be summarised in section "Fair
 re-runs vs old runs" once the 761199-761203 jobs finish.

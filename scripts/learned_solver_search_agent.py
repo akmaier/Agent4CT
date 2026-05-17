@@ -33,7 +33,7 @@ SOLVERS = {
     "itnet_v2": {
         "solver": "pentathlon/demo_dl_reference/solver_itnet_v2.py",
         "env_var": "ITNET_CONFIG_PATH",
-        "slug_prefix": "demo-dl-itnet-v2-search",
+        "slug_prefix": "demo-dl-fair-itnet-v2-search",
         "agent_name": "itnet-v2-search",
         "space": {
             "pretrain_epochs":     (3, 8, "int"),
@@ -46,7 +46,7 @@ SOLVERS = {
     "itnet_v3": {
         "solver": "pentathlon/demo_dl_reference/solver_itnet_v3.py",
         "env_var": "ITNET_CONFIG_PATH",
-        "slug_prefix": "demo-dl-itnet-v3-search",
+        "slug_prefix": "demo-dl-fair-itnet-v3-search",
         "agent_name": "itnet-v3-search",
         "space": {
             "epochs":         (5, 15, "int"),
@@ -55,6 +55,63 @@ SOLVERS = {
             "unet_c":         ([8, 12, 16], "choice"),
             "itnet_k":        ([2, 3, 4], "choice"),
             "alpha_init":     (1e-3, 1e-2, "log"),
+        },
+    },
+    # ----- Fair re-runs for solvers that previously had standalone agents ------
+    "dual_domain": {
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain.py",
+        "env_var": "DD_CONFIG_PATH",
+        "slug_prefix": "demo-dl-fair-dual-domain-search",
+        "agent_name": "dual-domain-search",
+        "space": {
+            "epochs":     (3, 8, "int"),
+            "lr":         (1e-4, 5e-3, "log"),
+            "batch_size": ([1, 2, 4], "choice"),
+            "unet_c":     ([8, 16, 24], "choice"),
+        },
+    },
+    "dual_domain_bilateral": {
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral.py",
+        "env_var": "DD_BF_CONFIG_PATH",
+        "slug_prefix": "demo-dl-fair-dual-domain-bf-search",
+        "agent_name": "dual-domain-bf-search",
+        "space": {
+            "epochs":     (10, 30, "int"),
+            "lr":         (1e-3, 1e-2, "log"),
+            "batch_size": ([1, 2, 4], "choice"),
+            "proj_kernel": ([3, 5, 7], "choice"),
+            "img_kernel":  ([5, 7, 9], "choice"),
+            "proj_sx":    (0.5, 2.0, "linear"),
+            "proj_sy":    (1.0, 3.0, "linear"),
+            "proj_sr":    (0.01, 0.05, "log"),
+            "img_sx":     (1.0, 3.0, "linear"),
+            "img_sr":     (0.01, 0.05, "log"),
+        },
+    },
+    "tv_iterative": {
+        "solver": "pentathlon/demo_dl_reference/solver_tv_search.py",
+        "env_var": "TV_CONFIG_PATH",
+        "slug_prefix": "demo-dl-fair-tv-search",
+        "agent_name": "tv-search",
+        "space": {
+            "tv_lambda":     (1e-4, 1e-2, "log"),
+            "tv_iterations": (50, 500, "int"),
+            "tv_lr":         (1e-3, 1e-1, "log"),
+            "tv_clip_max":   (0.03, 0.08, "linear"),
+            "tv_decay":      (0.0, 0.05, "linear"),
+        },
+    },
+    "wu_2015": {
+        "solver": "pentathlon/demo_dl_reference/solver_wu_2015.py",
+        "env_var": "WU_CONFIG_PATH",
+        "slug_prefix": "demo-dl-fair-wu-search",
+        "agent_name": "wu-search",
+        "space": {
+            "wu_n_bands":        ([4, 6, 8, 12], "choice"),
+            "wu_n_outer":        ([1, 2, 3], "choice"),
+            "wu_motion_range":   ([3, 5, 8, 12], "choice"),
+            "wu_motion_window":  ([1, 2, 4], "choice"),
+            "wu_soft_thresh":    (5e-4, 5e-3, "log"),
         },
     },
     "hammernik": {
