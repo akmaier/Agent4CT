@@ -81,6 +81,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     with torch.no_grad():
         val_ref = R_full.fbp(val_clean)   # reference (noiseless FBP)
         pred = torch.clamp(R_full.fbp(val_noisy), min=0.0)  # our "recon" = standard FBP
+        pred = pred.clamp(0.0, cfg["display_max"])
     train_time = time.time() - t0
 
     # CORRECT: Compare against ground truth phantom (not noiseless FBP)
@@ -100,17 +101,21 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         n_show = min(3, cfg["val_n"])
-        fig, ax = plt.subplots(n_show, 3, figsize=(9, 3 * n_show))
+        fig, ax = plt.subplots(n_show, 4, figsize=(12, 3 * n_show))
         if n_show == 1:
             ax = ax[None]
         vmin, vmax = cfg["display_min"], cfg["display_max"]
         for i in range(n_show):
-            ax[i, 0].imshow(val_ref[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 0].set_title("reference" if i == 0 else "")
+            ax[i, 0].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
+            ax[i, 0].set_title("truth" if i == 0 else "")
             ax[i, 1].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 1].set_title(f"FBP  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})" if i == 0 else "")
-            ax[i, 2].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 2].set_title("phantom" if i == 0 else "")
+            ax[i, 1].set_title(f"FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
+            ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
+            ax[i, 2].set_title(f"FBP recon  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})" if i == 0 else "")
+            residual = (pred[i, 0] - val_ph[i, 0]).cpu()
+            vmax_res = max(abs(residual.min()), abs(residual.max()))
+            ax[i, 3].imshow(residual, cmap="RdBu_r", vmin=-vmax_res, vmax=vmax_res)
+            ax[i, 3].set_title("residual" if i == 0 else "")
             for a in ax[i]:
                 a.set_axis_off()
         plt.tight_layout()

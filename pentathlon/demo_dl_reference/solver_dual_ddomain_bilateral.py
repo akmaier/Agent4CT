@@ -169,6 +169,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         for i in range(0, val_noisy.shape[0], chunk):
             preds.append(pipe.predict(val_noisy[i:i + chunk]))
         pred = torch.cat(preds, dim=0)
+        pred = pred.clamp(0.0, cfg["display_max"])
 
     data_range = cfg["display_max"] - cfg["display_min"]
     # Compare against ground truth phantom
@@ -192,13 +193,15 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         vmin, vmax = cfg["display_min"], cfg["display_max"]
         for i in range(n_show):
             ax[i, 0].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 0].set_title("phantom (truth)" if i == 0 else "")
+            ax[i, 0].set_title("truth" if i == 0 else "")
             ax[i, 1].imshow(ld_fbp[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 1].set_title(f"FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
             ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 2].set_title(f"dual-domain BF  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})" if i == 0 else "")
-            ax[i, 3].imshow(val_ref[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 3].set_title("noiseless FBP" if i == 0 else "")
+            residual = (pred[i, 0] - val_ph[i, 0]).cpu()
+            vmax_res = max(abs(residual.min()), abs(residual.max()))
+            ax[i, 3].imshow(residual, cmap="RdBu_r", vmin=-vmax_res, vmax=vmax_res)
+            ax[i, 3].set_title("residual" if i == 0 else "")
             for a in ax[i]:
                 a.set_axis_off()
         plt.tight_layout()

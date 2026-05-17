@@ -1,24 +1,24 @@
-"""Reference: Hammernik 2017 — Variational Network for limited-angle CT.
+"""Reference: Hammernik-VN — MRI Variational Network (Hammernik 2018 MRM, arXiv 1704.00447)
+adapted to sparse-view CT.
 
-Adapted to our sparse-view setup. We skip the Würfl 2016 compensation-weights
-step (Step 1 of the paper) because sparse-view CT has full angular range —
-the standard FBP + non-negativity is good enough as the variational network's
-starting iterate ``y_NN``.
+Each unrolled gradient-descent step combines a learned regulariser
+gradient with a data-consistency step against the measured sinogram:
 
-The variational network (Step 2) is the paper's main contribution:
+    u^{t+1} = u^t
+              - Σ_i (K_i^t)^T Φ'_i^t( K_i^t · u^t )      (regulariser grad)
+              - λ^t · R^T( R · u^t  -  g )               (data fidelity grad)
 
-    y^t = y^{t-1}
-            - Σ_i K^T_{i,t} · ρ'_{i,t}( K_{i,t} · y^{t-1} )    (gradient of regulariser)
-            - λ_t · ( y^{t-1} - y_NN )                          (gradient of data term)
+The regulariser parameterisation (per-step learned filter banks + per-filter
+learned RBF activations) is identical to solver_hammernik_2017.py. The
+new ingredient versus that solver is the **data-consistency term using
+the actual forward projector R**, i.e. the architectural twin of
+ItNet v3 but with a tiny, interpretable per-step regulariser instead of
+a 5-level U-Net.
 
-Each unrolled step has its own bank of N_k learned 2-D filters K_{i,t},
-learned activation derivatives ρ'_{i,t} (parameterised as a weighted sum
-of Gaussian RBFs on a fixed grid — Chen-Yu-Pock 2015), and a learned
-data-fidelity weight λ_t. End-to-end MSE training.
-
-Citation: Hammernik K., Würfl T., Pock T., Maier A., "A deep learning
-architecture for limited-angle computed tomography reconstruction",
-BVM 2017. See literature/hammernik_2017_bvm_limited_angle.md.
+Citation: Hammernik K., Klatzer T., Kobler E., Recht M., Sodickson D.,
+Pock T., Knoll F., "Learning a Variational Network for Reconstruction
+of Accelerated MRI Data", Magnetic Resonance in Medicine, 79(6), 2018.
+See literature/hammernik_2018_mri_variational_network.md.
 """
 from __future__ import annotations
 import argparse
@@ -59,64 +59,67 @@ CONFIG = {
     "seed":          42,
     "display_min":   0.0,
     "display_max":   0.05,
-    # Variational-network architecture (paper defaults: T=5, N_k=24, k=13)
-    "vn_T":          5,
-    "vn_n_filters":  24,
-    "vn_kernel":     11,         # k=13 best per paper, k=11 cheaper at -0.003 SSIM
-    "vn_n_bumps":    31,         # RBF activation grid
-    "vn_x_range":    2.0,        # RBF centres span [-x_range, +x_range]
+    # Hammernik-VN architecture. Paper used (T=10, N_k=48, k=11) on 320x288 MRI;
+    # at our 512x512 fan-beam this OOMs a 24 GB Q8000. Memory-fitted defaults
+    # (T=5, N_k=24) match the BVM 2017 budget while keeping the projector-DC step.
+    "vn_T":             5,
+    "vn_n_filters":     24,
+    "vn_kernel":        11,
+    "vn_n_bumps":       31,
+    "vn_x_range":       1.0,
     "vn_filter_init_std": 0.05,
-    "vn_rbf_init_std":    0.01,
-    "vn_lambda_init":     1.0e-3,
+    "vn_rbf_init_std":  0.01,
+    "vn_lambda_init":   1.0e-3,
+    "vn_init":          "fbp",     # "fbp" (default) or "backproj" (paper-faithful)
+    "vn_normalize_filters": False, # paper constrains filters zero-mean unit-norm
+    "vn_dc_norm":       True,      # divide R^T(R x - g) by an estimate of ‖R^T R‖
+                                   # so λ_t lives in O(1); prevents divergence
+    "vn_checkpoint":    True,      # gradient-checkpoint each unrolled step
     # Training
-    "epochs":        20,
-    "batch_size":    4,
-    "lr":            5e-4,
+    "epochs":     12,
+    "batch_size": 2,
+    "lr":         2e-4,
 }
 
 
 # ---------------------------------------------------------------------------
-class GDStep(nn.Module):
-    """One unrolled gradient-descent step of Hammernik's variational network.
+class VNStep(nn.Module):
+    """One unrolled gradient-descent step of the variational network.
 
-    Parameters
-    ----------
-    n_filters : int
-        Number of 2-D analysis filters K_i in this step's filter bank.
-    kernel_size : int
-        Spatial size of each filter (square).
-    n_bumps : int
-        Number of Gaussian RBFs parameterising ρ'_i (per filter).
-    x_range : float
-        RBF centres span [-x_range, +x_range].
-    lambda_init : float
-        Initial data-fidelity weight (softplus-parameterised so it stays >0).
+    Combines the regulariser-gradient `Σ_i K_i^T ρ'_i(K_i u)` with the
+    data-fidelity gradient `λ · R^T(R u - g)` through the actual forward
+    projector. Untied weights across steps, like the paper.
     """
 
-    def __init__(self, n_filters=24, kernel_size=11, n_bumps=31,
-                 x_range=2.0, filter_init_std=0.05, rbf_init_std=0.01,
-                 lambda_init=1e-3):
+    def __init__(self, projector: PyronnFanBeamProjector,
+                 n_filters=24, kernel_size=11, n_bumps=31,
+                 x_range=1.0, filter_init_std=0.05, rbf_init_std=0.01,
+                 lambda_init=1e-3, normalize_filters=False,
+                 dc_norm=1.0):
         super().__init__()
+        self.projector = projector              # shared single instance, not a sub-module
         self.n_filters = int(n_filters)
         self.kernel_size = int(kernel_size)
         self.n_bumps = int(n_bumps)
+        self.normalize_filters = bool(normalize_filters)
+        # Scalar dividing R^T(R x - g) so λ_t stays in O(1) regardless of
+        # the projector's spectral norm. Estimated from a power iteration
+        # at HammernikVN init.
+        self.register_buffer("dc_norm", torch.tensor(float(dc_norm)))
         # Filter weights K_i: (n_filters, 1, k, k).
         self.weight = nn.Parameter(
             torch.randn(n_filters, 1, kernel_size, kernel_size) * filter_init_std
         )
-        # RBF centres on fixed grid.
+        # RBF centres + width.
         centres = torch.linspace(-x_range, x_range, n_bumps)
-        # Width set so adjacent RBFs overlap at ~e^{-1/2} (i.e. σ = grid spacing).
         sigma = 2.0 * x_range / max(1, n_bumps - 1)
         self.register_buffer("centres", centres)
         self.register_buffer("inv_sigma_sq", torch.tensor(1.0 / (sigma ** 2)))
-        # Per-filter, per-bump weight for ρ'_i.
+        # Per-filter, per-bump RBF weights.
         self.rbf_weights = nn.Parameter(
             torch.randn(n_filters, n_bumps) * rbf_init_std
         )
-        # Learnable data-fidelity weight λ_t > 0 via softplus.
-        # log_lambda chosen so softplus(log_lambda) ≈ lambda_init.
-        # softplus^{-1}(y) = log(exp(y) - 1) for y > 0.
+        # Learnable λ_t via softplus to enforce positivity (paper Eq. 6).
         inv_softplus = math.log(math.expm1(max(lambda_init, 1e-6)))
         self.log_lambda = nn.Parameter(torch.tensor(float(inv_softplus)))
 
@@ -124,55 +127,96 @@ class GDStep(nn.Module):
     def lam(self) -> torch.Tensor:
         return F.softplus(self.log_lambda)
 
-    def _rho_prime(self, Kx: torch.Tensor) -> torch.Tensor:
-        """Apply ρ'_i pointwise. Kx shape (B, F, H, W) → (B, F, H, W).
+    def _effective_weight(self) -> torch.Tensor:
+        """Optionally enforce paper's zero-mean unit-norm filter constraint."""
+        if not self.normalize_filters:
+            return self.weight
+        w = self.weight
+        flat = w.view(self.n_filters, -1)
+        flat = flat - flat.mean(dim=1, keepdim=True)             # zero-mean
+        norms = flat.norm(dim=1, keepdim=True).clamp(min=1e-8)
+        flat = flat / norms                                       # unit-norm
+        return flat.view_as(w)
 
-        Implemented as a chunked sum over RBF bumps so we never
-        materialise the (B, F, H, W, n_bumps) tensor.
-        """
+    def _rho_prime(self, Kx: torch.Tensor) -> torch.Tensor:
+        """Pointwise RBF mixture per filter; sum over bumps in a loop to avoid
+        materialising the (B, F, H, W, n_bumps) tensor."""
         out = torch.zeros_like(Kx)
         for j in range(self.n_bumps):
             mu_j = self.centres[j]
-            diff_j = Kx - mu_j
-            bump = torch.exp(-0.5 * (diff_j ** 2) * self.inv_sigma_sq)
+            bump = torch.exp(-0.5 * (Kx - mu_j) ** 2 * self.inv_sigma_sq)
             w_j = self.rbf_weights[:, j].view(1, self.n_filters, 1, 1)
             out = out + bump * w_j
         return out
 
-    def forward(self, y: torch.Tensor, y_NN: torch.Tensor) -> torch.Tensor:
-        # y, y_NN: (B, 1, H, W).
+    def forward(self, u: torch.Tensor, sino: torch.Tensor) -> torch.Tensor:
+        # u: (B,1,H,W); sino: (B,1,A,D).
         pad = self.kernel_size // 2
-        # K_i · y for all filters: (B, F, H, W)
-        Kx = F.conv2d(y, self.weight, padding=pad)
-        # ρ'_i(K_i y): (B, F, H, W)
+        w_eff = self._effective_weight()
+
+        # Regulariser-gradient term.
+        Kx = F.conv2d(u, w_eff, padding=pad)
         rho_Kx = self._rho_prime(Kx)
-        # K^T_i · ρ'_i(...). Pad symmetric padding so conv_transpose gives same H,W.
-        KT_rho = F.conv_transpose2d(rho_Kx, self.weight, padding=pad)
-        # Update.
-        return y - KT_rho - self.lam * (y - y_NN)
+        KT_rho = F.conv_transpose2d(rho_Kx, w_eff, padding=pad)
+
+        # Data-consistency term via the actual projector. Divide by the
+        # power-iteration estimate of ‖R^T R‖ so λ_t stays in O(1).
+        R_u = self.projector.forward_project(u)               # (B,1,A,D)
+        sino_residual = R_u - sino
+        R_T_residual = self.projector.back_project(sino_residual) / self.dc_norm
+
+        return u - KT_rho - self.lam * R_T_residual
 
 
 class HammernikVN(nn.Module):
-    """T unrolled GD steps with untied weights — Hammernik 2017 Step 2."""
+    """T unrolled VN steps with untied weights and projection-domain DC."""
 
-    def __init__(self, T=5, n_filters=24, kernel_size=11, n_bumps=31,
-                 x_range=2.0, filter_init_std=0.05, rbf_init_std=0.01,
-                 lambda_init=1e-3):
+    def __init__(self, projector: PyronnFanBeamProjector,
+                 T=5, n_filters=24, kernel_size=11, n_bumps=31,
+                 x_range=1.0, filter_init_std=0.05, rbf_init_std=0.01,
+                 lambda_init=1e-3, normalize_filters=False,
+                 dc_norm=True, checkpoint=True):
         super().__init__()
+        self.projector = projector
+        self.checkpoint = bool(checkpoint)
+        # Power-iteration estimate of ‖R^T R‖.  Used to scale the DC step
+        # so λ_t stays in O(1) regardless of geometry.
+        norm_val = 1.0
+        if dc_norm:
+            with torch.no_grad():
+                device = next(projector.parameters(), torch.zeros(1)).device \
+                    if any(True for _ in projector.parameters()) else "cpu"
+                v = torch.randn(1, 1, projector.geom.image_size,
+                                projector.geom.image_size, device=device)
+                v = v / v.norm()
+                for _ in range(8):
+                    Av = projector.forward_project(v)
+                    v = projector.back_project(Av)
+                    n = v.norm().clamp(min=1e-12)
+                    v = v / n
+                norm_val = float(n.item())
+                print(f"[HammernikVN] dc_norm power-iter ≈ {norm_val:.3g}",
+                      flush=True)
         self.steps = nn.ModuleList([
-            GDStep(n_filters=n_filters, kernel_size=kernel_size,
+            VNStep(projector, n_filters=n_filters, kernel_size=kernel_size,
                    n_bumps=n_bumps, x_range=x_range,
                    filter_init_std=filter_init_std,
                    rbf_init_std=rbf_init_std,
-                   lambda_init=lambda_init)
+                   lambda_init=lambda_init,
+                   normalize_filters=normalize_filters,
+                   dc_norm=norm_val)
             for _ in range(T)
         ])
 
-    def forward(self, y_NN: torch.Tensor) -> torch.Tensor:
-        y = y_NN
+    def forward(self, u0: torch.Tensor, sino: torch.Tensor) -> torch.Tensor:
+        u = u0
         for step in self.steps:
-            y = step(y, y_NN)
-        return y
+            if self.checkpoint and u.requires_grad:
+                u = torch.utils.checkpoint.checkpoint(step, u, sino,
+                                                       use_reentrant=False)
+            else:
+                u = step(u, sino)
+        return u
 
 
 # ---------------------------------------------------------------------------
@@ -189,7 +233,7 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
-    env_path = os.environ.get("HAMMERNIK_CONFIG_PATH")
+    env_path = os.environ.get("HAMMERNIK_VN_CONFIG_PATH")
     if env_path and Path(env_path).exists():
         cfg = {**CONFIG, **json.loads(Path(env_path).read_text()), **(cfg or {})}
     else:
@@ -218,10 +262,17 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
 
     proj = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
-        train_fbp = torch.clamp(proj.fbp(train_noisy), min=0.0)        # Ψ ≡ ReLU
-        val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
+        if cfg["vn_init"] == "fbp":
+            train_u0 = torch.clamp(proj.fbp(train_noisy), min=0.0)
+            val_u0   = torch.clamp(proj.fbp(val_noisy),   min=0.0)
+        elif cfg["vn_init"] == "backproj":
+            train_u0 = proj.back_project(train_noisy)
+            val_u0   = proj.back_project(val_noisy)
+        else:
+            raise ValueError(f"unknown vn_init={cfg['vn_init']!r}")
 
     model = HammernikVN(
+        projector=proj,
         T=cfg["vn_T"],
         n_filters=cfg["vn_n_filters"],
         kernel_size=cfg["vn_kernel"],
@@ -230,12 +281,16 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         filter_init_std=cfg["vn_filter_init_std"],
         rbf_init_std=cfg["vn_rbf_init_std"],
         lambda_init=cfg["vn_lambda_init"],
+        normalize_filters=cfg["vn_normalize_filters"],
+        dc_norm=cfg.get("vn_dc_norm", True),
+        checkpoint=cfg.get("vn_checkpoint", True),
     ).to(device)
 
     params_total = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"[solver] Hammernik VN params: {params_total/1e3:.2f} k "
+    print(f"[solver] Hammernik-VN params: {params_total/1e3:.2f} k "
           f"(T={cfg['vn_T']}, N_k={cfg['vn_n_filters']}, k={cfg['vn_kernel']}, "
-          f"n_bumps={cfg['vn_n_bumps']})", flush=True)
+          f"init={cfg['vn_init']}, norm={cfg['vn_normalize_filters']})",
+          flush=True)
 
     opt = torch.optim.Adam(model.parameters(), lr=cfg["lr"])
     train_start = time.time()
@@ -246,21 +301,22 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         n_batches = 0
         for i in range(0, cfg["train_n"], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
-            x0 = train_fbp[idx]
+            u0 = train_u0[idx]
+            sino = train_noisy[idx]
             truth = train_ph[idx]
-            pred = model(x0)
+            pred = model(u0, sino)
             loss = F.mse_loss(pred, truth)
             opt.zero_grad()
             loss.backward()
             opt.step()
             running += float(loss.detach().cpu())
             n_batches += 1
-        lambdas = [float(s.lam.detach().cpu()) for s in model.steps]
         avg_loss = running / max(1, n_batches)
+        lambdas = [float(s.lam.detach().cpu()) for s in model.steps]
         print(f"[train] epoch {ep+1}/{cfg['epochs']}  loss={avg_loss:.6g}  "
               f"λ_t={[f'{l:.3g}' for l in lambdas]}", flush=True)
-        if time.time() - train_start > 240:
-            print(f"[train] 4-min wall reached at epoch {ep+1}", flush=True)
+        if time.time() - train_start > 480:        # 8-min wall
+            print(f"[train] 8-min wall reached at epoch {ep+1}", flush=True)
             break
     train_time = time.time() - train_start
 
@@ -268,8 +324,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     preds = []
     with torch.no_grad():
         chunk = max(1, cfg["batch_size"])
-        for i in range(0, val_fbp.shape[0], chunk):
-            preds.append(model(val_fbp[i:i + chunk]))
+        for i in range(0, val_u0.shape[0], chunk):
+            preds.append(model(val_u0[i:i + chunk], val_noisy[i:i + chunk]))
     pred = torch.cat(preds, dim=0)
     pred = pred.clamp(0.0, cfg["display_max"])
 
@@ -277,6 +333,10 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     val_psnr = float(psnr(pred, val_ph, data_range=data_range).cpu())
     val_ssim = float(ssim(pred, val_ph, data_range=data_range).cpu())
     val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())
+    # baseline = the FBP starting point (regardless of vn_init choice — use FBP
+    # for fair comparison against the rest of the demo_dl_reference table)
+    with torch.no_grad():
+        val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
     baseline_psnr = float(psnr(val_fbp, val_ph, data_range=data_range).cpu())
     baseline_rmse = float(((val_fbp - val_ph) ** 2).mean().sqrt().cpu())
     headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
@@ -285,7 +345,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     print(f"[solver] λ_t per step: "
           f"{[f'{float(s.lam.detach().cpu()):.4g}' for s in model.steps]}",
           flush=True)
-    print(f"[solver] Hammernik VN: val_score={val_score:.4f} "
+    print(f"[solver] Hammernik-VN: val_score={val_score:.4f} "
           f"headroom={headroom:.4f}  PSNR={val_psnr:.2f}  SSIM={val_ssim:.4f}  "
           f"time={train_time:.1f}s", flush=True)
 
@@ -302,10 +362,10 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             ax[i, 0].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 0].set_title("truth" if i == 0 else "")
             ax[i, 1].imshow(val_fbp[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 1].set_title(f"y_NN = FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
+            ax[i, 1].set_title(f"FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
             ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
             ax[i, 2].set_title(
-                f"Hammernik VN  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})"
+                f"Hammernik-VN  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})"
                 if i == 0 else "")
             ax[i, 3].imshow((pred[i, 0] - val_ph[i, 0]).cpu(),
                             cmap="RdBu_r", vmin=-0.01, vmax=0.01)

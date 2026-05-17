@@ -159,6 +159,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             print(f"[fit] 10-min wall at sample {i+1}", flush=True); break
     train_time = time.time() - t0
     pred = torch.cat(preds, 0)
+    pred = pred.clamp(0.0, cfg["display_max"])
     val_ph = phs[:pred.shape[0]]; val_fbp = fbps[:pred.shape[0]]
 
     dr = cfg["display_max"] - cfg["display_min"]

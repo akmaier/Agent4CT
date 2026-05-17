@@ -223,6 +223,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         for i in range(0, val_noisy.shape[0], chunk):
             preds.append(itnet(val_fbp[i:i+chunk], val_noisy[i:i+chunk]))
         pred = torch.cat(preds, dim=0)
+        pred = pred.clamp(0.0, cfg["display_max"])
 
     train_time = time.time() - t0
     params_total = sum(p.numel() for p in itnet.parameters() if p.requires_grad)

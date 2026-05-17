@@ -255,6 +255,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         for i in range(0, val_noisy.shape[0], chunk):
             preds.append(itnet(val_fbp[i:i+chunk], val_noisy[i:i+chunk]))
         pred = torch.cat(preds, dim=0)
+        pred = pred.clamp(0.0, cfg["display_max"])
 
     # Metrics vs truth phantom
     data_range = cfg["display_max"] - cfg["display_min"]

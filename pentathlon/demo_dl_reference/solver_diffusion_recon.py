@@ -194,8 +194,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     sample_time = time.time() - t0
     pred = torch.cat(preds, 0)
     val_ph = val_ph[:pred.shape[0]]; val_fbp = val_fbp[:pred.shape[0]]
-
     dr = cfg["display_max"] - cfg["display_min"]
+    pred = pred.clamp(0.0, cfg["display_max"])
     val_psnr = float(psnr(pred, val_ph, data_range=dr).cpu())
     val_ssim = float(ssim(pred, val_ph, data_range=dr).cpu())
     val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())

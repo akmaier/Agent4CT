@@ -240,6 +240,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         for i in range(0, val_fbp.shape[0], cfg["batch_size"]):
             preds.append(model(val_fbp[i:i + cfg["batch_size"]]))
     pred = torch.cat(preds, 0)
+    pred = pred.clamp(0.0, cfg["display_max"])
 
     dr = cfg["display_max"] - cfg["display_min"]
     val_psnr = float(psnr(pred, val_ph, data_range=dr).cpu())
