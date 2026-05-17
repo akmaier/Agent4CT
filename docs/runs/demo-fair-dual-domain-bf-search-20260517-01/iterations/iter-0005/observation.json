@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T11:39:53Z",
+  "run_id": "demo-fair-dual-domain-bf-search-20260517-01",
+  "iter": 5,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual-domain-bf-search: epochs=13, lr=0.0011059, batch_size=2, proj_kernel=5, img_kernel=7, proj_sx=1.0939, proj_sy=1.9599, proj_sr=0.013704, img_sx=1.5411, img_sr=0.026593",
+  "val_score": 0.30696380138397217,
+  "headroom": 0.6088552734830517,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0,
+  "train_n": 400,
+  "agent": "dual-domain-bf-search",
+  "model": "random-search",
+  "advice_for_others": "dual-domain-bf-search: epochs=13, lr=0.0011059, batch_size=2, proj_kernel=5, img_kernel=7, proj_sx=1.0939, proj_sy=1.9599, proj_sr=0.013704, img_sx=1.5411, img_sr=0.026593 -> hr=0.6089",
+  "comparison_image": "runs/demo-fair-dual-domain-bf-search-20260517-01/iterations/iter-0005/comparison.png"
+}

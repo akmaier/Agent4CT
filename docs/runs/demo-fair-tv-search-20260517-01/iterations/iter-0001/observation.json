@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T11:17:37Z",
+  "run_id": "demo-fair-tv-search-20260517-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv-search: tv_lambda=0.00062908, tv_iterations=418, tv_lr=0.0042052, tv_clip_max=0.048672, tv_decay=0.02268",
+  "val_score": 0.2637878358364105,
+  "headroom": 0.3516521979463042,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 0,
+  "agent": "tv-search",
+  "model": "random-search",
+  "advice_for_others": "tv-search: tv_lambda=0.00062908, tv_iterations=418, tv_lr=0.0042052, tv_clip_max=0.048672, tv_decay=0.02268 -> hr=0.3517",
+  "comparison_image": "runs/demo-fair-tv-search-20260517-01/iterations/iter-0001/comparison.png"
+}

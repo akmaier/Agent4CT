@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-17T12:59:48Z",
+  "updated": "2026-05-17T13:05:55Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -195,6 +195,54 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-fair-dual-domain-bf-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T11:12:39Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.306964,
+      "best_headroom": 0.608855,
+      "agent": "dual-domain-bf-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-fair-dual-domain-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T11:11:13Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.311031,
+      "best_headroom": 0.606764,
+      "agent": "dual-domain-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-fair-itnet-v2-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T11:11:13Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.382786,
+      "best_headroom": 0.632952,
+      "agent": "itnet-v2-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-fair-tv-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T11:11:13Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.476693,
+      "best_headroom": 0.617977,
+      "agent": "tv-search",
+      "model": "random-search"
+    },
+    {
       "slug": "demo-fair-uswin-search-20260517-01",
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
@@ -204,6 +252,18 @@
       "best_score": 0.781748,
       "best_headroom": 0.809015,
       "agent": "uswin-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-fair-wu-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T11:11:13Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.18255,
+      "best_headroom": 0.410858,
+      "agent": "wu-search",
       "model": "random-search"
     },
     {

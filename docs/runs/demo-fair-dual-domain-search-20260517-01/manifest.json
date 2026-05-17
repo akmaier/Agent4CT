@@ -1,0 +1,19 @@
+{
+  "slug": "demo-fair-dual-domain-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-dual-domain-search",
+  "started": "2026-05-17T11:11:13Z",
+  "agent": "dual-domain-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "packed-random: DD U-Net under CONVENTIONS",
+  "finished": "2026-05-17T12:10:26Z",
+  "sampler": "random",
+  "best_params": {
+    "epochs": 3,
+    "lr": 0.0007656500072133063,
+    "batch_size": 2,
+    "unet_c": 16
+  },
+  "best_headroom": 0.6067640303345857
+}

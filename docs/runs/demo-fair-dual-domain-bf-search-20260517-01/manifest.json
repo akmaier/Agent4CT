@@ -1,0 +1,25 @@
+{
+  "slug": "demo-fair-dual-domain-bf-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-dual-domain-bf-search",
+  "started": "2026-05-17T11:12:39Z",
+  "agent": "dual-domain-bf-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "packed-random: DD-Bilateral under CONVENTIONS",
+  "finished": "2026-05-17T12:58:06Z",
+  "sampler": "random",
+  "best_params": {
+    "epochs": 22,
+    "lr": 0.0015663564272945668,
+    "batch_size": 2,
+    "proj_kernel": 5,
+    "img_kernel": 9,
+    "proj_sx": 1.0589579381741867,
+    "proj_sy": 2.7402139768370635,
+    "proj_sr": 0.01507301146169827,
+    "img_sx": 2.7006280700791807,
+    "img_sr": 0.017480004555595095
+  },
+  "best_headroom": 0.6088553051195588
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "demo-fair-itnet-v2-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-itnet-v2-search",
+  "started": "2026-05-17T11:11:13Z",
+  "agent": "itnet-v2-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "packed-random: ItNet v2 under CONVENTIONS",
+  "finished": "2026-05-17T11:38:39Z",
+  "sampler": "random",
+  "best_params": {
+    "pretrain_epochs": 4,
+    "pretrain_lr": 0.0010189898838522773,
+    "itnet_k": 4,
+    "itnet_alpha_init": 0.005226769407243715,
+    "residual_learning": false
+  },
+  "best_headroom": 0.6329516970565642
+}

@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.263788	0.351652	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.00062908, tv_iterations=418, tv_lr=0.0042052, tv_clip_max=0.048672, tv_decay=0.02268
+2		0.28909	0.377425	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.003995, tv_iterations=297, tv_lr=0.0020082, tv_clip_max=0.052615, tv_decay=0.021401
+3		0.329815	0.402093	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.00024535, tv_iterations=468, tv_lr=0.054631, tv_clip_max=0.047677, tv_decay=0.018632
+4		0.258559	0.343708	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0054981, tv_iterations=180, tv_lr=0.0012236, tv_clip_max=0.073476, tv_decay=0.049431
+5		0.297051	0.387873	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.00050973, tv_iterations=323, tv_lr=0.034573, tv_clip_max=0.064329, tv_decay=0.049852
+6		0.45383	0.518324	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0092024, tv_iterations=353, tv_lr=0.0090412, tv_clip_max=0.051137, tv_decay=0.029914
+7		0.279727	0.358213	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0046739, tv_iterations=467, tv_lr=0.0012889, tv_clip_max=0.046779, tv_decay=0.033853
+8		0.321982	0.400271	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.00072121, tv_iterations=316, tv_lr=0.0085623, tv_clip_max=0.049082, tv_decay=0.002185
+9		0.405701	0.467613	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0065966, tv_iterations=215, tv_lr=0.0078857, tv_clip_max=0.049798, tv_decay=0.023997
+10		0.34002	0.410732	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.00024637, tv_iterations=188, tv_lr=0.082771, tv_clip_max=0.047863, tv_decay=0.013686
+11		0.291392	0.255274	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.00012013, tv_iterations=195, tv_lr=0.0090364, tv_clip_max=0.031568, tv_decay=0.018496
+12		0.266965	0.341156	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0015857, tv_iterations=185, tv_lr=0.0031805, tv_clip_max=0.04414, tv_decay=0.043582
+13		0.476693	0.617977	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0064507, tv_iterations=321, tv_lr=0.020437, tv_clip_max=0.068778, tv_decay=0.023835
+14		0.448222	0.339469	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0069705, tv_iterations=357, tv_lr=0.0097617, tv_clip_max=0.031876, tv_decay=0.028659
+15		0.265553	0.361425	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0012214, tv_iterations=125, tv_lr=0.0068184, tv_clip_max=0.059405, tv_decay=0.039835
+16		0.274495	0.367711	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0021032, tv_iterations=459, tv_lr=0.0024402, tv_clip_max=0.05495, tv_decay=0.026528
+17		0.265832	0.337238	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0023132, tv_iterations=155, tv_lr=0.0016483, tv_clip_max=0.043285, tv_decay=0.029459
+18		0.328054	0.418662	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0015121, tv_iterations=339, tv_lr=0.01788, tv_clip_max=0.058237, tv_decay=0.043466
+19		0.292747	0.382564	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.0010299, tv_iterations=168, tv_lr=0.008055, tv_clip_max=0.067249, tv_decay=0.0063266
+20		0.385183	0.460359	keep	architecture	tv-search	random-search	tv-search: tv_lambda=0.00021161, tv_iterations=391, tv_lr=0.089771, tv_clip_max=0.05175, tv_decay=0.0080062
