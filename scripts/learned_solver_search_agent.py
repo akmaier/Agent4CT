@@ -60,7 +60,7 @@ SOLVERS = {
     "hammernik": {
         "solver": "pentathlon/demo_dl_reference/solver_hammernik_2017.py",
         "env_var": "HAMMERNIK_CONFIG_PATH",
-        "slug_prefix": "demo-dl-hammernik-search",
+        "slug_prefix": "demo-dl-fair-hammernik-search",
         "agent_name": "hammernik-search",
         "space": {
             "epochs":          (10, 30, "int"),
@@ -74,7 +74,7 @@ SOLVERS = {
     "hammernik_vn": {
         "solver": "pentathlon/demo_dl_reference/solver_hammernik_vn.py",
         "env_var": "HAMMERNIK_VN_CONFIG_PATH",
-        "slug_prefix": "demo-dl-hammernik-vn-search",
+        "slug_prefix": "demo-dl-fair-hammernik-vn-search",
         "agent_name": "hammernik-vn-search",
         "space": {
             "epochs":          (10, 18, "int"),
@@ -90,7 +90,7 @@ SOLVERS = {
     "uswin": {
         "solver": "pentathlon/demo_dl_reference/solver_uswin.py",
         "env_var": "USWIN_CONFIG_PATH",
-        "slug_prefix": "demo-dl-uswin-search",
+        "slug_prefix": "demo-dl-fair-uswin-search",
         "agent_name": "uswin-search",
         "space": {
             "epochs":      (6, 14, "int"),
@@ -104,7 +104,7 @@ SOLVERS = {
     "naf": {
         "solver": "pentathlon/demo_dl_reference/solver_naf.py",
         "env_var": "NAF_CONFIG_PATH",
-        "slug_prefix": "demo-dl-naf-search",
+        "slug_prefix": "demo-dl-fair-naf-search",
         "agent_name": "naf-search",
         "space": {
             "naf_n_freqs":      ([6, 8, 10, 12, 14], "choice"),
@@ -119,7 +119,7 @@ SOLVERS = {
     "r2gaussian": {
         "solver": "pentathlon/demo_dl_reference/solver_r2gaussian.py",
         "env_var": "R2G_CONFIG_PATH",
-        "slug_prefix": "demo-dl-r2gaussian-search",
+        "slug_prefix": "demo-dl-fair-r2gaussian-search",
         "agent_name": "r2gaussian-search",
         "space": {
             "gs_n_gaussians": ([512, 1024, 2048], "choice"),

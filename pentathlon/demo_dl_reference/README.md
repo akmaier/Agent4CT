@@ -1,7 +1,49 @@
 # Demo Reference Implementations — Results Summary
 
-**Run**: `demo-dl-reference-20260515-01`  
+**Run**: `demo-dl-reference-20260515-01`
 **Dashboard**: https://akmaier.github.io/Agent4CT/dashboard.html
+
+> ⚖️ **Comparison conventions** — every solver in this directory must
+> follow the rules in [CONVENTIONS.md](CONVENTIONS.md): same val-set
+> seeds (`cfg["seed"]+1000`), prediction clamped to `[0, display_max]`
+> before metric computation, `data_range = display_max-display_min`
+> passed explicitly to PSNR/SSIM. Past `demo-dl-<solver>-search-*`
+> entries that pre-date this enforcement are kept for historical
+> visibility but are superseded by the **`demo-dl-fair-*` slugs**
+> launched 2026-05-17 (jobs 761199-761203) under the corrected
+> convention.
+
+## Fair re-run plan (2026-05-17)
+
+A bug audit found two sources of incomparability across older runs:
+
+1. Some solvers used different seed offsets for the val phantoms
+   (mostly `cfg["seed"]+1000` but a few drifted to `+10000` or used
+   the global `torch.manual_seed`).
+2. Some solvers did not clamp negative or `>display_max` pixel values
+   in the prediction before metric computation, biasing SSIM/PSNR/RMSE
+   either way.
+
+Both are now codified in [CONVENTIONS.md](CONVENTIONS.md) and every
+solver has been patched. The dashboard now hosts both:
+
+| Old slug (buggy) | Fair re-run slug (2026-05-17) | Job |
+|---|---|---|
+| `demo-dl-uswin-search-20260516-01` | `demo-dl-fair-uswin-search-20260517-01` | 761199 |
+| `demo-dl-naf-search-20260516-02` | `demo-dl-fair-naf-search-20260517-01` | 761200 |
+| `demo-dl-r2gaussian-search-20260516-01` | `demo-dl-fair-r2gaussian-search-20260517-01` | 761201 |
+| `demo-dl-hammernik-search-20260516-02` | `demo-dl-fair-hammernik-search-20260517-01` | 761202 |
+| `demo-dl-hammernik-vn-search-20260516-02` | `demo-dl-fair-hammernik-vn-search-20260517-01` | 761203 |
+
+Unaffected (their old slugs remain the official leaderboard):
+
+- FBP baseline / TV iterative / TV search
+- Dual-Domain U-Net / Dual-Domain Bilateral
+- ItNet v1 / v2 / v3 / v3 (search 20260516-02)
+- Wu 2015 (`demo-dl-wu-search-20260516-01`)
+
+The original-vs-fair deltas will be summarised in section "Fair
+re-runs vs old runs" once the 761199-761203 jobs finish.
 
 ---
 
