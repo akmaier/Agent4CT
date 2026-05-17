@@ -1,0 +1,16 @@
+{
+  "ddpm_mode": "constrained",
+  "ddpm_n_train": 2000,
+  "ddpm_n_train_constrained": 200,
+  "ddpm_n_val": 100,
+  "ddpm_ch": 32,
+  "ddpm_n_steps": 1000,
+  "ddpm_epochs": 60,
+  "ddpm_batch": 4,
+  "ddpm_lr": 0.00043190,
+  "ddpm_weight_decay": 0.0,
+  "ddpm_train_wall_s": 3600,
+  "ddpm_ckpt": "/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt",
+  "ddpm_out_scale": 0.05,
+  "seed": 42
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "demo-dl-ddpm-search-20260517-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-ddpm-search",
+  "started": "2026-05-17T06:11:39Z",
+  "agent": "ddpm-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "ddpm hyperparameter random search",
+  "finished": "2026-05-17T12:57:14Z",
+  "best_params": {
+    "ddpm_mode": "unconstrained",
+    "ddpm_n_train": 2000,
+    "ddpm_ch": 32,
+    "ddpm_n_steps": 1000,
+    "ddpm_epochs": 36,
+    "ddpm_batch": 4,
+    "ddpm_lr": 0.0004318988394106964,
+    "ddpm_weight_decay": 0.0,
+    "ddpm_train_wall_s": 1200
+  },
+  "best_headroom": 0.9972397940036899
+}

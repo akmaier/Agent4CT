@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T09:21:41Z",
+  "run_id": "demo-dl-ddpm-search-20260517-01",
+  "iter": 9,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "ddpm-search: ddpm_mode=unconstrained, ddpm_n_train=3000, ddpm_ch=48, ddpm_n_steps=1000, ddpm_epochs=30, ddpm_batch=8, ddpm_lr=0.00019964, ddpm_weight_decay=0.0001, ddpm_train_wall_s=1200",
+  "val_score": -0.004872184007791265,
+  "headroom": 0.9951278159922088,
+  "kept": true,
+  "status": "keep",
+  "params_M": 2.152083,
+  "train_n": 3000,
+  "agent": "ddpm-search",
+  "model": "random-search",
+  "advice_for_others": "ddpm-search: ddpm_mode=unconstrained, ddpm_n_train=3000, ddpm_ch=48, ddpm_n_steps=1000, ddpm_epochs=30, ddpm_batch=8, ddpm_lr=0.00019964, ddpm_weight_decay=0.0001, ddpm_train_wall_s=1200 -> hr=0.9951",
+  "comparison_image": "runs/demo-dl-ddpm-search-20260517-01/iterations/iter-0009/comparison.png"
+}
