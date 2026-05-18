@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T15:18:13Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 16,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 16: n_cg 10->20 (double CG inner steps per DC-step). Tests whether hard projection is undersolved.",
+  "val_score": 0.6495,
+  "headroom": 0.5712,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "hr=0.5712 NEW BEST (+0.0072 vs iter 15). DC-step projection was undersolved at n_cg=10. SSIM dropped to 0.65 (image looks less natural but matches projections better). Try n_cg=40 next to see if CG axis still has headroom.",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0016/comparison.png"
+}

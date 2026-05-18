@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T12:25:03Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 8,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 8: eta 1.0->0.3 (less DPS pull, more DC-step weight).",
+  "val_score": 0.7424,
+  "headroom": 0.5412,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "eta=0.3 slightly worse (0.5412 vs 0.5499 at eta=1.0). Try eta=3.0 next.",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0008/comparison.png"
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-18T09:05:20Z",
+  "updated": "2026-05-18T14:31:29Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -637,6 +637,18 @@
       "best_headroom": 0.611967,
       "agent": "claude",
       "model": "claude-sonnet-4.5"
+    },
+    {
+      "slug": "demo-fair-claude-diffusion-recon-search-20260518-01",
+      "short_id": "20260518-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-18T11:39:18Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.6495,
+      "best_headroom": 0.5712,
+      "agent": "claude-diffusion-recon-agent",
+      "model": "claude-sonnet-4.7"
     }
   ]
 }

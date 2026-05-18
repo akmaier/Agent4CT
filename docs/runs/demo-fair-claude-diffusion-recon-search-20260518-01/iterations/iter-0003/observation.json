@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T11:52:37Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 3,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 3: relax 0.8->1.0 (full hard projection). Otherwise same as iter 2.",
+  "val_score": 0.7423,
+  "headroom": 0.5456,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "relax 0.8->1.0 only +0.006 hr. Diminishing on DC pressure axis. Try more frequent DC (every 3) next.",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0003/comparison.png"
+}

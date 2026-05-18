@@ -66,7 +66,8 @@ dashboard under the `demo-fair` chart group.
 | NAF (per-scene INR) | **0.5419** | 0.5354 | −0.0065 |
 | Wu 2015 (classical) | 0.4109 | 0.4123 | +0.0014 |
 | R2Gaussian (per-scene GS) | 0.3589 | 0.4014 | +0.0425 |
-| **Diffusion recon (8 attempts)** | **0.0000** | **0.0000** | broken — see below |
+| Diffusion recon (random / TPE) | 0.0000 | 0.0000 | broken without DC-step — see "Outstanding" below |
+| **Diffusion recon (Claude agentic, 20 iters)** | — | **0.5712** | post-DC-step fix; see [agentic search README](../../docs/runs/demo-fair-claude-diffusion-recon-search-20260518-01/README.md) |
 
 † Hammernik 2017 random only had 4/20 iters survive even at
 `batch_size=2`; TPE got 20/20 by side-stepping OOM-prone configs.
@@ -111,19 +112,49 @@ SSIM. NAF and Hammernik 2017 each regressed slightly; the new fair
 numbers reflect the actually-bounded prediction, which is what the
 challenge metric expects.
 
-## Outstanding: diffusion-recon collapse
+## Diffusion-recon: unblocked by DC-step + Claude-agentic search
+
+### The collapse (random / TPE attempts)
 
 8 separate sampling-search attempts (random + TPE × constrained +
 unconstrained DDPM × v1 + v2 grad-normalised samplers) all collapsed to
 hr=0.0 with the output saturating to uniform display_max white. The
 DDPM training itself looked healthy (final val ε-loss ≈ 0.0028 on
-held-out phantoms — within standard DDPM ranges).
+held-out phantoms — within standard DDPM ranges). The unconditional
+DDIM samples (job 761258) confirmed both checkpoints produced
+phantom-like images, isolating the bug to the DPS guidance trajectory.
 
-Sanity check submitted as job 761258: 100-step DDIM sampling with no
-guidance, on both DDPM checkpoints. If those unconditional samples
-look like ellipse phantoms, the bug is in the DPS/MCG guidance
-gradient. If they look like noise, the DDPM needs longer / deeper
-training despite the val-loss number.
+### The fix: Resample-style DC-step
+
+A periodic hard projection toward the data-fidelity manifold (a few CG
+steps of `min ‖A·x_μ − y‖²` on the predicted-clean image, then re-noise
+back to the current diffusion time) unblocked the collapse on the very
+first attempt (iter 1: hr=0.4689). See `solver_diffusion_recon.py`'s
+`dc_step_cg` and the `sample_guided` loop.
+
+### Claude-driven agentic search (20 iters)
+
+A separate 20-iteration search where Claude proposed each next
+configuration after reading the prior iter's `result.json` and
+`comparison.png`. The trajectory and final winning config live in
+[`docs/runs/demo-fair-claude-diffusion-recon-search-20260518-01/`](../../docs/runs/demo-fair-claude-diffusion-recon-search-20260518-01/README.md).
+
+**Final: iter 16, headroom = 0.5712, SSIM = 0.6495.**
+
+| axis | won at | ceiling | note |
+|---|---|---|---|
+| `recon_dcstep_n_cg`  | **20** | 40 | over-projects against noisy sinogram |
+| `recon_eta`          | **30** | 100 | over-pulls DPS step when projection is strong |
+| `recon_dcstep_every` | **3**  | 2 | too-frequent ≈ same failure mode as high n_cg |
+| `recon_sample_steps` | **500** | (200 worse) | longer trajectory wins |
+| `recon_dcstep_relax` | **1.0** | (lower worse) | full hard projection wins given enough CG |
+| `recon_dcstep_warmup`| **25** | 5 worse, 10 ok | DC needs the image to be partly denoised first |
+| `recon_mode`         | **dps** | mcg worse | MCG's FBP-pseudoinverse blurs the gradient |
+| DDPM ckpt            | **unconstrained (2000 phantoms)** | constrained (200) worse | constrained train set too narrow |
+
+Diffusion-recon now sits between Hammernik 2017 (hr 0.6007) and NAF (hr
+0.5354). Still well behind the supervised end-to-end leaders (ItNet v3
+hr 0.8378, U-Swin hr 0.8180) but no longer broken.
 
 ## Fair re-run plan (2026-05-17)
 

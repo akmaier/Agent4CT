@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T12:35:30Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 10,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 10: eta 3.0->10.0 (push aggressive DPS pull further).",
+  "val_score": 0.7623,
+  "headroom": 0.5621,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "eta=10 NEW BEST hr=0.5621. Try shorter warmup (5 vs 10) so DC-step kicks in earlier.",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0010/comparison.png"
+}

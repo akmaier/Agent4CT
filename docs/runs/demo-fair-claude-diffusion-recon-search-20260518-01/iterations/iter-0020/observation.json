@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T16:28:14Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 20,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 20: eta 30->50 with n_cg=20 (peak refinement between iter 16's winning 30 and iter 18's losing 100).",
+  "val_score": 0.6488,
+  "headroom": 0.5632,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "Slight regression hr=0.5632 (-0.008 vs iter 16). Confirms eta=30 is the peak with n_cg=20. Full eta sweep with n_cg=20: 30->0.5712, 50->0.5632, 100->0.5402. Search converged.",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0020/comparison.png"
+}

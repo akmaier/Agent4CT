@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T11:47:29Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 2: tighter DC pressure \u2014 relax 0.5->0.8, n_cg 5->10. Otherwise same as iter 1.",
+  "val_score": 0.7406,
+  "headroom": 0.54,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "relax=0.8 + n_cg=10 lifted hr 0.47->0.54 (+0.07). Next: try relax=1.0 (full projection).",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0002/comparison.png"
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-claude-diffusion-recon-search",
+  "started": "2026-05-18T11:39:18Z",
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "status": "complete",
+  "completed": "2026-05-18T16:28:14Z",
+  "n_iters": 20,
+  "best_iter": 16,
+  "best_headroom": 0.5712,
+  "best_val_ssim": 0.6495,
+  "best_config": {
+    "recon_mode": "dps",
+    "recon_sample_steps": 500,
+    "recon_eta": 30.0,
+    "recon_init": "fbp",
+    "recon_dcstep_every": 3,
+    "recon_dcstep_n_cg": 20,
+    "recon_dcstep_warmup": 25,
+    "recon_dcstep_relax": 1.0,
+    "recon_ckpt": "ddpm_unconstrained_final.pt"
+  },
+  "notes": "Claude-in-the-loop search for diffusion recon (DPS + optional DC-step), driven manually per-iter by reading prior result.json. 20 iters total. Each axis was probed and ceilings identified: n_cg ceiling at 20 (40 over-fits noisy sinogram), eta ceiling at 30 (100 over-pulls when projection is strong), every ceiling at 3 (2 over-projects)."
+}

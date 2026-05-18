@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T12:59:07Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 14,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 14: 500 steps + dcstep_every=3 (158 DC-steps total, max DC pressure).",
+  "val_score": 0.7186,
+  "headroom": 0.564,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "hr=0.5640 NEW BEST. More DC pressure at long traj wins hr but drops SSIM. Try noise init next.",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0014/comparison.png"
+}

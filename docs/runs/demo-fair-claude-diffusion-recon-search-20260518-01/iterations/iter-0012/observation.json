@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T12:43:43Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 12,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 12: eta 10->30 (push aggressive limit).",
+  "val_score": 0.7411,
+  "headroom": 0.5625,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "eta=30 NEW BEST hr=0.5625 (+0.0004). Eta saturating ~10-30. Try eta=30 + 500 steps (longer trajectory) next.",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0012/comparison.png"
+}

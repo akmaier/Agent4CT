@@ -61,6 +61,11 @@ CONFIG = {
     "recon_eta":           1.0,
     "recon_init":          "fbp",
     "recon_eta_clamp":     False,    # if True, clamp x_t after each step into [0, 1]
+    # ---- DC-step (Resample-style hard projection) --------------------------
+    "recon_dcstep_every":  0,        # 0 = off; otherwise apply DC-step every K reverse steps
+    "recon_dcstep_n_cg":   5,        # CG inner iterations per DC-step
+    "recon_dcstep_warmup": 5,        # skip the first N reverse steps (too noisy for projection)
+    "recon_dcstep_relax":  0.5,      # 0=no relax, 1=full hard projection
 }
 
 
@@ -77,8 +82,30 @@ def ddim_step(xt, eps_pred, sched, t_now, t_next):
     return ab_next.sqrt() * x0_hat + (1 - ab_next).sqrt() * eps_pred
 
 
+def dc_step_cg(x0_mu, sino, proj, n_cg, relax):
+    """Resample-style hard projection toward data-fidelity: a few steps of
+    Gauss-Newton (~CG) on `min_x ‖A x − sino‖²` starting from x0_mu. Returns
+    the projected mu-image. `relax` blends with the input: 1 = full project,
+    0 = no change. Operates in the noise-free image domain (mu units).
+    """
+    x = x0_mu.clone()
+    for _ in range(n_cg):
+        with torch.no_grad():
+            r = proj.forward_project(x) - sino                  # (B, 1, A, D)
+            g = proj.back_project(r)                              # (B, 1, H, W)
+            # CG step size via Polak-Ribiere-ish: use g^T A^T A g  /  ‖A g‖²
+            Ag = proj.forward_project(g)
+            num = (g * g).sum(dim=(1, 2, 3), keepdim=True)
+            den = (Ag * Ag).sum(dim=(1, 2, 3), keepdim=True).clamp(min=1e-12)
+            alpha = num / den
+            x = x - alpha * g
+    return relax * x + (1.0 - relax) * x0_mu
+
+
 def sample_guided(model, sched, proj, sino, fbp_init, *, mode, n_steps,
-                  eta, init_kind, out_scale, device, eta_clamp):
+                  eta, init_kind, out_scale, device, eta_clamp,
+                  dcstep_every=0, dcstep_n_cg=5, dcstep_warmup=5,
+                  dcstep_relax=0.5):
     T = sched.T
     times = torch.linspace(T, 1, n_steps + 1).long().tolist()
     fbp_norm = (fbp_init / out_scale).clamp(0.0, 1.0)
@@ -121,16 +148,32 @@ def sample_guided(model, sched, proj, sino, fbp_init, *, mode, n_steps,
         with torch.no_grad():
             x_clean = ddim_step(x.detach(), eps.detach(), sched, t_now, t_next)
             x = x_clean - step
-            # Mid-trajectory x_t is NOISY by design (the reverse process needs
-            # it spread across ~ N(0, 1)). DO NOT clamp x mid-loop — that was
-            # the v2 collapse mechanism. eta_clamp is kept as a flag for the
-            # search to ablate, but defaults to False now.
             if eta_clamp:
-                # Soft clamp only: limit per-step displacement so x can't run
-                # away if the residual-normalised step is still too large.
-                disp = (x - x_clean).abs()
                 cap = 0.5  # max per-step pixel displacement in [0,1] space
                 x = x_clean + (x - x_clean).clamp(-cap, cap)
+
+            # ---- DC-step refinement (Resample-style) ---------------------
+            # Periodically project x toward the data-fidelity manifold by
+            # solving min ‖A x_mu − y‖² for a few CG steps, then re-noising
+            # back to the current t-level. Off by default (dcstep_every=0);
+            # set 5-10 to enable.
+            if (dcstep_every > 0
+                    and k >= dcstep_warmup
+                    and (k - dcstep_warmup) % dcstep_every == 0
+                    and t_next > 0):
+                # Move to t_next noise level: form x̂₀ from current x
+                ab_next = sched.alpha_bar[t_next]
+                # Convert current x → predicted clean image in mu units
+                # (use the just-computed eps as the noise estimate)
+                x0_est = x0_from_eps(x, eps.detach(), ab_next).clamp(0.0, 1.0) * out_scale
+                # Hard project via CG against the sinogram
+                x0_proj = dc_step_cg(x0_est, sino, proj,
+                                      n_cg=dcstep_n_cg, relax=dcstep_relax)
+                # Re-noise back to the t_next level so the DDIM trajectory
+                # can resume.
+                x0_proj_norm = (x0_proj / out_scale).clamp(0.0, 1.0)
+                noise = torch.randn_like(x0_proj_norm)
+                x = ab_next.sqrt() * x0_proj_norm + (1 - ab_next).sqrt() * noise
     # Final denorm + clamp; only here do we crop to display range.
     return (x.detach() * out_scale).clamp(0.0, out_scale)
 
@@ -204,7 +247,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                                 eta=cfg["recon_eta"],
                                 init_kind=cfg["recon_init"],
                                 out_scale=out_scale, device=device,
-                                eta_clamp=cfg["recon_eta_clamp"])
+                                eta_clamp=cfg["recon_eta_clamp"],
+                                dcstep_every=cfg.get("recon_dcstep_every", 0),
+                                dcstep_n_cg=cfg.get("recon_dcstep_n_cg", 5),
+                                dcstep_warmup=cfg.get("recon_dcstep_warmup", 5),
+                                dcstep_relax=cfg.get("recon_dcstep_relax", 0.5))
         preds.append(pred_i)
         if (i + 1) % 5 == 0:
             print(f"[sample] {i+1}/{cfg['val_n']}  elapsed={time.time()-t0:.1f}s",

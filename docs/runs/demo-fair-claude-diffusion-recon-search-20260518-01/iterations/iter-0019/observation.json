@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T16:17:49Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 19,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 19: dcstep_every 3->2 (more frequent DC at same n_cg=20). 237 DC events vs 158. Tests last unexplored axis.",
+  "val_score": 0.6544,
+  "headroom": 0.567,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "Slight regression hr=0.567 (-0.004 vs iter 16). every=2 over-projects (similar to n_cg=40 ceiling). every=3 confirmed as the DC-frequency sweet spot. SSIM slightly higher (0.654 vs 0.650).",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0019/comparison.png"
+}

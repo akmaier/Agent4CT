@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-18T12:30:18Z",
+  "run_id": "demo-fair-claude-diffusion-recon-search-20260518-01",
+  "iter": 9,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "iter 9: eta 1.0->3.0 (more aggressive DPS pull, with full DC-step backstop).",
+  "val_score": 0.7629,
+  "headroom": 0.5569,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.958,
+  "train_n": 2000,
+  "agent": "claude-diffusion-recon-agent",
+  "model": "claude-sonnet-4.7",
+  "advice_for_others": "eta=3.0 NEW BEST hr=0.5569 (+0.007). Higher eta helps when DC-step backstops it. Try eta=10.0 next.",
+  "comparison_image": "runs/demo-fair-claude-diffusion-recon-search-20260518-01/iterations/iter-0009/comparison.png"
+}
