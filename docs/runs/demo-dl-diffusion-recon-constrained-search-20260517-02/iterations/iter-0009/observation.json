@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-17T21:21:46Z",
+  "run_id": "demo-dl-diffusion-recon-constrained-search-20260517-02",
+  "iter": 9,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "diffusion-recon-constrained-search: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt, recon_mode=mcg, recon_sample_steps=200, recon_eta=0.029176, recon_init=fbp, recon_eta_clamp=True",
+  "val_score": 0.25160518288612366,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.958051,
+  "train_n": 200,
+  "agent": "diffusion-recon-constrained-search",
+  "model": "random-search",
+  "advice_for_others": "diffusion-recon-constrained-search: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt, recon_mode=mcg, recon_sample_steps=200, recon_eta=0.029176, recon_init=fbp, recon_eta_clamp=True -> hr=0.0000",
+  "comparison_image": "runs/demo-dl-diffusion-recon-constrained-search-20260517-02/iterations/iter-0009/comparison.png"
+}

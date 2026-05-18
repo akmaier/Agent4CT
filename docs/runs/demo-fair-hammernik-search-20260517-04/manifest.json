@@ -1,0 +1,22 @@
+{
+  "slug": "demo-fair-hammernik-search-20260517-04",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-fair-hammernik-search",
+  "started": "2026-05-17T21:11:23Z",
+  "agent": "hammernik-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "Hammernik 2017 fair v3 (tightened search space)",
+  "finished": "2026-05-17T21:32:46Z",
+  "sampler": "random",
+  "best_params": {
+    "epochs": 25,
+    "lr": 0.00028838131873695663,
+    "batch_size": 2,
+    "vn_T": 3,
+    "vn_n_filters": 24,
+    "vn_kernel": 7,
+    "vn_lambda_init": 0.005019125673442214
+  },
+  "best_headroom": 0.5923506418490209
+}

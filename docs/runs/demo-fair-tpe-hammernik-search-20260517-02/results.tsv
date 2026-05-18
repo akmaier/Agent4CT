@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.447146	0.582352	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=23, lr=0.00029884, batch_size=2, vn_T=3, vn_n_filters=24, vn_kernel=11, vn_lambda_init=0.00011428
+2		0.238474	0.504224	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=18, lr=0.00021619, batch_size=2, vn_T=5, vn_n_filters=24, vn_kernel=7, vn_lambda_init=0.00025913
+3		0.283262	0.567564	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=12, lr=0.00014117, batch_size=2, vn_T=3, vn_n_filters=24, vn_kernel=9, vn_lambda_init=0.0006369
+4		0.32574	0.540667	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=21, lr=0.00027639, batch_size=2, vn_T=5, vn_n_filters=24, vn_kernel=11, vn_lambda_init=0.00025785
+5		0.509923	0.584011	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=24, lr=0.00018216, batch_size=2, vn_T=3, vn_n_filters=24, vn_kernel=7, vn_lambda_init=0.00018218
+6		0.427341	0.600441	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=30, lr=0.0015445, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0052249
+7		0.42404	0.600131	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=30, lr=0.0017414, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0088939
+8		0.439212	0.592461	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=30, lr=0.0012156, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=9, vn_lambda_init=0.0055374
+9		0.275681	0.51856	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=15, lr=0.00075279, batch_size=2, vn_T=5, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0022757
+10		0.363655	0.593489	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=27, lr=0.00063438, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.002353
+11		0.320892	0.579622	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=10, lr=0.0010599, batch_size=2, vn_T=5, vn_n_filters=16, vn_kernel=9, vn_lambda_init=0.0028058
+12		0.431983	0.600653	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=30, lr=0.0019951, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0085559
+13		0.430029	0.600486	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=26, lr=0.0019904, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0096376
+14		0.426917	0.600368	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=26, lr=0.0018608, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0093243
+15		0.338049	0.586232	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=27, lr=0.00053424, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.00095606
+16		0.278816	0.522142	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=19, lr=0.00090228, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.0043071
+17		0.363125	0.59125	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=25, lr=0.0012251, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0012257
+18		0.376534	0.593479	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=22, lr=0.00044038, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0099485
+19		-0.00135721	0	discard	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=28, lr=0.0018698, batch_size=2, vn_T=5, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.0037368
+20		0.249452	0.539126	keep	architecture	hammernik-search-tpe	random-search	hammernik-search-tpe: epochs=28, lr=0.00010838, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=9, vn_lambda_init=0.0014561

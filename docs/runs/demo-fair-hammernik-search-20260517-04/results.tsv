@@ -1,0 +1,5 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+3		0.453779	0.592351	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=25, lr=0.00028838, batch_size=2, vn_T=3, vn_n_filters=24, vn_kernel=7, vn_lambda_init=0.0050191
+5		0.23512	0.504224	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=14, lr=0.00035482, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.000469
+16		0.270444	0.517727	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=16, lr=0.00042183, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=9, vn_lambda_init=0.0002199
+19		0.308488	0.557085	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=18, lr=0.00091284, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.0024124
