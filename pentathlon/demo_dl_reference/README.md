@@ -43,6 +43,88 @@ so they queue but do not start until the matching random run finishes,
 freeing the GPU for the same solver and letting the per-study SQLite
 file's prior history (if any) accumulate cleanly.
 
+## 2026-05-17 fair-run results
+
+All 11 solvers re-evaluated under the strict
+[CONVENTIONS.md](CONVENTIONS.md) (same val seeds, output clamped to
+`[0, display_max]` before metrics, `data_range = display_max −
+display_min`) under both random search and Optuna-TPE. Live on the
+dashboard under the `demo-fair` chart group.
+
+### Random vs TPE delta (best headroom across 20 iters)
+
+| Solver | Random | **TPE** | Δ (TPE − random) |
+|---|---:|---:|---:|
+| ItNet v3 (end-to-end) | 0.8187 | **0.8378** 🏆 | +0.0191 |
+| U-Swin (transformer) | 0.8090 | 0.8180 | +0.0090 |
+| TV (tuned) | 0.6180 | 0.6793 | **+0.0613** |
+| ItNet v2 (pre-train only) | **0.6330** | 0.5761 | −0.0569 |
+| DD Bilateral (Wagner 2022) | 0.6089 | 0.6106 | +0.0017 |
+| DD U-Net (Wagner 2023) | 0.6068 | 0.6019 | −0.0049 |
+| Hammernik 2017 (variational net) | 0.5924† | 0.6007 | +0.0083 |
+| Hammernik-VN (MRI VN port) | **0.6061** | 0.5961 | −0.0100 |
+| NAF (per-scene INR) | **0.5419** | 0.5354 | −0.0065 |
+| Wu 2015 (classical) | 0.4109 | 0.4123 | +0.0014 |
+| R2Gaussian (per-scene GS) | 0.3589 | 0.4014 | +0.0425 |
+| **Diffusion recon (8 attempts)** | **0.0000** | **0.0000** | broken — see below |
+
+† Hammernik 2017 random only had 4/20 iters survive even at
+`batch_size=2`; TPE got 20/20 by side-stepping OOM-prone configs.
+
+**Take-aways from the random-vs-TPE comparison:**
+1. TPE wins on **7 / 11** solvers, with the biggest gain on TV (+0.06)
+   and R2Gaussian (+0.04).
+2. Random wins on 4 solvers, with the biggest drop on ItNet v2
+   (−0.057). The ItNet v2 random search happened to hit a lucky
+   `residual=False, alpha=0.038` config in 1 of 20 trials that TPE's
+   first 5 startup-random trials missed; with 15 acquisition trials
+   TPE couldn't find that exact config back.
+3. TPE most useful for **noisy / sparse landscapes** (per-scene fits
+   like R2Gaussian where most random trials fail; TV where the
+   `lambda × lr × clip` interactions matter).
+4. TPE less useful for **bimodal / shallow landscapes** (ItNet v2's
+   residual-learning toggle creates two near-equivalent basins; TPE
+   commits to one early).
+5. New leader: **ItNet v3 tuned with TPE at hr = 0.8378**, params
+   2.5 M.
+
+### Fair vs legacy buggy runs
+
+| Solver | Old (buggy) | Fair (random) | Fair (TPE) | Δ ssim under fix |
+|---|---:|---:|---:|---:|
+| U-Swin | hr 0.8103, SSIM 0.5433 | hr 0.8090, SSIM 0.7817 | hr 0.8180 | **SSIM +0.238** (clamp fix) |
+| ItNet v2 | hr 0.4806 | hr 0.6330 | hr 0.5761 | hr **+0.152** (clamp fix) |
+| ItNet v3 | hr 0.8215 | hr 0.8187 | hr 0.8378 | hr ≈ flat then +0.016 with TPE |
+| TV (tuned) | hr 0.6033 | hr 0.6180 | hr 0.6793 | hr **+0.076** (TPE big win) |
+| DD U-Net | hr 0.5868 | hr 0.6068 | hr 0.6019 | hr +0.020 |
+| DD Bilateral | hr 0.6095 (fixed-config) | hr 0.6089 | hr 0.6106 | tuned ≈ fixed |
+| Hammernik 2017 | hr 0.6113 | hr 0.5924 | hr 0.6007 | hr −0.011 (the un-clamped run was overfitting overshoot to look better) |
+| Hammernik-VN | hr 0.6113 | hr 0.6061 | hr 0.5961 | flat |
+| Wu 2015 | hr 0.4101 | hr 0.4109 | hr 0.4123 | flat |
+| R2Gaussian | hr 0.5053 (partial) | hr 0.3589 | hr 0.4014 | hr **−0.10** under fair; investigating |
+| NAF | hr 0.0000 (broken) | hr 0.5419 | hr 0.5354 | now actually works |
+
+The biggest clamp-fix beneficiaries: **ItNet v2 (+0.15 hr)** and
+**U-Swin (+0.24 SSIM)** — both produced predictions that exceeded
+`display_max` in the old runs and got dinged by the data-range-mismatch
+SSIM. NAF and Hammernik 2017 each regressed slightly; the new fair
+numbers reflect the actually-bounded prediction, which is what the
+challenge metric expects.
+
+## Outstanding: diffusion-recon collapse
+
+8 separate sampling-search attempts (random + TPE × constrained +
+unconstrained DDPM × v1 + v2 grad-normalised samplers) all collapsed to
+hr=0.0 with the output saturating to uniform display_max white. The
+DDPM training itself looked healthy (final val ε-loss ≈ 0.0028 on
+held-out phantoms — within standard DDPM ranges).
+
+Sanity check submitted as job 761258: 100-step DDIM sampling with no
+guidance, on both DDPM checkpoints. If those unconditional samples
+look like ellipse phantoms, the bug is in the DPS/MCG guidance
+gradient. If they look like noise, the DDPM needs longer / deeper
+training despite the val-loss number.
+
 ## Fair re-run plan (2026-05-17)
 
 A bug audit found two sources of incomparability across older runs:
