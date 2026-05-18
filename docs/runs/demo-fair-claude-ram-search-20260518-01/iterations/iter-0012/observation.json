@@ -1,0 +1,1 @@
+{"ts":"2026-05-18T21:07:36Z","iter":12,"rationale":"iter 12: factor 0.5->0.3","val_score":0.4199,"headroom":0.5216,"kept":false,"status":"discard","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"Factor sweep: 0.1->collapse, 0.3->0.52, 0.5->0.58 peak, 1.0->0.54. Try 0.7."}

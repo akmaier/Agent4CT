@@ -68,6 +68,7 @@ dashboard under the `demo-fair` chart group.
 | R2Gaussian (per-scene GS) | 0.3589 | 0.4014 | +0.0425 |
 | Diffusion recon (random / TPE) | 0.0000 | 0.0000 | broken without DC-step — see "Outstanding" below |
 | **Diffusion recon (Claude agentic, 20 iters)** | — | **0.5712** | post-DC-step fix; see [agentic search README](../../docs/runs/demo-fair-claude-diffusion-recon-search-20260518-01/README.md) |
+| **RAM zero-shot (Claude agentic, 20 iters)** | — | **0.5938** | Terris 2025 foundational model + PyroNN deepinv adapter; SSIM = 0.934 (best in table); see [agentic search README](../../docs/runs/demo-fair-claude-ram-search-20260518-01/README.md) |
 
 † Hammernik 2017 random only had 4/20 iters survive even at
 `batch_size=2`; TPE got 20/20 by side-stepping OOM-prone configs.

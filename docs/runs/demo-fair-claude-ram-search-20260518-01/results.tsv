@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.5236	0.3677	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 1 baseline: zero-shot RAM, ||A||=38 normalized, adjoint_max input scaling, factor=1.0, multiscale ON, no finetune.
+2		0.5353	0.3085	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 2: post_fbp_blend 0.0->0.3. Slight regression hr=0.3085 (-0.059). SSIM tiny gain +0.012. Blend dilutes RAM.
+3		0.3737	0.2814	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 3: sigma 0.005->0.001 (less denoising). REGRESSION hr=0.2814 (-0.086). Lower sigma wrong direction.
+4		0.7098	0.4473	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 4: sigma 0.005->0.02. NEW BEST hr=0.4473 (+0.080). SSIM 0.52->0.71. RAM wants stronger denoising hint.
+5		0.8009	0.4694	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 5: sigma 0.02->0.05. NEW BEST hr=0.4694. SSIM 0.71->0.80. Sigma axis still climbing.
+6		0.8785	0.5101	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 6: sigma 0.05->0.1. NEW BEST hr=0.5101 SSIM=0.88. Keep climbing.
+7		0.9364	0.5445	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 7: sigma 0.1->0.2. NEW BEST hr=0.5445 SSIM=0.94. Still climbing.
+8		0.9048	0.5156	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 8: sigma 0.2->0.5. REGRESSION hr=0.5156 (-0.029). Peak near 0.2.
+9		0.9259	0.5325	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 9: sigma=0.3 refine. -0.012 vs iter 7. Peak confirmed at sigma=0.2.
+10		0.8566	0.5816	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 10: factor 1.0->0.5 (less prox_l2). NEW BEST hr=0.5816 +0.037, PSNR +0.73dB. SSIM -0.08 (sharper, less smooth).
+11		0.3185	0.3206	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 11: factor 0.5->0.1. BIG REGRESSION -0.26. Sharp drop below 0.5.
+12		0.4199	0.5216	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 12: factor 0.5->0.3. -0.060 vs iter 10. Sharp dropoff below 0.5.
+13		0.9351	0.5709	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 13: factor=0.7. Below 0.5 peak by 0.011. Factor=0.5 confirmed as optimum.
+14		0.8484	0.5701	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 14: blend=0.1 on winner. -0.012. No blend best.
+15		0.3396	0.3008	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 15: norm fbp_max. -0.28. adjoint_max is the right scaling.
+16		0.6432	0.4129	discard	architecture	claude-ram-agent	claude-sonnet-4.7	iter 16: finetune 20 epochs SURE+EI. BIG REGRESSION hr=0.4129 (-0.17). Finetune harmful for our val set.
+17		0.8566	0.5816	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 17: multiscale OFF on winner. IDENTICAL to iter 10. Multiscale doesn't matter here.
+18		0.9077	0.5884	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 18: sigma=0.15 with factor=0.5. NEW BEST hr=0.5884 SSIM=0.91.
+19		0.9263	0.5920	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 19: sigma=0.12 with factor=0.5. NEW BEST hr=0.5920 SSIM=0.93.
+20		0.9337	0.5938	keep	architecture	claude-ram-agent	claude-sonnet-4.7	iter 20: sigma=0.10 + factor=0.5. WINNER hr=0.5938 SSIM=0.93 PSNR=18.80.

@@ -258,6 +258,77 @@ SOLVERS = {
             "recon_eta_clamp":     ([False, True], "choice"),
         },
     },
+    # ----- Diffusion-recon with DC-step (Resample-style hard projection) --------
+    # Search space tightened around the 20-iter Claude-agentic winner
+    # (iter 16: hr=0.5712, eta=30, n_cg=20, every=3, warmup=25, relax=1.0,
+    # 500 steps, FBP init). When --sampler tpe is used, the harness also
+    # enqueues that winner config as the first trial so TPE has a strong
+    # prior. Slug prefix uses "demo-fair-" so the runs join the existing
+    # demo-fair-* dashboard chart-group alongside the Claude search.
+    "diffusion_recon_dcstep_unconstrained": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-fair-diff-recon-dcstep-unconstrained-search",
+        "agent_name": "diff-recon-dcstep-unconstrained-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_unconstrained_final.pt"], "choice"),
+            "recon_mode":          (["dps"], "choice"),               # mcg lost in Claude iter 6
+            "recon_sample_steps":  ([200, 500, 800], "choice"),       # 500 won, probe 800
+            "recon_eta":           (3.0, 60.0, "log"),                # peak at 30; 100 over-pulled
+            "recon_init":          (["fbp", "noise"], "choice"),      # tied
+            "recon_eta_clamp":     ([False, True], "choice"),         # never gained but worth a trial
+            "recon_dcstep_every":  ([3, 4, 5], "choice"),              # 3 won; 2 over-projected
+            "recon_dcstep_n_cg":   ([10, 15, 20, 25], "choice"),      # 20 won; 40 over-fit noise
+            "recon_dcstep_warmup": ([10, 25, 40], "choice"),          # 25 won
+            "recon_dcstep_relax":  ([0.85, 0.95, 1.0], "choice"),     # 1.0 won
+        },
+        # Seeded into Optuna's enqueue_trial when --sampler tpe (see main).
+        "tpe_seed_trial": {
+            "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_unconstrained_final.pt",
+            "recon_mode":          "dps",
+            "recon_sample_steps":  500,
+            "recon_eta":           30.0,
+            "recon_init":          "fbp",
+            "recon_eta_clamp":     False,
+            "recon_dcstep_every":  3,
+            "recon_dcstep_n_cg":   20,
+            "recon_dcstep_warmup": 25,
+            "recon_dcstep_relax":  1.0,
+        },
+    },
+    "diffusion_recon_dcstep_constrained": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-fair-diff-recon-dcstep-constrained-search",
+        "agent_name": "diff-recon-dcstep-constrained-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt"], "choice"),
+            "recon_mode":          (["dps"], "choice"),
+            "recon_sample_steps":  ([200, 500, 800], "choice"),
+            "recon_eta":           (3.0, 60.0, "log"),
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([False, True], "choice"),
+            "recon_dcstep_every":  ([3, 4, 5], "choice"),
+            "recon_dcstep_n_cg":   ([10, 15, 20, 25], "choice"),
+            "recon_dcstep_warmup": ([10, 25, 40], "choice"),
+            "recon_dcstep_relax":  ([0.85, 0.95, 1.0], "choice"),
+        },
+        # Note: the Claude search found constrained-DDPM worse than unconstrained
+        # (iter 7 lost -0.026 hr), but we re-test under TPE in case the broader
+        # cfg-space favors the narrower 200-phantom trained prior.
+        "tpe_seed_trial": {
+            "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt",
+            "recon_mode":          "dps",
+            "recon_sample_steps":  500,
+            "recon_eta":           30.0,
+            "recon_init":          "fbp",
+            "recon_eta_clamp":     False,
+            "recon_dcstep_every":  3,
+            "recon_dcstep_n_cg":   20,
+            "recon_dcstep_warmup": 25,
+            "recon_dcstep_relax":  1.0,
+        },
+    },
 }
 
 
@@ -532,6 +603,14 @@ def main():
         )
         print(f"[agent] Optuna TPE study persisted at {storage} "
               f"(n_startup={args.tpe_startup}, seed={args.seed})", flush=True)
+        # Optional: seed the study with a known-good config so TPE's prior
+        # samples include it. The seed trial does NOT count against the
+        # n_startup budget (Optuna treats enqueued trials as user-provided).
+        seed_trial = spec.get("tpe_seed_trial")
+        if seed_trial:
+            study.enqueue_trial(seed_trial)
+            print(f"[agent] enqueued TPE seed trial: "
+                  f"{json.dumps(seed_trial)}", flush=True)
 
     best_hr = 0.0
     best_params = None

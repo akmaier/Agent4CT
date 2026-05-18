@@ -1,0 +1,1 @@
+{"ts":"2026-05-19T00:00:00Z","iter":16,"rationale":"iter 16: finetune 20 ep SURE+EI on winner","val_score":0.6432,"headroom":0.4129,"kept":false,"status":"discard","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"Finetune hurts (-0.17). SURE/EI losses don't match val phantom structure. Avoid finetune for this task."}

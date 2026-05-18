@@ -1,0 +1,1 @@
+{"ts":"2026-05-19T00:01:00Z","iter":17,"rationale":"iter 17: multiscale OFF","val_score":0.8566,"headroom":0.5816,"kept":true,"status":"keep","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"Multiscale physics has no measurable effect at sigma=0.2 + factor=0.5. Refine sigma between 0.1 and 0.2."}

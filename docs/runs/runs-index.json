@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-18T14:31:29Z",
+  "updated": "2026-05-18T22:38:39Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -648,6 +648,18 @@
       "best_score": 0.6495,
       "best_headroom": 0.5712,
       "agent": "claude-diffusion-recon-agent",
+      "model": "claude-sonnet-4.7"
+    },
+    {
+      "slug": "demo-fair-claude-ram-search-20260518-01",
+      "short_id": "20260518-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-18T18:28:27Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.9337,
+      "best_headroom": 0.5938,
+      "agent": "claude-ram-agent",
       "model": "claude-sonnet-4.7"
     }
   ]
