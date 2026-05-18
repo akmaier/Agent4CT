@@ -234,13 +234,14 @@ SOLVERS = {
         "space": {
             "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_unconstrained_final.pt"], "choice"),
             "recon_mode":          (["dps", "mcg"], "choice"),
-            "recon_sample_steps":  ([50, 80, 120, 200], "choice"),
-            # v2 grad-normalised: eta is now a per-step step-size in [0, 1] space.
-            # 0.01-0.5 explores from "gentle nudge" to "rapid descent".
-            "recon_eta":           (1e-2, 5e-1, "log"),
+            "recon_sample_steps":  ([100, 200, 500], "choice"),  # DPS needs many steps
+            # v3 adaptive ζ_t = eta / ‖residual‖ (Chung 2023 eq. 12). eta now
+            # in [0.1, 10] range — original DPS paper used 1.0 with this scaling.
+            "recon_eta":           (0.1, 10.0, "log"),
             "recon_init":          (["fbp", "noise"], "choice"),
-            # Always clamp inside the loop (safer); keep both choices for ablation.
-            "recon_eta_clamp":     ([True], "choice"),
+            # No mid-trajectory clamp (default False); optional soft per-step
+            # displacement cap as ablation knob.
+            "recon_eta_clamp":     ([False, True], "choice"),
         },
     },
     "diffusion_recon_constrained": {
@@ -251,10 +252,10 @@ SOLVERS = {
         "space": {
             "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt"], "choice"),
             "recon_mode":          (["dps", "mcg"], "choice"),
-            "recon_sample_steps":  ([50, 80, 120, 200], "choice"),
-            "recon_eta":           (1e-2, 5e-1, "log"),
+            "recon_sample_steps":  ([100, 200, 500], "choice"),
+            "recon_eta":           (0.1, 10.0, "log"),
             "recon_init":          (["fbp", "noise"], "choice"),
-            "recon_eta_clamp":     ([True], "choice"),
+            "recon_eta_clamp":     ([False, True], "choice"),
         },
     },
 }

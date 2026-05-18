@@ -96,32 +96,42 @@ def sample_guided(model, sched, proj, sino, fbp_init, *, mode, n_steps,
             eps = model(x_req, t_tensor)
             ab_now = sched.alpha_bar[t_now]
             x0_hat = x0_from_eps(x_req, eps, ab_now)
-            x0_mu = x0_hat * out_scale
+            # Clamp x0_hat to [0,1] BEFORE projecting — keeps the projector
+            # operating on valid mu values. Crucially we do NOT clamp x_t.
+            x0_mu = x0_hat.clamp(0.0, 1.0) * out_scale
             sino_pred = proj.forward_project(x0_mu)
             if mode == "dps":
-                loss = ((sino_pred - sino) ** 2).mean()
+                # Use sum-of-squares (NOT mean) and DPS's canonical adaptive
+                # weight ζ_t = eta / ‖residual‖_2 (Chung 2023, eq. 12). Without
+                # this scaling, no fixed eta works across noise levels.
+                sse = ((sino_pred - sino) ** 2).sum()
+                resid_norm = sse.detach().sqrt().clamp(min=1e-8)
+                grad = torch.autograd.grad(sse, x_req)[0]
+                step = (eta / resid_norm) * grad.detach()
             elif mode == "mcg":
+                # MCG: pseudo-inverse via FBP, same adaptive scaling.
                 resid = sino_pred - sino
                 back = proj.fbp(resid)
-                loss = (back ** 2).mean()
+                sse = (back ** 2).sum()
+                resid_norm = sse.detach().sqrt().clamp(min=1e-8)
+                grad = torch.autograd.grad(sse, x_req)[0]
+                step = (eta / resid_norm) * grad.detach()
             else:
                 raise ValueError(mode)
-            grad = torch.autograd.grad(loss, x_req)[0]
         with torch.no_grad():
-            # Normalise grad so eta has a consistent scale across all configs.
-            # Without this, the absolute magnitude of grad varies by orders
-            # of magnitude with out_scale and the projector spectral norm,
-            # making any fixed eta either no-op or saturating — which is why
-            # the v1 search collapsed all 20 iters to uniform-white output.
-            gn = grad.flatten(1).norm(dim=1).clamp(min=1e-12)
-            grad_unit = grad / gn.view(-1, 1, 1, 1)
             x_clean = ddim_step(x.detach(), eps.detach(), sched, t_now, t_next)
-            x = x_clean - eta * grad_unit.detach()
-            # Always clamp to the DDPM's training range. eta_clamp now only
-            # toggles whether the clamp is INSIDE (after each step) vs
-            # ONLY at the end; default (clamp inside) is safer.
+            x = x_clean - step
+            # Mid-trajectory x_t is NOISY by design (the reverse process needs
+            # it spread across ~ N(0, 1)). DO NOT clamp x mid-loop — that was
+            # the v2 collapse mechanism. eta_clamp is kept as a flag for the
+            # search to ablate, but defaults to False now.
             if eta_clamp:
-                x = x.clamp(0.0, 1.0)
+                # Soft clamp only: limit per-step displacement so x can't run
+                # away if the residual-normalised step is still too large.
+                disp = (x - x_clean).abs()
+                cap = 0.5  # max per-step pixel displacement in [0,1] space
+                x = x_clean + (x - x_clean).clamp(-cap, cap)
+    # Final denorm + clamp; only here do we crop to display range.
     return (x.detach() * out_scale).clamp(0.0, out_scale)
 
 
