@@ -1,0 +1,20 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.830677	0.488349	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=11, lr=0.00023197, batch_size=2, uswin_c=32, swin_window=4, swin_heads=8
+2		0.768272	0.476961	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=7, lr=0.000467, batch_size=2, uswin_c=16, swin_window=4, swin_heads=8
+3		0.776548	0.463079	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=13, lr=0.00025237, batch_size=8, uswin_c=32, swin_window=16, swin_heads=4
+4		0.748322	0.456303	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=10, lr=0.00028119, batch_size=8, uswin_c=16, swin_window=4, swin_heads=8
+5		0.725494	0.465975	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=8, lr=0.00033666, batch_size=2, uswin_c=16, swin_window=8, swin_heads=4
+6		0.711063	0.461069	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=14, lr=0.00012265, batch_size=4, uswin_c=32, swin_window=4, swin_heads=2
+7		0.889083	0.4956	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=11, lr=0.00073463, batch_size=2, uswin_c=24, swin_window=16, swin_heads=8
+8		0.843046	0.489382	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=12, lr=0.0009674, batch_size=4, uswin_c=24, swin_window=16, swin_heads=2
+9		0.862583	0.487453	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=9, lr=0.00098994, batch_size=2, uswin_c=24, swin_window=16, swin_heads=8
+10		0.651081	0.442551	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=6, lr=0.00049039, batch_size=2, uswin_c=24, swin_window=8, swin_heads=8
+11		0.82043	0.486908	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=11, lr=0.00063897, batch_size=4, uswin_c=24, swin_window=16, swin_heads=2
+12		0.865334	0.48323	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=12, lr=0.00099832, batch_size=4, uswin_c=24, swin_window=16, swin_heads=2
+13		0.833788	0.49165	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=12, lr=0.0006758, batch_size=4, uswin_c=24, swin_window=16, swin_heads=2
+14		0.881943	0.499605	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=14, lr=0.00054146, batch_size=4, uswin_c=24, swin_window=16, swin_heads=2
+15		0.830811	0.489292	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=14, lr=0.00062734, batch_size=8, uswin_c=24, swin_window=16, swin_heads=4
+16		0.88112	0.49794	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=10, lr=0.00040806, batch_size=2, uswin_c=24, swin_window=16, swin_heads=8
+17		0.836794	0.485389	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=9, lr=0.00037791, batch_size=4, uswin_c=24, swin_window=8, swin_heads=2
+18		0.851347	0.488709	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=9, lr=0.00018046, batch_size=2, uswin_c=24, swin_window=16, swin_heads=8
+19		0.709697	0.469031	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=10, lr=0.00043373, batch_size=4, uswin_c=32, swin_window=16, swin_heads=2

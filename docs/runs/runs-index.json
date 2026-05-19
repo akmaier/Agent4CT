@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-19T15:00:00Z",
+  "updated": "2026-05-19T15:50:00Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -1031,6 +1031,42 @@
       "n_iterations": 12,
       "best_score": 0.850708,
       "best_headroom": 0.490865,
+      "agent": "uswin-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-05",
+      "short_id": "20260519-05",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T13:16:22Z",
+      "status": "running",
+      "n_iterations": 6,
+      "best_score": 0.696469,
+      "best_headroom": 0.362526,
+      "agent": "hammernik-vn-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-05",
+      "short_id": "20260519-05",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T13:16:23Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.918431,
+      "best_headroom": 0.500461,
+      "agent": "itnet-v3-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-05",
+      "short_id": "20260519-05",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T13:16:23Z",
+      "status": "running",
+      "n_iterations": 19,
+      "best_score": 0.889083,
+      "best_headroom": 0.499605,
       "agent": "uswin-search-tpe-calibrated",
       "model": "optuna-tpe"
     }
