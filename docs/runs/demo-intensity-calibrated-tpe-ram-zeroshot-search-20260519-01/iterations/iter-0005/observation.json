@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-19T16:39:39Z",
+  "run_id": "demo-intensity-calibrated-tpe-ram-zeroshot-search-20260519-01",
+  "iter": 5,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "ram-zeroshot-search-tpe-calibrated: ram_ckpt_path=/cluster/maier/Agent4CT/checkpoints/ram.pth.tar, ram_input_norm=adjoint_max, ram_clamp_output=True, ram_finetune=False, ram_finetune_epochs=0, ram_finetune_lr=0.0001, ram_disable_multiscale=False, ram_disable_cudnn=False, ram_use_deepinv_tomo=False, ram_sigma=0.075342, ram_factor=0.341, ram_post_fbp_blend=0.041351",
+  "val_score": 0.8841233253479004,
+  "headroom": 0.4928365188949133,
+  "kept": true,
+  "status": "keep",
+  "params_M": 35.618953,
+  "train_n": 0,
+  "agent": "ram-zeroshot-search-tpe-calibrated",
+  "model": "random-search",
+  "advice_for_others": "ram-zeroshot-search-tpe-calibrated: ram_ckpt_path=/cluster/maier/Agent4CT/checkpoints/ram.pth.tar, ram_input_norm=adjoint_max, ram_clamp_output=True, ram_finetune=False, ram_finetune_epochs=0, ram_finetune_lr=0.0001, ram_disable_multiscale=False, ram_disable_cudnn=False, ram_use_deepinv_tomo=False, ram_sigma=0.075342, ram_factor=0.341, ram_post_fbp_blend=0.041351 -> hr=0.4928",
+  "comparison_image": "runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260519-01/iterations/iter-0005/comparison.png"
+}
