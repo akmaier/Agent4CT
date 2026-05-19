@@ -26,7 +26,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
 
 
 CONFIG = {
@@ -81,60 +81,43 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     with torch.no_grad():
         val_ref = R_full.fbp(val_clean)   # reference (noiseless FBP)
         pred = torch.clamp(R_full.fbp(val_noisy), min=0.0)  # our "recon" = standard FBP
-        pred = pred.clamp(0.0, cfg["display_max"])
     train_time = time.time() - t0
 
-    # CORRECT: Compare against ground truth phantom (not noiseless FBP)
-    data_range = cfg["display_max"] - cfg["display_min"]
-    val_psnr = float(psnr(pred, val_ph, data_range=data_range).cpu())
-    val_ssim = float(ssim(pred, val_ph, data_range=data_range).cpu())
-    val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())
-    # Baseline: noisy FBP vs phantom (actual challenge baseline)
-    baseline_psnr = float(psnr(ld_fbp, val_ph, data_range=data_range).cpu())
-    baseline_rmse = float(((ld_fbp - val_ph) ** 2).mean().sqrt().cpu())
-    headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
+    # FBP is its own baseline; intensity-calibrate it once and report it as both.
+    metrics = evaluate_calibrated(
+        pred, val_ph, baseline=pred,
+        display_min=cfg["display_min"], display_max=cfg["display_max"])
+    pred_cal = metrics["pred_cal"]
+    baseline_cal = metrics["baseline_cal"]
+    val_psnr, val_ssim, val_rmse = metrics["val_psnr"], metrics["val_ssim"], metrics["val_rmse"]
+    baseline_psnr, baseline_rmse = metrics["baseline_psnr"], metrics["baseline_rmse"]
+    headroom = metrics["headroom"]
     val_score = val_ssim
-
-    # Comparison figure
-    try:
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-        n_show = min(3, cfg["val_n"])
-        fig, ax = plt.subplots(n_show, 4, figsize=(12, 3 * n_show))
-        if n_show == 1:
-            ax = ax[None]
-        vmin, vmax = cfg["display_min"], cfg["display_max"]
-        for i in range(n_show):
-            ax[i, 0].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 0].set_title("truth" if i == 0 else "")
-            ax[i, 1].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 1].set_title(f"FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
-            ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 2].set_title(f"FBP recon  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})" if i == 0 else "")
-            residual = (pred[i, 0] - val_ph[i, 0]).cpu()
-            vmax_res = max(abs(residual.min()), abs(residual.max()))
-            ax[i, 3].imshow(residual, cmap="RdBu_r", vmin=-vmax_res, vmax=vmax_res)
-            ax[i, 3].set_title("residual" if i == 0 else "")
-            for a in ax[i]:
-                a.set_axis_off()
-        plt.tight_layout()
-        figpath = out_dir / "comparison.png"
-        plt.savefig(figpath, dpi=120)
-        print(f"[solver] saved {figpath}", flush=True)
-    except Exception as e:
-        print(f"[solver] figure failed: {e}", flush=True)
 
     result = {
         "val_score": val_score, "val_psnr": val_psnr, "val_ssim": val_ssim,
         "val_rmse": val_rmse, "baseline_psnr": baseline_psnr,
+        "baseline_ssim": metrics.get("baseline_ssim"),
         "baseline_rmse": baseline_rmse, "headroom": headroom,
+        "calibration": metrics["calibration"],
+        "fg_threshold": metrics["fg_threshold"],
         "params_M": 0.0, "train_n": 0, "val_n": cfg["val_n"],
         "train_time_s": train_time, "config": cfg,
     }
     (out_dir / "result.json").write_text(json.dumps(result, indent=2))
     print(f"[solver] BASELINE FBP: val_score={val_score:.4f} headroom={headroom:.4f} "
-          f"PSNR={val_psnr:.2f} SSIM={val_ssim:.4f}", flush=True)
+          f"PSNR={val_psnr:.2f} SSIM={val_ssim:.4f} RMSE={val_rmse:.5f}  "
+          f"(intensity-calibrated)", flush=True)
+
+    try:
+        make_4panel_comparison(
+            truth=val_ph, fbp=baseline_cal, recon=pred_cal,
+            out_path=out_dir / "comparison.png",
+            display_min=cfg["display_min"], display_max=cfg["display_max"],
+            n_show=4, solver_label="FBP", headroom=headroom)
+    except Exception as e:
+        print(f"[solver] comparison.png failed: {e}", flush=True)
+
     return result
 
 

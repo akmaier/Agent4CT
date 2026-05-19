@@ -42,7 +42,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
 
 
 CONFIG = {
@@ -414,20 +414,28 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     sample_time = time.time() - t0
     pred = torch.cat(preds, 0)               # (n, 1, H, W)
     val_ph_4d = val_ph                        # (n, 1, H, W)
-    dr = float(cfg["display_max"] - cfg["display_min"])
-    val_psnr = float(psnr(pred, val_ph_4d, data_range=dr).cpu())
-    val_ssim = float(ssim(pred, val_ph_4d, data_range=dr).cpu())
-    val_rmse = float(((pred - val_ph_4d) ** 2).mean().sqrt().cpu())
-    baseline_psnr = float(psnr(val_fbp, val_ph_4d, data_range=dr).cpu())
-    baseline_rmse = float(((val_fbp - val_ph_4d) ** 2).mean().sqrt().cpu())
-    headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
+
+    # Intensity-calibrated evaluation (CONVENTIONS.md rule 4): two-point
+    # linear calibration of BOTH pred and baseline against truth before any
+    # PSNR/SSIM/RMSE so the leaderboard is comparable across solvers.
+    metrics = evaluate_calibrated(
+        pred, val_ph_4d, baseline=val_fbp,
+        display_min=cfg["display_min"], display_max=cfg["display_max"])
+    pred_cal = metrics["pred_cal"]
+    baseline_cal = metrics["baseline_cal"]
+    val_psnr, val_ssim, val_rmse = metrics["val_psnr"], metrics["val_ssim"], metrics["val_rmse"]
+    baseline_psnr, baseline_rmse = metrics["baseline_psnr"], metrics["baseline_rmse"]
+    headroom = metrics["headroom"]
     params_M = sum(p.numel() for p in model.parameters()) / 1e6
 
     result = {
         "val_score": val_ssim,
         "val_psnr": val_psnr, "val_ssim": val_ssim, "val_rmse": val_rmse,
-        "baseline_psnr": baseline_psnr, "baseline_rmse": baseline_rmse,
+        "baseline_psnr": baseline_psnr, "baseline_ssim": metrics.get("baseline_ssim"),
+        "baseline_rmse": baseline_rmse,
         "headroom": headroom,
+        "calibration": metrics["calibration"],
+        "fg_threshold": metrics["fg_threshold"],
         "params_M": params_M,
         "train_n": 0, "val_n": int(pred.shape[0]),
         "train_time_s": sample_time,
@@ -437,29 +445,16 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     }
     (out_dir / "result.json").write_text(json.dumps(result, indent=2))
     print(f"[solver] hr={headroom:.4f}  SSIM={val_ssim:.4f}  PSNR={val_psnr:.2f}"
-          f"  baseline_PSNR={baseline_psnr:.2f}", flush=True)
+          f"  RMSE={val_rmse:.5f}  baseline_PSNR={baseline_psnr:.2f}  "
+          f"(intensity-calibrated)", flush=True)
 
-    # Write a 3-column comparison: truth / FBP / RAM for the first 4 cases.
+    # Standardised 4-panel comparison: truth | FBP_cal | RAM_cal | diff.
     try:
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-        n_show = min(4, pred.shape[0])
-        fig, axes = plt.subplots(n_show, 3, figsize=(9, 3 * n_show))
-        if n_show == 1:
-            axes = axes[None, :]
-        vmin, vmax = float(cfg["display_min"]), float(cfg["display_max"])
-        for r in range(n_show):
-            for c, (img, name) in enumerate([
-                (val_ph_4d[r, 0].cpu(), "truth"),
-                (val_fbp[r, 0].cpu(),    "FBP-128"),
-                (pred[r, 0].cpu(),       f"RAM  (hr={headroom:.3f})"),
-            ]):
-                axes[r, c].imshow(img.numpy(), cmap="gray", vmin=vmin, vmax=vmax)
-                axes[r, c].set_title(name); axes[r, c].axis("off")
-        plt.tight_layout()
-        plt.savefig(out_dir / "comparison.png", dpi=80, bbox_inches="tight")
-        plt.close(fig)
+        make_4panel_comparison(
+            truth=val_ph_4d, fbp=baseline_cal, recon=pred_cal,
+            out_path=out_dir / "comparison.png",
+            display_min=cfg["display_min"], display_max=cfg["display_max"],
+            n_show=4, solver_label="RAM", headroom=headroom)
     except Exception as e:
         print(f"[solver] comparison.png failed: {e}", flush=True)
 

@@ -30,7 +30,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
 
 
 # ---------------------------------------------------------------------------
@@ -186,60 +186,28 @@ def main(out_dir: Path, cfg_override: dict | None = None) -> dict:
     # TV reconstruction
     t0 = time.time()
     pred = tv_reconstruction(proj, val_noisy, val_fbp, cfg, device)
-    pred = pred.clamp(0.0, cfg["display_max"])
     train_time = time.time() - t0
 
-    # Metrics: compare against BOTH phantom (truth) and noiseless FBP
-    data_range = cfg["display_max"] - cfg["display_min"]
+    metrics = evaluate_calibrated(
+        pred, val_ph, baseline=val_fbp,
+        display_min=cfg["display_min"], display_max=cfg["display_max"])
+    pred_cal = metrics["pred_cal"]
+    baseline_cal = metrics["baseline_cal"]
+    val_psnr, val_ssim, val_rmse = metrics["val_psnr"], metrics["val_ssim"], metrics["val_rmse"]
+    baseline_psnr, baseline_rmse = metrics["baseline_psnr"], metrics["baseline_rmse"]
+    headroom = metrics["headroom"]
 
-    # Primary: against ground truth phantom (challenge standard)
-    val_psnr = float(psnr(pred, val_ph, data_range=data_range).cpu())
-    val_ssim = float(ssim(pred, val_ph, data_range=data_range).cpu())
-    val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())
-
-    # Baseline: noisy FBP vs phantom
-    baseline_psnr = float(psnr(val_fbp, val_ph, data_range=data_range).cpu())
-    baseline_rmse = float(((val_fbp - val_ph) ** 2).mean().sqrt().cpu())
-    headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
-
-    # Secondary: against noiseless FBP (practical denoising metric)
-    val_psnr_fbp = float(psnr(pred, val_ref, data_range=data_range).cpu())
-    val_ssim_fbp = float(ssim(pred, val_ref, data_range=data_range).cpu())
+    # Secondary: against noiseless FBP (practical denoising metric, also calibrated)
+    metrics_fbp = evaluate_calibrated(
+        pred, val_ref,
+        display_min=cfg["display_min"], display_max=cfg["display_max"])
+    val_psnr_fbp = metrics_fbp["val_psnr"]
+    val_ssim_fbp = metrics_fbp["val_ssim"]
     baseline_rmse_fbp = float(((val_fbp - val_ref) ** 2).mean().sqrt().cpu())
     headroom_fbp = max(0.0, 1.0 - val_rmse / max(baseline_rmse_fbp, 1e-12))
 
     print(f"[solver] vs phantom:  SSIM={val_ssim:.4f} PSNR={val_psnr:.2f} headroom={headroom:.4f}")
     print(f"[solver] vs FBP ref:  SSIM={val_ssim_fbp:.4f} PSNR={val_psnr_fbp:.2f} headroom={headroom_fbp:.4f}")
-
-    # Comparison figure
-    try:
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-        n_show = min(3, cfg["val_n"])
-        fig, ax = plt.subplots(n_show, 4, figsize=(12, 3 * n_show))
-        if n_show == 1:
-            ax = ax[None]
-        vmin, vmax = cfg["display_min"], cfg["display_max"]
-        for i in range(n_show):
-            ax[i, 0].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 0].set_title("truth" if i == 0 else "")
-            ax[i, 1].imshow(val_fbp[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 1].set_title(f"FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
-            ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 2].set_title(f"TV recon  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})" if i == 0 else "")
-            residual = (pred[i, 0] - val_ph[i, 0]).cpu()
-            vmax_res = max(abs(residual.min()), abs(residual.max()))
-            ax[i, 3].imshow(residual, cmap="RdBu_r", vmin=-vmax_res, vmax=vmax_res)
-            ax[i, 3].set_title("residual" if i == 0 else "")
-            for a in ax[i]:
-                a.set_axis_off()
-        plt.tight_layout()
-        figpath = out_dir / "comparison.png"
-        plt.savefig(figpath, dpi=120)
-        print(f"[solver] saved {figpath}", flush=True)
-    except Exception as e:
-        print(f"[solver] figure failed: {e}", flush=True)
 
     result = {
         "val_score": val_ssim,              # Primary: SSIM vs phantom
@@ -253,8 +221,11 @@ def main(out_dir: Path, cfg_override: dict | None = None) -> dict:
         "headroom_fbp": headroom_fbp,
         # Baselines
         "baseline_psnr": baseline_psnr,
+        "baseline_ssim": metrics.get("baseline_ssim"),
         "baseline_rmse": baseline_rmse,
         "baseline_rmse_fbp": baseline_rmse_fbp,
+        "calibration": metrics["calibration"],
+        "fg_threshold": metrics["fg_threshold"],
         "params_M": 0.0,
         "train_n": 0,
         "val_n": cfg["val_n"],
@@ -263,7 +234,19 @@ def main(out_dir: Path, cfg_override: dict | None = None) -> dict:
     }
     (out_dir / "result.json").write_text(json.dumps(result, indent=2))
     print(f"[solver] TV recon: val_score={val_ssim:.4f} headroom={headroom:.4f} "
-          f"PSNR={val_psnr:.2f} SSIM={val_ssim:.4f} time={train_time:.1f}s", flush=True)
+          f"PSNR={val_psnr:.2f} SSIM={val_ssim:.4f} RMSE={val_rmse:.5f} "
+          f"baseline_PSNR={baseline_psnr:.2f} time={train_time:.1f}s  "
+          f"(intensity-calibrated)", flush=True)
+
+    try:
+        make_4panel_comparison(
+            truth=val_ph, fbp=baseline_cal, recon=pred_cal,
+            out_path=out_dir / "comparison.png",
+            display_min=cfg["display_min"], display_max=cfg["display_max"],
+            n_show=4, solver_label="TV", headroom=headroom)
+    except Exception as e:
+        print(f"[solver] comparison.png failed: {e}", flush=True)
+
     return result
 
 

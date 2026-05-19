@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		nan	0.203683	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=2, wu_motion_range=5, wu_motion_window=4, wu_soft_thresh=0.00080936
+2		nan	0.226468	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=4, wu_n_outer=1, wu_motion_range=12, wu_motion_window=2, wu_soft_thresh=0.0012618
+3		nan	0.204938	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=12, wu_n_outer=2, wu_motion_range=12, wu_motion_window=2, wu_soft_thresh=0.00075748
+4		nan	0.204951	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=6, wu_n_outer=2, wu_motion_range=12, wu_motion_window=4, wu_soft_thresh=0.00093529
+5		nan	0.19331	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=4, wu_n_outer=2, wu_motion_range=5, wu_motion_window=4, wu_soft_thresh=0.0014634
+6		nan	0.207244	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=4, wu_n_outer=1, wu_motion_range=8, wu_motion_window=2, wu_soft_thresh=0.0039556
+7		nan	0.19038	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=4, wu_n_outer=3, wu_motion_range=3, wu_motion_window=1, wu_soft_thresh=0.0027308
+8		nan	0.241213	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=1, wu_motion_range=12, wu_motion_window=2, wu_soft_thresh=0.0017468
+9		nan	0.242276	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=1, wu_motion_range=8, wu_motion_window=1, wu_soft_thresh=0.0023594
+10		nan	0.175892	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=3, wu_motion_range=8, wu_motion_window=1, wu_soft_thresh=0.00050877
+11		nan	0.237464	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=12, wu_n_outer=1, wu_motion_range=8, wu_motion_window=1, wu_soft_thresh=0.0025579
+12		nan	0.241925	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=1, wu_motion_range=3, wu_motion_window=2, wu_soft_thresh=0.0022511
+13		nan	0.246629	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=1, wu_motion_range=3, wu_motion_window=1, wu_soft_thresh=0.0023948
+14		nan	0.230516	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=1, wu_motion_range=3, wu_motion_window=1, wu_soft_thresh=0.0045375
+15		nan	0.23919	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=6, wu_n_outer=1, wu_motion_range=3, wu_motion_window=1, wu_soft_thresh=0.0032546
+16		nan	0.244431	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=1, wu_motion_range=8, wu_motion_window=1, wu_soft_thresh=0.0018396
+17		nan	0.200771	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=3, wu_motion_range=3, wu_motion_window=1, wu_soft_thresh=0.0018512
+18		nan	0.246116	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=8, wu_n_outer=1, wu_motion_range=8, wu_motion_window=1, wu_soft_thresh=0.0011664
+19		nan	0.244041	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=12, wu_n_outer=1, wu_motion_range=5, wu_motion_window=1, wu_soft_thresh=0.0011849
+20		nan	0.177464	keep	architecture	wu-search-tpe-calibrated	random-search	wu-search-tpe-calibrated: wu_n_bands=6, wu_n_outer=3, wu_motion_range=8, wu_motion_window=1, wu_soft_thresh=0.00056535

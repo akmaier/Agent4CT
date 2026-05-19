@@ -1,0 +1,21 @@
+{
+  "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-intensity-calibrated-tpe-itnet-v3-search",
+  "started": "2026-05-19T06:05:36Z",
+  "agent": "itnet-v3-search-tpe-calibrated",
+  "model": "optuna-tpe",
+  "status": "done",
+  "notes": "intensity-calibrated TPE (CONVENTIONS rule 4)",
+  "finished": "2026-05-19T06:49:30Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 11,
+    "lr": 0.0012251256465431693,
+    "batch_size": 10,
+    "unet_c": 16,
+    "itnet_k": 2,
+    "alpha_init": 0.0027784303767468934
+  },
+  "best_headroom": 0.46289411768033495
+}

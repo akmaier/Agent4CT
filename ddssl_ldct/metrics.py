@@ -1,7 +1,181 @@
 from __future__ import annotations
 import math
+from pathlib import Path
 import torch
 import torch.nn.functional as F
+
+
+# ===========================================================================
+# Intensity calibration
+# ===========================================================================
+#
+# Reconstructions from different solvers come out at different absolute
+# intensity scales — a learned U-Net might output values centred near zero,
+# a diffusion sampler near display_max/2, classical FBP near the true μ
+# range, etc. PSNR/SSIM/RMSE on such uncalibrated images favour solvers
+# whose internal bias happens to land near the truth scale, even when
+# their *structure* is worse than a competitor's.
+#
+# To make the dl_sparse_view leaderboard comparable, we apply a single
+# linear two-point calibration to every reconstruction before scoring:
+#
+#     pred_cal = a · (pred - bg_pred)       with        a = fg_truth / (fg_pred - bg_pred)
+#     pred_cal = clamp(pred_cal, 0, display_max)
+#
+# where `fg_pred` / `bg_pred` are the means of `pred` inside / outside a
+# foreground mask defined from the *ground truth*, and `fg_truth` is the
+# truth's mean inside the same mask. This forces:
+#   - the background to land at exactly 0 (matching the air outside the body);
+#   - the foreground tissue mean to match the truth's tissue mean;
+#   - negative artefacts to be clipped away.
+#
+# It is the standard pre-scoring step in CT recon benchmarks (cf. Wagner
+# et al. 2022, Hammernik et al. 2018). Without it our metrics drift run-to-
+# run with the solver's internal bias and the leaderboard is meaningless.
+# A simple ReLU at the solver boundary is *not* sufficient — it fixes the
+# negative tail but leaves the bias and span uncalibrated.
+
+
+def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
+                        fg_threshold: float | None = None,
+                        display_max: float | None = None) -> torch.Tensor:
+    """Linear two-point calibration of `pred` against `truth`.
+
+    Pixels where `truth > fg_threshold` define the foreground mask; the
+    complement is background. We then:
+      1. compute `bg_pred = pred[bg].mean()`
+      2. compute `fg_pred = pred[fg].mean()`, `fg_truth = truth[fg].mean()`
+      3. solve for the affine `pred_cal = a · (pred - bg_pred)` that maps
+         the fg_pred mean to fg_truth, i.e. `a = fg_truth / (fg_pred - bg_pred)`
+      4. clip below 0; if `display_max` is given, also clip above it.
+
+    If either mask is empty the input is returned unchanged (we cannot
+    calibrate without two reference levels). Operates pixel-wise; works on
+    `(H,W)`, `(1,H,W)`, `(B,1,H,W)`, etc. — `pred` and `truth` just have to
+    broadcast.
+    """
+    if fg_threshold is None:
+        tmin = float(truth.min())
+        tmax = float(truth.max())
+        fg_threshold = tmin + 0.05 * (tmax - tmin)
+    fg_mask = truth > fg_threshold
+    bg_mask = ~fg_mask
+    if not bool(fg_mask.any()) or not bool(bg_mask.any()):
+        # Degenerate (uniform truth) — nothing to calibrate.
+        out = pred.clamp_min(0.0)
+        if display_max is not None:
+            out = out.clamp(0.0, display_max)
+        return out
+    bg_pred  = pred[bg_mask].mean()
+    fg_pred  = pred[fg_mask].mean()
+    fg_truth = truth[fg_mask].mean()
+    span = (fg_pred - bg_pred).clamp_min(torch.tensor(1e-9, device=pred.device,
+                                                       dtype=pred.dtype))
+    a = fg_truth / span
+    pred_cal = a * (pred - bg_pred)
+    pred_cal = pred_cal.clamp_min(0.0)
+    if display_max is not None:
+        pred_cal = pred_cal.clamp(0.0, float(display_max))
+    return pred_cal
+
+
+def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
+                         baseline: torch.Tensor | None = None,
+                         *, display_min: float, display_max: float,
+                         fg_threshold: float | None = None) -> dict:
+    """Full standard evaluation: calibrate `pred` (and optionally `baseline`)
+    against `truth`, then compute PSNR/SSIM/RMSE/headroom with the standard
+    data range.
+
+    Returns a dict including `pred_cal` (calibrated tensor for downstream
+    figure-making) and all four standard scalars: psnr, ssim, rmse, headroom.
+    If `baseline` is supplied, it is calibrated identically and its psnr/rmse
+    are reported as `baseline_*`; headroom is computed as
+    `max(0, 1 - rmse / baseline_rmse)`.
+    """
+    if fg_threshold is None:
+        fg_threshold = display_min + 0.05 * (display_max - display_min)
+    dr = float(display_max - display_min)
+    pred_cal = intensity_calibrate(pred, truth,
+                                    fg_threshold=fg_threshold,
+                                    display_max=display_max)
+    result = {
+        "pred_cal":   pred_cal,
+        "val_psnr":   float(psnr(pred_cal, truth, data_range=dr).cpu()),
+        "val_ssim":   float(ssim(pred_cal, truth, data_range=dr).cpu()),
+        "val_rmse":   float(((pred_cal - truth) ** 2).mean().sqrt().cpu()),
+        "fg_threshold": float(fg_threshold),
+        "calibration": "intensity_calibrate (two-point linear, bg->0, fg_mean->truth_fg_mean)",
+    }
+    if baseline is not None:
+        baseline_cal = intensity_calibrate(baseline, truth,
+                                            fg_threshold=fg_threshold,
+                                            display_max=display_max)
+        bl_rmse = float(((baseline_cal - truth) ** 2).mean().sqrt().cpu())
+        result["baseline_psnr"] = float(psnr(baseline_cal, truth, data_range=dr).cpu())
+        result["baseline_ssim"] = float(ssim(baseline_cal, truth, data_range=dr).cpu())
+        result["baseline_rmse"] = bl_rmse
+        result["baseline_cal"]  = baseline_cal
+        result["headroom"]      = max(0.0, 1.0 - result["val_rmse"] / max(bl_rmse, 1e-12))
+    return result
+
+
+# ===========================================================================
+# Standard 4-panel comparison figure
+# ===========================================================================
+#
+# All dl_sparse_view solvers should emit a comparison.png with the same
+# layout so the dashboard cards are visually comparable. The layout is one
+# row per scene with four columns: truth | FBP | recon (calibrated) |
+# difference (recon - truth, diverging colormap).
+
+def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
+                           recon: torch.Tensor, out_path: Path | str, *,
+                           display_min: float, display_max: float,
+                           n_show: int = 4, solver_label: str = "recon",
+                           headroom: float | None = None,
+                           dpi: int = 80) -> None:
+    """Write a standardised comparison.png to `out_path`.
+
+    `truth`, `fbp`, `recon` may be (B,1,H,W) or (B,H,W); we take the first
+    `n_show` scenes. Difference image uses a symmetric bwr colormap with
+    range ±(display_max-display_min)/2 so over- and under-estimates are
+    visually equivalent.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    def _arr(t, i):
+        x = t[i]
+        if x.dim() == 3:
+            x = x[0]
+        return x.detach().cpu().numpy()
+
+    n = min(n_show, truth.shape[0])
+    fig, axes = plt.subplots(n, 4, figsize=(12, 3 * n))
+    if n == 1:
+        axes = axes[None, :]
+    diff_lim = (display_max - display_min) / 2.0
+    title_extra = f"  (hr={headroom:.3f})" if headroom is not None else ""
+    for r in range(n):
+        gt   = _arr(truth, r)
+        ifbp = _arr(fbp,   r)
+        irec = _arr(recon, r)
+        diff = irec - gt
+        for c, (img, name, vmin, vmax, cmap) in enumerate([
+            (gt,   "truth",                 display_min, display_max, "gray"),
+            (ifbp, "FBP",                   display_min, display_max, "gray"),
+            (irec, f"{solver_label}{title_extra if r == 0 else ''}",
+                                            display_min, display_max, "gray"),
+            (diff, f"diff (rec - truth)",   -diff_lim,    diff_lim,    "bwr"),
+        ]):
+            axes[r, c].imshow(img, cmap=cmap, vmin=vmin, vmax=vmax)
+            axes[r, c].set_title(name); axes[r, c].axis("off")
+    plt.tight_layout()
+    plt.savefig(str(out_path), dpi=dpi, bbox_inches="tight")
+    plt.close(fig)
 
 
 def psnr(pred: torch.Tensor, target: torch.Tensor, data_range: float | None = None) -> torch.Tensor:
@@ -21,17 +195,22 @@ def _gaussian_window(size: int, sigma: float, device, dtype) -> torch.Tensor:
 def ssim(pred: torch.Tensor, target: torch.Tensor,
           data_range: float | None = None,
           window_size: int = 11, sigma: float = 1.5) -> torch.Tensor:
-    """SSIM for calibrated floating-point images.
+    """SSIM for floating-point images.
 
-    C1 and C2 are set to 0 because the images are calibrated attenuation
-    coefficients (not 8-bit or windowed display values).  See discussion in
-    Wang et al., IEEE Trans. IP 2004 – the stabilising constants are only
-    needed when the dynamic range is quantised and unknown.
+    Uses the Wang et al. 2004 stabilisers C1 = (0.01·L)², C2 = (0.03·L)²
+    where L is `data_range`. Earlier versions of this function used C1=C2=0
+    on the argument that calibrated attenuation coefficients don't need
+    them — that was wrong: after intensity calibration the background
+    pixels of both pred and truth are exactly 0, so local 11×11 windows
+    over background give mu² + sigma² ≈ 0 on both sides and the
+    SSIM ratio becomes 0/0 → NaN. The Wang constants stabilise this
+    edge case without measurably changing SSIM on textured regions.
     """
     if data_range is None:
         data_range = float(target.amax() - target.amin())
-    C1 = 0.0
-    C2 = 0.0
+    K1, K2 = 0.01, 0.03
+    C1 = (K1 * data_range) ** 2
+    C2 = (K2 * data_range) ** 2
     w = _gaussian_window(window_size, sigma, pred.device, pred.dtype)[None, None]
     pad = window_size // 2
     mu_x = F.conv2d(pred, w, padding=pad)

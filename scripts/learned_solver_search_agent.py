@@ -329,6 +329,43 @@ SOLVERS = {
             "recon_dcstep_relax":  1.0,
         },
     },
+    # ----- RAM (Terris 2025) zero-shot: TPE around iter-20 Claude winner ---
+    "ram_zeroshot": {
+        "solver": "pentathlon/demo_dl_reference/solver_ram.py",
+        "env_var": "RAM_CONFIG_PATH",
+        "slug_prefix": "demo-fair-ram-zeroshot-search",
+        "agent_name": "ram-zeroshot-search",
+        "space": {
+            # Locked: pretrained ckpt + sane invariants
+            "ram_ckpt_path":         (["/cluster/maier/Agent4CT/checkpoints/ram.pth.tar"], "choice"),
+            "ram_input_norm":        (["adjoint_max"], "choice"),     # only norm that worked
+            "ram_clamp_output":      ([True], "choice"),
+            "ram_finetune":          ([False], "choice"),             # finetune hurt by -0.17
+            "ram_finetune_epochs":   ([0], "choice"),
+            "ram_finetune_lr":       ([1e-4], "choice"),
+            "ram_disable_multiscale": ([False, True], "choice"),       # no effect at peak; verify
+            "ram_disable_cudnn":     ([False], "choice"),
+            "ram_use_deepinv_tomo":  ([False], "choice"),
+            # Search axes (narrow around the winner)
+            "ram_sigma":             (0.05, 0.30, "log"),              # peak at 0.10
+            "ram_factor":            (0.30, 0.80, "linear"),           # peak at 0.5
+            "ram_post_fbp_blend":    (0.0, 0.20, "linear"),            # 0 won; mild blend may help
+        },
+        "tpe_seed_trial": {
+            "ram_ckpt_path":         "/cluster/maier/Agent4CT/checkpoints/ram.pth.tar",
+            "ram_sigma":             0.10,
+            "ram_input_norm":        "adjoint_max",
+            "ram_clamp_output":      True,
+            "ram_finetune":          False,
+            "ram_finetune_epochs":   0,
+            "ram_finetune_lr":       1e-4,
+            "ram_factor":            0.5,
+            "ram_post_fbp_blend":    0.0,
+            "ram_disable_multiscale": False,
+            "ram_disable_cudnn":     False,
+            "ram_use_deepinv_tomo":  False,
+        },
+    },
 }
 
 
@@ -557,14 +594,19 @@ def main():
                    help="Directory for the per-study SQLite db (TPE only)")
     p.add_argument("--tpe-startup", type=int, default=5,
                    help="Random startup trials before TPE kicks in")
+    p.add_argument("--calibrated", action="store_true",
+                   help="Re-prefix the slug as `demo-intensity-calibrated-*` "
+                        "to mark the run as using the post-2026-05-19 "
+                        "intensity-calibration scoring (CONVENTIONS.md rule 4). "
+                        "Joins the `demo-intensity` dashboard chart group.")
     args = p.parse_args()
 
     spec = SOLVERS[args.solver]
+    spec = dict(spec)
     # When using a non-default sampler, suffix both slug prefix and agent
     # name so the runs are clearly tagged but still group under the same
     # chart on the dashboard (chartGroupKey uses first 2 hyphen segments).
     if args.sampler == "tpe":
-        spec = dict(spec)
         # demo-fair-uswin-search -> demo-fair-tpe-uswin-search
         spec["slug_prefix"] = spec["slug_prefix"].replace(
             "demo-fair-", "demo-fair-tpe-")
@@ -572,6 +614,12 @@ def main():
         model_label = "optuna-tpe"
     else:
         model_label = "random-search"
+    if args.calibrated:
+        # demo-fair-...-search -> demo-intensity-calibrated-...-search
+        # (chart group becomes `demo-intensity`, separate from `demo-fair`.)
+        spec["slug_prefix"] = spec["slug_prefix"].replace(
+            "demo-fair-", "demo-intensity-calibrated-")
+        spec["agent_name"] = spec["agent_name"] + "-calibrated"
 
     rng = random.Random(args.seed)
     slug, run_dir = create_run(

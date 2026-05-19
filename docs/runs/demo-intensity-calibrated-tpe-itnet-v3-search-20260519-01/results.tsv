@@ -1,0 +1,4 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+6		nan	0.356236	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=14, lr=0.0015445, batch_size=10, unet_c=16, itnet_k=2, alpha_init=0.0043973
+17		nan	0.462894	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=11, lr=0.0012251, batch_size=10, unet_c=16, itnet_k=2, alpha_init=0.0027784
+18		nan	0.4446	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=6, lr=0.0013153, batch_size=10, unet_c=16, itnet_k=2, alpha_init=0.0030102

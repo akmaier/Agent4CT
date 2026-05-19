@@ -39,7 +39,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
 # Reuse the model + schedule definitions from the training file so a single
 # class definition is the source of truth across both solvers.
 from pentathlon.demo_dl_reference.solver_ddpm import (
@@ -261,53 +261,46 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     sample_time = time.time() - t0
     pred = torch.cat(preds, 0)
     val_ph = val_ph[:pred.shape[0]]; val_fbp = val_fbp[:pred.shape[0]]
-    dr = cfg["display_max"] - cfg["display_min"]
-    pred = pred.clamp(0.0, cfg["display_max"])
-    val_psnr = float(psnr(pred, val_ph, data_range=dr).cpu())
-    val_ssim = float(ssim(pred, val_ph, data_range=dr).cpu())
-    val_rmse = float(((pred - val_ph) ** 2).mean().sqrt().cpu())
-    baseline_psnr = float(psnr(val_fbp, val_ph, data_range=dr).cpu())
-    baseline_rmse = float(((val_fbp - val_ph) ** 2).mean().sqrt().cpu())
-    headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
-    print(f"[solver] DiffRecon[{ddpm_mode}/{cfg['recon_mode']}]: "
-          f"hr={headroom:.4f} SSIM={val_ssim:.4f} PSNR={val_psnr:.2f}", flush=True)
 
-    try:
-        import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-        n_show = min(3, pred.shape[0])
-        fig, ax = plt.subplots(n_show, 4, figsize=(12, 3 * n_show))
-        if n_show == 1: ax = ax[None]
-        vmin, vmax = cfg["display_min"], cfg["display_max"]
-        title = f"{cfg['recon_mode'].upper()} ({ddpm_mode})"
-        for i in range(n_show):
-            ax[i, 0].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 0].set_title("truth" if i == 0 else "")
-            ax[i, 1].imshow(val_fbp[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 1].set_title(f"FBP (PSNR={baseline_psnr:.1f})" if i == 0 else "")
-            ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 2].set_title(f"{title} (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})"
-                               if i == 0 else "")
-            ax[i, 3].imshow((pred[i, 0] - val_ph[i, 0]).cpu(),
-                            cmap="RdBu_r", vmin=-0.01, vmax=0.01)
-            ax[i, 3].set_title("residual" if i == 0 else "")
-            for a in ax[i]: a.set_axis_off()
-        plt.tight_layout(); plt.savefig(out_dir / "comparison.png", dpi=120)
-    except Exception as e:
-        print(f"[solver] figure failed: {e}", flush=True)
-
+    metrics = evaluate_calibrated(
+        pred, val_ph, baseline=val_fbp,
+        display_min=cfg["display_min"], display_max=cfg["display_max"])
+    pred_cal = metrics["pred_cal"]
+    baseline_cal = metrics["baseline_cal"]
+    val_psnr, val_ssim, val_rmse = metrics["val_psnr"], metrics["val_ssim"], metrics["val_rmse"]
+    baseline_psnr, baseline_rmse = metrics["baseline_psnr"], metrics["baseline_rmse"]
+    headroom = metrics["headroom"]
     params_total = sum(p.numel() for p in model.parameters())
+
     result = {
         "val_score": val_ssim, "val_psnr": val_psnr, "val_ssim": val_ssim,
         "val_rmse": val_rmse, "baseline_psnr": baseline_psnr,
+        "baseline_ssim": metrics.get("baseline_ssim"),
         "baseline_rmse": baseline_rmse, "headroom": headroom,
+        "calibration": metrics["calibration"],
+        "fg_threshold": metrics["fg_threshold"],
         "params_M": params_total / 1e6,
-        "train_n": state.get("n_train", 0), "val_n": pred.shape[0],
+        "train_n": state.get("n_train", 0), "val_n": int(pred.shape[0]),
         "train_time_s": sample_time, "config": cfg,
         "ddpm_mode": ddpm_mode,
         "ddpm_train_seed": state.get("train_seed"),
         "ddpm_final_val_eps_loss": state.get("final_val_loss"),
     }
     (out_dir / "result.json").write_text(json.dumps(result, indent=2))
+    print(f"[solver] DiffRecon[{ddpm_mode}/{cfg['recon_mode']}]: "
+          f"hr={headroom:.4f}  SSIM={val_ssim:.4f}  PSNR={val_psnr:.2f}  "
+          f"RMSE={val_rmse:.5f}  baseline_PSNR={baseline_psnr:.2f}  "
+          f"(intensity-calibrated)", flush=True)
+
+    try:
+        make_4panel_comparison(
+            truth=val_ph, fbp=baseline_cal, recon=pred_cal,
+            out_path=out_dir / "comparison.png",
+            display_min=cfg["display_min"], display_max=cfg["display_max"],
+            n_show=4, solver_label="Diffusion", headroom=headroom)
+    except Exception as e:
+        print(f"[solver] comparison.png failed: {e}", flush=True)
+
     return result
 
 

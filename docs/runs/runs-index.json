@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-18T22:38:39Z",
+  "updated": "2026-05-19T09:21:39Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
-      "short_id": "bf-20260516-01",
+      "short_id": "20260516-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-16T13:20:23Z",
       "status": "done",
@@ -63,6 +63,18 @@
       "model": "optuna-tpe"
     },
     {
+      "slug": "demo-dl-diffusion-recon-constrained-search-20260518-01",
+      "short_id": "20260518-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-18T09:39:52Z",
+      "status": "done",
+      "n_iterations": 38,
+      "best_score": 0.198706,
+      "best_headroom": 0.0,
+      "agent": "diffusion-recon-constrained-search",
+      "model": "random-search"
+    },
+    {
       "slug": "demo-dl-diffusion-recon-unconstrained-search-20260517-01",
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
@@ -99,6 +111,18 @@
       "model": "optuna-tpe"
     },
     {
+      "slug": "demo-dl-diffusion-recon-unconstrained-search-20260518-01",
+      "short_id": "20260518-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-18T09:39:52Z",
+      "status": "running",
+      "n_iterations": 31,
+      "best_score": 0.591864,
+      "best_headroom": 0.160706,
+      "agent": "diffusion-recon-unconstrained-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
       "slug": "demo-dl-diffusion-search-20260516-01",
       "short_id": "20260516-01",
       "challenge": "dl_sparse_view",
@@ -106,6 +130,18 @@
       "status": "done",
       "n_iterations": 20,
       "best_score": 0.325581,
+      "best_headroom": 0.0,
+      "agent": "diffusion-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-diffusion-search-20260516-02",
+      "short_id": "20260516-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T23:36:32Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.0862672,
       "best_headroom": 0.0,
       "agent": "diffusion-search",
       "model": "random-search"
@@ -123,6 +159,42 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-dl-fair-naf-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T09:07:00Z",
+      "status": "running",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "naf-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-fair-uswin-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T08:12:14Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.781748,
+      "best_headroom": 0.809015,
+      "agent": "uswin-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-hammernik-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T13:30:01Z",
+      "status": "running",
+      "n_iterations": 11,
+      "best_score": 0.415653,
+      "best_headroom": 0.515916,
+      "agent": "hammernik-search",
+      "model": "random-search"
+    },
+    {
       "slug": "demo-dl-hammernik-search-20260516-02",
       "short_id": "20260516-02",
       "challenge": "dl_sparse_view",
@@ -132,6 +204,18 @@
       "best_score": 0.359245,
       "best_headroom": 0.526303,
       "agent": "hammernik-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-hammernik-vn-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T17:43:33Z",
+      "status": "running",
+      "n_iterations": 4,
+      "best_score": 0.000566502,
+      "best_headroom": 0.0,
+      "agent": "hammernik-vn-search",
       "model": "random-search"
     },
     {
@@ -171,6 +255,18 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-dl-itnet-v3-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T13:29:58Z",
+      "status": "done",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "itnet-v3-search",
+      "model": "random-search"
+    },
+    {
       "slug": "demo-dl-itnet-v3-search-20260516-02",
       "short_id": "20260516-02",
       "challenge": "dl_sparse_view",
@@ -180,6 +276,42 @@
       "best_score": 0.723799,
       "best_headroom": 0.821517,
       "agent": "itnet-v3-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-naf-search-20260516-01",
+      "short_id": "20260516-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T18:26:21Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.250013,
+      "best_headroom": 0.0,
+      "agent": "naf-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-naf-search-20260516-02",
+      "short_id": "20260516-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T23:18:18Z",
+      "status": "running",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "naf-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-naf-search-20260516-03",
+      "short_id": "20260516-03",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-16T23:36:32Z",
+      "status": "running",
+      "n_iterations": 16,
+      "best_score": 0.821593,
+      "best_headroom": 0.541929,
+      "agent": "naf-search",
       "model": "random-search"
     },
     {
@@ -195,50 +327,38 @@
       "model": "random-search"
     },
     {
-      "slug": "demo-dl-reference-20260515-01",
-      "short_id": "20260515-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-15T14:23:32Z",
-      "status": "running",
-      "n_iterations": 4,
-      "best_score": 0.4454,
-      "best_headroom": 0.5831,
-      "agent": "reference",
-      "model": "TV-iterative"
-    },
-    {
-      "slug": "demo-dl-reference-20260515-02",
-      "short_id": "20260515-02",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-15T17:47:13Z",
-      "status": "running",
-      "n_iterations": 3,
-      "best_score": 0.4454,
-      "best_headroom": 0.5831,
-      "agent": "reference",
-      "model": "ItNet"
-    },
-    {
-      "slug": "demo-dl-sparse-view-20260513-01",
-      "short_id": "20260513-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-13T20:30:00Z",
-      "status": "demo",
-      "n_iterations": 3,
-      "best_score": 0.62,
-      "best_headroom": 0.41,
-      "agent": "claude",
-      "model": "claude-sonnet-4.5"
-    },
-    {
       "slug": "demo-dl-tv-search-20260515-01",
       "short_id": "20260515-01",
       "challenge": "dl_sparse_view",
-      "started": "2026-05-15T21:48:00Z",
-      "status": "done",
+      "started": "2026-05-15T19:48:33Z",
+      "status": "running",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "tv-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-tv-search-20260515-02",
+      "short_id": "20260515-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-15T20:20:10Z",
+      "status": "running",
       "n_iterations": 20,
-      "best_score": 0.4804,
-      "best_headroom": 0.6033,
+      "best_score": 0.306885,
+      "best_headroom": 0.387661,
+      "agent": "tv-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-dl-tv-search-20260515-03",
+      "short_id": "20260515-03",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-15T20:54:25Z",
+      "status": "running",
+      "n_iterations": 20,
+      "best_score": 0.480428,
+      "best_headroom": 0.603272,
       "agent": "tv-search",
       "model": "random-search"
     },
@@ -267,6 +387,30 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-fair-claude-diffusion-recon-search-20260518-01",
+      "short_id": "20260518-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-18T11:39:18Z",
+      "status": "complete",
+      "n_iterations": 20,
+      "best_score": 0.8078,
+      "best_headroom": 0.5712,
+      "agent": "claude-diffusion-recon-agent",
+      "model": "claude-sonnet-4.7"
+    },
+    {
+      "slug": "demo-fair-claude-ram-search-20260518-01",
+      "short_id": "20260518-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-18T18:28:27Z",
+      "status": "complete",
+      "n_iterations": 20,
+      "best_score": 0.9364,
+      "best_headroom": 0.5938,
+      "agent": "claude-ram-agent",
+      "model": "claude-sonnet-4.7"
+    },
+    {
       "slug": "demo-fair-dual-domain-bf-search-20260517-01",
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
@@ -291,6 +435,18 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-fair-hammernik-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T11:12:39Z",
+      "status": "done",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "hammernik-search",
+      "model": "random-search"
+    },
+    {
       "slug": "demo-fair-hammernik-search-20260517-02",
       "short_id": "20260517-02",
       "challenge": "dl_sparse_view",
@@ -299,6 +455,18 @@
       "n_iterations": 2,
       "best_score": 0.318089,
       "best_headroom": 0.408671,
+      "agent": "hammernik-search",
+      "model": "random-search"
+    },
+    {
+      "slug": "demo-fair-hammernik-search-20260517-03",
+      "short_id": "20260517-03",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T20:16:10Z",
+      "status": "done",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
       "agent": "hammernik-search",
       "model": "random-search"
     },
@@ -375,6 +543,30 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-fair-tpe-diff-recon-dcstep-constrained-search-20260518-01",
+      "short_id": "20260518-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-18T15:20:58Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.744062,
+      "best_headroom": 0.575291,
+      "agent": "diff-recon-dcstep-constrained-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-diff-recon-dcstep-unconstrained-search-20260518-01",
+      "short_id": "20260518-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-18T15:20:58Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.860647,
+      "best_headroom": 0.580324,
+      "agent": "diff-recon-dcstep-unconstrained-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
       "slug": "demo-fair-tpe-dual-domain-bf-search-20260517-01",
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
@@ -396,6 +588,18 @@
       "best_score": 0.316394,
       "best_headroom": 0.601915,
       "agent": "dual-domain-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-hammernik-search-20260517-01",
+      "short_id": "20260517-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-17T20:16:10Z",
+      "status": "running",
+      "n_iterations": 11,
+      "best_score": 0.484737,
+      "best_headroom": 0.566156,
+      "agent": "hammernik-search-tpe",
       "model": "optuna-tpe"
     },
     {
@@ -463,11 +667,23 @@
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-17T17:33:45Z",
-      "status": "running",
+      "status": "done",
       "n_iterations": 16,
       "best_score": 0.840486,
       "best_headroom": 0.401391,
       "agent": "r2gaussian-search-tpe",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-fair-tpe-ram-zeroshot-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T04:59:34Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.940238,
+      "best_headroom": 0.594036,
+      "agent": "ram-zeroshot-search-tpe",
       "model": "optuna-tpe"
     },
     {
@@ -519,18 +735,6 @@
       "model": "random-search"
     },
     {
-      "slug": "demo-fair-uswin-search-20260517-01",
-      "short_id": "20260517-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-17T08:12:14Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.781748,
-      "best_headroom": 0.809015,
-      "agent": "uswin-search",
-      "model": "random-search"
-    },
-    {
       "slug": "demo-fair-wu-search-20260517-01",
       "short_id": "20260517-01",
       "challenge": "dl_sparse_view",
@@ -543,124 +747,124 @@
       "model": "random-search"
     },
     {
-      "slug": "dl-sparse-view-20260513-01",
-      "short_id": "20260513-01",
+      "slug": "demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260519-01",
+      "short_id": "20260519-01",
       "challenge": "dl_sparse_view",
-      "started": "2026-05-13T20:21:16Z",
+      "started": "2026-05-19T07:49:18Z",
       "status": "running",
-      "n_iterations": 150,
-      "best_score": 0.6537,
-      "best_headroom": 0.614405,
-      "agent": "claude",
-      "model": "claude-sonnet-4.5"
+      "n_iterations": 2,
+      "best_score": NaN,
+      "best_headroom": 0.470407,
+      "agent": "diff-recon-dcstep-unconstrained-search-tpe-calibrated",
+      "model": "optuna-tpe"
     },
     {
-      "slug": "dl-sparse-view-deepseek-20260513-01",
-      "short_id": "20260513-01",
+      "slug": "demo-intensity-calibrated-tpe-dual-domain-bf-search-20260519-01",
+      "short_id": "20260519-01",
       "challenge": "dl_sparse_view",
-      "started": "2026-05-13T23:50:27Z",
+      "started": "2026-05-19T07:07:44Z",
       "status": "running",
-      "n_iterations": 0,
-      "best_score": null,
-      "best_headroom": null,
-      "agent": "deepseek",
-      "model": "deepseek-ai/DeepSeek-V4-Flash"
+      "n_iterations": 4,
+      "best_score": NaN,
+      "best_headroom": 0.382603,
+      "agent": "dual-domain-bf-search-tpe-calibrated",
+      "model": "optuna-tpe"
     },
     {
-      "slug": "dl-sparse-view-gptoss-20260513-01",
-      "short_id": "20260513-01",
+      "slug": "demo-intensity-calibrated-tpe-dual-domain-search-20260519-01",
+      "short_id": "20260519-01",
       "challenge": "dl_sparse_view",
-      "started": "2026-05-13T23:50:29Z",
+      "started": "2026-05-19T06:59:22Z",
       "status": "running",
+      "n_iterations": 10,
+      "best_score": NaN,
+      "best_headroom": 0.384085,
+      "agent": "dual-domain-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T06:40:47Z",
+      "status": "done",
+      "n_iterations": 2,
+      "best_score": NaN,
+      "best_headroom": 0.357612,
+      "agent": "hammernik-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T06:05:35Z",
+      "status": "done",
+      "n_iterations": 10,
+      "best_score": NaN,
+      "best_headroom": 0.355445,
+      "agent": "hammernik-vn-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T06:49:30Z",
+      "status": "done",
+      "n_iterations": 1,
+      "best_score": NaN,
+      "best_headroom": 0.0,
+      "agent": "itnet-v2-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T06:05:36Z",
+      "status": "done",
       "n_iterations": 3,
-      "best_score": 0.0,
-      "best_headroom": 0.0,
-      "agent": "gptoss",
-      "model": "gpt-oss-120b"
+      "best_score": NaN,
+      "best_headroom": 0.462894,
+      "agent": "itnet-v3-search-tpe-calibrated",
+      "model": "optuna-tpe"
     },
     {
-      "slug": "dl-sparse-view-iter-20260513-01",
-      "short_id": "20260513-01",
+      "slug": "demo-intensity-calibrated-tpe-tv-search-20260519-01",
+      "short_id": "20260519-01",
       "challenge": "dl_sparse_view",
-      "started": "2026-05-13T22:38:37Z",
-      "status": "running",
-      "n_iterations": 150,
-      "best_score": 0.6568,
-      "best_headroom": 0.617055,
-      "agent": "claude",
-      "model": "claude-sonnet-4.5"
-    },
-    {
-      "slug": "dl-sparse-view-kimi-20260513-01",
-      "short_id": "20260513-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-13T23:50:26Z",
-      "status": "running",
-      "n_iterations": 0,
-      "best_score": null,
-      "best_headroom": null,
-      "agent": "kimi",
-      "model": "moonshotai/Kimi-K2.6"
-    },
-    {
-      "slug": "dl-sparse-view-loss-20260514-01",
-      "short_id": "20260514-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-14T06:10:23Z",
-      "status": "running",
-      "n_iterations": 150,
-      "best_score": 0.33257,
-      "best_headroom": 0.610239,
-      "agent": "claude",
-      "model": "claude-sonnet-4.5"
-    },
-    {
-      "slug": "dl-sparse-view-mistral-20260513-01",
-      "short_id": "20260513-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-13T23:50:28Z",
-      "status": "running",
-      "n_iterations": 5,
-      "best_score": 0.0,
-      "best_headroom": 0.0,
-      "agent": "mistral",
-      "model": "mistralai/Mistral-Medium-3.5-128B"
-    },
-    {
-      "slug": "dl-sparse-view-res-20260513-01",
-      "short_id": "20260513-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-13T22:38:38Z",
-      "status": "running",
-      "n_iterations": 151,
-      "best_score": 0.68416,
-      "best_headroom": 0.611967,
-      "agent": "claude",
-      "model": "claude-sonnet-4.5"
-    },
-    {
-      "slug": "demo-fair-claude-diffusion-recon-search-20260518-01",
-      "short_id": "20260518-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-18T11:39:18Z",
+      "started": "2026-05-19T07:12:31Z",
       "status": "done",
       "n_iterations": 20,
-      "best_score": 0.6495,
-      "best_headroom": 0.5712,
-      "agent": "claude-diffusion-recon-agent",
-      "model": "claude-sonnet-4.7"
+      "best_score": NaN,
+      "best_headroom": 0.41797,
+      "agent": "tv-search-tpe-calibrated",
+      "model": "optuna-tpe"
     },
     {
-      "slug": "demo-fair-claude-ram-search-20260518-01",
-      "short_id": "20260518-01",
+      "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-01",
+      "short_id": "20260519-01",
       "challenge": "dl_sparse_view",
-      "started": "2026-05-18T18:28:27Z",
+      "started": "2026-05-19T06:05:35Z",
+      "status": "done",
+      "n_iterations": 2,
+      "best_score": NaN,
+      "best_headroom": 0.463028,
+      "agent": "uswin-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-wu-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T07:46:08Z",
       "status": "done",
       "n_iterations": 20,
-      "best_score": 0.9337,
-      "best_headroom": 0.5938,
-      "agent": "claude-ram-agent",
-      "model": "claude-sonnet-4.7"
+      "best_score": NaN,
+      "best_headroom": 0.246629,
+      "agent": "wu-search-tpe-calibrated",
+      "model": "optuna-tpe"
     }
   ]
 }

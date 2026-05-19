@@ -6,7 +6,7 @@ contaminated by two recurring bugs (per-solver seed drift and missing
 clamps on negative output values); this document codifies the fix so it
 doesn't happen again.
 
-## The four rules
+## The five rules
 
 ### 1. Fixed seeds, fixed val set
 
@@ -78,7 +78,46 @@ headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
   `[0, +∞)` (we don't upper-clamp the baseline — the headroom denominator
   is more conservative that way and easier to beat fairly).
 
-### 4. Standardised `result.json` keys
+### 4. Intensity calibration before scoring  *(NEW — 2026-05-19)*
+
+Different solvers output reconstructions at different absolute intensity
+scales: a learned U-Net might centre near zero, a diffusion sampler near
+`display_max/2`, classical FBP near the true μ range. Uncalibrated
+PSNR/SSIM/RMSE favour whichever solver's *bias* happens to land near the
+truth scale, even when their *structure* is worse than a competitor's.
+
+The simple ReLU clamp in Rule 2 fixes the negative tail but **does not**
+correct the mean offset or span — two solvers with identical structure
+but different intensity offsets will get different SSIM. To make the
+leaderboard comparable, we apply a two-point linear calibration to
+every prediction before scoring:
+
+```python
+from ddssl_ldct.metrics import evaluate_calibrated
+
+# fg_mask = (truth > display_min + 5%·(display_max-display_min))
+# bg_mask = ~fg_mask
+# a = mean(truth[fg_mask]) / (mean(pred[fg_mask]) - mean(pred[bg_mask]))
+# pred_cal = clamp(a · (pred - mean(pred[bg_mask])), 0, display_max)
+m = evaluate_calibrated(
+    pred, val_ph, baseline=val_fbp,
+    display_min=cfg["display_min"], display_max=cfg["display_max"])
+val_psnr, val_ssim, val_rmse = m["val_psnr"], m["val_ssim"], m["val_rmse"]
+baseline_psnr = m["baseline_psnr"]; baseline_rmse = m["baseline_rmse"]
+headroom = m["headroom"]
+pred_cal = m["pred_cal"]   # for comparison.png
+```
+
+The baseline (FBP) is calibrated identically using the same algorithm
+applied to itself against truth — `headroom = 1 - val_rmse / baseline_rmse`
+remains the comparison metric, just computed post-calibration on both
+sides.
+
+This is the standard pre-scoring step in CT recon benchmarks (cf. Wagner
+et al. 2022, Hammernik et al. 2018). Without it the leaderboard drifts
+run-to-run with each solver's internal bias.
+
+### 5. Standardised `result.json` keys
 
 Every solver writes `result.json` with at least:
 
@@ -111,6 +150,7 @@ treated as 0.
 | Solver output left un-clamped (e.g. negative pixels from residual prediction) | RMSE artificially low in dark regions, headroom inflated | Rule 2: `pred = pred.clamp(0, display_max)` mandatory |
 | Solver used `data_range = pred.amax() - pred.amin()` for SSIM | Solvers that produce wider dynamic range get higher SSIM | Rule 3: `data_range = display_max - display_min` fixed |
 | Inner-loop clamp killed gradients (NAF v1, Diffusion v1) | hr = 0 across all 20 search iters; constant SSIM ≈ 0.25 | Clamp is applied AFTER optimisation, not inside |
+| Per-solver intensity bias drifted SSIM/PSNR run-to-run | RAM ssim 0.93 vs ItNet 0.78 partly reflects bias, not structure | Rule 4: `evaluate_calibrated()` two-point linear calibration before scoring |
 
 ## Backwards-incompatibility note
 

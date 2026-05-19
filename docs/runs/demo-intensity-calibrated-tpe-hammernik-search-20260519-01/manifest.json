@@ -1,0 +1,22 @@
+{
+  "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260519-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-intensity-calibrated-tpe-hammernik-search",
+  "started": "2026-05-19T06:40:47Z",
+  "agent": "hammernik-search-tpe-calibrated",
+  "model": "optuna-tpe",
+  "status": "done",
+  "notes": "intensity-calibrated TPE (CONVENTIONS rule 4)",
+  "finished": "2026-05-19T07:07:43Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 27,
+    "lr": 0.0019224584677988569,
+    "batch_size": 2,
+    "vn_T": 3,
+    "vn_n_filters": 16,
+    "vn_kernel": 11,
+    "vn_lambda_init": 0.0022842819405373615
+  },
+  "best_headroom": 0.35761162199021446
+}

@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+12		nan	0	discard	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=3, pretrain_lr=0.0040175, itnet_k=8, itnet_alpha_init=0.0010001, residual_learning=True
