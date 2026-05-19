@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+2		0.722338	0.47	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=7, lr=0.000467, batch_size=2, uswin_c=16, swin_window=4, swin_heads=8
