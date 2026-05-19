@@ -553,10 +553,13 @@ def update_index():
                 cells = r.split("\t")
                 try:
                     v = float(cells[2])
-                    if best_score is None or v > best_score:
+                    # Guard against NaN/Inf — they crash JSON.parse in the
+                    # browser dashboard (JSON spec forbids non-finite
+                    # numbers). Use math.isfinite to also catch +/-inf.
+                    if math.isfinite(v) and (best_score is None or v > best_score):
                         best_score = v
                     h = float(cells[3])
-                    if best_hr is None or h > best_hr:
+                    if math.isfinite(h) and (best_hr is None or h > best_hr):
                         best_hr = h
                 except (ValueError, IndexError):
                     pass
@@ -573,8 +576,12 @@ def update_index():
             "agent": manifest.get("agent"),
             "model": manifest.get("model"),
         })
+    # allow_nan=False raises ValueError on NaN/Inf, so we know if any leaks
+    # through the per-row guards above. JSON.parse in the browser rejects
+    # non-finite numbers and silently breaks the dashboard.
     idx_path.write_text(json.dumps(
-        {"schema_version": 1, "updated": utc_now_iso(), "runs": runs}, indent=2))
+        {"schema_version": 1, "updated": utc_now_iso(), "runs": runs},
+        indent=2, allow_nan=False))
     print(f"[agent] Updated index with {len(runs)} runs")
 
 

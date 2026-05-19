@@ -753,7 +753,7 @@
       "started": "2026-05-19T07:49:18Z",
       "status": "running",
       "n_iterations": 2,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.470407,
       "agent": "diff-recon-dcstep-unconstrained-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -765,7 +765,7 @@
       "started": "2026-05-19T07:07:44Z",
       "status": "running",
       "n_iterations": 4,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.382603,
       "agent": "dual-domain-bf-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -777,7 +777,7 @@
       "started": "2026-05-19T06:59:22Z",
       "status": "running",
       "n_iterations": 10,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.384085,
       "agent": "dual-domain-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -789,7 +789,7 @@
       "started": "2026-05-19T06:40:47Z",
       "status": "done",
       "n_iterations": 2,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.357612,
       "agent": "hammernik-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -801,7 +801,7 @@
       "started": "2026-05-19T06:05:35Z",
       "status": "done",
       "n_iterations": 10,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.355445,
       "agent": "hammernik-vn-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -813,7 +813,7 @@
       "started": "2026-05-19T06:49:30Z",
       "status": "done",
       "n_iterations": 1,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.0,
       "agent": "itnet-v2-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -825,7 +825,7 @@
       "started": "2026-05-19T06:05:36Z",
       "status": "done",
       "n_iterations": 3,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.462894,
       "agent": "itnet-v3-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -837,7 +837,7 @@
       "started": "2026-05-19T07:12:31Z",
       "status": "done",
       "n_iterations": 20,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.41797,
       "agent": "tv-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -849,7 +849,7 @@
       "started": "2026-05-19T06:05:35Z",
       "status": "done",
       "n_iterations": 2,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.463028,
       "agent": "uswin-search-tpe-calibrated",
       "model": "optuna-tpe"
@@ -861,7 +861,7 @@
       "started": "2026-05-19T07:46:08Z",
       "status": "done",
       "n_iterations": 20,
-      "best_score": NaN,
+      "best_score": null,
       "best_headroom": 0.246629,
       "agent": "wu-search-tpe-calibrated",
       "model": "optuna-tpe"
