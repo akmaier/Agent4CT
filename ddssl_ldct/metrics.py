@@ -211,6 +211,53 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
     plt.close(fig)
 
 
+# ===========================================================================
+# Training-time non-negativity penalty (CONVENTIONS.md rule 6)
+# ===========================================================================
+#
+# End-to-end-trained CT recon networks (ItNet, U-Swin, Hammernik VN, DD,
+# etc.) need to actively suppress negative outputs during training, not
+# just clip them at evaluation. A naive hard ReLU on the output kills
+# gradients for any pixel with a negative pre-activation — the network
+# then has no signal to push those pixels up, and the background fills
+# with negative streaks that downstream intensity-calibration cannot
+# undo cleanly.
+#
+# The fix is a smooth quadratic penalty on the negative part of `pred`,
+# added to the supervised loss:
+#     loss = base(pred, target) + lambda_neg · mean( max(0, -pred)^2 )
+# This is differentiable everywhere (gradient is 2·max(0, -pred) which is
+# nonzero exactly when pred is negative), so the network gets a constant
+# push to drive negative pre-activations toward zero. Default
+# `lambda_neg = 1.0` puts the penalty at roughly the same scale as the
+# MSE term for our [0, 0.05] μ-range targets.
+
+
+def negativity_penalty(pred: torch.Tensor) -> torch.Tensor:
+    """Quadratic penalty on the negative part of `pred`. Returns a scalar.
+    Differentiable everywhere; gradient is 2·max(0, -pred), nonzero only
+    where pred < 0. Use as `lambda_neg · negativity_penalty(pred)` added
+    to the base reconstruction loss during training."""
+    return pred.clamp(max=0.0).pow(2).mean()
+
+
+def supervised_recon_loss(pred: torch.Tensor, target: torch.Tensor,
+                          *, lambda_neg: float = 1.0,
+                          base: str = "mse") -> torch.Tensor:
+    """Reconstruction loss with built-in non-negativity penalty.
+
+    base = "mse" -> torch.nn.functional.mse_loss
+    base = "l1"  -> torch.nn.functional.l1_loss
+    """
+    if base == "mse":
+        recon = F.mse_loss(pred, target)
+    elif base == "l1":
+        recon = F.l1_loss(pred, target)
+    else:
+        raise ValueError(f"unknown base loss {base!r}")
+    return recon + lambda_neg * negativity_penalty(pred)
+
+
 def psnr(pred: torch.Tensor, target: torch.Tensor, data_range: float | None = None) -> torch.Tensor:
     if data_range is None:
         data_range = float(target.amax() - target.amin())

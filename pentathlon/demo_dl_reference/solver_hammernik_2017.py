@@ -41,7 +41,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
 
 
 CONFIG = {
@@ -249,7 +249,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             x0 = train_fbp[idx]
             truth = train_ph[idx]
             pred = model(x0)
-            loss = F.mse_loss(pred, truth)
+            loss = supervised_recon_loss(pred, truth, lambda_neg=1.0)
             opt.zero_grad()
             loss.backward()
             opt.step()

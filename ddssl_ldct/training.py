@@ -23,6 +23,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .geometry import FanBeamGeometry
+from .metrics import negativity_penalty
 from .pyronn_projector import PyronnFanBeamProjector
 from .simulate import split_projections
 
@@ -60,6 +61,9 @@ class DualDomainPipeline(nn.Module):
         loss_ba = F.mse_loss(y_hat_b, y_tgt_a)
 
         loss = 0.5 * (loss_ab + loss_ba)
+        # Non-negativity penalty on image-domain predictions: discourages
+        # negative streaks that would otherwise bias intensity calibration.
+        loss = loss + 1.0 * 0.5 * (negativity_penalty(y_hat_a) + negativity_penalty(y_hat_b))
         return {"loss": loss, "loss_ab": loss_ab.detach(), "loss_ba": loss_ba.detach()}
 
     @torch.no_grad()

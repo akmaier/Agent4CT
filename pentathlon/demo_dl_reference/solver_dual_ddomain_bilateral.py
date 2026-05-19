@@ -31,7 +31,7 @@ from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose, split_projections
 from ddssl_ldct.models import TrainableBilateralFilter2d
 from ddssl_ldct.training import DualDomainPipeline
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
 
 
 CONFIG = {

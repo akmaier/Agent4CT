@@ -32,7 +32,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
 
 
 CONFIG = {
@@ -225,7 +225,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         for i in range(0, cfg["train_n"], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
             pred = model(train_fbp[idx])
-            loss = F.mse_loss(pred, train_ph[idx])
+            loss = supervised_recon_loss(pred, train_ph[idx], lambda_neg=1.0)
             opt.zero_grad(); loss.backward(); opt.step()
             running += float(loss.detach().cpu()); nb += 1
         print(f"[train] epoch {ep+1}/{cfg['epochs']}  loss={running/max(1,nb):.6g}",

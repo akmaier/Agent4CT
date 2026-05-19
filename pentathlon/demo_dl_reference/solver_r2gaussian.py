@@ -30,7 +30,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
 
 
 CONFIG = {
@@ -113,7 +113,7 @@ def fit_one_scene(noisy_sino, geom, cfg, device):
     for it in range(cfg["gs_n_iter"]):
         mu = model().clamp(0.0, cfg["gs_n_clip"]).unsqueeze(0).unsqueeze(0)
         sino_pred = proj.forward_project(mu)
-        loss = F.mse_loss(sino_pred, noisy_sino) + cfg["gs_tv_weight"] * _tv(mu)
+        loss = F.mse_loss(sino_pred, noisy_sino) + cfg["gs_tv_weight"] * _tv(mu) + 1.0 * negativity_penalty(mu)
         opt.zero_grad(); loss.backward(); opt.step()
     with torch.no_grad():
         mu = model().clamp(0.0, cfg["gs_n_clip"]).unsqueeze(0).unsqueeze(0)

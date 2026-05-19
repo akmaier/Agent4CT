@@ -29,7 +29,7 @@ from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
 from ddssl_ldct.models import SmallUNet
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
 
 
 CONFIG = {
@@ -130,7 +130,7 @@ def pretrain_denoiser(denoiser, fbp_images, truth_images, epochs, lr, patience, 
             fbp = fbp_images[idx].to(device)
             truth = truth_images[idx].to(device)
             pred = denoiser(fbp)
-            loss = torch.nn.functional.mse_loss(pred, truth)
+            loss = supervised_recon_loss(pred, truth, lambda_neg=1.0)
             opt.zero_grad()
             loss.backward()
             opt.step()

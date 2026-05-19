@@ -117,7 +117,43 @@ This is the standard pre-scoring step in CT recon benchmarks (cf. Wagner
 et al. 2022, Hammernik et al. 2018). Without it the leaderboard drifts
 run-to-run with each solver's internal bias.
 
-### 5. Standardised `result.json` keys
+### 5. Training-time non-negativity penalty  *(NEW — 2026-05-19)*
+
+End-to-end-trained networks (ItNet v2/v3, U-Swin, Hammernik 2017/VN,
+DD-UNet, DD-BF) and per-scene optimisers (NAF, R2Gaussian) must add a
+**non-negativity penalty** to their training loss. Without it the
+network has no signal to suppress negative outputs in the background —
+the supervised loss against truth (where target is 0) gives the same
+gradient whether `pred = 0`, `pred = -0.001`, or `pred = -0.05`, so
+the network freely produces negative streaks. These streaks then bias
+the bg-mean inside the intensity-calibration step (Rule 4) and bleed
+into the comparison figure even though the calibrated output is
+clamped at the end.
+
+A naive hard `output ReLU` is the wrong fix: it kills the gradient for
+any pre-activation `z < 0` (because `d ReLU(z) / d z = 0` there), so
+once a pixel goes negative it can never recover during training. Use a
+smooth quadratic penalty instead:
+
+```python
+from ddssl_ldct.metrics import supervised_recon_loss
+
+# replaces F.mse_loss(pred, truth) in the per-batch training step
+loss = supervised_recon_loss(pred, truth, lambda_neg=1.0)
+# = F.mse_loss(pred, truth) + 1.0 * pred.clamp(max=0).pow(2).mean()
+```
+
+`lambda_neg = 1.0` is the canonical default (penalty roughly at MSE
+scale for our [0, 0.05] μ-range targets). For solvers whose pred
+output naturally ranges much wider during early training, scale up
+toward 10. For per-scene optimisers without a supervised target (NAF,
+R2Gaussian fit data-consistency only), add the penalty directly:
+
+```python
+loss = data_consistency(...) + lambda_neg * negativity_penalty(pred)
+```
+
+### 6. Standardised `result.json` keys
 
 Every solver writes `result.json` with at least:
 

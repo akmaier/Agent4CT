@@ -29,7 +29,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
 
 
 CONFIG = {
@@ -130,7 +130,7 @@ def fit_one_scene(noisy_sino, geom, cfg, device, t_limit=None):
     for it in range(cfg["naf_n_iter"]):
         mu = model(coords).reshape(1, 1, H, W)
         sino_pred = proj.forward_project(mu)
-        loss = F.mse_loss(sino_pred, noisy_sino) + cfg["naf_tv_weight"] * _tv(mu)
+        loss = F.mse_loss(sino_pred, noisy_sino) + cfg["naf_tv_weight"] * _tv(mu) + 1.0 * negativity_penalty(mu)
         opt.zero_grad(); loss.backward(); opt.step()
         last_loss = float(loss.detach().cpu())
         if t_limit is not None and (time.time() - t0) > t_limit:
