@@ -264,6 +264,156 @@ class RotatingSubsetDataset(Dataset):
         return self._pool_size
 
 
+# ---------------------------------------------------------------------------
+# Thin helpers for the demo_dl_reference TPE pipeline (Track B/C in
+# docs/workplan_real_datasets.md). The classes above are for training-loop
+# DataLoaders; the helpers below load a whole val split into memory in one
+# go, which is what the solvers' main() functions need.
+#
+# Geometry table keyed by dataset_kind. Each entry pins everything the
+# search agent needs to override in CONFIG so the existing solvers can run
+# against real staged data without changing per-solver constants.
+
+import os as _os
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class DatasetInfo:
+    image_size: int
+    pixel_spacing: float
+    n_angles: int
+    n_det: int
+    det_spacing: float
+    sod: float
+    sdd: float
+    display_min: float
+    display_max: float
+    has_real_sino: bool             # True -> noisy is loaded; False -> simulated
+    staged_dir: Path | None = None
+    truth_file_tmpl: str = "{split}_truth.h5"
+    truth_dataset: str = "image"
+    sino_file_tmpl: str = "{split}_sinograms.h5"
+    sino_dataset: str = "sino"
+
+
+_DEFAULT_DATA_ROOT = Path(_os.environ.get(
+    "AGENT4CT_DATA", "/cluster/maier/Agent4CT/data"))
+
+
+GEOMETRIES: dict[str, DatasetInfo] = {
+    "phantoms": DatasetInfo(
+        image_size=512, pixel_spacing=0.7,
+        n_angles=128, n_det=736, det_spacing=1.2858,
+        sod=595.0, sdd=1085.6,
+        display_min=0.0, display_max=0.05,
+        has_real_sino=False,
+    ),
+    "breast_ct": DatasetInfo(
+        image_size=512, pixel_spacing=0.7,
+        n_angles=128, n_det=1024, det_spacing=1.2858,
+        sod=595.0, sdd=1085.6,
+        # Sidky 2021 breast phantoms peak around μ ≈ 0.30-0.33 mm⁻¹
+        # (microcalcifications); plain breast tissue is ≈ 0.18-0.22.
+        # display_max=0.5 leaves headroom for the calc tail without
+        # compressing the calibration's typical foreground span.
+        display_min=0.0, display_max=0.5,
+        has_real_sino=True,
+        staged_dir=_DEFAULT_DATA_ROOT / "dl_sparse_view" / "staged",
+    ),
+    # mayo_ldct_2d geometry will be tuned once Track A's helix2fan
+    # rebinning lands. Placeholder uses helix2fan-style rotview≈2304.
+    "mayo_ldct_2d": DatasetInfo(
+        image_size=512, pixel_spacing=0.5859375,
+        n_angles=2304, n_det=736, det_spacing=1.2858,
+        sod=595.0, sdd=1085.6,
+        display_min=0.0, display_max=0.05,
+        has_real_sino=True,
+        staged_dir=_DEFAULT_DATA_ROOT / "mayo_ldct_2d" / "staged",
+        sino_file_tmpl="{split}_sino_fulldose.h5",
+    ),
+}
+
+
+def get_dataset_kind(cfg: dict | None = None) -> str:
+    """Resolve dataset kind from env (`AGENT4CT_DATASET`) → cfg → default.
+    Env wins so an sbatch wrapper can flip the dataset without editing JSON."""
+    env = _os.environ.get("AGENT4CT_DATASET")
+    if env:
+        return env
+    if cfg and "dataset_kind" in cfg:
+        return cfg["dataset_kind"]
+    return "phantoms"
+
+
+def geometry_overrides(kind: str) -> dict:
+    """Return the cfg-key overrides for the named dataset (image_size,
+    pixel_spacing, n_angles, n_det, det_spacing, sod, sdd, display_min/max)."""
+    info = GEOMETRIES[kind]
+    return dict(
+        image_size=info.image_size, pixel_spacing=info.pixel_spacing,
+        n_angles=info.n_angles, n_det=info.n_det,
+        det_spacing=info.det_spacing, sod=info.sod, sdd=info.sdd,
+        display_min=info.display_min, display_max=info.display_max,
+    )
+
+
+def load_val_split(kind: str, split: str, n: int, *, device,
+                   seed: int = 1042, noise_i0: float = 1e5,
+                   noise_sigma_e: float = 10.0,
+                   geom: FanBeamGeometry | None = None
+                   ) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor]:
+    """Return (phantoms, clean, noisy) tensors on `device`.
+
+    For kind="phantoms": synthetic ellipse phantoms + simulated low-dose sino
+    (backwards-compatible with the existing solvers' build_dataset).
+    For kind="breast_ct" or "mayo_ldct_2d": load truth and REAL sinograms
+    from staged HDF5; `clean` is None (no clean sino available).
+
+    Always returns `(N, 1, H, W)` for images and `(N, 1, A, D)` for sinos.
+    """
+    info = GEOMETRIES[kind]
+    if not info.has_real_sino:
+        # Backwards-compat synthetic path.
+        from ddssl_ldct.phantoms import random_ellipses_phantom
+        from ddssl_ldct.simulate import simulate_low_dose
+        from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
+        assert geom is not None, "phantoms kind needs a geom (built from CONFIG)"
+        proj = PyronnFanBeamProjector(geom).to(device)
+        phantoms = torch.stack([
+            random_ellipses_phantom(size=geom.image_size, n_ellipses=10,
+                                     seed=seed + i)[0]
+            for i in range(n)
+        ]).to(device)
+        with torch.no_grad():
+            clean = proj.forward_project(phantoms)
+            noisy = simulate_low_dose(clean, i0=noise_i0,
+                                       sigma_e=noise_sigma_e,
+                                       seed=seed + 10_000)
+        return phantoms, clean, noisy
+
+    assert info.staged_dir is not None, f"{kind!r} has no staged_dir"
+    truth_path = info.staged_dir / info.truth_file_tmpl.format(split=split)
+    sino_path  = info.staged_dir / info.sino_file_tmpl .format(split=split)
+    if not truth_path.exists():
+        raise FileNotFoundError(f"{kind} {split} truth missing: {truth_path}")
+    if not sino_path.exists():
+        raise FileNotFoundError(f"{kind} {split} sino missing: {sino_path}")
+    with h5py.File(truth_path, "r") as f:
+        n_truth = f[info.truth_dataset].shape[0]
+        n_eff = min(n, n_truth)
+        truth = f[info.truth_dataset][:n_eff][...]
+    with h5py.File(sino_path, "r") as f:
+        sino = f[info.sino_dataset][:n_eff][...]
+    truth_t = torch.from_numpy(truth).to(device=device, dtype=torch.float32)
+    sino_t  = torch.from_numpy(sino ).to(device=device, dtype=torch.float32)
+    if truth_t.dim() == 3:   # (N, H, W) -> (N, 1, H, W)
+        truth_t = truth_t.unsqueeze(1)
+    if sino_t.dim() == 3:    # (N, A, D) -> (N, 1, A, D)
+        sino_t = sino_t.unsqueeze(1)
+    return truth_t, None, sino_t
+
+
 def FanBeamGeometryFromManifest(manifest_path: Path, *,
                                 device=None) -> FanBeamGeometry:
     """Build a `FanBeamGeometry` from the geometry block in a staged manifest.

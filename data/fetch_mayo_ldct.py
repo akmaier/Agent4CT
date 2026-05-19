@@ -48,6 +48,12 @@ from _common import (
     write_manifest,
 )
 
+# Track A (A1/A2) of docs/workplan_real_datasets.md: helical-to-fan rebinning
+# of the DICOM-CT-PD projection series. The actual NumPy implementation lives
+# in ddssl_ldct.helix2fan; this module orchestrates the per-patient pass and
+# writes the staged HDF5 outputs.
+SOP_RAW_DATA = "1.2.840.10008.5.1.4.1.1.66"   # DICOM-CT-PD Raw Data Storage
+
 CHALLENGE = "mayo_ldct"
 TCIA_COLLECTION = "LDCT-and-Projection-data"  # case-sensitive ("data" lowercase per API)
 TCIA_API = "https://services.cancerimagingarchive.net/nbia-api/services/v1"
@@ -57,35 +63,21 @@ TCIA_API = "https://services.cancerimagingarchive.net/nbia-api/services/v1"
 #
 # Wagner et al. 2023 ("Self-supervised dual-domain image denoising for
 # low-dose CT", arXiv:2211.01111) and the companion repo
-# https://github.com/faebstn96/helix2fan together describe the *methodology*
-# (four training, one validation, five test abdomen scans) but do NOT pin
-# specific TCIA PatientIDs. The choice of which 10 L* (abdomen) cases is
-# left to the implementer. The ten below are a sensible default — any ten
-# L* cases will reproduce Wagner's setup, since all L-cases share the same
-# Siemens scanner geometry and reconstruction parameters.
-#
-# To change the subset: replace this list with any 10 PatientIDs that
-# exist in https://www.cancerimagingarchive.net/collection/ldct-and-projection-data/
-# (filter on Subject ID starts with "L"). Re-running with a new list will
-# only redownload the missing patients; existing ones are cached.
-# Valid L* IDs in the collection (100 abdomen cases) confirmed via
-# getPatient API 2026-05-15. Picked 10 spread across the ID range.
-WAGNER_PATIENT_IDS = [
-    "L004", "L033", "L064", "L107", "L143",
-    "L186", "L221", "L260", "L288", "L299",
-]
-# Verified 2026-05-15: every ID above appears in the
-# getPatient?Collection=LDCT-and-Projection-data response. L067 looked
-# right but does NOT exist (valid L* IDs skip non-monotonically: L064 is
-# present, L067 is not, L071 is next). Collection name is case-sensitive:
-# "...data" not "...Data".
-
-# Wagner's split per the paper: 4 train, 1 val, 5 test.
+# The exact Wagner split (Wagner et al. 2022/2023) is pinned by patient ID:
+#   train: L145, L186, L209, L219      (4 patients)
+#   val:   L277                         (1 patient)
+#   test:  L014, L056, L058, L075, L123 (5 patients)
+# User-supplied 2026-05-19. Earlier defaults (L004 / L033 / L064 / L107 / L143
+# / L186 / L221 / L260 / L288 / L299) were a placeholder set that happened to
+# match the *structure* but not the *exact* IDs in Wagner's experiments. They
+# have been retired in favor of the pinned IDs above.
 WAGNER_SPLITS = {
-    "train": WAGNER_PATIENT_IDS[:4],
-    "val":   WAGNER_PATIENT_IDS[4:5],
-    "test":  WAGNER_PATIENT_IDS[5:],
+    "train": ["L145", "L186", "L209", "L219"],
+    "val":   ["L277"],
+    "test":  ["L014", "L056", "L058", "L075", "L123"],
 }
+WAGNER_PATIENT_IDS = (WAGNER_SPLITS["train"] + WAGNER_SPLITS["val"] +
+                     WAGNER_SPLITS["test"])
 
 # Mayo Siemens SOMATOM Definition AS, rebinned to the fan-beam geometry our
 # pipeline uses. See ddssl_ldct/geometry.py for cross-references. The staged
@@ -282,17 +274,188 @@ def raw_per_patient_to_raw_dir(raw_per_patient: dict) -> Path:
 
 
 # -----------------------------------------------------------------------------
+# Track A (A1/A2): helical -> 2D fan-beam rebinning of the projection series.
+# -----------------------------------------------------------------------------
+
+def _find_projection_series(patient_dir: Path,
+                            description_filter: str) -> Path | None:
+    """Return the raw-data DICOM-CT-PD series dir whose SeriesDescription
+    contains `description_filter` (case-insensitive), or None if not present.
+
+    Two series of interest per patient: "Full dose projections" and
+    "Low dose projections" (both SOP `1.2.840.10008.5.1.4.1.1.66`).
+    """
+    import pydicom
+    target = description_filter.lower()
+    for series_dir in sorted(patient_dir.iterdir()):
+        if not series_dir.is_dir():
+            continue
+        sample = next(series_dir.iterdir(), None)
+        if sample is None:
+            continue
+        try:
+            ds = pydicom.dcmread(str(sample), stop_before_pixels=True)
+        except Exception:
+            continue
+        if getattr(ds, "SOPClassUID", "") != SOP_RAW_DATA:
+            continue
+        desc = getattr(ds, "SeriesDescription", "").lower()
+        if target in desc:
+            return series_dir
+    return None
+
+
+def _rebin_patient_series(series_dir: Path, out_h5: Path, out_zgrid: Path,
+                          out_geom: Path, *,
+                          dv_rebinned: float, n_jobs: int) -> dict:
+    """Run the full curved->flat->fan pipeline on one DICOM-CT-PD series.
+
+    Writes `out_h5` (key "sino", shape (rotview, nu, nz) float32),
+    `out_zgrid` (npy: per-output-slice z positions),
+    `out_geom` (json: geometry dict — pydicom-derived).
+
+    Returns a small status dict for the manifest entry.
+    """
+    # Import here so the top-level fetch path doesn't drag in joblib/pydicom
+    # at module-import time on non-rebinning runs.
+    import h5py  # type: ignore
+
+    REPO = Path(__file__).resolve().parents[1]
+    if str(REPO) not in sys.path:
+        sys.path.insert(0, str(REPO))
+    from ddssl_ldct.helix2fan import (
+        read_dicom_ctpd, rebin_curved_to_flat, rebin_helical_to_fan,
+    )
+
+    print(f"[rebin] reading {series_dir}", flush=True)
+    proj_curved, geom = read_dicom_ctpd(series_dir)
+    print(f"[rebin]   proj_curved shape={proj_curved.shape} "
+          f"sdd={geom['sdd']:.3f} sod={geom['sod']:.3f} du={geom['du']:.4f} "
+          f"dv={geom['dv']:.4f} total_rot={geom['total_rotations']:.3f}",
+          flush=True)
+
+    print(f"[rebin]   curved -> flat (n_jobs={n_jobs}) ...", flush=True)
+    proj_flat = rebin_curved_to_flat(proj_curved, geom, n_jobs=n_jobs)
+    del proj_curved  # free ~3 GB
+
+    z_pos = np.asarray(geom["z_positions"], dtype=np.float64)
+    z_min, z_max = float(np.nanmin(z_pos)), float(np.nanmax(z_pos))
+    pitch = abs(float(geom["pitch_mm"]))
+    # Output covers (z_min + 0.5*pitch, z_max - 0.5*pitch) so every output
+    # slice has a full helical window of contributing readouts.
+    z_start = z_min + 0.5 * pitch
+    z_end = z_max - 0.5 * pitch
+    nz_rebinned = max(1, int(np.floor((z_end - z_start) / dv_rebinned)) + 1)
+    print(f"[rebin]   helical -> fan SSR (rotview~{int(round(proj_flat.shape[0] / geom['total_rotations']))}, "
+          f"nz={nz_rebinned}, dv_rebinned={dv_rebinned})", flush=True)
+    rebinned, z_grid = rebin_helical_to_fan(
+        proj_flat, geom,
+        dv_rebinned=dv_rebinned,
+        nz_rebinned=nz_rebinned,
+        z_start=z_start,
+        n_jobs=n_jobs,
+    )
+    del proj_flat
+
+    out_h5.parent.mkdir(parents=True, exist_ok=True)
+    print(f"[rebin]   writing {out_h5} shape={rebinned.shape}", flush=True)
+    with h5py.File(out_h5, "w", libver="latest") as f:
+        f.create_dataset("sino", data=rebinned, dtype="float32",
+                         chunks=(1, rebinned.shape[1], rebinned.shape[2]),
+                         compression="gzip", compression_opts=1)
+    np.save(out_zgrid, z_grid)
+    # geometry sidecar: strip the large per-readout arrays out of the dict
+    # before json-encoding.
+    geom_json = {k: (v if not isinstance(v, np.ndarray) else None)
+                 for k, v in geom.items()}
+    geom_json["n_proj"] = int(geom["n_proj"])
+    geom_json["rotview"] = int(rebinned.shape[0])
+    geom_json["nu"] = int(rebinned.shape[1])
+    geom_json["nz_rebinned"] = int(rebinned.shape[2])
+    geom_json["dv_rebinned"] = float(dv_rebinned)
+    geom_json["z_start"] = float(z_start)
+    out_geom.write_text(json.dumps(geom_json, indent=2, default=float))
+    return {
+        "series": str(series_dir),
+        "h5": str(out_h5),
+        "rotview": int(rebinned.shape[0]),
+        "nu": int(rebinned.shape[1]),
+        "nz": int(rebinned.shape[2]),
+        "z_start": float(z_start),
+        "z_step": float(dv_rebinned),
+    }
+
+
+def stage_h5_with_sino(raw_dir: Path, staged_dir: Path, *,
+                       dv_rebinned: float = 1.0, n_jobs: int = -1) -> dict:
+    """Iterate Wagner patients, rebin Full + Low dose projection series.
+
+    Writes per-patient files into `staged_dir`:
+      L<NNN>_sino_fulldose.h5    (key "sino", (rotview, nu, nz))
+      L<NNN>_sino_fulldose_z_grid.npy
+      L<NNN>_sino_fulldose_geometry.json
+      ... and the lowdose triple.
+    """
+    staged_dir.mkdir(parents=True, exist_ok=True)
+    report: dict = {"patients": {}}
+    for pid in WAGNER_PATIENT_IDS:
+        pdir = raw_dir / pid
+        if not pdir.exists():
+            print(f"[rebin] {pid}: no raw/ dir, skip.", flush=True)
+            continue
+        report["patients"][pid] = {}
+        for kind, desc in (("fulldose", "full dose projections"),
+                           ("lowdose",  "low dose projections")):
+            series_dir = _find_projection_series(pdir, desc)
+            if series_dir is None:
+                print(f"[rebin] {pid}: no '{desc}' series, skip.", flush=True)
+                continue
+            out_h5 = staged_dir / f"{pid}_sino_{kind}.h5"
+            out_z = staged_dir / f"{pid}_sino_{kind}_z_grid.npy"
+            out_g = staged_dir / f"{pid}_sino_{kind}_geometry.json"
+            if out_h5.exists():
+                print(f"[rebin] {pid}/{kind}: {out_h5.name} exists, skip.",
+                      flush=True)
+                continue
+            try:
+                info = _rebin_patient_series(
+                    series_dir, out_h5, out_z, out_g,
+                    dv_rebinned=dv_rebinned, n_jobs=n_jobs,
+                )
+                report["patients"][pid][kind] = info
+            except Exception as e:  # pragma: no cover  (logged + skip)
+                print(f"[rebin] {pid}/{kind} FAILED: {e}", flush=True)
+                report["patients"][pid][kind] = {"error": str(e)}
+    (staged_dir / "rebin_manifest.json").write_text(
+        json.dumps(report, indent=2, default=str)
+    )
+    return report
+
+
+# -----------------------------------------------------------------------------
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--data-root", default=None)
     p.add_argument("--skip-download", action="store_true")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--force", action="store_true",
+                   help="Re-stage even if staged/manifest.json exists "
+                        "(overwrites the existing HDF5 files in place).")
+    p.add_argument("--rebin-only", action="store_true",
+                   help="Skip download + truth-staging; only run the "
+                        "helix2fan rebinning over the existing raw/ tree "
+                        "into <data-root>/mayo_ldct/staged_helix2fan/.")
+    p.add_argument("--dv-rebinned", type=float, default=1.0,
+                   help="Axial output slice spacing in mm (default 1.0).")
+    p.add_argument("--n-jobs", type=int, default=-1,
+                   help="joblib n_jobs for the rebinning passes (default -1).")
     args = p.parse_args(argv)
 
     root = data_root(args.data_root)
     challenge_dir = root / CHALLENGE
     raw_dir = challenge_dir / "raw"
     staged_dir = challenge_dir / "staged"
+    staged_sino_dir = challenge_dir / "staged_helix2fan"
 
     print(f"[plan] AGENT4CT_DATA = {root}")
     print(f"[plan] subset = Wagner 10 patients = {WAGNER_PATIENT_IDS}")
@@ -300,6 +463,17 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[plan] estimated raw  ~ 40 GB at {raw_dir}")
     print(f"[plan] estimated stage ~ 150 GB at {staged_dir} (rebinned)")
     if args.dry_run:
+        return 0
+
+    if args.rebin_only:
+        if not raw_dir.exists():
+            print(f"--rebin-only: raw/ tree not found at {raw_dir}",
+                  file=sys.stderr)
+            return 1
+        print(f"[rebin] mode=--rebin-only target={staged_sino_dir}")
+        stage_h5_with_sino(raw_dir, staged_sino_dir,
+                           dv_rebinned=args.dv_rebinned,
+                           n_jobs=args.n_jobs)
         return 0
 
     assert_budget(root, need_gb=200.0)
@@ -315,8 +489,8 @@ def main(argv: list[str] | None = None) -> int:
             print("--skip-download but raw/ is empty.", file=sys.stderr)
             return 1
 
-    if staged_dir.exists() and (staged_dir / "manifest.json").exists():
-        print(f"[stage] {staged_dir}/manifest.json present — skip.")
+    if staged_dir.exists() and (staged_dir / "manifest.json").exists() and not args.force:
+        print(f"[stage] {staged_dir}/manifest.json present — pass --force to re-stage.")
     else:
         splits = stage_h5(raw_per_patient, staged_dir)
         write_manifest(
