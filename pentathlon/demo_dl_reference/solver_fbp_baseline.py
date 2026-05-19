@@ -80,7 +80,10 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     R_full = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
         val_ref = R_full.fbp(val_clean)   # reference (noiseless FBP)
-        pred = torch.clamp(R_full.fbp(val_noisy), min=0.0)  # our "recon" = standard FBP
+        # CONVENTIONS rule 2: clamp the solver output to [display_min,
+        # display_max] inside the solver itself — not just before the metric.
+        pred = torch.clamp(R_full.fbp(val_noisy),
+                            min=cfg["display_min"], max=cfg["display_max"])
     train_time = time.time() - t0
 
     # FBP is its own baseline; intensity-calibrate it once and report it as both.

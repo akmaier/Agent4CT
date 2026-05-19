@@ -257,7 +257,11 @@ def wu_2015_reconstruct(proj: PyronnFanBeamProjector,
             residual_img.abs() - soft_thresh, min=0.0)
         # Merge
         g = g + residual_img
-    return g
+    # CONVENTIONS rule 2: clamp the solver output non-negative inside the
+    # algorithm — soft-thresholded residuals can still drive g below 0 in
+    # a few background pixels, which then biases the bg-mean of the
+    # downstream intensity-calibration step (rule 4).
+    return g.clamp_min(0.0)
 
 
 # ---------------------------------------------------------------------------
