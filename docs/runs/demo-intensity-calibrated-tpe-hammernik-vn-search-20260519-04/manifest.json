@@ -1,0 +1,10 @@
+{
+  "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-04",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-intensity-calibrated-tpe-hammernik-vn-search",
+  "started": "2026-05-19T11:02:29Z",
+  "agent": "hammernik-vn-search-tpe-calibrated",
+  "model": "optuna-tpe",
+  "status": "running",
+  "notes": "intensity-calibrated TPE (CONVENTIONS rule 4)"
+}

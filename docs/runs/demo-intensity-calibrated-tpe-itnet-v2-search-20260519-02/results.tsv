@@ -1,0 +1,14 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.893825	0.363134	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=6, pretrain_lr=0.0004177, itnet_k=7, itnet_alpha_init=0.0015883, residual_learning=False
+2		0.29475	0	discard	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=3, pretrain_lr=0.002566, itnet_k=8, itnet_alpha_init=0.0011201, residual_learning=True
+3		0.567823	0	discard	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=4, pretrain_lr=0.00041992, itnet_k=4, itnet_alpha_init=0.013714, residual_learning=True
+4		0.674051	0.217978	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=3, pretrain_lr=0.00022453, itnet_k=3, itnet_alpha_init=0.0015687, residual_learning=True
+5		0.58665	0	discard	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=5, pretrain_lr=0.00078554, itnet_k=8, itnet_alpha_init=0.04166, residual_learning=True
+6		0.922666	0.446392	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=8, pretrain_lr=0.00014147, itnet_k=6, itnet_alpha_init=0.0042075, residual_learning=False
+7		0.917106	0.439799	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=8, pretrain_lr=0.00010615, itnet_k=5, itnet_alpha_init=0.0057987, residual_learning=False
+8		0.818246	0.304307	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=8, pretrain_lr=0.0018771, itnet_k=6, itnet_alpha_init=0.0051197, residual_learning=False
+16		0.910569	0.452273	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=7, pretrain_lr=0.00012996, itnet_k=4, itnet_alpha_init=0.0024127, residual_learning=False
+17		0.895446	0.470509	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=7, pretrain_lr=0.0001709, itnet_k=3, itnet_alpha_init=0.0020545, residual_learning=False
+18		0.919213	0.474312	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=5, pretrain_lr=0.00031128, itnet_k=3, itnet_alpha_init=0.002221, residual_learning=False
+19		0.755338	0.158845	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=5, pretrain_lr=0.00034166, itnet_k=3, itnet_alpha_init=0.0010062, residual_learning=True
+20		0.918239	0.476698	keep	architecture	itnet-v2-search-tpe-calibrated	random-search	itnet-v2-search-tpe-calibrated: pretrain_epochs=4, pretrain_lr=0.00063492, itnet_k=3, itnet_alpha_init=0.0021392, residual_learning=False

@@ -1,1 +1,2 @@
 iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+14		0.474525	0.393927	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=9, lr=0.00055161, batch_size=20, unet_c=8, itnet_k=4, alpha_init=0.0013867
