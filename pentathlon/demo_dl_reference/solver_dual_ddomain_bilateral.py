@@ -173,8 +173,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
     # negative outliers in the raw pred would otherwise pull the bg mean
     # negative inside evaluate_calibrated and bias the linear calibration.
-    pred = pred.clamp(cfg["display_min"], cfg["display_max"])
-    ld_fbp = torch.clamp(ld_fbp, cfg["display_min"], cfg["display_max"])
+    pred = pred.clamp_min(0.0)
+    ld_fbp = ld_fbp.clamp_min(0.0)
     metrics = evaluate_calibrated(
         pred, val_ph, baseline=ld_fbp,
         display_min=cfg["display_min"], display_max=cfg["display_max"])

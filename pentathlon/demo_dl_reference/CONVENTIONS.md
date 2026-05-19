@@ -37,24 +37,42 @@ use the equivalent per-image seed: `cfg["seed"] + 1000 + i`.
 10_000` so the simulated Poisson + Gaussian noise realisation is
 identical across solvers.
 
-### 2. Clamp predictions to `[display_min, display_max]` before metrics
+### 2. Clamp the algorithm output non-negative; let the metric apply the display range
 
 ```python
-pred = pred.clamp(cfg["display_min"], cfg["display_max"])     # [0, 0.05] in mu mm^-1
+# Solver-internal output: physical non-negativity (μ ≥ 0)
+pred = pred.clamp_min(0.0)
+val_fbp = val_fbp.clamp_min(0.0)
+
+# evaluate_calibrated handles the display-range bound internally:
+metrics = evaluate_calibrated(pred, val_ph, baseline=val_fbp,
+                              display_min=cfg["display_min"],
+                              display_max=cfg["display_max"])
 ```
 
-Reasons:
-- The truth phantoms live in `[0, 0.05]`. Negative or `>0.05` pixels in
-  the prediction give misleading SSIM/PSNR/RMSE numbers and inflate
-  headroom artificially in either direction.
-- The FBP baseline reference is computed against the same clamp:
-  `val_fbp = torch.clamp(proj.fbp(val_noisy), min=0)`. If the candidate
-  recon doesn't clamp, the baseline_rmse / candidate_rmse ratio that
-  defines `headroom` is biased.
+Two layers of clamping, separating physical and display concerns:
+
+1. **Inside the solver** (`pred.clamp_min(0.0)`): enforce **physical
+   non-negativity** of attenuation coefficients. No material has μ < 0.
+   This is a property of the algorithm output, not the dataset.
+2. **Inside `evaluate_calibrated`** (the post-calibration clamp to
+   `[display_min, display_max]`): enforce the **dataset / display-range
+   bound** *after* the linear two-point calibration has fit the recon's
+   intensity bias to the truth. `display_min` and `display_max` are
+   properties of the *dataset* (where the truth μ values live and what
+   colormap range makes sense for visualisation), not the algorithm —
+   do not bake them into the solver.
+
+Why not clamp at `display_max` inside the solver: it artificially
+compresses the output before scoring, biasing `baseline_rmse` downward
+and shrinking `headroom` for every candidate solver. The candidate
+recon shouldn't need to know that the dataset happens to top out at
+0.05 μ mm⁻¹.
 
 The clamp goes **after the network output**, just before metric
-computation. Don't insert it inside the optimisation loop (kills
-gradients — see the NAF v1 / Diffusion v1 collapse bugs).
+computation. Don't insert a hard clamp inside the *training* loop —
+that kills gradients (NAF v1 / Diffusion v1 collapse bugs). For
+training-time non-negativity see Rule 5.
 
 ### 3. Canonical reference baselines
 

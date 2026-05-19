@@ -80,17 +80,20 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     R_full = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
         val_ref = R_full.fbp(val_clean)   # reference (noiseless FBP)
-        # CONVENTIONS rule 2: clamp the solver output to [display_min,
-        # display_max] inside the solver itself — not just before the metric.
-        pred = torch.clamp(R_full.fbp(val_noisy),
-                            min=cfg["display_min"], max=cfg["display_max"])
+        # Physical non-negativity (μ ≥ 0 for any real material). Do NOT
+        # clamp at display_max here — display_max is a dataset/colormap
+        # property, not an algorithm property; clamping FBP at display_max
+        # would artificially compress its output and bias baseline_rmse
+        # downward, which would shrink `headroom` for every candidate
+        # solver. The display-range bound is applied by evaluate_calibrated.
+        pred = R_full.fbp(val_noisy).clamp_min(0.0)
     train_time = time.time() - t0
 
     # FBP is its own baseline; intensity-calibrate it once and report it as both.
     # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
     # negative outliers in the raw pred would otherwise pull the bg mean
     # negative inside evaluate_calibrated and bias the linear calibration.
-    pred = pred.clamp(cfg["display_min"], cfg["display_max"])
+    pred = pred.clamp_min(0.0)
     metrics = evaluate_calibrated(
         pred, val_ph, baseline=pred,
         display_min=cfg["display_min"], display_max=cfg["display_max"])
