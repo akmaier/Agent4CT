@@ -84,6 +84,10 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     train_time = time.time() - t0
 
     # FBP is its own baseline; intensity-calibrate it once and report it as both.
+    # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
+    # negative outliers in the raw pred would otherwise pull the bg mean
+    # negative inside evaluate_calibrated and bias the linear calibration.
+    pred = pred.clamp(cfg["display_min"], cfg["display_max"])
     metrics = evaluate_calibrated(
         pred, val_ph, baseline=pred,
         display_min=cfg["display_min"], display_max=cfg["display_max"])

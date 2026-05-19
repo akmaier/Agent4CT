@@ -137,10 +137,19 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
                            dpi: int = 80) -> None:
     """Write a standardised comparison.png to `out_path`.
 
+    Layout: 4 columns × `n_show` rows.
+      Col 1: ground truth   (gray, [display_min, display_max])
+      Col 2: FBP baseline   (gray, same range)
+      Col 3: solver recon   (gray, same range) + suptitle with solver label
+      Col 4: difference recon - truth (bwr, symmetric ±(L/2))
+    Each row's third column also reports per-scene PSNR / SSIM / RMSE
+    computed against the ground truth (with the standard data_range), so
+    the figure stays self-describing alongside the headline metrics in
+    result.json. The first row additionally shows the overall headroom in
+    the solver-column title.
+
     `truth`, `fbp`, `recon` may be (B,1,H,W) or (B,H,W); we take the first
-    `n_show` scenes. Difference image uses a symmetric bwr colormap with
-    range ±(display_max-display_min)/2 so over- and under-estimates are
-    visually equivalent.
+    `n_show` scenes.
     """
     import matplotlib
     matplotlib.use("Agg")
@@ -153,26 +162,50 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
             x = x[0]
         return x.detach().cpu().numpy()
 
+    def _per_scene_metrics(rec_t: torch.Tensor, gt_t: torch.Tensor) -> tuple[float, float, float]:
+        # Convert single-scene 2D tensors to (1, 1, H, W) for psnr/ssim.
+        r = rec_t.view(1, 1, *rec_t.shape[-2:]).float()
+        g = gt_t.view(1, 1, *gt_t.shape[-2:]).float()
+        dr = display_max - display_min
+        try:
+            ps = float(psnr(r, g, data_range=dr).cpu())
+        except Exception:
+            ps = float("nan")
+        try:
+            ss = float(ssim(r, g, data_range=dr).cpu())
+        except Exception:
+            ss = float("nan")
+        rm = float(((r - g) ** 2).mean().sqrt().cpu())
+        return ps, ss, rm
+
     n = min(n_show, truth.shape[0])
     fig, axes = plt.subplots(n, 4, figsize=(12, 3 * n))
     if n == 1:
         axes = axes[None, :]
     diff_lim = (display_max - display_min) / 2.0
-    title_extra = f"  (hr={headroom:.3f})" if headroom is not None else ""
+    if headroom is not None:
+        fig.suptitle(f"{solver_label}   overall headroom = {headroom:.3f}",
+                     fontsize=11, y=1.0)
     for r in range(n):
-        gt   = _arr(truth, r)
-        ifbp = _arr(fbp,   r)
-        irec = _arr(recon, r)
+        gt_t  = truth[r] if truth[r].dim() == 2 else truth[r, 0] if truth[r].dim() == 3 else truth[r].squeeze()
+        fb_t  = fbp[r] if fbp[r].dim() == 2 else fbp[r, 0] if fbp[r].dim() == 3 else fbp[r].squeeze()
+        rc_t  = recon[r] if recon[r].dim() == 2 else recon[r, 0] if recon[r].dim() == 3 else recon[r].squeeze()
+        gt   = gt_t.detach().cpu().numpy()
+        ifbp = fb_t.detach().cpu().numpy()
+        irec = rc_t.detach().cpu().numpy()
         diff = irec - gt
+        rec_psnr, rec_ssim, rec_rmse = _per_scene_metrics(rc_t, gt_t)
+        fbp_psnr, fbp_ssim, fbp_rmse = _per_scene_metrics(fb_t, gt_t)
         for c, (img, name, vmin, vmax, cmap) in enumerate([
-            (gt,   "truth",                 display_min, display_max, "gray"),
-            (ifbp, "FBP",                   display_min, display_max, "gray"),
-            (irec, f"{solver_label}{title_extra if r == 0 else ''}",
-                                            display_min, display_max, "gray"),
-            (diff, f"diff (rec - truth)",   -diff_lim,    diff_lim,    "bwr"),
+            (gt,   "truth",                            display_min, display_max, "gray"),
+            (ifbp, f"FBP\nPSNR={fbp_psnr:.1f} SSIM={fbp_ssim:.3f} RMSE={fbp_rmse:.4f}",
+                                                       display_min, display_max, "gray"),
+            (irec, f"{solver_label}\nPSNR={rec_psnr:.1f} SSIM={rec_ssim:.3f} RMSE={rec_rmse:.4f}",
+                                                       display_min, display_max, "gray"),
+            (diff, "diff (rec - truth)",               -diff_lim,    diff_lim,    "bwr"),
         ]):
             axes[r, c].imshow(img, cmap=cmap, vmin=vmin, vmax=vmax)
-            axes[r, c].set_title(name); axes[r, c].axis("off")
+            axes[r, c].set_title(name, fontsize=9); axes[r, c].axis("off")
     plt.tight_layout()
     plt.savefig(str(out_path), dpi=dpi, bbox_inches="tight")
     plt.close(fig)

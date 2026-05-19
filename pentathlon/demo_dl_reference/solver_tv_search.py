@@ -188,6 +188,11 @@ def main(out_dir: Path, cfg_override: dict | None = None) -> dict:
     pred = tv_reconstruction(proj, val_noisy, val_fbp, cfg, device)
     train_time = time.time() - t0
 
+    # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
+    # negative outliers in the raw pred would otherwise pull the bg mean
+    # negative inside evaluate_calibrated and bias the linear calibration.
+    pred = pred.clamp(cfg["display_min"], cfg["display_max"])
+    val_fbp = torch.clamp(val_fbp, cfg["display_min"], cfg["display_max"])
     metrics = evaluate_calibrated(
         pred, val_ph, baseline=val_fbp,
         display_min=cfg["display_min"], display_max=cfg["display_max"])
@@ -198,6 +203,11 @@ def main(out_dir: Path, cfg_override: dict | None = None) -> dict:
     headroom = metrics["headroom"]
 
     # Secondary: against noiseless FBP (practical denoising metric, also calibrated)
+    # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
+    # negative outliers in the raw pred would otherwise pull the bg mean
+    # negative inside evaluate_calibrated and bias the linear calibration.
+    pred = pred.clamp(cfg["display_min"], cfg["display_max"])
+    val_fbp = torch.clamp(val_fbp, cfg["display_min"], cfg["display_max"])
     metrics_fbp = evaluate_calibrated(
         pred, val_ref,
         display_min=cfg["display_min"], display_max=cfg["display_max"])

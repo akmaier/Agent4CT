@@ -142,6 +142,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     )
     train_time = time.time() - t0
 
+    # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
+    # negative outliers in the raw pred would otherwise pull the bg mean
+    # negative inside evaluate_calibrated and bias the linear calibration.
+    pred = pred.clamp(cfg["display_min"], cfg["display_max"])
+    fbp_init = torch.clamp(fbp_init, cfg["display_min"], cfg["display_max"])
     metrics = evaluate_calibrated(
         pred, val_ph, baseline=fbp_init,
         display_min=cfg["display_min"], display_max=cfg["display_max"])

@@ -418,6 +418,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # Intensity-calibrated evaluation (CONVENTIONS.md rule 4): two-point
     # linear calibration of BOTH pred and baseline against truth before any
     # PSNR/SSIM/RMSE so the leaderboard is comparable across solvers.
+    # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
+    # negative outliers in the raw pred would otherwise pull the bg mean
+    # negative inside evaluate_calibrated and bias the linear calibration.
+    pred = pred.clamp(cfg["display_min"], cfg["display_max"])
+    val_fbp = torch.clamp(val_fbp, cfg["display_min"], cfg["display_max"])
     metrics = evaluate_calibrated(
         pred, val_ph_4d, baseline=val_fbp,
         display_min=cfg["display_min"], display_max=cfg["display_max"])
