@@ -5,6 +5,17 @@
   "started": "2026-05-19T13:16:23Z",
   "agent": "uswin-search-tpe-calibrated",
   "model": "optuna-tpe",
-  "status": "running",
-  "notes": "intensity-calibrated TPE (CONVENTIONS rule 4)"
+  "status": "done",
+  "notes": "intensity-calibrated TPE (CONVENTIONS rule 4)",
+  "finished": "2026-05-19T14:24:05Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 14,
+    "lr": 0.0005414580915715926,
+    "batch_size": 4,
+    "uswin_c": 24,
+    "swin_window": 16,
+    "swin_heads": 2
+  },
+  "best_headroom": 0.49960491003347496
 }

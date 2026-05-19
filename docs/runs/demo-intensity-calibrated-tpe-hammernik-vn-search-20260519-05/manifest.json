@@ -5,6 +5,19 @@
   "started": "2026-05-19T13:16:22Z",
   "agent": "hammernik-vn-search-tpe-calibrated",
   "model": "optuna-tpe",
-  "status": "running",
-  "notes": "intensity-calibrated TPE (CONVENTIONS rule 4)"
+  "status": "done",
+  "notes": "intensity-calibrated TPE (CONVENTIONS rule 4)",
+  "finished": "2026-05-19T16:25:13Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 13,
+    "lr": 0.00024022109407111837,
+    "batch_size": 2,
+    "vn_T": 3,
+    "vn_n_filters": 16,
+    "vn_kernel": 7,
+    "vn_lambda_init": 0.0008033985851970616,
+    "vn_init": "fbp"
+  },
+  "best_headroom": 0.36752031547137765
 }

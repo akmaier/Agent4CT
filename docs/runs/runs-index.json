@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-19T15:50:00Z",
+  "updated": "2026-05-19T17:00:00Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -747,14 +747,50 @@
       "model": "random-search"
     },
     {
+      "slug": "demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T09:21:40Z",
+      "status": "running",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "diff-recon-dcstep-constrained-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T16:25:14Z",
+      "status": "running",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "diff-recon-dcstep-constrained-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
       "slug": "demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260519-01",
       "short_id": "20260519-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-19T07:49:18Z",
       "status": "running",
-      "n_iterations": 2,
+      "n_iterations": 3,
       "best_score": null,
-      "best_headroom": 0.470407,
+      "best_headroom": 0.484438,
+      "agent": "diff-recon-dcstep-unconstrained-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T16:12:06Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.76372,
+      "best_headroom": 0.468398,
       "agent": "diff-recon-dcstep-unconstrained-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
@@ -764,9 +800,33 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-19T07:07:44Z",
       "status": "running",
-      "n_iterations": 4,
+      "n_iterations": 5,
       "best_score": null,
       "best_headroom": 0.382603,
+      "agent": "dual-domain-bf-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-dual-domain-bf-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T12:38:41Z",
+      "status": "running",
+      "n_iterations": 0,
+      "best_score": null,
+      "best_headroom": null,
+      "agent": "dual-domain-bf-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-dual-domain-bf-search-20260519-03",
+      "short_id": "20260519-03",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T15:22:04Z",
+      "status": "running",
+      "n_iterations": 18,
+      "best_score": 0.797543,
+      "best_headroom": 0.397141,
       "agent": "dual-domain-bf-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
@@ -776,9 +836,33 @@
       "challenge": "dl_sparse_view",
       "started": "2026-05-19T06:59:22Z",
       "status": "running",
-      "n_iterations": 10,
+      "n_iterations": 11,
       "best_score": null,
       "best_headroom": 0.384085,
+      "agent": "dual-domain-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-dual-domain-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T12:25:43Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.611224,
+      "best_headroom": 0.405061,
+      "agent": "dual-domain-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-dual-domain-search-20260519-03",
+      "short_id": "20260519-03",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T14:43:16Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.725727,
+      "best_headroom": 0.417198,
       "agent": "dual-domain-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
@@ -795,78 +879,6 @@
       "model": "optuna-tpe"
     },
     {
-      "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-01",
-      "short_id": "20260519-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T06:05:35Z",
-      "status": "done",
-      "n_iterations": 10,
-      "best_score": null,
-      "best_headroom": 0.355445,
-      "agent": "hammernik-vn-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260519-01",
-      "short_id": "20260519-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T06:49:30Z",
-      "status": "done",
-      "n_iterations": 1,
-      "best_score": null,
-      "best_headroom": 0.0,
-      "agent": "itnet-v2-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-01",
-      "short_id": "20260519-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T06:05:36Z",
-      "status": "done",
-      "n_iterations": 3,
-      "best_score": null,
-      "best_headroom": 0.462894,
-      "agent": "itnet-v3-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-tv-search-20260519-01",
-      "short_id": "20260519-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T07:12:31Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": null,
-      "best_headroom": 0.41797,
-      "agent": "tv-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-01",
-      "short_id": "20260519-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T06:05:35Z",
-      "status": "done",
-      "n_iterations": 2,
-      "best_score": null,
-      "best_headroom": 0.463028,
-      "agent": "uswin-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-wu-search-20260519-01",
-      "short_id": "20260519-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T07:46:08Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": null,
-      "best_headroom": 0.246629,
-      "agent": "wu-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
       "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260519-02",
       "short_id": "20260519-02",
       "challenge": "dl_sparse_view",
@@ -879,66 +891,6 @@
       "model": "optuna-tpe"
     },
     {
-      "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-02",
-      "short_id": "20260519-02",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T10:07:28Z",
-      "status": "running",
-      "n_iterations": 1,
-      "best_score": 0.56231,
-      "best_headroom": 0.272225,
-      "agent": "hammernik-vn-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-02",
-      "short_id": "20260519-02",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T10:07:28Z",
-      "status": "running",
-      "n_iterations": 1,
-      "best_score": 0.474525,
-      "best_headroom": 0.393927,
-      "agent": "itnet-v3-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-02",
-      "short_id": "20260519-02",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T10:07:28Z",
-      "status": "running",
-      "n_iterations": 1,
-      "best_score": 0.722338,
-      "best_headroom": 0.47,
-      "agent": "uswin-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-dual-domain-bf-search-20260519-02",
-      "short_id": "20260519-02",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T12:38:41Z",
-      "status": "running",
-      "n_iterations": 0,
-      "best_score": null,
-      "best_headroom": null,
-      "agent": "dual-domain-bf-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-dual-domain-search-20260519-02",
-      "short_id": "20260519-02",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T12:25:43Z",
-      "status": "running",
-      "n_iterations": 1,
-      "best_score": 0.611224,
-      "best_headroom": 0.405061,
-      "agent": "dual-domain-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
       "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260519-03",
       "short_id": "20260519-03",
       "challenge": "dl_sparse_view",
@@ -948,6 +900,42 @@
       "best_score": null,
       "best_headroom": null,
       "agent": "hammernik-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260519-04",
+      "short_id": "20260519-04",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T14:01:32Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.745043,
+      "best_headroom": 0.371795,
+      "agent": "hammernik-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T06:05:35Z",
+      "status": "done",
+      "n_iterations": 10,
+      "best_score": null,
+      "best_headroom": 0.355445,
+      "agent": "hammernik-vn-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T10:07:28Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.56231,
+      "best_headroom": 0.272225,
+      "agent": "hammernik-vn-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
     {
@@ -975,6 +963,30 @@
       "model": "optuna-tpe"
     },
     {
+      "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-05",
+      "short_id": "20260519-05",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T13:16:22Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.736052,
+      "best_headroom": 0.36752,
+      "agent": "hammernik-vn-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T06:49:30Z",
+      "status": "done",
+      "n_iterations": 1,
+      "best_score": null,
+      "best_headroom": 0.0,
+      "agent": "itnet-v2-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
       "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260519-02",
       "short_id": "20260519-02",
       "challenge": "dl_sparse_view",
@@ -984,6 +996,42 @@
       "best_score": 0.922666,
       "best_headroom": 0.476698,
       "agent": "itnet-v2-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260519-03",
+      "short_id": "20260519-03",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T14:24:06Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.92773,
+      "best_headroom": 0.474245,
+      "agent": "itnet-v2-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T06:05:36Z",
+      "status": "done",
+      "n_iterations": 3,
+      "best_score": null,
+      "best_headroom": 0.462894,
+      "agent": "itnet-v3-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T10:07:28Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.474525,
+      "best_headroom": 0.393927,
+      "agent": "itnet-v3-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
     {
@@ -1011,6 +1059,66 @@
       "model": "optuna-tpe"
     },
     {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-05",
+      "short_id": "20260519-05",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T13:16:23Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.918431,
+      "best_headroom": 0.500461,
+      "agent": "itnet-v3-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-tv-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T07:12:31Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": null,
+      "best_headroom": 0.41797,
+      "agent": "tv-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-tv-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T15:35:30Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.834361,
+      "best_headroom": 0.41797,
+      "agent": "tv-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T06:05:35Z",
+      "status": "done",
+      "n_iterations": 2,
+      "best_score": null,
+      "best_headroom": 0.463028,
+      "agent": "uswin-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T10:07:28Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.722338,
+      "best_headroom": 0.47,
+      "agent": "uswin-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
       "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-03",
       "short_id": "20260519-03",
       "challenge": "dl_sparse_view",
@@ -1035,39 +1143,39 @@
       "model": "optuna-tpe"
     },
     {
-      "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260519-05",
-      "short_id": "20260519-05",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T13:16:22Z",
-      "status": "running",
-      "n_iterations": 6,
-      "best_score": 0.696469,
-      "best_headroom": 0.362526,
-      "agent": "hammernik-vn-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260519-05",
+      "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-05",
       "short_id": "20260519-05",
       "challenge": "dl_sparse_view",
       "started": "2026-05-19T13:16:23Z",
       "status": "done",
       "n_iterations": 20,
-      "best_score": 0.918431,
-      "best_headroom": 0.500461,
-      "agent": "itnet-v3-search-tpe-calibrated",
-      "model": "optuna-tpe"
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-uswin-search-20260519-05",
-      "short_id": "20260519-05",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-19T13:16:23Z",
-      "status": "running",
-      "n_iterations": 19,
       "best_score": 0.889083,
       "best_headroom": 0.499605,
       "agent": "uswin-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-wu-search-20260519-01",
+      "short_id": "20260519-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T07:46:08Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": null,
+      "best_headroom": 0.246629,
+      "agent": "wu-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-wu-search-20260519-02",
+      "short_id": "20260519-02",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-19T16:09:06Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.553575,
+      "best_headroom": 0.238264,
+      "agent": "wu-search-tpe-calibrated",
       "model": "optuna-tpe"
     }
   ]
