@@ -51,7 +51,11 @@ SOLVERS = {
         "space": {
             "epochs":         (5, 15, "int"),
             "lr":             (1e-4, 2e-3, "log"),
-            "batch_size":     ([10, 20, 40], "choice"),
+            # batch_size capped after the calibrated TPE batch (-04) OOM'd
+            # on the Q8000-24GB at bs=10. The Rule-5 non-negativity penalty
+            # holds an extra (pred.clamp(max=0))^2 activation tensor on the
+            # graph, adding ~25% memory pressure to the supervised loss.
+            "batch_size":     ([2, 4, 6], "choice"),
             "unet_c":         ([8, 12, 16], "choice"),
             "itnet_k":        ([2, 3, 4], "choice"),
             "alpha_init":     (1e-3, 1e-2, "log"),

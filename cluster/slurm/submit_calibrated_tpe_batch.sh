@@ -36,10 +36,16 @@ for entry in "${JOBS[@]}"; do
   IFS=':' read -r SOLVER H M S MEM GPU <<<"$entry"
   WALL="${H}:${M}:${S}"
   JOBNAME="cal-tpe-${SOLVER}"
+  # IMPORTANT: must include the "#SBATCH " prefix here. A bare
+  # `--gres=gpu:1` line is a non-comment, non-blank line and Slurm
+  # treats it as the start of the script body, silently dropping
+  # every following #SBATCH directive (mem, time, output, error).
+  # That was the bug behind the calibrated-TPE batch logs landing
+  # in /home/maier/ and the itnet_v3 OOM (no --mem=24G honored).
   if [ "$GPU" = "1" ]; then
-    GRES="--gres=gpu:1"
+    GRES_LINE="#SBATCH --gres=gpu:1"
   else
-    GRES=""
+    GRES_LINE="#SBATCH --comment=cpu-only"
   fi
   cat > /tmp/_cal_$$.sbatch <<EOF
 #!/bin/bash
@@ -47,7 +53,7 @@ for entry in "${JOBS[@]}"; do
 #SBATCH --partition=main
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
-$GRES
+$GRES_LINE
 #SBATCH --exclude=lme49,lme53
 #SBATCH --mem=$MEM
 #SBATCH --time=$WALL
