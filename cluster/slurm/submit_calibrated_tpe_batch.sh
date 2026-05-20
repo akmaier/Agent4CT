@@ -27,7 +27,7 @@ JOBS=(
   "diffusion_recon_dcstep_unconstrained:06:00:00:24G:1"
   "diffusion_recon_dcstep_constrained:06:00:00:24G:1"
   "ram_zeroshot:01:30:00:24G:1"
-  "naf:08:00:00:24G:1"
+  "naf:16:00:00:24G:1"   # 8h TIMEOUT on previous run; bump to 16h
 )
 
 mkdir -p $REPO/results/slurm

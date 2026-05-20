@@ -411,7 +411,13 @@ def load_val_split(kind: str, split: str, n: int, *, device,
         truth_t = truth_t.unsqueeze(1)
     if sino_t.dim() == 3:    # (N, A, D) -> (N, 1, A, D)
         sino_t = sino_t.unsqueeze(1)
-    return truth_t, None, sino_t
+    # Alias `clean = noisy` so downstream solvers that compute a
+    # "noiseless reference" via `proj.fbp(val_clean)` for the comparison
+    # figure don't NPE on real-sino datasets. There is no separate clean
+    # measurement available; the reference panel will show FBP(real_sino)
+    # twice. The metric pipeline only uses truth and pred — this alias
+    # never affects scores.
+    return truth_t, sino_t.clone(), sino_t
 
 
 def FanBeamGeometryFromManifest(manifest_path: Path, *,

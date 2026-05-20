@@ -51,6 +51,18 @@ CONFIG = {
 }
 
 
+def build_dataset(geom, n, seed, i0, sigma_e, device):
+    # Dispatches on AGENT4CT_DATASET / cfg["dataset_kind"]. Phantom path
+    # is backwards-compatible; staged paths load from disk.
+    from ddssl_ldct.staged_dataset import load_val_split
+    import os
+    kind = os.environ.get("AGENT4CT_DATASET", "phantoms")
+    split = "val" if (seed % 100_000) >= 1000 else "train"
+    return load_val_split(kind, split, n, device=device,
+                          seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
+                          geom=geom)
+
+
 class PosEnc(nn.Module):
     def __init__(self, n_freqs):
         super().__init__()
@@ -146,6 +158,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         cfg = {**CONFIG, **json.loads(Path(env_path).read_text()), **(cfg or {})}
     else:
         cfg = {**CONFIG, **(cfg or {})}
+    # Dataset dispatch (Track B/C of workplan). When dataset_kind != "phantoms"
+    # we override the geometry to match the staged data.
+    from ddssl_ldct.staged_dataset import get_dataset_kind, geometry_overrides
+    cfg["dataset_kind"] = get_dataset_kind(cfg)
+    if cfg["dataset_kind"] != "phantoms":
+        cfg.update(geometry_overrides(cfg["dataset_kind"]))
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     torch.manual_seed(cfg["seed"])
@@ -157,17 +175,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"])
     proj_full = PyronnFanBeamProjector(geom).to(device)
 
-    # Build val set
-    phs = torch.stack([
-        random_ellipses_phantom(size=geom.image_size, n_ellipses=10,
-                                seed=cfg["seed"] + 1000 + i)[0]
-        for i in range(cfg["val_n"])
-    ]).to(device)
+    # Build val set (dispatches to phantom path or staged path based on env).
+    phs, _, noisys = build_dataset(
+        geom, cfg["val_n"], cfg["seed"] + 1000,
+        cfg["noise_i0"], cfg["noise_sigma_e"], device)
     with torch.no_grad():
-        cleans = proj_full.forward_project(phs)
-        noisys = simulate_low_dose(cleans, i0=cfg["noise_i0"],
-                                   sigma_e=cfg["noise_sigma_e"],
-                                   seed=cfg["seed"] + 10_000)
         fbps = torch.clamp(proj_full.fbp(noisys), min=0.0)
 
     outer_wall = cfg.get("naf_outer_wall_s", 600)            # 10 min default; 4x = 2400

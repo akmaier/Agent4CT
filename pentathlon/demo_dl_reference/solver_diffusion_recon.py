@@ -180,12 +180,15 @@ def sample_guided(model, sched, proj, sino, fbp_init, *, mode, n_steps,
 
 # ---------------------------------------------------------------------------
 def build_dataset(geom, n, seed, i0, sigma_e, device):
-    proj = PyronnFanBeamProjector(geom).to(device)
-    phantoms = build_phantoms(geom.image_size, n, seed, device)
-    with torch.no_grad():
-        clean = proj.forward_project(phantoms)
-        noisy = simulate_low_dose(clean, i0=i0, sigma_e=sigma_e, seed=seed + 10_000)
-    return phantoms, clean, noisy
+    # Dispatches on AGENT4CT_DATASET / cfg["dataset_kind"]. Phantom path
+    # is backwards-compatible; staged paths load from disk.
+    from ddssl_ldct.staged_dataset import load_val_split
+    import os
+    kind = os.environ.get("AGENT4CT_DATASET", "phantoms")
+    split = "val" if (seed % 100_000) >= 1000 else "train"
+    return load_val_split(kind, split, n, device=device,
+                          seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
+                          geom=geom)
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
@@ -197,6 +200,13 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # Allow env override of the checkpoint path independently of the JSON cfg.
     env_ckpt = os.environ.get("DIFFUSION_RECON_CKPT")
     if env_ckpt: cfg["recon_ckpt"] = env_ckpt
+
+    # Dataset dispatch (Track B/C of workplan). When dataset_kind != "phantoms"
+    # we override the geometry to match the staged data.
+    from ddssl_ldct.staged_dataset import get_dataset_kind, geometry_overrides
+    cfg["dataset_kind"] = get_dataset_kind(cfg)
+    if cfg["dataset_kind"] != "phantoms":
+        cfg.update(geometry_overrides(cfg["dataset_kind"]))
 
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"

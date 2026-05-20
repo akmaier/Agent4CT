@@ -138,28 +138,39 @@ def _make_physics(proj: "PyronnFanBeamProjector", sigma: float, device: str,
     return PyronnFanBeamPhysics()
 
 
+def build_dataset(geom, n, seed, i0, sigma_e, device):
+    """Public dispatch entry point — matches the conventional solver API.
+
+    Dispatches on AGENT4CT_DATASET / cfg["dataset_kind"]. Phantom path is
+    backwards-compatible; staged paths load truth + real sinograms from disk.
+    Always returns (phantoms, clean_or_None, noisy_or_sino) with leading
+    shape (N, 1, *).
+    """
+    from ddssl_ldct.staged_dataset import load_val_split
+    import os
+    kind = os.environ.get("AGENT4CT_DATASET", "phantoms")
+    split = "val" if (seed % 100_000) >= 1000 else "train"
+    return load_val_split(kind, split, n, device=device,
+                          seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
+                          geom=geom)
+
+
 def _build_phantoms_or_load(geom, n, seed, device):
     """Returns a (n, 1, H, W) float tensor of μ-images.
 
-    `random_ellipses_phantom(...)[0]` is already (1, H, W) (the function adds
-    a leading (None, None) so its full return is (1, 1, H, W) — indexing [0]
-    drops the outermost). Stacking N of those gives (N, 1, H, W) directly;
-    no extra unsqueeze is needed.
+    Now goes through build_dataset() so the staged-dataset dispatch is
+    honoured — for staged kinds the disk truth replaces synthetic phantoms.
     """
-    phantoms = torch.stack([
-        random_ellipses_phantom(size=geom.image_size, n_ellipses=10, seed=seed + i)[0]
-        for i in range(n)
-    ]).to(device)                       # (N, 1, H, W)
+    phantoms, _, _ = build_dataset(geom, n, seed, 1.0, 0.0, device)
     assert phantoms.dim() == 4 and phantoms.shape[1] == 1, phantoms.shape
     return phantoms
 
 
 def _build_dataset(geom, n, seed, i0, sigma_e, device):
+    # Same dispatch as build_dataset() but also returns the projector
+    # (legacy ABI used by main()). For staged kinds, `clean` is None.
     proj = PyronnFanBeamProjector(geom).to(device)
-    phantoms = _build_phantoms_or_load(geom, n, seed, device)
-    with torch.no_grad():
-        clean = proj.forward_project(phantoms)
-        noisy = simulate_low_dose(clean, i0=i0, sigma_e=sigma_e, seed=seed + 10_000)
+    phantoms, clean, noisy = build_dataset(geom, n, seed, i0, sigma_e, device)
     return phantoms, clean, noisy, proj
 
 
@@ -261,6 +272,13 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         cfg = {**CONFIG, **json.loads(Path(env_path).read_text()), **(cfg or {})}
     else:
         cfg = {**CONFIG, **(cfg or {})}
+
+    # Dataset dispatch (Track B/C of workplan). When dataset_kind != "phantoms"
+    # we override the geometry to match the staged data.
+    from ddssl_ldct.staged_dataset import get_dataset_kind, geometry_overrides
+    cfg["dataset_kind"] = get_dataset_kind(cfg)
+    if cfg["dataset_kind"] != "phantoms":
+        cfg.update(geometry_overrides(cfg["dataset_kind"]))
 
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"

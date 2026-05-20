@@ -222,9 +222,29 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     device = "cuda" if torch.cuda.is_available() else "cpu"
     torch.manual_seed(cfg["seed"])
 
+    # Dataset dispatch (Track B/C of workplan): when AGENT4CT_DATASET is set
+    # (or cfg["dataset_kind"] != "phantoms"), pull training/val truth images
+    # from the staged HDF5 instead of synthesizing ellipse phantoms. The
+    # image geometry (size, μ range / out_scale) gets overridden so the
+    # checkpoint we save matches the real dataset's distribution.
+    from ddssl_ldct.staged_dataset import (
+        get_dataset_kind, geometry_overrides, GEOMETRIES,
+    )
+    cfg["dataset_kind"] = get_dataset_kind(cfg)
+    if cfg["dataset_kind"] != "phantoms":
+        overrides = geometry_overrides(cfg["dataset_kind"])
+        cfg.update(overrides)
+        # Use the dataset's display_max as the [0,1] normaliser if not
+        # explicitly overridden; this matches what the matching
+        # diffusion-recon solver does at inference time.
+        if cfg.get("ddpm_out_scale_auto", True):
+            cfg["ddpm_out_scale"] = float(overrides["display_max"])
+
     mode = cfg["ddpm_mode"]
     out_scale = cfg["ddpm_out_scale"]
-    print(f"[solver] device={device}  mode={mode}", flush=True)
+    print(f"[solver] device={device}  mode={mode}  "
+          f"dataset_kind={cfg['dataset_kind']}  out_scale={out_scale}",
+          flush=True)
     print(f"[solver] cfg={json.dumps({k:v for k,v in cfg.items() if k.startswith('ddpm_')}, default=str)}",
           flush=True)
 
@@ -241,14 +261,30 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         raise ValueError(f"unknown ddpm_mode={mode!r}")
     print(f"[solver] data regime: {mode}  n_train={n_train}  train_seed={train_seed}",
           flush=True)
-    train_imgs = build_phantoms(cfg["image_size"], n_train, train_seed, device)
-    train_imgs = (train_imgs / out_scale).clamp(0.0, 1.0)
 
-    # Validation set: held-out seeds (cfg["seed"]+500_000..) to avoid any
-    # overlap with the other solvers' train/val partition.
-    val_imgs = build_phantoms(cfg["image_size"], cfg["ddpm_n_val"],
-                               cfg["seed"] + 500_000, device)
-    val_imgs = (val_imgs / out_scale).clamp(0.0, 1.0)
+    if cfg["dataset_kind"] == "phantoms":
+        train_imgs = build_phantoms(cfg["image_size"], n_train, train_seed, device)
+        val_imgs   = build_phantoms(cfg["image_size"], cfg["ddpm_n_val"],
+                                     cfg["seed"] + 500_000, device)
+    else:
+        # Load real truth images from staged HDF5. Train/val splits come
+        # from disk; the seed-offset convention used by the phantoms path
+        # doesn't apply (the dataset's split is what defines train vs val).
+        from ddssl_ldct.staged_dataset import load_val_split
+        # load_val_split returns (truth, clean, noisy); we only want truth.
+        train_imgs, _, _ = load_val_split(cfg["dataset_kind"], "train",
+                                            n_train, device=device)
+        # Strip the (B, 1, H, W) channel dim down to (B, H, W) — the DDPM
+        # builds its own channel below.
+        if train_imgs.dim() == 4 and train_imgs.shape[1] == 1:
+            train_imgs = train_imgs[:, 0]
+        val_imgs, _, _ = load_val_split(cfg["dataset_kind"], "val",
+                                          cfg["ddpm_n_val"], device=device)
+        if val_imgs.dim() == 4 and val_imgs.shape[1] == 1:
+            val_imgs = val_imgs[:, 0]
+
+    train_imgs = (train_imgs / out_scale).clamp(0.0, 1.0)
+    val_imgs   = (val_imgs   / out_scale).clamp(0.0, 1.0)
 
     # ---- model + optim --------------------------------------------------------
     sched = NoiseSchedule(T=cfg["ddpm_n_steps"], device=device)
