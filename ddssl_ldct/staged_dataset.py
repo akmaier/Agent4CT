@@ -310,13 +310,24 @@ GEOMETRIES: dict[str, DatasetInfo] = {
         has_real_sino=False,
     ),
     "breast_ct": DatasetInfo(
-        image_size=512, pixel_spacing=0.7,
-        n_angles=128, n_det=1024, det_spacing=1.2858,
-        sod=595.0, sdd=1085.6,
-        # Sidky 2021 breast phantoms peak around μ ≈ 0.30-0.33 mm⁻¹
-        # (microcalcifications); plain breast tissue is ≈ 0.18-0.22.
-        # display_max=0.5 leaves headroom for the calc tail without
-        # compressing the calibration's typical foreground span.
+        # Sidky 2022 Med Phys (DL-Sparse-View challenge) Section II.B:
+        #   "source-to-center-of-rotation distance of 50 cm,
+        #    source-to-detector distance of 100 cm,
+        #    1024 detector elements,
+        #    [reconstruction] 512x512 pixels covering an area (18cm)²"
+        # Pixel spacing: 180mm / 512 = 0.3516 mm/pixel.
+        # Detector pitch derived from the FOV-coverage relation:
+        #   chord_at_iso = n_det · det_pitch · (SOD/SDD) = image FOV
+        #   1024 · det_pitch · 0.5 = 180  ->  det_pitch = 0.3516 mm.
+        # Phantom radius is 8 cm (Sidky paper) -> occupies ~89% of the
+        # half-FOV per axis, matching what truth panels show.
+        # Linear (flat) detector per the paper; our PyronnFanBeamProjector
+        # is flat-detector compatible.
+        image_size=512, pixel_spacing=0.3516,
+        n_angles=128, n_det=1024, det_spacing=0.3516,
+        sod=500.0, sdd=1000.0,
+        # Truth μ ranges [0, 0.33] (breast tissue + microcalcs).
+        # display_max=0.5 leaves headroom for the calc tail.
         display_min=0.0, display_max=0.5,
         has_real_sino=True,
         staged_dir=_DEFAULT_DATA_ROOT / "dl_sparse_view" / "staged",

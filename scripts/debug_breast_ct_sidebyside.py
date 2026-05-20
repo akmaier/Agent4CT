@@ -50,20 +50,27 @@ def main():
     out_dir = Path("/cluster/maier/Agent4CT/results/breast_debug")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    vmin, vmax = 0.0, float(np.percentile(truth, 99.5))
-    diff_lim = vmax / 2
+    def auto_v(img, p_lo=1, p_hi=99.5):
+        return float(np.percentile(img, p_lo)), float(np.percentile(img, p_hi))
 
     fig, axes = plt.subplots(4, 5, figsize=(18, 13))
     for r in range(4):
-        for c, (img, label, vlo, vhi, cmap) in enumerate([
-            (truth[r],              f"truth #{r}",          vmin, vmax, "gray"),
-            (fbp_ref[r],            "FBP128 (Sidky ref)",   vmin, vmax, "gray"),
-            (fbp_current[r],        "OUR @det_spacing=1.286 (Mayo)", vmin, vmax, "gray"),
-            (fbp_fixed[r],          "OUR @det_spacing=0.643",         vmin, vmax, "gray"),
-            (fbp_fixed[r] - fbp_ref[r], "(0.643) - FBP128", -diff_lim, diff_lim, "bwr"),
+        # Auto-scale each panel to its own percentile range so structure
+        # is visible regardless of absolute intensity.
+        for c, (img, label, cmap) in enumerate([
+            (truth[r],              f"truth #{r}\n[{truth[r].min():.3f},{truth[r].max():.3f}]",      "gray"),
+            (fbp_ref[r],            f"FBP128 (Sidky ref)\n[{fbp_ref[r].min():.3f},{fbp_ref[r].max():.3f}]",    "gray"),
+            (fbp_current[r],        f"OUR @det=1.286\n[{fbp_current[r].min():.4f},{fbp_current[r].max():.4f}]","gray"),
+            (fbp_fixed[r],          f"OUR @det=0.643\n[{fbp_fixed[r].min():.4f},{fbp_fixed[r].max():.4f}]",    "gray"),
+            (fbp_fixed[r] - fbp_ref[r], "(0.643) - FBP128", "bwr"),
         ]):
+            if cmap == "bwr":
+                lim = float(np.percentile(np.abs(img), 99))
+                vlo, vhi = -lim, lim
+            else:
+                vlo, vhi = auto_v(img)
             axes[r, c].imshow(img, cmap=cmap, vmin=vlo, vmax=vhi)
-            axes[r, c].set_title(label, fontsize=10)
+            axes[r, c].set_title(label, fontsize=9)
             axes[r, c].axis("off")
     plt.tight_layout()
     plt.savefig(out_dir / "sidebyside.png", dpi=80, bbox_inches="tight")
