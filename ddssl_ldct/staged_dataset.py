@@ -295,6 +295,14 @@ class DatasetInfo:
     truth_dataset: str = "image"
     sino_file_tmpl: str = "{split}_sinograms.h5"
     sino_dataset: str = "sino"
+    # Per-dataset start-angle shift applied via np.roll along the angle
+    # axis BEFORE the harness consumes the sino. Used to align the
+    # dataset's gantry-rotation convention with the PyronnFanBeamProjector's
+    # (angle 0 = source at +x, CCW positive). For breast_ct (Sidky 2021):
+    # +32 of 128 views = +90° in sino-time → -90° CW in image-domain,
+    # matching the expert-verified visual orientation. Verified
+    # quantitatively: SSIM-vs-truth jumps 0.756 (no shift) → 0.806 (+32).
+    sino_angle_shift: int = 0
 
 
 _DEFAULT_DATA_ROOT = Path(_os.environ.get(
@@ -331,6 +339,10 @@ GEOMETRIES: dict[str, DatasetInfo] = {
         display_min=0.0, display_max=0.5,
         has_real_sino=True,
         staged_dir=_DEFAULT_DATA_ROOT / "dl_sparse_view" / "staged",
+        sino_angle_shift=32,    # +90° sino advance = -90° CW image rotation
+                                 # vs Sidky's gantry origin. Verified visually
+                                 # by an expert and quantitatively: SSIM-vs-
+                                 # truth 0.756 (no shift) → 0.806 (+32).
     ),
     # mayo_ldct_2d geometry will be tuned once Track A's helix2fan
     # rebinning lands. Placeholder uses helix2fan-style rotview≈2304.
@@ -422,6 +434,11 @@ def load_val_split(kind: str, split: str, n: int, *, device,
         truth_t = truth_t.unsqueeze(1)
     if sino_t.dim() == 3:    # (N, A, D) -> (N, 1, A, D)
         sino_t = sino_t.unsqueeze(1)
+    # Apply per-dataset sinogram start-angle shift to align the gantry-
+    # rotation convention with PyronnFanBeamProjector's (angle 0 = source
+    # at +x, CCW positive). For breast_ct this is +32 of 128 views.
+    if info.sino_angle_shift != 0:
+        sino_t = torch.roll(sino_t, shifts=int(info.sino_angle_shift), dims=-2)
     # Alias `clean = noisy` so downstream solvers that compute a
     # "noiseless reference" via `proj.fbp(val_clean)` for the comparison
     # figure don't NPE on real-sino datasets. There is no separate clean
