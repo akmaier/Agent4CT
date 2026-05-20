@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-20T18:00:00Z",
+  "updated": "2026-05-20T19:00:00Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -1201,30 +1201,6 @@
       "best_headroom": 0.238264,
       "agent": "wu-search-tpe-calibrated",
       "model": "optuna-tpe"
-    },
-    {
-      "slug": "breast-ct-calibrated-tpe-tv-search-20260520-01",
-      "short_id": "20260520-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-20T09:09:43Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.379509,
-      "best_headroom": 0.0512958,
-      "agent": "tv-search-tpe-calibrated-breast-ct",
-      "model": "optuna-tpe-breast-ct"
-    },
-    {
-      "slug": "breast-ct-calibrated-tpe-wu-search-20260520-01",
-      "short_id": "20260520-01",
-      "challenge": "dl_sparse_view",
-      "started": "2026-05-20T09:49:44Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.264878,
-      "best_headroom": 0.0128854,
-      "agent": "wu-search-tpe-calibrated-breast-ct",
-      "model": "optuna-tpe-breast-ct"
     },
     {
       "slug": "demo-intensity-calibrated-tpe-naf-search-20260520-01",
