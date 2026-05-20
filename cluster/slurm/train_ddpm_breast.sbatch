@@ -33,7 +33,7 @@ nvidia-smi -L
 # 1) UNCONSTRAINED — all 3600 breast phantoms
 CFG1=/tmp/_ddpm_breast_uncon_${SLURM_JOB_ID}.json
 cat > "$CFG1" <<JEOF
-{"ddpm_mode":"unconstrained","ddpm_n_train":3600,"ddpm_n_train_constrained":200,"ddpm_n_val":40,"ddpm_ch":32,"ddpm_n_steps":1000,"ddpm_epochs":25,"ddpm_batch":8,"ddpm_lr":2e-4,"ddpm_weight_decay":0,"ddpm_train_wall_s":9000,"ddpm_save_path":"$CKPT/ddpm_breast_unconstrained_final.pt"}
+{"ddpm_mode":"unconstrained","ddpm_n_train":3600,"ddpm_n_train_constrained":200,"ddpm_n_val":40,"ddpm_ch":32,"ddpm_n_steps":1000,"ddpm_epochs":25,"ddpm_batch":8,"ddpm_lr":2e-4,"ddpm_weight_decay":0,"ddpm_train_wall_s":9000,"ddpm_ckpt":"$CKPT/ddpm_breast_unconstrained_final.pt"}
 JEOF
 echo "[ddpm-breast] === UNCONSTRAINED ==="
 OUT1=$REPO/runs/train-ddpm-breast-uncon-${SLURM_JOB_ID}
@@ -43,7 +43,7 @@ DDPM_CONFIG_PATH=$CFG1 python pentathlon/demo_dl_reference/solver_ddpm.py "$OUT1
 # 2) CONSTRAINED — 200-image subset
 CFG2=/tmp/_ddpm_breast_con_${SLURM_JOB_ID}.json
 cat > "$CFG2" <<JEOF
-{"ddpm_mode":"constrained","ddpm_n_train":3600,"ddpm_n_train_constrained":200,"ddpm_n_val":40,"ddpm_ch":32,"ddpm_n_steps":1000,"ddpm_epochs":25,"ddpm_batch":8,"ddpm_lr":2e-4,"ddpm_weight_decay":0,"ddpm_train_wall_s":9000,"ddpm_save_path":"$CKPT/ddpm_breast_constrained_final.pt"}
+{"ddpm_mode":"constrained","ddpm_n_train":3600,"ddpm_n_train_constrained":200,"ddpm_n_val":40,"ddpm_ch":32,"ddpm_n_steps":1000,"ddpm_epochs":25,"ddpm_batch":8,"ddpm_lr":2e-4,"ddpm_weight_decay":0,"ddpm_train_wall_s":9000,"ddpm_ckpt":"$CKPT/ddpm_breast_constrained_final.pt"}
 JEOF
 echo "[ddpm-breast] === CONSTRAINED ==="
 OUT2=$REPO/runs/train-ddpm-breast-con-${SLURM_JOB_ID}
