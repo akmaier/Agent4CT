@@ -30,14 +30,12 @@ from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
 from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
+from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
 
 CONFIG = {
-    "image_size": 512, "pixel_spacing": 0.7,
-    "n_angles": 128, "n_det": 736, "det_spacing": 1.2858,
-    "sod": 595.0, "sdd": 1085.6,
-    "val_n": 20, "noise_i0": 1e5, "noise_sigma_e": 10.0, "seed": 42,
-    "display_min": 0.0, "display_max": 0.05,
+    **DEMO_DL_DEFAULTS,
+    "val_n": 20,
     "naf_n_freqs": 10,         # positional-encoding frequency bands
     "naf_hidden": 192,
     "naf_layers": 5,

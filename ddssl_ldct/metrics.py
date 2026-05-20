@@ -1,8 +1,53 @@
 from __future__ import annotations
 import math
+from functools import lru_cache
 from pathlib import Path
 import torch
 import torch.nn.functional as F
+
+
+# ---------------------------------------------------------------------------
+# FOV mask
+# ---------------------------------------------------------------------------
+#
+# Every released val_fbp128 in the Sidky 2021 DL-Sparse-View challenge is
+# masked outside the inscribed circle of the 512x512 grid (= 21.46 % of the
+# pixels exactly 0, matching `1 − π/4` to four decimals). For a fair score
+# our recon must be masked identically; otherwise corner FBP-undershoot
+# garbage corrupts SSIM/PSNR/RMSE while leaving Sidky's clean recon
+# unaffected. This helper is used automatically by `evaluate_calibrated`.
+
+
+@lru_cache(maxsize=32)
+def _fov_mask_cached(size: int, radius_pix: float,
+                      device_str: str, dtype_str: str) -> torch.Tensor:
+    device = torch.device(device_str)
+    dtype = getattr(torch, dtype_str)
+    coords = torch.arange(size, device=device, dtype=dtype) - (size - 1) / 2.0
+    yy, xx = torch.meshgrid(coords, coords, indexing="ij")
+    r2 = xx * xx + yy * yy
+    return (r2 <= radius_pix * radius_pix).to(dtype)
+
+
+def fov_mask(size: int, *, radius_pix: float | None = None,
+              device: torch.device | str | None = None,
+              dtype: torch.dtype = torch.float32) -> torch.Tensor:
+    """Circular FOV mask, shape `(size, size)`, float in {0, 1}.
+
+    Defaults: `radius_pix = size / 2` (= largest circle inscribed in the
+    square image grid — the Sidky 2021 convention; see
+    `challenges/dl_sparse_view/README.md`). Override `radius_pix` for
+    larger or smaller circles. Cached so repeated calls during a search
+    don't reallocate.
+    """
+    if radius_pix is None:
+        radius_pix = float(size) / 2.0
+    if device is None:
+        device = torch.device("cpu")
+    device = torch.device(device)
+    dtype_str = str(dtype).rsplit(".", 1)[-1]
+    return _fov_mask_cached(int(size), float(radius_pix),
+                              str(device), dtype_str)
 
 
 # ===========================================================================
@@ -82,35 +127,63 @@ def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
 def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
                          baseline: torch.Tensor | None = None,
                          *, display_min: float, display_max: float,
-                         fg_threshold: float | None = None) -> dict:
+                         fg_threshold: float | None = None,
+                         fov: torch.Tensor | bool = True) -> dict:
     """Full standard evaluation: calibrate `pred` (and optionally `baseline`)
-    against `truth`, then compute PSNR/SSIM/RMSE/headroom with the standard
-    data range.
+    against `truth`, apply a circular FOV mask, then compute
+    PSNR/SSIM/RMSE/headroom over the masked region.
+
+    FOV mask: ``fov=True`` (default) applies the inscribed-circle mask
+    (radius = `truth.shape[-1]/2` px) — matching Sidky 2021's released
+    val_fbp128 convention. Pass a custom mask tensor to override, or
+    ``fov=False`` to disable. Masked pixels contribute 0 to RMSE/PSNR and
+    are silently passed through SSIM (small structural-window effect at
+    the FOV boundary, negligible in practice).
 
     Returns a dict including `pred_cal` (calibrated tensor for downstream
-    figure-making) and all four standard scalars: psnr, ssim, rmse, headroom.
-    If `baseline` is supplied, it is calibrated identically and its psnr/rmse
-    are reported as `baseline_*`; headroom is computed as
-    `max(0, 1 - rmse / baseline_rmse)`.
+    figure-making), the `fov_mask` tensor used, and all four standard
+    scalars: psnr, ssim, rmse, headroom. If `baseline` is supplied, it is
+    calibrated identically and its psnr/rmse are reported as `baseline_*`;
+    headroom is computed as `max(0, 1 - rmse / baseline_rmse)`.
     """
     if fg_threshold is None:
         fg_threshold = display_min + 0.05 * (display_max - display_min)
     dr = float(display_max - display_min)
+
     pred_cal = intensity_calibrate(pred, truth,
                                     fg_threshold=fg_threshold,
                                     display_max=display_max)
+
+    # FOV mask handling
+    if isinstance(fov, bool):
+        if fov:
+            mask_2d = fov_mask(truth.shape[-1],
+                                device=pred_cal.device, dtype=pred_cal.dtype)
+        else:
+            mask_2d = None
+    else:
+        mask_2d = fov.to(device=pred_cal.device, dtype=pred_cal.dtype)
+    if mask_2d is not None:
+        # Broadcast (H,W) -> matching trailing dims of pred_cal/truth.
+        pred_cal = pred_cal * mask_2d
+        truth = truth * mask_2d
+
     result = {
-        "pred_cal":   pred_cal,
-        "val_psnr":   float(psnr(pred_cal, truth, data_range=dr).cpu()),
-        "val_ssim":   float(ssim(pred_cal, truth, data_range=dr).cpu()),
-        "val_rmse":   float(((pred_cal - truth) ** 2).mean().sqrt().cpu()),
+        "pred_cal":     pred_cal,
+        "fov_mask":     mask_2d,
+        "val_psnr":     float(psnr(pred_cal, truth, data_range=dr).cpu()),
+        "val_ssim":     float(ssim(pred_cal, truth, data_range=dr).cpu()),
+        "val_rmse":     float(((pred_cal - truth) ** 2).mean().sqrt().cpu()),
         "fg_threshold": float(fg_threshold),
-        "calibration": "intensity_calibrate (two-point linear, bg->0, fg_mean->truth_fg_mean)",
+        "calibration":  "intensity_calibrate (two-point linear, bg->0, fg_mean->truth_fg_mean)"
+                        + ("; FOV-masked" if mask_2d is not None else ""),
     }
     if baseline is not None:
         baseline_cal = intensity_calibrate(baseline, truth,
                                             fg_threshold=fg_threshold,
                                             display_max=display_max)
+        if mask_2d is not None:
+            baseline_cal = baseline_cal * mask_2d
         bl_rmse = float(((baseline_cal - truth) ** 2).mean().sqrt().cpu())
         result["baseline_psnr"] = float(psnr(baseline_cal, truth, data_range=dr).cpu())
         result["baseline_ssim"] = float(ssim(baseline_cal, truth, data_range=dr).cpu())

@@ -40,6 +40,7 @@ from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
 from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 # Reuse the model + schedule definitions from the training file so a single
 # class definition is the source of truth across both solvers.
 from pentathlon.demo_dl_reference.solver_ddpm import (
@@ -48,11 +49,8 @@ from pentathlon.demo_dl_reference.solver_ddpm import (
 
 
 CONFIG = {
-    "image_size": 512, "pixel_spacing": 0.7,
-    "n_angles": 128, "n_det": 736, "det_spacing": 1.2858,
-    "sod": 595.0, "sdd": 1085.6,
-    "val_n": 20, "noise_i0": 1e5, "noise_sigma_e": 10.0, "seed": 42,
-    "display_min": 0.0, "display_max": 0.05,
+    **DEMO_DL_DEFAULTS,
+    "val_n": 20,
     # Path to a checkpoint produced by solver_ddpm.py. Override via env.
     "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_unconstrained_final.pt",
     # Sampling hyperparameters (what the search varies).

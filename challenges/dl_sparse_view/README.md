@@ -38,26 +38,43 @@ For our pipeline:
   organiser's val set anymore).
 - **Test**: an additional 400-case held-out split if the data dump permits.
 
-## Geometry to pass into `FanBeamGeometry`
+## Geometry
 
-The challenge geometry is published in the report (Sec. 2.1):
+Single source of truth: [`challenges/dl_sparse_view/geometry.py`](geometry.py).
+`GEOMETRY` is a `DatasetInfo`; `DEFAULTS` is the solver-CONFIG-shaped dict
+that `ddssl_ldct.staged_dataset.geometry_overrides("breast_ct")` returns.
 
-```python
-FanBeamGeometry(
-    image_size=512,
-    pixel_spacing=...,   # TODO — confirm from challenge manifest
-    n_angles=128,
-    n_det=...,           # TODO — confirm
-    det_spacing=...,
-    sod=...,
-    sdd=...,
-    angle_start=0.0,
-    angle_end=2 * math.pi,
-)
-```
+| Knob | Value | Provenance |
+|---|---|---|
+| `image_size` | 512 | Sidky 2022 §II.B |
+| `pixel_spacing` | 0.3516 mm | 180 mm / 512 = paper FOV (18 cm) / image dim |
+| `n_angles` | 128 | Sidky 2022 §II.B (128 views over 2π) |
+| `n_det` | 1024 | Sidky 2022 §II.B |
+| `det_spacing` | **0.35754 mm** | **NOT in paper**; pinned empirically (see below) |
+| `sod` | 500 mm | Sidky 2022 §II.B (50 cm source-to-iso) |
+| `sdd` | 1000 mm | Sidky 2022 §II.B (100 cm source-to-detector) |
+| `display_max` | 0.5 | μ range [0, 0.33] 1/cm + headroom for microcalcs |
+| `sino_angle_shift` | +32 (= +90°) | aligns Sidky gantry origin with pyronn (angle 0 = source at +x, CCW) |
 
-The data-staging pass will fill the TODOs from the challenge `parameters.txt`
-that ships with the download.
+### `det_spacing` derivation
+
+The paper specifies image dims, channel count, SOD, SDD — but not the
+detector pitch. We pinned it down by sweeping `det_spacing = 0.35156 · c`
+over `c ∈ [0.94, 1.06]` and minimising the forward-projection L2 of the
+matched-pair Siddon projector against the released `val_sinograms[0]`
+(see `scripts/debug_breast_ct_detspacing_sweep.py`, SLURM job 761480):
+
+- Best `c = 1.017` → `det_spacing = 0.35754 mm` → forward L2 ≈ 7.9 × 10⁻⁴
+  (essentially exact agreement).
+- Detector iso-projection covers `0.35754 · 1024 · 0.5 = 18.31 cm` — a
+  1.7 % margin over the 18 cm image FOV (sensible CT design choice).
+
+### FOV mask
+
+Sidky's released `val_fbp128.h5` is masked outside the inscribed circle
+of the 512×512 grid (radius 256 px = 9 cm). 21.46 % of pixels are
+exactly 0 (= `1 − π/4`). Our metrics apply the same mask via
+`ddssl_ldct.metrics.fov_mask(size=512)`.
 
 ## Download
 

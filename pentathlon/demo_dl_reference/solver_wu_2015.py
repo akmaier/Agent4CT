@@ -39,23 +39,11 @@ from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
 from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
 
 CONFIG = {
-    "image_size":    512,
-    "pixel_spacing": 0.7,
-    "n_angles":      128,
-    "n_det":         736,
-    "det_spacing":   1.2858,
-    "sod":           595.0,
-    "sdd":           1085.6,
-    "train_n":       400,
-    "val_n":         100,
-    "noise_i0":      1e5,
-    "noise_sigma_e": 10.0,
-    "seed":          42,
-    "display_min":   0.0,
-    "display_max":   0.05,
+    **DEMO_DL_DEFAULTS,
     # Wu 2015 hyperparameters
     "wu_n_bands":      4,        # paper uses 8 triangular bands; 4 keeps cost down
     "wu_n_outer":      2,        # restoration iterations (paper recommends 2-3)

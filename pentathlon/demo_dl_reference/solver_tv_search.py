@@ -31,28 +31,15 @@ from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
 from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison
+from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
 
 # ---------------------------------------------------------------------------
 #  CONFIG — agent edits this block
 # ---------------------------------------------------------------------------
 CONFIG = {
-    # Geometry (fixed)
-    "image_size":    512,
-    "pixel_spacing": 0.7,
-    "n_angles":      128,
-    "n_det":         736,
-    "det_spacing":   1.2858,
-    "sod":           595.0,
-    "sdd":           1085.6,
-    # Data (fixed for fair comparison)
+    **DEMO_DL_DEFAULTS,
     "train_n":       0,       # TV needs no training
-    "val_n":         100,
-    "noise_i0":      1e5,
-    "noise_sigma_e": 10.0,
-    "seed":          42,
-    "display_min":   0.0,
-    "display_max":   0.05,
     # TV hyperparameters (AGENT EDITS THESE)
     "tv_lambda":     0.001,   # regularization weight
     "tv_iterations": 200,     # number of iterations

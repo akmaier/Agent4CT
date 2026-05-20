@@ -275,34 +275,13 @@ class RotatingSubsetDataset(Dataset):
 # against real staged data without changing per-solver constants.
 
 import os as _os
-from dataclasses import dataclass
 
-
-@dataclass(frozen=True)
-class DatasetInfo:
-    image_size: int
-    pixel_spacing: float
-    n_angles: int
-    n_det: int
-    det_spacing: float
-    sod: float
-    sdd: float
-    display_min: float
-    display_max: float
-    has_real_sino: bool             # True -> noisy is loaded; False -> simulated
-    staged_dir: Path | None = None
-    truth_file_tmpl: str = "{split}_truth.h5"
-    truth_dataset: str = "image"
-    sino_file_tmpl: str = "{split}_sinograms.h5"
-    sino_dataset: str = "sino"
-    # Per-dataset start-angle shift applied via np.roll along the angle
-    # axis BEFORE the harness consumes the sino. Used to align the
-    # dataset's gantry-rotation convention with the PyronnFanBeamProjector's
-    # (angle 0 = source at +x, CCW positive). For breast_ct (Sidky 2021):
-    # +32 of 128 views = +90° in sino-time → -90° CW in image-domain,
-    # matching the expert-verified visual orientation. Verified
-    # quantitatively: SSIM-vs-truth jumps 0.756 (no shift) → 0.806 (+32).
-    sino_angle_shift: int = 0
+# DatasetInfo lives in `challenges/_common.py` so the challenges folder is
+# the single source of truth for per-challenge geometry. Re-exported here
+# for backwards compat with `from ddssl_ldct.staged_dataset import DatasetInfo`.
+from challenges._common import DatasetInfo  # noqa: F401 (re-export)
+from challenges.demo_dl.geometry import GEOMETRY as _DEMO_DL
+from challenges.dl_sparse_view.geometry import GEOMETRY as _DL_SPARSE_VIEW
 
 
 _DEFAULT_DATA_ROOT = Path(_os.environ.get(
@@ -310,42 +289,10 @@ _DEFAULT_DATA_ROOT = Path(_os.environ.get(
 
 
 GEOMETRIES: dict[str, DatasetInfo] = {
-    "phantoms": DatasetInfo(
-        image_size=512, pixel_spacing=0.7,
-        n_angles=128, n_det=736, det_spacing=1.2858,
-        sod=595.0, sdd=1085.6,
-        display_min=0.0, display_max=0.05,
-        has_real_sino=False,
-    ),
-    "breast_ct": DatasetInfo(
-        # Sidky 2022 Med Phys (DL-Sparse-View challenge) Section II.B:
-        #   "source-to-center-of-rotation distance of 50 cm,
-        #    source-to-detector distance of 100 cm,
-        #    1024 detector elements,
-        #    [reconstruction] 512x512 pixels covering an area (18cm)²"
-        # Pixel spacing: 180mm / 512 = 0.3516 mm/pixel.
-        # Detector pitch derived from the FOV-coverage relation:
-        #   chord_at_iso = n_det · det_pitch · (SOD/SDD) = image FOV
-        #   1024 · det_pitch · 0.5 = 180  ->  det_pitch = 0.3516 mm.
-        # Phantom radius is 8 cm (Sidky paper) -> occupies ~89% of the
-        # half-FOV per axis, matching what truth panels show.
-        # Linear (flat) detector per the paper; our PyronnFanBeamProjector
-        # is flat-detector compatible.
-        image_size=512, pixel_spacing=0.3516,
-        n_angles=128, n_det=1024, det_spacing=0.3516,
-        sod=500.0, sdd=1000.0,
-        # Truth μ ranges [0, 0.33] (breast tissue + microcalcs).
-        # display_max=0.5 leaves headroom for the calc tail.
-        display_min=0.0, display_max=0.5,
-        has_real_sino=True,
-        staged_dir=_DEFAULT_DATA_ROOT / "dl_sparse_view" / "staged",
-        sino_angle_shift=32,    # +90° sino advance = -90° CW image rotation
-                                 # vs Sidky's gantry origin. Verified visually
-                                 # by an expert and quantitatively: SSIM-vs-
-                                 # truth 0.756 (no shift) → 0.806 (+32).
-    ),
-    # mayo_ldct_2d geometry will be tuned once Track A's helix2fan
-    # rebinning lands. Placeholder uses helix2fan-style rotview≈2304.
+    "phantoms":   _DEMO_DL,           # synthetic ellipse-phantom fallback
+    "breast_ct":  _DL_SPARSE_VIEW,    # Sidky 2021 DL-Sparse-View challenge
+    # mayo_ldct_2d geometry stays inline until Track A's helix2fan
+    # rebinning lands and we move it into challenges/mayo_ldct/geometry.py.
     "mayo_ldct_2d": DatasetInfo(
         image_size=512, pixel_spacing=0.5859375,
         n_angles=2304, n_det=736, det_spacing=1.2858,

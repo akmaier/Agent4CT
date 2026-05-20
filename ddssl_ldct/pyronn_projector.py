@@ -276,14 +276,31 @@ class PyronnFanBeamProjector(torch.nn.Module):
 
         Sino shape ``(B, 1, A, D)`` or ``(B, A, D)``. Filter shape ``(A, D)`` is
         broadcast across the batch (and channel) dimension.
+
+        Filter pipeline (same as :class:`SiddonFanBeamProjector`):
+          - zero-pad the sinogram N → M = 2·N along the detector axis to
+            convert the FFT's circular convolution into a linear one
+            (the wrap of the long Kak-Slaney 1/n² tails causes a
+            low-frequency cupping bias if N is left as the FFT length).
+          - build the filter at length M via pyronn's helpers.
+          - halve the DC bin H[0] to undo half of the Kak-Slaney truncation
+            residual ``2/(π²·M·τ²)``. The "by the book" discrete |ν=0|
+            is 0; halving cancels exactly the leakage without overshooting
+            into the negative-DC regime that "clamp H[0]=0" produced
+            empirically (see debug_breast_ct_siddon_dc job 761475).
+          - FFT-multiply-IFFT, then truncate the padded tail.
+
+        Note: padding to `2·next_pow2(N)` instead of plain `2·N` was tested
+        on demo-dl (n_det=736, M=2048 vs 1472) and was marginally *worse*
+        (-0.005 SSIM); the simpler 2·N wins on every N we care about. For
+        power-of-2 N (breast_ct, 1024) the two forms coincide anyway.
         """
         from pyronn.ct_reconstruction.helpers.filters import filters as pyronn_filters
 
         g = self.geom
-        # PYRO-NN's *_2D filters tile per-view; we apply per-batch so we only
-        # need the 1D filter, but the existing helpers return a 2D (A,D) array
-        # — fine, broadcast over batch axis.
-        det_shape = [g.n_det]
+        N = sino.shape[-1]
+        M = 2 * N
+        det_shape = [M]                                  # pad length
         det_spacing = [g.det_spacing]
         if filter_name == "ramlak":
             f_np = pyronn_filters.ram_lak_2D(det_shape, det_spacing, g.n_angles)
@@ -314,12 +331,23 @@ class PyronnFanBeamProjector(torch.nn.Module):
             elif filter_name == "cosine":
                 f_np = pyronn_filters.cosine_2D(det_shape, det_spacing, A_sino)
 
+        # Halve DC bin per the by-the-book truncation correction.
+        if f_np.ndim == 1:
+            f_np[0] = f_np[0] * 0.5
+        else:
+            f_np[:, 0] = f_np[:, 0] * 0.5
+
         f = torch.as_tensor(f_np, dtype=sino.dtype, device=sino.device)
 
+        # Zero-pad sino N → 2N along detector axis.
+        pad = torch.zeros(sino.shape[:-1] + (N,), device=sino.device, dtype=sino.dtype)
+        sino_pad = torch.cat([sino, pad], dim=-1)
+
         # Apply per-projection 1D FFT along the detector axis.
-        spec = torch.fft.fft(sino, dim=-1, norm="ortho")
+        spec = torch.fft.fft(sino_pad, dim=-1, norm="ortho")
         spec = spec * f  # broadcast over batch / channel
-        return torch.fft.ifft(spec, dim=-1, norm="ortho").real
+        y_full = torch.fft.ifft(spec, dim=-1, norm="ortho").real
+        return y_full[..., :N]
 
     def fbp(self, sino: torch.Tensor, filter_name: str = "hann") -> torch.Tensor:
         """Filtered back-projection. Returns ``(B, 1, H, W)``.
