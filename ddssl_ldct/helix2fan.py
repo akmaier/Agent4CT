@@ -241,8 +241,12 @@ def _rebin_one_view_curved_to_flat(view_curved: np.ndarray,
     # We resolve the inverse below where du/sdd is folded into phi_flat.
     # Here phi_flat is already in "curved channel index" units.
     u_idx = phi_flat
-    # Clamp indices to in-bounds.
-    u_idx = np.clip(u_idx, 0.0, nu - 1.0 - 1e-6)
+    # Clamp indices so u_floor + 1 stays in [0, nu - 1]. Using
+    # `nu - 1.0 - 1e-6` is unsafe: 1e-6 is below float32 precision near
+    # nu ~ 64, so the upper bound rounds back to exactly `nu - 1.0`,
+    # which then `np.floor` -> nu-1 and `u_floor + 1` -> nu (OOB).
+    # `nu - 2` is the safe choice regardless of float precision.
+    u_idx = np.clip(u_idx, 0.0, float(nu - 2))
     u_floor = np.floor(u_idx).astype(np.int64)
     u_frac = (u_idx - u_floor).astype(np.float32)
     # For each row, bilinear in u only (v is identity).

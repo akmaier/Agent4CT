@@ -271,17 +271,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         # from disk; the seed-offset convention used by the phantoms path
         # doesn't apply (the dataset's split is what defines train vs val).
         from ddssl_ldct.staged_dataset import load_val_split
-        # load_val_split returns (truth, clean, noisy); we only want truth.
+        # load_val_split returns (truth, clean, noisy) as (N, 1, H, W);
+        # build_phantoms also produces (N, 1, H, W), so just pass through.
         train_imgs, _, _ = load_val_split(cfg["dataset_kind"], "train",
                                             n_train, device=device)
-        # Strip the (B, 1, H, W) channel dim down to (B, H, W) — the DDPM
-        # builds its own channel below.
-        if train_imgs.dim() == 4 and train_imgs.shape[1] == 1:
-            train_imgs = train_imgs[:, 0]
         val_imgs, _, _ = load_val_split(cfg["dataset_kind"], "val",
                                           cfg["ddpm_n_val"], device=device)
-        if val_imgs.dim() == 4 and val_imgs.shape[1] == 1:
-            val_imgs = val_imgs[:, 0]
 
     train_imgs = (train_imgs / out_scale).clamp(0.0, 1.0)
     val_imgs   = (val_imgs   / out_scale).clamp(0.0, 1.0)
