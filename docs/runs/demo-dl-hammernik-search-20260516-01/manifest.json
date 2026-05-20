@@ -1,0 +1,10 @@
+{
+  "slug": "demo-dl-hammernik-search-20260516-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-hammernik-search",
+  "started": "2026-05-16T13:30:01Z",
+  "agent": "hammernik-search",
+  "model": "random-search",
+  "status": "running",
+  "notes": "Hammernik 2017 variational network hyperparameter search: T, N_k, kernel, lr, lambda_init, epochs"
+}

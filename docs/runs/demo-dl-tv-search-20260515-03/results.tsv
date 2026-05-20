@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.280181	0.371358	keep	optimizer	tv-search	random-search	TV search: lambda=0.00301, iters=75, lr=0.0051, clip=0.056, decay=0.0323
+2		0.348626	0.310932	keep	optimizer	tv-search	random-search	TV search: lambda=0.00147, iters=270, lr=0.0050, clip=0.034, decay=0.0047
+3		0.321375	0.330666	keep	optimizer	tv-search	random-search	TV search: lambda=0.00126, iters=174, lr=0.0093, clip=0.038, decay=0.0235
+4		0.241416	0.343475	keep	optimizer	tv-search	random-search	TV search: lambda=0.00011, iters=209, lr=0.0029, clip=0.057, decay=0.0318
+5		0.398058	0.483507	keep	optimizer	tv-search	random-search	TV search: lambda=0.00145, iters=302, lr=0.0309, clip=0.079, decay=0.0224
+6		0.267761	0.324753	keep	optimizer	tv-search	random-search	TV search: lambda=0.00056, iters=119, lr=0.0058, clip=0.041, decay=0.0284
+7		0.26216	0.357008	keep	optimizer	tv-search	random-search	TV search: lambda=0.00164, iters=315, lr=0.0026, clip=0.063, decay=0.0287
+8		0.308952	0.399508	keep	optimizer	tv-search	random-search	TV search: lambda=0.00033, iters=424, lr=0.0261, clip=0.056, decay=0.0130
+9		0.469101	0.603272	keep	optimizer	tv-search	random-search	TV search: lambda=0.00372, iters=408, lr=0.0418, clip=0.071, decay=0.0463
+10		0.342571	0.333249	keep	optimizer	tv-search	random-search	TV search: lambda=0.00569, iters=211, lr=0.0020, clip=0.036, decay=0.0119
+11		0.262055	0.357251	keep	optimizer	tv-search	random-search	TV search: lambda=0.00027, iters=168, lr=0.0084, clip=0.063, decay=0.0013
+12		0.349197	0.426706	keep	optimizer	tv-search	random-search	TV search: lambda=0.00037, iters=372, lr=0.0655, clip=0.051, decay=0.0263
+13		0.282014	0.371783	keep	optimizer	tv-search	random-search	TV search: lambda=0.00050, iters=414, lr=0.0149, clip=0.067, decay=0.0259
+14		0.310709	0.377093	keep	optimizer	tv-search	random-search	TV search: lambda=0.00958, iters=145, lr=0.0022, clip=0.046, decay=0.0372
+15		0.299493	0.386519	keep	optimizer	tv-search	random-search	TV search: lambda=0.00494, iters=338, lr=0.0024, clip=0.053, decay=0.0288
+16		0.456533	0.567417	keep	optimizer	tv-search	random-search	TV search: lambda=0.00072, iters=250, lr=0.0523, clip=0.065, decay=0.0016
+17		0.480428	0.421995	keep	optimizer	tv-search	random-search	TV search: lambda=0.00807, iters=66, lr=0.0395, clip=0.037, decay=0.0273
+18		0.257967	0.34392	keep	optimizer	tv-search	random-search	TV search: lambda=0.00045, iters=455, lr=0.0050, clip=0.073, decay=0.0156
+19		0.354776	0.440247	keep	optimizer	tv-search	random-search	TV search: lambda=0.00073, iters=335, lr=0.0459, clip=0.055, decay=0.0356
+20		0.298196	0.387397	keep	optimizer	tv-search	random-search	TV search: lambda=0.00268, iters=322, lr=0.0018, clip=0.069, decay=0.0028

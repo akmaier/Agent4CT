@@ -1,0 +1,10 @@
+{
+  "slug": "demo-dl-diffusion-recon-unconstrained-search-20260518-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-diffusion-recon-unconstrained-search",
+  "started": "2026-05-18T09:39:52Z",
+  "agent": "diffusion-recon-unconstrained-search-tpe",
+  "model": "optuna-tpe",
+  "status": "running",
+  "notes": "v2 diffusion-recon unconstrained (TPE)    \u2014 grad-normalised"
+}

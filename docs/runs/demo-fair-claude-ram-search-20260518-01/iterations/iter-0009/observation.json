@@ -1,1 +1,0 @@
-{"ts":"2026-05-18T21:04:30Z","iter":9,"rationale":"iter 9: sigma=0.3","val_score":0.9259,"headroom":0.5325,"kept":false,"status":"discard","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"Sigma peak = 0.2 (0.1->0.51, 0.2->0.54 win, 0.3->0.53, 0.5->0.52). Switch to other axes: factor."}

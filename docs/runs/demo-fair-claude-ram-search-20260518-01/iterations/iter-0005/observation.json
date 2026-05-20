@@ -1,1 +1,0 @@
-{"ts":"2026-05-18T21:00:44Z","iter":5,"rationale":"iter 5: sigma 0.02->0.05","val_score":0.8009,"headroom":0.4694,"kept":true,"status":"keep","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"NEW BEST. Push sigma=0.1 next."}

@@ -1,2 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1		0.611224	0.405061	keep	architecture	dual-domain-search-tpe-calibrated	random-search	dual-domain-search-tpe-calibrated: epochs=6, lr=0.0004177, batch_size=1, unet_c=24

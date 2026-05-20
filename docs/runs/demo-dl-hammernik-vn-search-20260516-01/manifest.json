@@ -1,0 +1,10 @@
+{
+  "slug": "demo-dl-hammernik-vn-search-20260516-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-hammernik-vn-search",
+  "started": "2026-05-16T17:43:33Z",
+  "agent": "hammernik-vn-search",
+  "model": "random-search",
+  "status": "running",
+  "notes": "Hammernik-VN (MRI VN adapted to CT) hyperparameter random search: T, N_k, kernel, lr, lambda, init, epochs, batch"
+}

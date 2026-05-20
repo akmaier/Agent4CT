@@ -1,1 +1,0 @@
-{"ts":"2026-05-19T00:04:00Z","iter":20,"rationale":"iter 20: sigma=0.10 + factor=0.5","val_score":0.9337,"headroom":0.5938,"kept":true,"status":"keep","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"FINAL WINNER. Sigma trajectory still rising slightly at sigma=0.10; could probe lower with more iter budget."}

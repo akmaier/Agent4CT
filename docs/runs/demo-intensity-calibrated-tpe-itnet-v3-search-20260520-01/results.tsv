@@ -1,0 +1,20 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.85769	0.459998	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=11, lr=0.00029884, batch_size=2, unet_c=16, itnet_k=2, alpha_init=0.0018087
+2		0.831107	0.43561	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=8, lr=0.00030006, batch_size=4, unet_c=8, itnet_k=4, alpha_init=0.0012873
+3		0.885971	0.457323	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=9, lr=0.00048473, batch_size=4, unet_c=12, itnet_k=3, alpha_init=0.0083281
+5		0.833782	0.441374	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=5, lr=0.00014773, batch_size=2, unet_c=16, itnet_k=4, alpha_init=0.0018706
+6		0.884057	0.453841	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=14, lr=0.0015445, batch_size=2, unet_c=16, itnet_k=2, alpha_init=0.0043973
+7		0.917827	0.464765	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=13, lr=0.00077156, batch_size=2, unet_c=16, itnet_k=2, alpha_init=0.0035172
+8		0.845307	0.450053	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=15, lr=0.0011002, batch_size=6, unet_c=8, itnet_k=2, alpha_init=0.0042532
+9		0.917788	0.467614	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=13, lr=0.00075279, batch_size=2, unet_c=16, itnet_k=3, alpha_init=0.009109
+10		0.842905	0.430516	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=12, lr=0.0019018, batch_size=2, unet_c=16, itnet_k=3, alpha_init=0.0093222
+11		0.901573	0.460665	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=10, lr=0.0006686, batch_size=4, unet_c=12, itnet_k=3, alpha_init=0.0061562
+12		0.915006	0.467583	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=13, lr=0.00083523, batch_size=2, unet_c=16, itnet_k=2, alpha_init=0.0030984
+13		0.900045	0.458646	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=13, lr=0.00095558, batch_size=2, unet_c=16, itnet_k=3, alpha_init=0.0025851
+14		0.92511	0.467299	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=15, lr=0.00048268, batch_size=2, unet_c=16, itnet_k=2, alpha_init=0.0065224
+15		0.917344	0.452864	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=12, lr=0.0011202, batch_size=2, unet_c=16, itnet_k=3, alpha_init=0.0029175
+16		0.768963	0.424488	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=11, lr=0.00030631, batch_size=6, unet_c=8, itnet_k=2, alpha_init=0.0054038
+17		0.927355	0.466799	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=13, lr=0.00063275, batch_size=2, unet_c=16, itnet_k=3, alpha_init=0.001063
+18		0.914377	0.456643	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=14, lr=0.001358, batch_size=2, unet_c=16, itnet_k=3, alpha_init=0.002401
+19		0.78433	0.428724	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=11, lr=0.00039972, batch_size=6, unet_c=8, itnet_k=2, alpha_init=0.0043624
+20		0.86593	0.446945	keep	architecture	itnet-v3-search-tpe-calibrated	random-search	itnet-v3-search-tpe-calibrated: epochs=14, lr=0.00010838, batch_size=4, unet_c=12, itnet_k=3, alpha_init=0.0034149

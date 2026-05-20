@@ -1,1 +1,0 @@
-{"ts":"2026-05-18T21:10:38Z","iter":15,"rationale":"iter 15: fbp_max norm","val_score":0.3396,"headroom":0.3008,"kept":false,"status":"discard","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"adjoint_max wins. Try finetune next."}

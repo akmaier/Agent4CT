@@ -1,3 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-6		nan	0.351394	keep	architecture	hammernik-search-tpe-calibrated	random-search	hammernik-search-tpe-calibrated: epochs=29, lr=0.00093338, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.0064075
-10		nan	0.357612	keep	architecture	hammernik-search-tpe-calibrated	random-search	hammernik-search-tpe-calibrated: epochs=27, lr=0.0019225, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.0022843

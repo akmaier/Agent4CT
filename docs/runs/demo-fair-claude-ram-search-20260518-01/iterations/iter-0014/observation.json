@@ -1,1 +1,0 @@
-{"ts":"2026-05-18T21:09:34Z","iter":14,"rationale":"iter 14: blend 0.0->0.1","val_score":0.8484,"headroom":0.5701,"kept":false,"status":"discard","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"Blend hurts. Try fbp_max norm."}

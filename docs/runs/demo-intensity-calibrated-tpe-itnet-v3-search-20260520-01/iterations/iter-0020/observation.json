@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-20T22:53:41Z",
+  "run_id": "demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01",
+  "iter": 20,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "itnet-v3-search-tpe-calibrated: epochs=14, lr=0.00010838, batch_size=4, unet_c=12, itnet_k=3, alpha_init=0.0034149",
+  "val_score": 0.8659302592277527,
+  "headroom": 0.44694545329557867,
+  "kept": true,
+  "status": "keep",
+  "params_M": 2.081942,
+  "train_n": 200,
+  "agent": "itnet-v3-search-tpe-calibrated",
+  "model": "random-search",
+  "advice_for_others": "itnet-v3-search-tpe-calibrated: epochs=14, lr=0.00010838, batch_size=4, unet_c=12, itnet_k=3, alpha_init=0.0034149 -> hr=0.4469",
+  "comparison_image": "runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0020/comparison.png"
+}

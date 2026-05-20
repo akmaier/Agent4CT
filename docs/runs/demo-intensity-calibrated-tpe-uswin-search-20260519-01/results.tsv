@@ -1,3 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1		nan	0.457442	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=11, lr=0.00023197, batch_size=2, uswin_c=32, swin_window=4, swin_heads=8
-5		nan	0.463028	keep	architecture	uswin-search-tpe-calibrated	random-search	uswin-search-tpe-calibrated: epochs=8, lr=0.00033666, batch_size=2, uswin_c=16, swin_window=8, swin_heads=4

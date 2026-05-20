@@ -1,1 +1,0 @@
-{"ts":"2026-05-19T00:03:00Z","iter":19,"rationale":"iter 19: sigma=0.12 with factor=0.5","val_score":0.9263,"headroom":0.5920,"kept":true,"status":"keep","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"NEW BEST. Sigma still climbing as we lower it with factor=0.5. Try 0.10."}

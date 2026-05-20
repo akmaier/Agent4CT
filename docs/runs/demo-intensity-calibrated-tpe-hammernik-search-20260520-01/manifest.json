@@ -1,0 +1,10 @@
+{
+  "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260520-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-intensity-calibrated-tpe-hammernik-search",
+  "started": "2026-05-20T22:06:23Z",
+  "agent": "hammernik-search-tpe-calibrated",
+  "model": "optuna-tpe",
+  "status": "running",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)"
+}

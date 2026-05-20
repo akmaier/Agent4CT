@@ -1,0 +1,17 @@
+{
+  "ts": "2026-05-15T21:10:23Z",
+  "run_id": "demo-dl-tv-search-20260515-03",
+  "iter": 12,
+  "challenge": "dl_sparse_view",
+  "change_class": "optimizer",
+  "rationale": "TV search: lambda=0.00037, iters=372, lr=0.0655, clip=0.051, decay=0.0263",
+  "val_score": 0.34919705986976624,
+  "headroom": 0.42670597819222544,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 0,
+  "agent": "tv-search",
+  "model": "random-search",
+  "advice_for_others": "TV lambda=0.00037, lr=0.0655, iters=372 -> headroom=0.4267"
+}

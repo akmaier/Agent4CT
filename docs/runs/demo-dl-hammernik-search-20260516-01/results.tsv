@@ -1,0 +1,12 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.223573	0.284476	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=22, lr=0.0011628, vn_T=5, vn_n_filters=24, vn_kernel=13, vn_lambda_init=0.00080758
+2		0.213877	0.476498	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=25, lr=0.00015739, vn_T=5, vn_n_filters=24, vn_kernel=13, vn_lambda_init=0.00062374
+3		0.359245	0.473955	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=25, lr=0.00028838, vn_T=5, vn_n_filters=32, vn_kernel=7, vn_lambda_init=0.00032351
+4		0.391479	0.287867	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=21, lr=0.0019329, vn_T=5, vn_n_filters=32, vn_kernel=11, vn_lambda_init=0.0023614
+5		0.415653	0.471048	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=21, lr=0.0018947, vn_T=7, vn_n_filters=24, vn_kernel=9, vn_lambda_init=0.00070064
+6		0.188541	0.455653	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=29, lr=0.00026667, vn_T=3, vn_n_filters=16, vn_kernel=11, vn_lambda_init=0.00054657
+7		0.2301	0.502626	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=19, lr=0.00036156, vn_T=7, vn_n_filters=24, vn_kernel=11, vn_lambda_init=0.00057978
+8		0.250726	0.499439	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=11, lr=0.00018412, vn_T=5, vn_n_filters=24, vn_kernel=11, vn_lambda_init=0.00061934
+9		0.264078	0.515916	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=25, lr=0.00024461, vn_T=5, vn_n_filters=24, vn_kernel=11, vn_lambda_init=0.0009379
+10		0.189028	0.452967	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=28, lr=0.00011267, vn_T=5, vn_n_filters=24, vn_kernel=9, vn_lambda_init=0.00011553
+11		0.260977	0.510463	keep	architecture	hammernik-search	random-search	hammernik-search: epochs=21, lr=0.00010389, vn_T=3, vn_n_filters=24, vn_kernel=11, vn_lambda_init=0.0018059

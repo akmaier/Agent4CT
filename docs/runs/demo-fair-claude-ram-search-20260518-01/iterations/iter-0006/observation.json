@@ -1,1 +1,0 @@
-{"ts":"2026-05-18T21:01:39Z","iter":6,"rationale":"iter 6: sigma 0.05->0.1","val_score":0.8785,"headroom":0.5101,"kept":true,"status":"keep","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"NEW BEST. SSIM 0.88. Push sigma=0.2."}

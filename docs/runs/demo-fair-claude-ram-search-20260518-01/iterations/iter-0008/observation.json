@@ -1,1 +1,0 @@
-{"ts":"2026-05-18T21:03:30Z","iter":8,"rationale":"iter 8: sigma 0.2->0.5","val_score":0.9048,"headroom":0.5156,"kept":false,"status":"discard","agent":"claude-ram-agent","model":"claude-sonnet-4.7","advice_for_others":"REGRESSION. Peak between 0.2 and 0.5. Try 0.3 next."}

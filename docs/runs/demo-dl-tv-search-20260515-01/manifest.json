@@ -2,9 +2,9 @@
   "slug": "demo-dl-tv-search-20260515-01",
   "challenge": "dl_sparse_view",
   "slug_prefix": "demo-dl-tv-search",
-  "started": "2026-05-15T21:48:00Z",
+  "started": "2026-05-15T19:48:33Z",
   "agent": "tv-search",
   "model": "random-search",
-  "status": "done",
-  "notes": "20-iteration random search over TV hyperparameters"
+  "status": "running",
+  "notes": "TV hyperparameter random search: lambda, lr, iters, clip, decay"
 }
