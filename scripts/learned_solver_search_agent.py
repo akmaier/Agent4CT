@@ -610,6 +610,13 @@ def main():
                         "to mark the run as using the post-2026-05-19 "
                         "intensity-calibration scoring (CONVENTIONS.md rule 4). "
                         "Joins the `demo-intensity` dashboard chart group.")
+    p.add_argument("--dataset", default=None,
+                   choices=[None, "phantoms", "breast_ct", "mayo_ldct_2d"],
+                   help="Run against a real staged dataset instead of synthetic "
+                        "phantoms. Sets AGENT4CT_DATASET in the subprocess env "
+                        "and re-prefixes the slug as `<dataset>-...-search-*` "
+                        "(e.g. `breast-ct-calibrated-tpe-tv-search-*`) so each "
+                        "dataset becomes its own dashboard chart group.")
     args = p.parse_args()
 
     spec = SOLVERS[args.solver]
@@ -631,6 +638,21 @@ def main():
         spec["slug_prefix"] = spec["slug_prefix"].replace(
             "demo-fair-", "demo-intensity-calibrated-")
         spec["agent_name"] = spec["agent_name"] + "-calibrated"
+    if args.dataset and args.dataset != "phantoms":
+        # demo-intensity-calibrated-tpe-tv-search ->
+        #     breast-ct-calibrated-tpe-tv-search
+        # demo-fair-tpe-tv-search -> breast-ct-tpe-tv-search
+        # First-two-hyphen-segments chart-group key becomes the dataset name
+        # (e.g. "breast-ct"), giving each real dataset its own dashboard chart.
+        ds_prefix = args.dataset.replace("_", "-")
+        spec["slug_prefix"] = spec["slug_prefix"].replace(
+            "demo-intensity-calibrated-", f"{ds_prefix}-calibrated-")
+        spec["slug_prefix"] = spec["slug_prefix"].replace(
+            "demo-fair-", f"{ds_prefix}-")
+        spec["agent_name"] = spec["agent_name"] + f"-{ds_prefix}"
+        # Propagate the dataset choice to every per-iter subprocess via env.
+        os.environ["AGENT4CT_DATASET"] = args.dataset
+        model_label = (model_label or "random-search") + f"-{ds_prefix}"
 
     rng = random.Random(args.seed)
     slug, run_dir = create_run(
