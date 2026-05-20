@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-19T18:00:00Z",
+  "updated": "2026-05-20T08:00:00Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -763,10 +763,10 @@
       "short_id": "20260519-02",
       "challenge": "dl_sparse_view",
       "started": "2026-05-19T16:25:14Z",
-      "status": "running",
-      "n_iterations": 8,
+      "status": "done",
+      "n_iterations": 20,
       "best_score": 0.832748,
-      "best_headroom": 0.470092,
+      "best_headroom": 0.478778,
       "agent": "diff-recon-dcstep-constrained-search-tpe-calibrated",
       "model": "optuna-tpe"
     },

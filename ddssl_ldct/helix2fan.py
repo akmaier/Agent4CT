@@ -57,10 +57,33 @@ def _get_tag(ds, tag, default=None):
     return default
 
 
+def _bytes_to_floats(value):
+    """If `value` is raw bytes (pydicom's fallback for private tags it
+    doesn't know the VR of), unpack as packed little-endian float32s.
+
+    DICOM-CT-PD private tags from the Siemens dataset use VR='UN'
+    (unknown), so pydicom returns the bytes verbatim. The numeric
+    payload is always a stream of float32 little-endian values whose
+    count = len(bytes)/4 (1 for du/dv/sod/sdd; 2 for the (u0,v0) pair).
+    """
+    if not isinstance(value, (bytes, bytearray)):
+        return None
+    b = bytes(value)
+    n = len(b) // 4
+    if n * 4 != len(b) or n == 0:
+        return None
+    import struct
+    return list(struct.unpack(f"<{n}f", b))
+
+
 def _to_float(value, default=None):
-    """Coerce a (potentially MultiValue) DICOM value to float."""
+    """Coerce a (potentially MultiValue / raw-bytes) DICOM value to float."""
     if value is None:
         return default
+    # Private tag returned as raw bytes — unpack as float32.
+    floats = _bytes_to_floats(value)
+    if floats is not None:
+        return float(floats[0])
     try:
         return float(value)
     except (TypeError, ValueError):
@@ -75,6 +98,10 @@ def _to_float_pair(value):
     """Coerce a 2-element DICOM value to a (float, float) tuple."""
     if value is None:
         return None
+    # Private tag returned as raw bytes — unpack as two float32.
+    floats = _bytes_to_floats(value)
+    if floats is not None and len(floats) >= 2:
+        return float(floats[0]), float(floats[1])
     try:
         a, b = value
         return float(a), float(b)

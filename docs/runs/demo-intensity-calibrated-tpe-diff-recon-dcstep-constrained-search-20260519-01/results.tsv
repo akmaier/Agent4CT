@@ -1,1 +1,2 @@
 iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		nan	0.428498	keep	architecture	diff-recon-dcstep-constrained-search-tpe-calibrated	random-search	diff-recon-dcstep-constrained-search-tpe-calibrated: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt, recon_mode=dps, recon_sample_steps=500, recon_eta=30, recon_init=fbp, recon_eta_clamp=False, recon_dcstep_every=3, recon_dcstep_n_cg=20, recon_dcstep_warmup=25, recon_dcstep_relax=1
