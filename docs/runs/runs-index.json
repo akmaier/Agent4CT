@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-21T13:36:38Z",
+  "updated": "2026-05-21T18:36:05Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-dual-domain-bf-search-20260521-01",
@@ -648,6 +648,18 @@
       "best_score": 0.895438,
       "best_headroom": 0.415958,
       "agent": "naf-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01",
+      "short_id": "20260521-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-21T15:31:56Z",
+      "status": "timeout",
+      "n_iterations": 15,
+      "best_score": 0.840662,
+      "best_headroom": 0.299936,
+      "agent": "r2gaussian-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
     {

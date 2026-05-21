@@ -1,0 +1,11 @@
+{
+  "slug": "demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-intensity-calibrated-tpe-r2gaussian-search",
+  "started": "2026-05-21T15:31:56Z",
+  "agent": "r2gaussian-search-tpe-calibrated",
+  "model": "optuna-tpe",
+  "status": "timeout",
+  "notes": "post-geomfix TPE r2gaussian backfill [TIMEOUT at iter 18/20]",
+  "finished": "2026-05-21T18:34:51Z"
+}

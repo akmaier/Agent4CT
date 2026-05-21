@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T17:24:28Z",
+  "run_id": "demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01",
+  "iter": 13,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "r2gaussian-search-tpe-calibrated: gs_n_gaussians=512, gs_n_iter=417, gs_lr_pos=0.0020426, gs_lr_scale=0.025864, gs_lr_amp=0.014787, gs_amp_init=0.0051616, gs_scale_init=0.031649, gs_tv_weight=2.8365e-05",
+  "val_score": 0.7936644554138184,
+  "headroom": 0.21271381109549248,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.003072,
+  "train_n": 0,
+  "agent": "r2gaussian-search-tpe-calibrated",
+  "model": "random-search",
+  "advice_for_others": "r2gaussian-search-tpe-calibrated: gs_n_gaussians=512, gs_n_iter=417, gs_lr_pos=0.0020426, gs_lr_scale=0.025864, gs_lr_amp=0.014787, gs_amp_init=0.0051616, gs_scale_init=0.031649, gs_tv_weight=2.8365e-05 -> hr=0.2127",
+  "comparison_image": "runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0013/comparison.png"
+}
