@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T13:09:40Z",
+  "run_id": "demo-intensity-calibrated-tpe-naf-search-20260521-01",
+  "iter": 20,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "naf-search-tpe-calibrated: naf_n_freqs=6, naf_hidden=256, naf_layers=6, naf_n_iter=2294, naf_lr=0.0010378, naf_tv_weight=2.208e-05, naf_outer_wall_s=2400",
+  "val_score": 0.8316906690597534,
+  "headroom": 0.40948131332963955,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.270337,
+  "train_n": 0,
+  "agent": "naf-search-tpe-calibrated",
+  "model": "random-search",
+  "advice_for_others": "naf-search-tpe-calibrated: naf_n_freqs=6, naf_hidden=256, naf_layers=6, naf_n_iter=2294, naf_lr=0.0010378, naf_tv_weight=2.208e-05, naf_outer_wall_s=2400 -> hr=0.4095",
+  "comparison_image": "runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/iterations/iter-0020/comparison.png"
+}

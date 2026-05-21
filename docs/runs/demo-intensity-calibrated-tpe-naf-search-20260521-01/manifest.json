@@ -5,6 +5,18 @@
   "started": "2026-05-21T00:51:23Z",
   "agent": "naf-search-tpe-calibrated",
   "model": "optuna-tpe",
-  "status": "running",
-  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)"
+  "status": "done",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)",
+  "finished": "2026-05-21T13:09:40Z",
+  "sampler": "tpe",
+  "best_params": {
+    "naf_n_freqs": 6,
+    "naf_hidden": 256,
+    "naf_layers": 6,
+    "naf_n_iter": 2216,
+    "naf_lr": 0.001953889463365225,
+    "naf_tv_weight": 2.9595978671008844e-05,
+    "naf_outer_wall_s": 2400
+  },
+  "best_headroom": 0.4159581668712634
 }
