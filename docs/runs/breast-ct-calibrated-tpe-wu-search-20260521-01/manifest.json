@@ -1,0 +1,20 @@
+{
+  "slug": "breast-ct-calibrated-tpe-wu-search-20260521-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-wu-search",
+  "started": "2026-05-21T05:49:42Z",
+  "agent": "wu-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "done",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)",
+  "finished": "2026-05-21T05:53:02Z",
+  "sampler": "tpe",
+  "best_params": {
+    "wu_n_bands": 4,
+    "wu_n_outer": 1,
+    "wu_motion_range": 8,
+    "wu_motion_window": 1,
+    "wu_soft_thresh": 0.0010886577757856974
+  },
+  "best_headroom": 0.04245870208724589
+}
