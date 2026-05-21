@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T02:15:27Z",
+  "run_id": "demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01",
+  "iter": 9,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "diff-recon-dcstep-constrained-search-tpe-calibrated: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt, recon_mode=dps, recon_sample_steps=800, recon_eta=54.142, recon_init=fbp, recon_eta_clamp=True, recon_dcstep_every=3, recon_dcstep_n_cg=10, recon_dcstep_warmup=10, recon_dcstep_relax=0.95",
+  "val_score": 0.8180014491081238,
+  "headroom": 0.392444079973021,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.958051,
+  "train_n": 200,
+  "agent": "diff-recon-dcstep-constrained-search-tpe-calibrated",
+  "model": "random-search",
+  "advice_for_others": "diff-recon-dcstep-constrained-search-tpe-calibrated: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt, recon_mode=dps, recon_sample_steps=800, recon_eta=54.142, recon_init=fbp, recon_eta_clamp=True, recon_dcstep_every=3, recon_dcstep_n_cg=10, recon_dcstep_warmup=10, recon_dcstep_relax=0.95 -> hr=0.3924",
+  "comparison_image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/iterations/iter-0009/comparison.png"
+}
