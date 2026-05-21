@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-21T02:07:00Z",
+  "updated": "2026-05-21T03:08:51Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-itnet-v3-search-20260521-01",
@@ -19,10 +19,10 @@
       "short_id": "20260521-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-21T01:55:30Z",
-      "status": "running",
-      "n_iterations": 3,
-      "best_score": 0.996357,
-      "best_headroom": 0.698703,
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.997121,
+      "best_headroom": 0.71738,
       "agent": "uswin-search-tpe-calibrated-breast-ct",
       "model": "optuna-tpe-breast-ct"
     },

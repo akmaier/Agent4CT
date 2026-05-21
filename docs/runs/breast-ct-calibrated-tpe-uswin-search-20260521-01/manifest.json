@@ -5,6 +5,17 @@
   "started": "2026-05-21T01:55:30Z",
   "agent": "uswin-search-tpe-calibrated-breast-ct",
   "model": "optuna-tpe-breast-ct",
-  "status": "running",
-  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)"
+  "status": "done",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)",
+  "finished": "2026-05-21T03:05:26Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 14,
+    "lr": 0.00018045729311738355,
+    "batch_size": 2,
+    "uswin_c": 24,
+    "swin_window": 16,
+    "swin_heads": 8
+  },
+  "best_headroom": 0.7173797964005993
 }
