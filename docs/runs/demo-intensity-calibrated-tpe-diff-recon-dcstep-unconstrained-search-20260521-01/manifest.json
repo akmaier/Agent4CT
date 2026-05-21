@@ -5,6 +5,21 @@
   "started": "2026-05-21T00:17:28Z",
   "agent": "diff-recon-dcstep-unconstrained-search-tpe-calibrated",
   "model": "optuna-tpe",
-  "status": "running",
-  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)"
+  "status": "done",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)",
+  "finished": "2026-05-21T03:14:50Z",
+  "sampler": "tpe",
+  "best_params": {
+    "recon_ckpt": "/cluster/maier/Agent4CT/checkpoints/ddpm_unconstrained_final.pt",
+    "recon_mode": "dps",
+    "recon_sample_steps": 200,
+    "recon_eta": 4.10830518545871,
+    "recon_init": "fbp",
+    "recon_eta_clamp": true,
+    "recon_dcstep_every": 4,
+    "recon_dcstep_n_cg": 25,
+    "recon_dcstep_warmup": 10,
+    "recon_dcstep_relax": 1.0
+  },
+  "best_headroom": 0.45298393121046876
 }
