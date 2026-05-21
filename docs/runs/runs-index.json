@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-20T22:57:16Z",
+  "updated": "2026-05-20T23:52:08Z",
   "runs": [
     {
       "slug": "demo-dl-bf-20260516-01",
@@ -427,10 +427,10 @@
       "short_id": "20260520-01",
       "challenge": "dl_sparse_view",
       "started": "2026-05-20T22:06:23Z",
-      "status": "running",
-      "n_iterations": 0,
-      "best_score": null,
-      "best_headroom": null,
+      "status": "done",
+      "n_iterations": 19,
+      "best_score": 0.789964,
+      "best_headroom": 0.36216,
       "agent": "hammernik-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
@@ -444,6 +444,18 @@
       "best_score": null,
       "best_headroom": null,
       "agent": "hammernik-vn-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01",
+      "short_id": "20260520-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-20T22:53:41Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.920274,
+      "best_headroom": 0.456707,
+      "agent": "itnet-v2-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
     {

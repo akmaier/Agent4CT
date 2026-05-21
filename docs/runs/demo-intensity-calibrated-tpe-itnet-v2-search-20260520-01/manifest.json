@@ -1,0 +1,20 @@
+{
+  "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-intensity-calibrated-tpe-itnet-v2-search",
+  "started": "2026-05-20T22:53:41Z",
+  "agent": "itnet-v2-search-tpe-calibrated",
+  "model": "optuna-tpe",
+  "status": "done",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)",
+  "finished": "2026-05-20T23:14:07Z",
+  "sampler": "tpe",
+  "best_params": {
+    "pretrain_epochs": 6,
+    "pretrain_lr": 0.0002278867596341341,
+    "itnet_k": 3,
+    "itnet_alpha_init": 0.032246773258300505,
+    "residual_learning": false
+  },
+  "best_headroom": 0.4567072842609302
+}
