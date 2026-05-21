@@ -5,6 +5,17 @@
   "started": "2026-05-20T22:06:23Z",
   "agent": "uswin-search-tpe-calibrated",
   "model": "optuna-tpe",
-  "status": "running",
-  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)"
+  "status": "done",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)",
+  "finished": "2026-05-20T22:55:15Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 14,
+    "lr": 0.0004939452007064969,
+    "batch_size": 4,
+    "uswin_c": 24,
+    "swin_window": 8,
+    "swin_heads": 2
+  },
+  "best_headroom": 0.46547344153668846
 }

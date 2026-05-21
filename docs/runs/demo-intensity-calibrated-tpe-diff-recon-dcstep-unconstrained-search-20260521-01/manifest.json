@@ -1,0 +1,10 @@
+{
+  "slug": "demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search",
+  "started": "2026-05-21T00:17:28Z",
+  "agent": "diff-recon-dcstep-unconstrained-search-tpe-calibrated",
+  "model": "optuna-tpe",
+  "status": "running",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)"
+}

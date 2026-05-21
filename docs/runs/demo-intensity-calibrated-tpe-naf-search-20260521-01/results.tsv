@@ -1,0 +1,3 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.626986	0.143618	keep	architecture	naf-search-tpe-calibrated	random-search	naf-search-tpe-calibrated: naf_n_freqs=10, naf_hidden=256, naf_layers=4, naf_n_iter=2143, naf_lr=0.0012229, naf_tv_weight=1.26e-05, naf_outer_wall_s=2400
+2		0.800038	0.364577	keep	architecture	naf-search-tpe-calibrated	random-search	naf-search-tpe-calibrated: naf_n_freqs=8, naf_hidden=128, naf_layers=4, naf_n_iter=2817, naf_lr=0.0085079, naf_tv_weight=0.00072454, naf_outer_wall_s=2400

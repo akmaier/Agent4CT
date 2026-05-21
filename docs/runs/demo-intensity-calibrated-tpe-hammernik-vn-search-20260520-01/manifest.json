@@ -5,6 +5,19 @@
   "started": "2026-05-20T22:06:23Z",
   "agent": "hammernik-vn-search-tpe-calibrated",
   "model": "optuna-tpe",
-  "status": "running",
-  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)"
+  "status": "done",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)",
+  "finished": "2026-05-21T01:14:17Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 17,
+    "lr": 0.00020520691655346123,
+    "batch_size": 2,
+    "vn_T": 3,
+    "vn_n_filters": 16,
+    "vn_kernel": 9,
+    "vn_lambda_init": 0.0010713949697964422,
+    "vn_init": "fbp"
+  },
+  "best_headroom": 0.3620519455870742
 }

@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T01:05:11Z",
+  "run_id": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01",
+  "iter": 19,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "hammernik-vn-search-tpe-calibrated: epochs=13, lr=0.00015666, batch_size=2, vn_T=7, vn_n_filters=32, vn_kernel=11, vn_lambda_init=0.0034084, vn_init=fbp",
+  "val_score": 0.7177726030349731,
+  "headroom": 0.3200887989415556,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.034055,
+  "train_n": 200,
+  "agent": "hammernik-vn-search-tpe-calibrated",
+  "model": "random-search",
+  "advice_for_others": "hammernik-vn-search-tpe-calibrated: epochs=13, lr=0.00015666, batch_size=2, vn_T=7, vn_n_filters=32, vn_kernel=11, vn_lambda_init=0.0034084, vn_init=fbp -> hr=0.3201",
+  "comparison_image": "runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/iterations/iter-0019/comparison.png"
+}

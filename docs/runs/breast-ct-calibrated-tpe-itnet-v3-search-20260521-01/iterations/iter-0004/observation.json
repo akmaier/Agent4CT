@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T01:21:11Z",
+  "run_id": "breast-ct-calibrated-tpe-itnet-v3-search-20260521-01",
+  "iter": 4,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "itnet-v3-search-tpe-calibrated-breast-ct: epochs=7, lr=0.00016816, batch_size=6, unet_c=12, itnet_k=4, alpha_init=0.0019062",
+  "val_score": 0.9813170433044434,
+  "headroom": 0.3897907495171177,
+  "kept": true,
+  "status": "keep",
+  "params_M": 2.081942,
+  "train_n": 200,
+  "agent": "itnet-v3-search-tpe-calibrated-breast-ct",
+  "model": "random-search",
+  "advice_for_others": "itnet-v3-search-tpe-calibrated-breast-ct: epochs=7, lr=0.00016816, batch_size=6, unet_c=12, itnet_k=4, alpha_init=0.0019062 -> hr=0.3898",
+  "comparison_image": "runs/breast-ct-calibrated-tpe-itnet-v3-search-20260521-01/iterations/iter-0004/comparison.png"
+}

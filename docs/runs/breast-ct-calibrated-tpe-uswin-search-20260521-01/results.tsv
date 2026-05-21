@@ -1,0 +1,4 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.996357	0.698703	keep	architecture	uswin-search-tpe-calibrated-breast-ct	random-search	uswin-search-tpe-calibrated-breast-ct: epochs=11, lr=0.00023197, batch_size=2, uswin_c=32, swin_window=4, swin_heads=8
+2		0.99496	0.647042	keep	architecture	uswin-search-tpe-calibrated-breast-ct	random-search	uswin-search-tpe-calibrated-breast-ct: epochs=7, lr=0.000467, batch_size=2, uswin_c=16, swin_window=4, swin_heads=8
+3		0.988202	0.522003	keep	architecture	uswin-search-tpe-calibrated-breast-ct	random-search	uswin-search-tpe-calibrated-breast-ct: epochs=13, lr=0.00025237, batch_size=8, uswin_c=32, swin_window=16, swin_heads=4

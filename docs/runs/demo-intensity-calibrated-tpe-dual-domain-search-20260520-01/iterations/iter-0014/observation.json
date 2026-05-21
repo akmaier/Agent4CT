@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-20T23:48:29Z",
+  "run_id": "demo-intensity-calibrated-tpe-dual-domain-search-20260520-01",
+  "iter": 14,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual-domain-search-tpe-calibrated: epochs=7, lr=0.00023557, batch_size=2, unet_c=16",
+  "val_score": 0.6859965324401855,
+  "headroom": 0.3740854076785721,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.465762,
+  "train_n": 400,
+  "agent": "dual-domain-search-tpe-calibrated",
+  "model": "random-search",
+  "advice_for_others": "dual-domain-search-tpe-calibrated: epochs=7, lr=0.00023557, batch_size=2, unet_c=16 -> hr=0.3741",
+  "comparison_image": "runs/demo-intensity-calibrated-tpe-dual-domain-search-20260520-01/iterations/iter-0014/comparison.png"
+}
