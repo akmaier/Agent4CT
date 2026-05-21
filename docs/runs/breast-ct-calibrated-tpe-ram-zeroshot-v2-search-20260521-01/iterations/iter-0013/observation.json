@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T20:05:33Z",
+  "run_id": "breast-ct-calibrated-tpe-ram-zeroshot-v2-search-20260521-01",
+  "iter": 13,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "ram-zeroshot-v2-search-tpe-calibrated-breast-ct: ram_ckpt_path=/cluster/maier/Agent4CT/checkpoints/ram.pth.tar, ram_input_norm=adjoint_max, ram_clamp_output=True, ram_finetune=False, ram_finetune_epochs=0, ram_finetune_lr=0.0001, ram_disable_multiscale=False, ram_disable_cudnn=False, ram_use_deepinv_tomo=False, ram_sigma=0.0077991, ram_factor=0.38905, ram_post_fbp_blend=0.57525",
+  "val_score": 0.9869560599327087,
+  "headroom": 0.295037041574711,
+  "kept": true,
+  "status": "keep",
+  "params_M": 35.618953,
+  "train_n": 0,
+  "agent": "ram-zeroshot-v2-search-tpe-calibrated-breast-ct",
+  "model": "random-search",
+  "advice_for_others": "ram-zeroshot-v2-search-tpe-calibrated-breast-ct: ram_ckpt_path=/cluster/maier/Agent4CT/checkpoints/ram.pth.tar, ram_input_norm=adjoint_max, ram_clamp_output=True, ram_finetune=False, ram_finetune_epochs=0, ram_finetune_lr=0.0001, ram_disable_multiscale=False, ram_disable_cudnn=False, ram_use_deepinv_tomo=False, ram_sigma=0.0077991, ram_factor=0.38905, ram_post_fbp_blend=0.57525 -> hr=0.2950",
+  "comparison_image": "runs/breast-ct-calibrated-tpe-ram-zeroshot-v2-search-20260521-01/iterations/iter-0013/comparison.png"
+}
