@@ -1,7 +1,19 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-21T04:42:09Z",
+  "updated": "2026-05-21T04:54:23Z",
   "runs": [
+    {
+      "slug": "breast-ct-calibrated-tpe-dual-domain-search-20260521-01",
+      "short_id": "20260521-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-21T04:03:55Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.966988,
+      "best_headroom": 0.0,
+      "agent": "dual-domain-search-tpe-calibrated-breast-ct",
+      "model": "optuna-tpe-breast-ct"
+    },
     {
       "slug": "breast-ct-calibrated-tpe-hammernik-search-20260521-01",
       "short_id": "20260521-01",

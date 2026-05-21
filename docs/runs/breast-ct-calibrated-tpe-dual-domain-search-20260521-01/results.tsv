@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.964492	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=6, lr=0.0004177, batch_size=1, unet_c=24
+2		0.964154	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=8, lr=0.00011201, batch_size=1, unet_c=24
+3		0.965108	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=6, lr=0.00024478, batch_size=2, unet_c=16
+4		0.965389	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=5, lr=0.00078554, batch_size=2, unet_c=16
+5		0.965376	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=6, lr=0.00096445, batch_size=2, unet_c=16
+6		0.964682	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=4, lr=0.0035678, batch_size=1, unet_c=24
+7		0.964826	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=8, lr=0.00028814, batch_size=4, unet_c=8
+8		0.966988	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=3, lr=0.0022511, batch_size=1, unet_c=24
+9		0.964138	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=7, lr=0.00043275, batch_size=4, unet_c=8
+10		0.964538	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=5, lr=0.00011049, batch_size=1, unet_c=24
+11		0.963888	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=7, lr=0.0015183, batch_size=1, unet_c=24
+12		0.963971	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=8, lr=0.00010534, batch_size=1, unet_c=24
+13		0.964253	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=7, lr=0.00018374, batch_size=1, unet_c=24
+14		0.964487	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=8, lr=0.00047483, batch_size=1, unet_c=24
+15		0.963672	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=4, lr=0.00018087, batch_size=4, unet_c=24
+16		0.965456	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=6, lr=0.00045392, batch_size=1, unet_c=8
+17		0.965071	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=7, lr=0.001398, batch_size=1, unet_c=24
+18		0.966036	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=5, lr=0.00016728, batch_size=1, unet_c=24
+19		0.964668	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=3, lr=0.0002826, batch_size=2, unet_c=16
+20		0.965249	0	discard	architecture	dual-domain-search-tpe-calibrated-breast-ct	random-search	dual-domain-search-tpe-calibrated-breast-ct: epochs=8, lr=0.00057737, batch_size=4, unet_c=8
