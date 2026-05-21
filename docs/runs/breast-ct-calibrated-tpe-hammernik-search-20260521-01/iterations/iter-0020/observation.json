@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T04:40:44Z",
+  "run_id": "breast-ct-calibrated-tpe-hammernik-search-20260521-01",
+  "iter": 20,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "hammernik-search-tpe-calibrated-breast-ct: epochs=25, lr=0.00040041, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0020251",
+  "val_score": 0.9850991368293762,
+  "headroom": 0.44510768873137174,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.003843,
+  "train_n": 200,
+  "agent": "hammernik-search-tpe-calibrated-breast-ct",
+  "model": "random-search",
+  "advice_for_others": "hammernik-search-tpe-calibrated-breast-ct: epochs=25, lr=0.00040041, batch_size=2, vn_T=3, vn_n_filters=16, vn_kernel=7, vn_lambda_init=0.0020251 -> hr=0.4451",
+  "comparison_image": "runs/breast-ct-calibrated-tpe-hammernik-search-20260521-01/iterations/iter-0020/comparison.png"
+}

@@ -1,0 +1,22 @@
+{
+  "slug": "breast-ct-calibrated-tpe-hammernik-search-20260521-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-hammernik-search",
+  "started": "2026-05-21T03:14:50Z",
+  "agent": "hammernik-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "done",
+  "notes": "post-geometry-fix TPE (FOV mask + corrected det_spacing + 2N pad + H[0]/2 filter)",
+  "finished": "2026-05-21T04:40:44Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 30,
+    "lr": 0.0009591789203634777,
+    "batch_size": 2,
+    "vn_T": 3,
+    "vn_n_filters": 16,
+    "vn_kernel": 9,
+    "vn_lambda_init": 0.009664388380443104
+  },
+  "best_headroom": 0.45485459877597956
+}
