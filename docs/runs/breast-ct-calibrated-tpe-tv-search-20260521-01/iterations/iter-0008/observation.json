@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T05:16:13Z",
+  "run_id": "breast-ct-calibrated-tpe-tv-search-20260521-01",
+  "iter": 8,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv-search-tpe-calibrated-breast-ct: tv_lambda=0.00044125, tv_iterations=265, tv_lr=0.0010175, tv_clip_max=0.078436, tv_decay=0.027163",
+  "val_score": 0.9548409581184387,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.0,
+  "train_n": 0,
+  "agent": "tv-search-tpe-calibrated-breast-ct",
+  "model": "random-search",
+  "advice_for_others": "tv-search-tpe-calibrated-breast-ct: tv_lambda=0.00044125, tv_iterations=265, tv_lr=0.0010175, tv_clip_max=0.078436, tv_decay=0.027163 -> hr=0.0000",
+  "comparison_image": "runs/breast-ct-calibrated-tpe-tv-search-20260521-01/iterations/iter-0008/comparison.png"
+}
