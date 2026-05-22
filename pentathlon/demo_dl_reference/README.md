@@ -221,7 +221,7 @@ All methods run on **synthetic random-ellipse phantoms** (stand-in for real AAPM
   - **Headroom: 0.2562** ← Solid improvement over FBP!
 - **Time**: ~57 seconds
 
-### 3. Dual-Domain Denoising with U-Nets (`solver_dual_ddomain.py`)
+### 3. Dual-Domain Denoising with U-Nets, N2I (`solver_dual_ddomain_n2i.py`)
 - **Method**: Wagner et al. 2023 — learned denoisers in projection + image domain, Noise2Inverse self-supervision
 - **Architecture**: SmallUNet(c=16) in both domains
 - **Training**: 8 epochs, Adam, lr=1e-3, 400 samples
@@ -233,7 +233,7 @@ All methods run on **synthetic random-ellipse phantoms** (stand-in for real AAPM
   - Params: 0.47M
 - **Time**: ~175 seconds
 
-### 4. Dual-Domain Denoising with Bilateral Filters (`solver_dual_ddomain_bilateral.py`)
+### 4. Dual-Domain Denoising with Bilateral Filters, N2I (`solver_dual_ddomain_bilateral_n2i.py`)
 - **Method**: Wagner et al. 2022 — trainable bilateral filters (4 params each) in both domains
 - **Architecture**: `TrainableBilateralFilter2d` (σx, σy, σr learnable) in projection + image domain
 - **Training**: Same Noise2Inverse self-supervision as U-Net variant
@@ -600,8 +600,11 @@ least sensitive knob.
 | `solver_fbp_baseline.py` | Pure FBP | 0 |
 | `solver_tv_iterative.py` | TV-regularized iterative | 0 |
 | `solver_tv_search.py` | TV with hyperparameter search | 0 |
-| `solver_dual_ddomain.py` | Dual-domain learned denoising (U-Net) | ~0.5M |
-| `solver_dual_ddomain_bilateral.py` | Dual-domain learned denoising (bilateral) | **8** |
+| `solver_dual_ddomain_n2i.py` | Dual-domain learned denoising, U-Net, Noise2Inverse self-supervised | ~0.5M |
+| `solver_dual_ddomain_bilateral_n2i.py` | Dual-domain learned denoising, bilateral filters, Noise2Inverse self-supervised | **6 × n_bf** |
+| `solver_dual_ddomain_supervised.py` | Dual-domain learned denoising, U-Net, supervised L2 on full 128 views | ~0.5M |
+| `solver_dual_ddomain_bilateral_supervised.py` | Dual-domain learned denoising, bilateral filters, supervised L2 on full 128 views | **6 × n_bf** |
+| `solver_wu_2015_trainable.py` | Wu 2015 with end-to-end-trainable scalar hyperparams (band scales, sigmoid slope/offset, per-iter soft thresholds, blend weights) | tens |
 | `solver_itnet.py` | ItNet-style v1 (broken) | ~0.2M |
 | `solver_itnet_v2.py` | ItNet-style v2 (pre-train only) | ~0.2M |
 | `solver_itnet_v3.py` | ItNet-style v3 (end-to-end, 5-level) | ~2.5M |

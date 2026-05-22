@@ -1,14 +1,23 @@
-"""Reference: Dual-Domain Denoising with trainable bilateral filters (Wagner et al. 2022).
+"""Reference: Dual-Domain Denoising with trainable bilateral filters
+(Wagner et al. 2022) trained with **Noise2Inverse self-supervision**
+on 2×64-view half-sets.
 
-This is the ultra-low-parameter alternative to the U-Net dual-domain approach.
-Each denoiser has only 4 trainable parameters (sigma_x, sigma_y, sigma_r) plus
-kernel size, compared to 230K+ for SmallUNet.
+This is the ultra-low-parameter alternative to the U-Net dual-domain
+approach. Each denoiser is a ``BilateralFilterStack`` of one or more
+``TrainableBilateralFilter2d`` layers (3 trainable params per BF). With
+``proj_n_bf = img_n_bf = 1`` the network has 6 trainable params total.
 
 Wagner showed dual bilateral filters achieve 97% of dual U-Net SSIM with
-only 8 total parameters (4 for projection + 4 for image domain) on abdomen CT.
+only 8 total parameters (4 for projection + 4 for image domain) on
+abdomen CT.
 
-Architecture: TrainableBilateralFilter2d in both projection and image domain.
-Training: Same Noise2Inverse self-supervision as the U-Net variant.
+For the **supervised** (full 128-view, MSE-vs-clean) variant see
+`solver_dual_ddomain_bilateral_supervised.py` — built 2026-05-22 after
+finding that N2I systematically over-smooths on dense breast-CT scans
+(see `docs/findings.md`).
+
+Training: Noise2Inverse self-supervision via the
+``DualDomainPipeline.training_step`` in ``ddssl_ldct/training.py``.
 """
 from __future__ import annotations
 import argparse
@@ -37,6 +46,13 @@ from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
 CONFIG = {
     **DEMO_DL_DEFAULTS,
+    # ``proj_n_bf`` / ``img_n_bf`` chain N independent Trainable BF
+    # layers in series in each domain (Wagner 2022 §3.2). Each BF
+    # contributes 3 trainable params (σ_x, σ_y, σ_r); default 1
+    # preserves backward compatibility with the original Wagner
+    # dual-bilateral baseline.
+    "proj_n_bf":     1,
+    "img_n_bf":      1,
     # Bilateral filter initial parameters
     "proj_kernel":   5,       # kernel size for projection denoiser
     "proj_sx":       1.0,     # initial sigma_x (angular smoothness)
@@ -52,6 +68,40 @@ CONFIG = {
     "lr":            5e-3,     # Wagner used 5e-3 for BFs (vs 5e-5 for U-Nets)
     "optimizer":     "adam",
 }
+
+
+class BilateralFilterStack(nn.Module):
+    """N independent TrainableBilateralFilter2d layers in series.
+
+    Per Wagner 2022 §3.2: cascading bilateral filters increases the
+    effective receptive field while keeping the parameter count tiny.
+    n=1 is the original single-BF baseline.
+    """
+
+    def __init__(self, n_filters: int, kernel_size: int,
+                 sigma_x: float, sigma_y: float, sigma_r: float):
+        super().__init__()
+        assert n_filters >= 1
+        self.filters = nn.ModuleList([
+            TrainableBilateralFilter2d(kernel_size=kernel_size,
+                                       sigma_x=sigma_x, sigma_y=sigma_y,
+                                       sigma_r=sigma_r)
+            for _ in range(n_filters)
+        ])
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        for bf in self.filters:
+            x = bf(x)
+        return x
+
+    @torch.no_grad()
+    def sigmas(self) -> list[tuple[float, float, float]]:
+        return [
+            (float(torch.exp(bf.log_sx).cpu()),
+             float(torch.exp(bf.log_sy).cpu()),
+             float(torch.exp(bf.log_sr).cpu()))
+            for bf in self.filters
+        ]
 
 
 def build_dataset(geom, n, seed, i0, sigma_e, device):
@@ -108,23 +158,22 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         val_ref = R_full.fbp(val_clean)
         ld_fbp = torch.clamp(R_full.fbp(val_noisy), min=0.0)
 
-    # Build bilateral filter denoisers
-    proj_dn = TrainableBilateralFilter2d(
-        kernel_size=cfg["proj_kernel"],
-        sigma_x=cfg["proj_sx"],
-        sigma_y=cfg["proj_sy"],
-        sigma_r=cfg["proj_sr"],
+    # Build bilateral filter denoisers (stacks of n_bf chained BFs each).
+    proj_dn = BilateralFilterStack(
+        n_filters=cfg["proj_n_bf"], kernel_size=cfg["proj_kernel"],
+        sigma_x=cfg["proj_sx"], sigma_y=cfg["proj_sy"], sigma_r=cfg["proj_sr"],
     )
-    img_dn = TrainableBilateralFilter2d(
-        kernel_size=cfg["img_kernel"],
-        sigma_x=cfg["img_sx"],
-        sigma_y=cfg["img_sy"],
-        sigma_r=cfg["img_sr"],
+    img_dn = BilateralFilterStack(
+        n_filters=cfg["img_n_bf"], kernel_size=cfg["img_kernel"],
+        sigma_x=cfg["img_sx"], sigma_y=cfg["img_sy"], sigma_r=cfg["img_sr"],
     )
     pipe = DualDomainPipeline(geometry=geom, proj_denoiser=proj_dn, image_denoiser=img_dn).to(device)
 
     params_total = sum(p.numel() for p in pipe.parameters() if p.requires_grad)
-    print(f"[solver] Bilateral dual-domain params: {params_total} (proj={sum(p.numel() for p in proj_dn.parameters())}, img={sum(p.numel() for p in img_dn.parameters())})", flush=True)
+    print(f"[solver] Bilateral dual-domain stack: proj_n_bf={cfg['proj_n_bf']} "
+          f"img_n_bf={cfg['img_n_bf']} params_total={params_total} "
+          f"(proj={sum(p.numel() for p in proj_dn.parameters())}, "
+          f"img={sum(p.numel() for p in img_dn.parameters())})", flush=True)
 
     opt = torch.optim.Adam(pipe.parameters(), lr=cfg["lr"])
 
@@ -143,17 +192,15 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             running += float(losses["loss"].detach().cpu())
         mean_loss = running / max(1, train_noisy.shape[0])
 
-        # Log learned sigmas
-        with torch.no_grad():
-            psx = float(torch.exp(proj_dn.log_sx).cpu())
-            psy = float(torch.exp(proj_dn.log_sy).cpu())
-            psr = float(torch.exp(proj_dn.log_sr).cpu())
-            isx = float(torch.exp(img_dn.log_sx).cpu())
-            isy = float(torch.exp(img_dn.log_sy).cpu())
-            isr = float(torch.exp(img_dn.log_sr).cpu())
+        # Log learned sigmas across the BF stacks.
+        proj_sigmas = proj_dn.sigmas()
+        img_sigmas = img_dn.sigmas()
+        proj_str = "; ".join(
+            f"σx={sx:.3f} σy={sy:.3f} σr={sr:.4f}" for (sx, sy, sr) in proj_sigmas)
+        img_str = "; ".join(
+            f"σx={sx:.3f} σy={sy:.3f} σr={sr:.4f}" for (sx, sy, sr) in img_sigmas)
         print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}  "
-              f"proj(σx={psx:.3f} σy={psy:.3f} σr={psr:.4f})  "
-              f"img(σx={isx:.3f} σy={isy:.3f} σr={isr:.4f})", flush=True)
+              f"proj[{proj_str}]  img[{img_str}]", flush=True)
 
     train_time = time.time() - t0
 

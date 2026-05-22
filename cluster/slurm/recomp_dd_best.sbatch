@@ -23,5 +23,5 @@ cat > "$OUT/dd_config.json" <<'JSONEOF'
 {"epochs": 6, "lr": 0.00040713221339467714, "batch_size": 2, "unet_c": 19, "train_n": 200}
 JSONEOF
 
-DD_CONFIG_PATH="$OUT/dd_config.json" python pentathlon/demo_dl_reference/solver_dual_ddomain.py "$OUT"
+DD_CONFIG_PATH="$OUT/dd_config.json" python pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py "$OUT"
 echo "[dd-recomp] Done. Output: $OUT"

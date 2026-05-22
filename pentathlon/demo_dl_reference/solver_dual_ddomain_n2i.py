@@ -1,8 +1,16 @@
-"""Reference: Dual-Domain Denoising with learned denoisers (Wagner et al. 2023).
+"""Reference: Dual-Domain Denoising with learned denoisers (Wagner et al. 2023)
+trained with **Noise2Inverse self-supervision** on 2×64-view half-sets.
 
-This is the "standard" learned approach used by the autoresearch agents.
-Two learned denoisers (projection-domain + image-domain) trained end-to-end
-via Noise2Inverse self-supervision.
+This is the original Wagner self-supervised setup: two learned U-Net
+denoisers (one in projection domain, one in image domain) trained
+end-to-end with the split-view MSE described in
+`ddssl_ldct/training.py::DualDomainPipeline.training_step`. No clean
+target is used at train time.
+
+For the **supervised** (full 128-view, MSE-vs-clean) variant see
+`solver_dual_ddomain_supervised.py` — built 2026-05-22 after finding
+that N2I systematically over-smooths on dense breast-CT scans (see
+`docs/findings.md`).
 
 Architecture: SmallUNet (c=16) in both domains.
 Adapted from the main dl_sparse_view solver for the demo track.

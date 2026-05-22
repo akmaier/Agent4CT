@@ -9,6 +9,166 @@ verdicts belong in `docs/runs/<slug>/stages.tsv`. Things that belong here:
 **facts about the substrate or methodology that the next agent should not
 have to re-discover.**
 
+## 2026-05-22 — Breast-CT DD-UNet supervised L2 reaches PSNR 54.25 dB (hr 0.81)
+
+Following the DD-BF supervised-L2 finding (next entry), ported the same
+loss change to the U-Net dual-domain solver
+(`solver_dual_ddomain_supervised.py`, 466 k params at c=16):
+
+| width | params | val_ssim | val_psnr | hr |
+|---|---:|---:|---:|---:|
+| c=8  | ≈120 k | 0.9979 | 52.53 dB | 0.771 |
+| c=16 | 466 k  | 0.9986 | 54.25 dB | 0.812 |
+
+This is 14.5 dB above baseline FBP — saturation level for the val set.
+The previous N2I-trained version of the same architecture at c=16
+peaked at val_ssim 0.967 / val_psnr 38.0 dB / hr=0. **Loss is the
+dominant lever; doubling U-Net width gains only +1.7 dB on top of the
+supervised-L2 change.** Mark this for the pentathlon all-rounder: any
+dual-domain solver competing on breast-CT or other dense-scan
+challenges should default to MSE-vs-clean if clean targets are
+available; reserve N2I for sparse-view or no-truth regimes.
+
+### Naming convention (2026-05-22)
+
+The N2I solvers now carry the training scheme explicitly in their
+filename:
+
+| Old name | New name | Loss |
+|---|---|---|
+| `solver_dual_ddomain.py`           | `solver_dual_ddomain_n2i.py`           | Noise2Inverse (self-sup) |
+| `solver_dual_ddomain_bilateral.py` | `solver_dual_ddomain_bilateral_n2i.py` | Noise2Inverse (self-sup) |
+| —                                  | `solver_dual_ddomain_supervised.py`           | Supervised L2 vs clean phantom |
+| —                                  | `solver_dual_ddomain_bilateral_supervised.py` | Supervised L2 vs clean phantom |
+
+The bilateral solvers also gained `proj_n_bf` / `img_n_bf` config keys
+(Wagner §3.2 BF chain). On the supervised-L2 BF variant, n=3 BFs per
+domain pushed hr from 0.214 (n=1) → 0.230 (n=1, bigger kernel) →
+0.248 (n=3). The image-domain cascade differentiated into a
+multi-scale stack (BF1 σ_x≈1.10, BF2 σ_x≈1.18, BF3 σ_x≈1.33); the
+projection-domain stack stayed locked-symmetric (gradients too small
+to break the identical init).
+
+### Trainable Wu 2015 (`solver_wu_2015_trainable.py`)
+
+The Wu 2015 classical algorithm has several scalar hyperparameters
+(per-band weights, sigmoid roll-off slope/offset, per-iter soft
+threshold, residual blend) that were hand-tuned in the paper. Built
+end-to-end-trainable variant wrapping these as `nn.Parameter`, trained
+supervised L2 + non-negativity penalty against the clean phantom on
+full 128 views.
+
+Iter-1 (10 params, 5 epochs, lr=1e-2) trained successfully — all
+parameters moved (e.g. sigmoid_offset 1.0 → 2.5, band scales settled
+to suppress the two highest-frequency bands, residual_blend learned an
+asymmetric [−0.20, +2.06] schedule) — but **val PSNR 36.65 dB ≤
+baseline 39.59 dB (hr=0)**: the optimisation landed in a local minimum
+that minimises train MSE but generalises worse than the un-trained Wu
+defaults. The motion-compensated interpolation's piecewise-constant
+shift selection probably blocks the right gradient signal in places.
+Needs lr tuning, warm-start from paper defaults with frozen first few
+epochs, or a less-aggressive loss schedule. Solver builds and runs end
+to end; a useful starting point for future iters.
+
+## 2026-05-22 — Breast-CT DD-BF: Noise2Inverse is the bottleneck; supervised L2 + full 128 views unlocks hr ≈ 0.21
+
+The dual-domain bilateral-filter (DD-BF) solver
+(`solver_dual_ddomain_bilateral_n2i.py`, formerly
+`solver_dual_ddomain_bilateral.py` — renamed 2026-05-22 to make the
+training scheme explicit) had been stuck at hr=0 across all TPE and
+agentic iterations on breast-CT (best val_ssim ≈ 0.957 ≤ baseline FBP
+0.957). The U-Net dual-domain variant (`solver_dual_ddomain_n2i.py`,
+formerly `solver_dual_ddomain.py`) had the same problem at every U-Net
+width
+tested (c=4, c=8, c=16): SSIM stuck just above baseline FBP, PSNR
+*below* baseline by ~1.7 dB.
+
+Root cause confirmed empirically (iters 1–5 on
+`breast-ct-claude-agentic-dual-domain-{,bf-}search-20260521-01`): the
+**Noise2Inverse split-view MSE** (`DualDomainPipeline.training_step`,
+`ddssl_ldct/training.py`) feeds the model the FBP of one 64-view
+half-set as a "target" for the other half-set. On dense breast scans
+the half-view FBP has an irreducible noise floor, so minimising MSE
+against it *encourages over-smoothing*. The bilateral filter's image-
+domain spatial sigma grew 0.5 → 1.08 in 2 epochs (iter-1) and 0.3 →
+0.87 in 5 epochs (iter-2), saturating the kernel and over-blurring
+fibroglandular detail. Increasing U-Net width didn't help — the loss
+was pulling all architectures the same way.
+
+Fix: new `solver_dual_ddomain_bilateral_supervised.py` — full 128-view
+forward pass, plain MSE against the *clean* phantom + non-negativity
+penalty (using the existing `supervised_recon_loss`). Same 6-parameter
+bilateral filter, same intensity calibration, same comparison panel.
+
+Iter-1 result (slug
+`breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01`,
+job 761594, 70 s, lme221):
+
+| solver | params | val_ssim | val_psnr | headroom |
+|---|---:|---:|---:|---:|
+| baseline FBP | 0 | 0.957 | 39.74 dB | 0 |
+| N2I DD-BF (best of 2 iters) | 6 | 0.957 | 37.50 dB | 0 |
+| N2I DD-UNet (c=16, 5 ep) | 466 k | 0.967 | 38.01 dB | 0 |
+| **Supervised-L2 DD-BF (this iter)** | **6** | **0.986** | **41.83 dB** | **0.21** |
+
+A 6-parameter bilateral filter trained with the right loss beats a
+466 k-parameter U-Net trained with the wrong loss by 3.8 dB PSNR on
+the same dataset. Lesson: **loss formulation, not model capacity, was
+the bottleneck for breast-CT dense-view denoising.** Mark this for the
+all-rounder phase — the N2I assumption is good for sparse-view (where
+the half-view FBP is so degraded the noise floor is below the signal)
+but a poor fit for dense scans where FBP itself is already strong.
+
+Caveat: supervised-L2 needs the clean phantom at train time, so this
+variant is only fair against other supervised baselines (it cannot
+play the "self-supervised" tag). Track separately in the dashboard.
+
+## 2026-05-22 — Random / TPE search is NOT autoresearch (terminology fix)
+
+Previous Agent4CT iterations conflated three distinct things by writing all
+of them into `docs/runs/<slug>/...` with the same on-disk shape:
+
+1. **Autoresearch (Karpathy-style)** — an *LLM* reads prior observations
+   + literature, forms a hypothesis about *why* the last iter
+   under/over-performed, proposes a *qualitatively different* next config
+   (architecture / loss / optimiser / preprocessing) and writes a
+   `rationale` that names the hypothesis. The slug carries
+   `claude-agentic` (or another LLM family tag).
+2. **TPE / Bayesian hyperparameter optimisation** — Optuna or similar
+   samples the *same* parametric solver inside a *fixed* numeric bounding
+   box, learning a surrogate over the box. No hypothesis, no architecture
+   change, no qualitative jump. Slug should carry `tpe`, model field
+   should be `optuna-tpe-*`.
+3. **Random search** — uniform / log-uniform sampling inside the same
+   box. Slug should carry `random-search`.
+
+All three are *hyperparameter-tuning aids* for the agentic loop, but
+**only #1 is the autoresearch loop itself**. Earlier scripts
+(`scripts/tv_search_agent.py`, `scripts/learned_solver_search_agent.py`,
+`scripts/tv_search_agent_standalone.py`, `scripts/record_demo_refs.py`)
+called themselves "agentic" or "autoresearch" because they wrote into the
+same `docs/runs/` schema; that wording is wrong and has been corrected.
+Rule of thumb when reading any prior run: **if `agent` ends in
+`-search` and `model` is `random-search` or starts with `optuna-`, the
+run was a parameter sampler, not an autoresearch iteration.** The
+dashboard groups them next to each other for comparison, which is fine
+— just don't claim that "TPE found x" was an "agentic finding".
+
+What an autoresearch iteration *must* include:
+- A specific testable hypothesis in the `rationale` field, naming the
+  expected mechanism (e.g. "img-domain BF σ ran away from 0.5 → 1.08 in
+  iter 1, causing over-smoothing; cap with smaller kernel + lower lr").
+- A change that the sampler could not have proposed by itself (a new
+  loss term, a new architecture, an asymmetric hyperparameter constraint,
+  a literature-cited prior).
+- Inspection of the previous iter's `comparison.png` *by the agent*
+  before the proposal (the agent should be able to name the artefact:
+  radial blur, ringing, oversmoothing, streak, etc.).
+
+If the proposal is "the same solver with the next sample in a box", it
+should be filed as a TPE / random-search iteration, not an autoresearch
+one.
+
 ## 2026-05-16 — B epochs=10 confirmed at stage: new high-water mark 0.6248
 
 Followed up on B's "underfits at stage" finding by raising iter-base

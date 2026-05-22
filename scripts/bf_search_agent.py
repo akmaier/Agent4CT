@@ -90,7 +90,7 @@ def run_solver(params, out_dir):
     
     cmd = [
         sys.executable,
-        str(REPO_ROOT / "pentathlon" / "demo_dl_reference" / "solver_dual_ddomain_bilateral.py"),
+        str(REPO_ROOT / "pentathlon" / "demo_dl_reference" / "solver_dual_ddomain_bilateral_n2i.py"),
         str(out_dir),
     ]
     

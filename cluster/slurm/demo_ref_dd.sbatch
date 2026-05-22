@@ -28,7 +28,7 @@ echo "[demo-ref-dd] host=$(hostname) job=$SLURM_JOB_ID"
 nvidia-smi -L
 python -c "import torch; print(f'torch={torch.__version__} cuda={torch.cuda.is_available()}')"
 
-python pentathlon/demo_dl_reference/solver_dual_ddomain.py "$OUT"
+python pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py "$OUT"
 
 cat "$OUT/result.json"
 echo "[demo-ref-dd] done."

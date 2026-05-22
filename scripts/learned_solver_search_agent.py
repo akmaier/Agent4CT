@@ -1,14 +1,22 @@
-"""Generic 20-iter random-search agent for the learned demo-dl-reference solvers.
+"""Generic 20-iter random-search / TPE harness for the learned
+demo-dl-reference solvers (NOT an autoresearch agent).
 
 Currently supports three solvers via --solver:
   - itnet_v2      → solver_itnet_v2.py        (ITNET_CONFIG_PATH)
   - itnet_v3      → solver_itnet_v3.py        (ITNET_CONFIG_PATH)
   - hammernik     → solver_hammernik_2017.py  (HAMMERNIK_CONFIG_PATH)
 
-Each iter samples a hyperparameter point, runs the solver via subprocess,
-copies its `comparison.png` into the iter dir, and writes
-`observation.json` + a `results.tsv` row in the autoresearch shape that
-the dashboard reads.
+Each iter samples a hyperparameter point (random or Optuna-TPE), runs
+the solver via subprocess, copies its `comparison.png` into the iter
+dir, and writes `observation.json` + a `results.tsv` row in the same
+on-disk shape that the autoresearch dashboard reads. This is a
+**hyperparameter sampler**, not the LLM-driven autoresearch loop —
+the file name says "agent" only for historical reasons. See
+`docs/findings.md` (2026-05-22) for the distinction. If you are reading
+this from inside an autoresearch loop and find yourself sampling the
+same parametric solver inside a fixed box, you are not doing
+autoresearch — file the run under a `-tpe` or `-random-search` slug
+instead of `-claude-agentic`.
 
 Usage:
     python scripts/learned_solver_search_agent.py --solver itnet_v3 --iterations 20
@@ -63,7 +71,7 @@ SOLVERS = {
     },
     # ----- Fair re-runs for solvers that previously had standalone agents ------
     "dual_domain": {
-        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain.py",
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py",
         "env_var": "DD_CONFIG_PATH",
         "slug_prefix": "demo-fair-dual-domain-search",
         "agent_name": "dual-domain-search",
@@ -75,7 +83,7 @@ SOLVERS = {
         },
     },
     "dual_domain_bilateral": {
-        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral.py",
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_n2i.py",
         "env_var": "DD_BF_CONFIG_PATH",
         "slug_prefix": "demo-fair-dual-domain-bf-search",
         "agent_name": "dual-domain-bf-search",
@@ -127,7 +135,7 @@ SOLVERS = {
         },
     },
     "dual_domain_v2": {
-        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain.py",
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py",
         "env_var": "DD_CONFIG_PATH",
         "slug_prefix": "demo-fair-dual-domain-v2-search",
         "agent_name": "dual-domain-v2-search",
@@ -141,7 +149,7 @@ SOLVERS = {
         },
     },
     "dual_domain_bilateral_v2": {
-        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral.py",
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_n2i.py",
         "env_var": "DD_BF_CONFIG_PATH",
         "slug_prefix": "demo-fair-dual-domain-bf-v2-search",
         "agent_name": "dual-domain-bf-v2-search",

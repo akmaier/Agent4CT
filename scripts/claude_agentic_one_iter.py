@@ -1,0 +1,166 @@
+"""Claude-driven agentic search: run ONE iter of a solver with a chosen config,
+then record the observation in the dashboard's standard layout.
+
+For each hr=0 breast-ct solver, Claude proposes the next-iter config based on
+the prior iter history + the user's hint, dispatches one iter via this driver,
+reads the result, and iterates. Slug naming: `breast-ct-claude-agentic-<solver>-search-<DATE>-NN`.
+
+Usage:
+    AGENT4CT_DATASET=breast_ct \
+    SLUG=breast-ct-claude-agentic-ram-zeroshot-search-20260521-01 \
+    ITER_N=1 \
+    SOLVER=ram_zeroshot \
+    CFG_JSON=/tmp/iter_1_cfg.json \
+    python scripts/claude_agentic_one_iter.py
+"""
+from __future__ import annotations
+import json
+import os
+import shutil
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+DOCS_RUNS = REPO / "docs" / "runs"
+RUNS_BASE = Path(os.environ.get("AGENT4CT_RUNS", "/cluster/maier/Agent4CT/runs"))
+
+SOLVER_MAP = {
+    "ram_zeroshot":         ("pentathlon/demo_dl_reference/solver_ram.py",          "RAM_CONFIG_PATH"),
+    "tv_iterative":         ("pentathlon/demo_dl_reference/solver_tv_search.py",     "TV_CONFIG_PATH"),
+    # Noise2Inverse self-supervised dual-domain variants (file names made
+    # explicit 2026-05-22 — see docs/findings.md re: N2I vs supervised L2).
+    "dual_domain_n2i":           ("pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py",            "DD_CONFIG_PATH"),
+    "dual_domain_bilateral_n2i": ("pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_n2i.py", "DD_CONFIG_PATH"),
+    # Back-compat aliases — older agentic configs use these short keys.
+    "dual_domain":          ("pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py",            "DD_CONFIG_PATH"),
+    "dual_domain_bilateral": ("pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_n2i.py", "DD_CONFIG_PATH"),
+    # Supervised-L2 variants (2026-05-22): full 128 views, MSE against clean
+    # phantom instead of Noise2Inverse self-supervision. Built to test
+    # whether N2I's noise-floor was what was pulling the dual-domain
+    # solvers to over-smooth on dense breast scans (yes, it was — see
+    # docs/findings.md).
+    "dual_domain_bilateral_supervised": (
+        "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_supervised.py", "DD_CONFIG_PATH"),
+    "dual_domain_supervised": (
+        "pentathlon/demo_dl_reference/solver_dual_ddomain_supervised.py", "DD_CONFIG_PATH"),
+    # End-to-end-trainable Wu 2015 (2026-05-22): per-band scales,
+    # sigmoid slope/offset, per-iter soft thresholds + residual blends
+    # wrapped as nn.Parameter and trained supervised-L2 vs clean phantom.
+    "wu_2015_trainable": (
+        "pentathlon/demo_dl_reference/solver_wu_2015_trainable.py", "WU_CONFIG_PATH"),
+}
+
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def main() -> int:
+    slug    = os.environ["SLUG"]
+    iter_n  = int(os.environ["ITER_N"])
+    solver_key = os.environ["SOLVER"]
+    cfg_json = Path(os.environ["CFG_JSON"])
+    if solver_key not in SOLVER_MAP:
+        raise ValueError(f"unknown solver {solver_key!r}; choices: {list(SOLVER_MAP)}")
+    solver_path, env_var = SOLVER_MAP[solver_key]
+
+    # Per-iter working dir (raw solver output goes here).
+    iter_dir = RUNS_BASE / f"{slug}-iter-{iter_n:04d}"
+    iter_dir.mkdir(parents=True, exist_ok=True)
+
+    # Dashboard slug dir.
+    dash_slug = DOCS_RUNS / slug
+    dash_iter = dash_slug / "iterations" / f"iter-{iter_n:04d}"
+    dash_iter.mkdir(parents=True, exist_ok=True)
+
+    # Make sure the manifest exists; create on first iter.
+    manifest_path = dash_slug / "manifest.json"
+    if not manifest_path.exists():
+        manifest = {
+            "slug": slug, "challenge": "dl_sparse_view",
+            "slug_prefix": "-".join(slug.split("-")[:-2]),
+            "started": utc_now_iso(),
+            "agent": f"{solver_key}-claude-agentic-breast-ct",
+            "model": "claude-opus-4.7-1m",
+            "status": "running",
+            "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints.",
+        }
+        manifest_path.write_text(json.dumps(manifest, indent=2))
+
+    # results.tsv header on first iter.
+    tsv_path = dash_slug / "results.tsv"
+    if not tsv_path.exists():
+        tsv_path.write_text("iter\tcommit\tval_score\theadroom\tstatus\tchange_class\tagent\tmodel\trationale\n")
+
+    # Run the solver with the chosen config.
+    cfg = json.loads(cfg_json.read_text())
+    print(f"[agentic] iter={iter_n}  solver={solver_key}  cfg={cfg}", flush=True)
+    os.environ[env_var] = str(cfg_json)
+    t0 = time.time()
+    import subprocess
+    cmd = [sys.executable, str(REPO / solver_path), str(iter_dir)]
+    res = subprocess.run(cmd, env=os.environ.copy())
+    if res.returncode != 0:
+        print(f"[agentic] solver returned exit code {res.returncode}", flush=True)
+        # Still record so we know it crashed.
+    elapsed = time.time() - t0
+
+    # Read solver's result.json + copy comparison.png.
+    rj = iter_dir / "result.json"
+    if rj.exists():
+        result = json.loads(rj.read_text())
+    else:
+        result = {"val_score": None, "headroom": 0.0, "error": "no result.json"}
+    cmp_src = iter_dir / "comparison.png"
+    if cmp_src.exists():
+        shutil.copyfile(cmp_src, dash_iter / "comparison.png")
+
+    # Build observation.json (the per-iter dashboard record).
+    rationale_keys = list(cfg.keys())
+    rationale = f"{solver_key}-claude-agentic: " + ", ".join(
+        f"{k}={cfg[k]}" for k in rationale_keys
+    )
+    obs = {
+        "ts": utc_now_iso(),
+        "run_id": slug,
+        "iter": iter_n,
+        "challenge": "dl_sparse_view",
+        "change_class": "architecture",
+        "rationale": rationale,
+        "val_score":   result.get("val_score"),
+        "headroom":    result.get("headroom") or 0.0,
+        "val_ssim":    result.get("val_ssim"),
+        "val_psnr":    result.get("val_psnr"),
+        "val_rmse":    result.get("val_rmse"),
+        "kept":        (result.get("headroom") or 0.0) > 0,
+        "status":      "keep" if (result.get("headroom") or 0.0) > 0 else "discard",
+        "params_M":    result.get("params_M"),
+        "train_n":     400,
+        "val_n":       result.get("val_n", 100),
+        "agent":       f"{solver_key}-claude-agentic-breast-ct",
+        "model":       "claude-opus-4.7-1m",
+        "advice_for_others": rationale,
+        "comparison_image": f"runs/{slug}/iterations/iter-{iter_n:04d}/comparison.png",
+        "elapsed_s": elapsed,
+        "cfg_full":  cfg,
+    }
+    (dash_iter / "observation.json").write_text(json.dumps(obs, indent=2))
+
+    # Append results.tsv row.
+    val = obs["val_score"] if obs["val_score"] is not None else ""
+    val_s = f"{val:.6g}" if isinstance(val, (int, float)) else ""
+    hr_s  = f"{obs['headroom']:.6g}" if isinstance(obs["headroom"], (int, float)) else ""
+    with tsv_path.open("a") as f:
+        f.write(
+            f"{iter_n}\t\t{val_s}\t{hr_s}\t{obs['status']}\t{obs['change_class']}\t"
+            f"{obs['agent']}\t{obs['model']}\t{rationale}\n"
+        )
+
+    print(f"[agentic] iter {iter_n} done  ssim={val_s}  hr={hr_s}  elapsed={elapsed:.1f}s", flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

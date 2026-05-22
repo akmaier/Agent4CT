@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-claude-agentic-dual-domain-bf-l2-search",
+  "started": "2026-05-22T14:05:36Z",
+  "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

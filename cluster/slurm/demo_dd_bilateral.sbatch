@@ -16,5 +16,5 @@ export PYTHONPATH="/cluster/maier/Agent4CT${PYTHONPATH:+:$PYTHONPATH}"
 OUT="/cluster/maier/Agent4CT/runs/dd-bilateral-test-${SLURM_JOB_ID}"
 mkdir -p "$OUT"
 
-python pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral.py "$OUT"
+python pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_n2i.py "$OUT"
 echo "[dd-bf] Done. Output: $OUT"
