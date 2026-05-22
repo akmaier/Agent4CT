@@ -49,26 +49,55 @@ multi-scale stack (BF1 σ_x≈1.10, BF2 σ_x≈1.18, BF3 σ_x≈1.33); the
 projection-domain stack stayed locked-symmetric (gradients too small
 to break the identical init).
 
-### Trainable Wu 2015 (`solver_wu_2015_trainable.py`)
+### Trainable Wu 2015 (`solver_wu_2015_trainable.py`) — 10-iter autoresearch loop
 
-The Wu 2015 classical algorithm has several scalar hyperparameters
-(per-band weights, sigmoid roll-off slope/offset, per-iter soft
-threshold, residual blend) that were hand-tuned in the paper. Built
-end-to-end-trainable variant wrapping these as `nn.Parameter`, trained
-supervised L2 + non-negativity penalty against the clean phantom on
-full 128 views.
+Built the variant 2026-05-22 and ran a 10-iteration agentic search
+(slug `breast-ct-claude-agentic-wu-2015-l2-search-20260522-01`):
 
-Iter-1 (10 params, 5 epochs, lr=1e-2) trained successfully — all
-parameters moved (e.g. sigmoid_offset 1.0 → 2.5, band scales settled
-to suppress the two highest-frequency bands, residual_blend learned an
-asymmetric [−0.20, +2.06] schedule) — but **val PSNR 36.65 dB ≤
-baseline 39.59 dB (hr=0)**: the optimisation landed in a local minimum
-that minimises train MSE but generalises worse than the un-trained Wu
-defaults. The motion-compensated interpolation's piecewise-constant
-shift selection probably blocks the right gradient signal in places.
-Needs lr tuning, warm-start from paper defaults with frozen first few
-epochs, or a less-aggressive loss schedule. Solver builds and runs end
-to end; a useful starting point for future iters.
+| iter | change vs prior | val_psnr | hr | observation |
+|---|---|---:|---:|---|
+| 1  | baseline cfg (lr=1e-2, ep=5)        | 36.65 | 0.000 | lr too high, killed high-freq bands |
+| 2  | **lr=1e-3, ep=10**                   | **41.74** | **0.219** | **sweet spot — best of the search** |
+| 3  | ep=20                                | 39.72 | 0.015 | overfit; train loss 0.016→1e-4 but val drops |
+| 4  | ep=8                                 | 40.64 | 0.114 | undertrained |
+| 5  | n_outer=3                            | 25.14 | 0.000 | collapse — blend went [1.87, 2.04, 1.03] |
+| 6  | wd=1e-3 (AdamW)                      | 40.81 | 0.131 | wd too weak; trajectory ≈ no-wd |
+| 7  | wd=1e-2                              | 40.65 | 0.114 | still too weak |
+| 8  | L1 loss (`loss_base="l1"`)           | 40.81 | 0.131 | same band-runaway pattern |
+| 9  | train_n=2000 (5× more data)          | 38.63 | 0.000 | data made overfit *worse* — band_scale[0]→53× |
+| 10 | hard clamps on band_scale / blend / soft_thresh | 36.55 | 0.000 | optimizer pinned to clamp corners — new pathology |
+
+**Ceiling**: hr ≈ 0.22 (iter-2). No further config or
+architectural-clamp move broke past it. The pattern across iters:
+**the optimisation landscape consistently pushes band_scale[1]
+upward and bands 3-4 toward zero** — a textbook noise-suppression
+solution that does well on the 400-phantom train set but fails on val
+because the per-band amplification it learns is dataset-specific
+overfit. Hard clamps don't help (corners become the new attractor);
+more data makes it worse (the optimizer becomes more confident);
+weight decay at reasonable magnitudes is too weak; L1 doesn't change
+the trajectory.
+
+What would likely break past hr=0.22:
+- **Validation-based early stopping** with best-checkpoint restoration.
+  Iter-2 happened to land in the sweet spot because epochs=10 was
+  exactly right; a proper early-stop would generalise that.
+- **Softmax-parametrised band weights** (sum constrained to a fixed
+  total) instead of independent log-scales — removes the band-runaway
+  degree of freedom by construction.
+- **Hybrid Wu + BF tail** — Wu does aliasing-free + residual cleanup,
+  a 6-param image-domain BF tail (supervised L2) cleans up remaining
+  streaks. Likely lands near hr ≈ 0.30 based on the 6-param BF
+  reference (hr=0.21).
+- **Bigger algorithmic capacity** — make `wu_n_bands` a config knob
+  that goes to 8 (the paper's value); learn per-pixel soft thresholds
+  via a tiny CNN-prior; etc.
+
+Even with the ceiling, the trainable Wu (10 params, hr=0.22) matches
+the 6-param DD-BF supervised (hr=0.23) and the 18-param 3×3 BF stack
+(hr=0.25). For a *classical* CT algorithm with end-to-end trainable
+knobs and no neural net, that's a respectable result and proves the
+machinery works.
 
 ## 2026-05-22 — Breast-CT DD-BF: Noise2Inverse is the bottleneck; supervised L2 + full 128 views unlocks hr ≈ 0.21
 

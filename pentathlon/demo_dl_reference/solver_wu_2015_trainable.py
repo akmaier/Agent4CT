@@ -84,6 +84,26 @@ CONFIG = {
     "epochs":         10,
     "batch_size":     1,
     "lr":             1e-2,       # scalar params — relatively big lr is fine
+    "weight_decay":   0.0,        # AdamW decoupled wd, applied to all
+                                  # trainable scalars; small values (e.g.
+                                  # 1e-3) pull the optimum back toward
+                                  # paper defaults and prevent the
+                                  # high-frequency band scales from
+                                  # collapsing to zero on small datasets.
+    "loss_base":      "mse",      # "mse" or "l1"; l1 is less sensitive
+                                  # to outliers and damps the band-scale
+                                  # runaway behaviour seen with MSE.
+    # Hard clamps on the trainable scalars to keep the optimiser out
+    # of the runaway regimes observed in iters 1-9 (2026-05-22):
+    # band_scale[0] amplified to 53x with train_n=2000, killing val
+    # PSNR. soft_thresh[1] went to 0.30 (larger than the breast's
+    # entire dynamic range), nullifying the second outer iter.
+    "wu_band_scale_min":  0.1,
+    "wu_band_scale_max":  3.0,
+    "wu_blend_min":      -0.5,
+    "wu_blend_max":       2.0,
+    "wu_soft_thresh_min": 1.0e-5,
+    "wu_soft_thresh_max": 0.05,
     "lambda_neg":     1.0,
 }
 
@@ -138,6 +158,21 @@ class TrainableWu2015(nn.Module):
         self.residual_blend = nn.Parameter(
             torch.full((n_outer,), float(cfg["wu_residual_blend"])))
 
+        # Clamp bounds (registered as buffers so they move to device and
+        # appear in state_dict but are not optimised).
+        self.register_buffer("band_scale_min",
+                             torch.tensor(float(cfg["wu_band_scale_min"])))
+        self.register_buffer("band_scale_max",
+                             torch.tensor(float(cfg["wu_band_scale_max"])))
+        self.register_buffer("blend_min",
+                             torch.tensor(float(cfg["wu_blend_min"])))
+        self.register_buffer("blend_max",
+                             torch.tensor(float(cfg["wu_blend_max"])))
+        self.register_buffer("soft_thresh_min",
+                             torch.tensor(float(cfg["wu_soft_thresh_min"])))
+        self.register_buffer("soft_thresh_max",
+                             torch.tensor(float(cfg["wu_soft_thresh_max"])))
+
     # ------------------------------------------------------------------ #
     def _aliasing_free_fbp(self, sino: torch.Tensor) -> torch.Tensor:
         """View-aliasing-free reconstruction with trainable band weighting."""
@@ -147,7 +182,10 @@ class TrainableWu2015(nn.Module):
         fR = self.band_centers.view(-1, 1, 1) * delta_R.unsqueeze(0)  # (B, H, W)
         weights = torch.sigmoid(
             -self.sigmoid_slope * (fR - self.sigmoid_offset))  # (B, H, W)
-        band_scale = torch.exp(self.log_band_scale).view(-1, 1, 1)
+        band_scale = torch.clamp(
+            torch.exp(self.log_band_scale),
+            min=float(self.band_scale_min), max=float(self.band_scale_max),
+        ).view(-1, 1, 1)
         weights = weights * band_scale
         wsum = weights.sum(dim=0, keepdim=True).clamp(min=1e-6)
         weights = weights / wsum                                # (B, H, W)
@@ -185,10 +223,18 @@ class TrainableWu2015(nn.Module):
                 residual_sino, max_shift=self.motion_range,
                 window=self.motion_window)
             residual_img = self.dense_proj.fbp(residual_dense, filter_name="hann")
-            soft_thresh = torch.exp(self.log_soft_thresh[it])
+            soft_thresh = torch.clamp(
+                torch.exp(self.log_soft_thresh[it]),
+                min=float(self.soft_thresh_min),
+                max=float(self.soft_thresh_max),
+            )
             residual_img = torch.sign(residual_img) * torch.clamp(
                 residual_img.abs() - soft_thresh, min=0.0)
-            g = g + self.residual_blend[it] * residual_img
+            blend = torch.clamp(
+                self.residual_blend[it],
+                min=float(self.blend_min), max=float(self.blend_max),
+            )
+            g = g + blend * residual_img
         return g.clamp_min(0.0)
 
 
@@ -233,7 +279,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     print(f"[solver] Trainable-Wu2015 params: {params_total} "
           f"(n_bands={cfg['wu_n_bands']}, n_outer={cfg['wu_n_outer']})", flush=True)
 
-    opt = torch.optim.Adam(model.parameters(), lr=cfg["lr"])
+    # AdamW for decoupled weight decay (pulls params toward 0, but our
+    # init is near sane paper defaults so we keep wd small; wd=0
+    # recovers plain Adam behaviour).
+    opt = torch.optim.AdamW(model.parameters(), lr=cfg["lr"],
+                             weight_decay=cfg.get("weight_decay", 0.0))
 
     t0 = time.time()
     for ep in range(cfg["epochs"]):
@@ -247,7 +297,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             truth = train_ph[idx].to(device)
             pred = model(sino)
             loss = supervised_recon_loss(pred, truth,
-                                          lambda_neg=cfg["lambda_neg"], base="mse")
+                                          lambda_neg=cfg["lambda_neg"],
+                                          base=cfg.get("loss_base", "mse"))
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()
