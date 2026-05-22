@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-22T05:07:43Z",
+  "updated": "2026-05-22T05:08:23Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01",
@@ -155,6 +155,18 @@
       "n_iterations": 20,
       "best_score": 0.972924,
       "best_headroom": 0.0,
+      "agent": "ram-zeroshot-search-tpe-calibrated-breast-ct",
+      "model": "optuna-tpe-breast-ct"
+    },
+    {
+      "slug": "breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01",
+      "short_id": "20260522-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-22T04:51:33Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.988126,
+      "best_headroom": 0.307663,
       "agent": "ram-zeroshot-search-tpe-calibrated-breast-ct",
       "model": "optuna-tpe-breast-ct"
     },

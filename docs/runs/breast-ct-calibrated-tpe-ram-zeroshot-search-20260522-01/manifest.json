@@ -1,0 +1,27 @@
+{
+  "slug": "breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-ram-zeroshot-search",
+  "started": "2026-05-22T04:51:33Z",
+  "agent": "ram-zeroshot-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "done",
+  "notes": "post-agentic TPE: RAM bounds from claude loop; diff_recon DDPM-ckpt fix",
+  "finished": "2026-05-22T05:04:23Z",
+  "sampler": "tpe",
+  "best_params": {
+    "ram_ckpt_path": "/cluster/maier/Agent4CT/checkpoints/ram.pth.tar",
+    "ram_input_norm": "adjoint_max",
+    "ram_clamp_output": true,
+    "ram_finetune": false,
+    "ram_finetune_epochs": 0,
+    "ram_finetune_lr": 0.0001,
+    "ram_disable_multiscale": true,
+    "ram_disable_cudnn": false,
+    "ram_use_deepinv_tomo": false,
+    "ram_sigma": 0.008118499949119786,
+    "ram_factor": 0.39901093429474727,
+    "ram_post_fbp_blend": 0.502043298699653
+  },
+  "best_headroom": 0.3076625923373987
+}
