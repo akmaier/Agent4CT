@@ -105,6 +105,61 @@ SOLVERS = {
             "tv_decay":      (0.0, 0.05, "linear"),
         },
     },
+    # ---- Agentic v2 spaces for the breast-ct hr=0 solvers ----------------
+    # Per user (2026-05-21): tv + ram have too little weight on data
+    # consistency; dual_domain & dual_domain_bilateral show oversmoothing
+    # in projection domain leading to radial smudging. The v2 spaces narrow
+    # bounds AWAY from those failure modes.
+    "tv_iterative_v2": {
+        "solver": "pentathlon/demo_dl_reference/solver_tv_search.py",
+        "env_var": "TV_CONFIG_PATH",
+        "slug_prefix": "demo-fair-tv-v2-search",
+        "agent_name": "tv-v2-search",
+        "space": {
+            # 100x lower lambda upper bound -> less TV smoothing, stronger
+            # data fidelity.
+            "tv_lambda":     (1e-6, 5e-4, "log"),
+            # More iterations so the data term has time to converge.
+            "tv_iterations": (200, 800, "int"),
+            "tv_lr":         (5e-3, 5e-2, "log"),
+            "tv_clip_max":   (0.05, 0.10, "linear"),
+            "tv_decay":      (1e-3, 3e-2, "log"),
+        },
+    },
+    "dual_domain_v2": {
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain.py",
+        "env_var": "DD_CONFIG_PATH",
+        "slug_prefix": "demo-fair-dual-domain-v2-search",
+        "agent_name": "dual-domain-v2-search",
+        "space": {
+            # Less training + smaller net = less projection-domain
+            # oversmoothing (U-Net learning to flatten high-freq).
+            "epochs":     (2, 5, "int"),
+            "lr":         (5e-5, 5e-4, "log"),
+            "batch_size": ([1, 2], "choice"),
+            "unet_c":     ([4, 8], "choice"),
+        },
+    },
+    "dual_domain_bilateral_v2": {
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral.py",
+        "env_var": "DD_BF_CONFIG_PATH",
+        "slug_prefix": "demo-fair-dual-domain-bf-v2-search",
+        "agent_name": "dual-domain-bf-v2-search",
+        "space": {
+            "epochs":     (5, 15, "int"),
+            "lr":         (5e-4, 5e-3, "log"),
+            "batch_size": ([1, 2], "choice"),
+            # Smaller kernels + smaller sigmas = less projection blur.
+            # proj_sx,sy ranges shrunk 4x; proj_sr kept (range/intensity).
+            "proj_kernel": ([3, 5], "choice"),
+            "img_kernel":  ([5, 7], "choice"),
+            "proj_sx":    (0.1, 0.8, "linear"),
+            "proj_sy":    (0.3, 1.2, "linear"),
+            "proj_sr":    (0.005, 0.03, "log"),
+            "img_sx":     (0.5, 1.5, "linear"),
+            "img_sr":     (0.005, 0.03, "log"),
+        },
+    },
     "wu_2015": {
         "solver": "pentathlon/demo_dl_reference/solver_wu_2015.py",
         "env_var": "WU_CONFIG_PATH",
@@ -350,21 +405,64 @@ SOLVERS = {
             "ram_disable_multiscale": ([False, True], "choice"),       # no effect at peak; verify
             "ram_disable_cudnn":     ([False], "choice"),
             "ram_use_deepinv_tomo":  ([False], "choice"),
-            # Search axes (narrow around the winner)
-            "ram_sigma":             (0.05, 0.30, "log"),              # peak at 0.10
-            "ram_factor":            (0.30, 0.80, "linear"),           # peak at 0.5
-            "ram_post_fbp_blend":    (0.0, 0.20, "linear"),            # 0 won; mild blend may help
+            # Search axes — narrowed 2026-05-21 to the region the
+            # Claude-driven agentic loop found (iters 1-5 on breast_ct):
+            # sigma~0.008, factor lower-is-better, blend~0.42 broke hr=0.
+            # Old bounds (sigma 0.05-0.30, blend 0.0-0.20) had the optimum
+            # pinned at both edges — the true optimum was outside.
+            "ram_sigma":             (0.004, 0.015, "log"),
+            "ram_factor":            (0.25, 0.55, "linear"),
+            "ram_post_fbp_blend":    (0.30, 0.58, "linear"),
         },
         "tpe_seed_trial": {
             "ram_ckpt_path":         "/cluster/maier/Agent4CT/checkpoints/ram.pth.tar",
-            "ram_sigma":             0.10,
+            "ram_sigma":             0.008,
+            "ram_input_norm":        "adjoint_max",
+            "ram_clamp_output":      True,
+            "ram_finetune":          False,
+            "ram_finetune_epochs":   0,
+            "ram_finetune_lr":       1e-4,
+            "ram_factor":            0.40,
+            "ram_post_fbp_blend":    0.42,
+            "ram_disable_multiscale": True,
+            "ram_disable_cudnn":     False,
+            "ram_use_deepinv_tomo":  False,
+        },
+    },
+    # Agentic v2 for breast-ct: user hint "RAM has too little data
+    # consistency weight." Bias: lower ram_sigma (less RAM denoising) +
+    # much wider/larger ram_post_fbp_blend range (more raw FBP weight).
+    "ram_zeroshot_v2": {
+        "solver": "pentathlon/demo_dl_reference/solver_ram.py",
+        "env_var": "RAM_CONFIG_PATH",
+        "slug_prefix": "demo-fair-ram-zeroshot-v2-search",
+        "agent_name": "ram-zeroshot-v2-search",
+        "space": {
+            "ram_ckpt_path":         (["/cluster/maier/Agent4CT/checkpoints/ram.pth.tar"], "choice"),
+            "ram_input_norm":        (["adjoint_max"], "choice"),
+            "ram_clamp_output":      ([True], "choice"),
+            "ram_finetune":          ([False], "choice"),
+            "ram_finetune_epochs":   ([0], "choice"),
+            "ram_finetune_lr":       ([1e-4], "choice"),
+            "ram_disable_multiscale": ([False, True], "choice"),
+            "ram_disable_cudnn":     ([False], "choice"),
+            "ram_use_deepinv_tomo":  ([False], "choice"),
+            # 6x lower sigma upper bound -> less RAM denoising.
+            "ram_sigma":             (5e-3, 0.05, "log"),
+            "ram_factor":            (0.30, 0.80, "linear"),
+            # blend range pushed up: 0.3..0.9 of weight on the raw FBP.
+            "ram_post_fbp_blend":    (0.30, 0.90, "linear"),
+        },
+        "tpe_seed_trial": {
+            "ram_ckpt_path":         "/cluster/maier/Agent4CT/checkpoints/ram.pth.tar",
+            "ram_sigma":             0.02,
             "ram_input_norm":        "adjoint_max",
             "ram_clamp_output":      True,
             "ram_finetune":          False,
             "ram_finetune_epochs":   0,
             "ram_finetune_lr":       1e-4,
             "ram_factor":            0.5,
-            "ram_post_fbp_blend":    0.0,
+            "ram_post_fbp_blend":    0.6,
             "ram_disable_multiscale": False,
             "ram_disable_cudnn":     False,
             "ram_use_deepinv_tomo":  False,

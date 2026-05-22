@@ -205,6 +205,24 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     cfg["dataset_kind"] = get_dataset_kind(cfg)
     if cfg["dataset_kind"] != "phantoms":
         cfg.update(geometry_overrides(cfg["dataset_kind"]))
+    # The DDPM prior must match the image distribution. The search-space
+    # `recon_ckpt` is hardcoded to the demo-dl ellipse-phantom DDPM; for a
+    # real staged dataset, swap to the dataset-specific checkpoint. Without
+    # this the diffusion prior hallucinates ellipse structure into breast
+    # images (breast-ct diff_recon scored SSIM 0.936 < FBP128's 0.955 — see
+    # SLURM 761515/761516, fixed 2026-05-21).
+    if cfg["dataset_kind"] == "breast_ct" and not os.environ.get("DIFFUSION_RECON_CKPT"):
+        _ck = Path(cfg["recon_ckpt"])
+        _name = _ck.name
+        if _name.startswith("ddpm_") and "breast" not in _name:
+            _breast = _ck.with_name("ddpm_breast_" + _name[len("ddpm_"):])
+            if _breast.exists():
+                print(f"[solver] breast_ct: swapping DDPM prior "
+                      f"{_ck.name} -> {_breast.name}", flush=True)
+                cfg["recon_ckpt"] = str(_breast)
+            else:
+                print(f"[solver] WARNING: {_breast} not found; "
+                      f"keeping {_ck.name} (prior mismatch likely).", flush=True)
 
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
