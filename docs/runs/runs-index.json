@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-22T04:52:57Z",
+  "updated": "2026-05-22T05:07:43Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01",
@@ -217,6 +217,18 @@
       "best_headroom": 0.0424587,
       "agent": "wu-search-tpe-calibrated-breast-ct",
       "model": "optuna-tpe-breast-ct"
+    },
+    {
+      "slug": "breast-ct-claude-agentic-dual-domain-search-20260521-01",
+      "short_id": "20260521-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-22T05:04:14Z",
+      "status": "running",
+      "n_iterations": 2,
+      "best_score": 0.96879,
+      "best_headroom": 0.0,
+      "agent": "dual_domain-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
     },
     {
       "slug": "breast-ct-claude-agentic-ram-zeroshot-search-20260521-01",
