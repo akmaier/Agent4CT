@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-21T21:18:20Z",
+  "run_id": "breast-ct-calibrated-tpe-dual-domain-bf-v2-search-20260521-01",
+  "iter": 16,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual-domain-bf-v2-search-tpe-calibrated-breast-ct: epochs=10, lr=0.0016473, batch_size=1, proj_kernel=3, img_kernel=5, proj_sx=0.42137, proj_sy=1.1963, proj_sr=0.0075806, img_sx=0.54619, img_sr=0.0074454",
+  "val_score": 0.9715198874473572,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0,
+  "train_n": 400,
+  "agent": "dual-domain-bf-v2-search-tpe-calibrated-breast-ct",
+  "model": "random-search",
+  "advice_for_others": "dual-domain-bf-v2-search-tpe-calibrated-breast-ct: epochs=10, lr=0.0016473, batch_size=1, proj_kernel=3, img_kernel=5, proj_sx=0.42137, proj_sy=1.1963, proj_sr=0.0075806, img_sx=0.54619, img_sr=0.0074454 -> hr=0.0000",
+  "comparison_image": "runs/breast-ct-calibrated-tpe-dual-domain-bf-v2-search-20260521-01/iterations/iter-0016/comparison.png"
+}
