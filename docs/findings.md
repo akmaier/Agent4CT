@@ -9,6 +9,291 @@ verdicts belong in `docs/runs/<slug>/stages.tsv`. Things that belong here:
 **facts about the substrate or methodology that the next agent should not
 have to re-discover.**
 
+## 2026-05-23 — Mayo helix2fan DOMINANT BUG FOUND: alphabetic `sorted(files)` ≠ acquisition order
+
+The "featureless disc" FBP from the previous-agent's rebin + this session's
+re-rebin had a much simpler root cause than the Bug 1–6 list in
+`literature/wagner_helix2fan_algorithm.md` suggested. **`read_dicom_ctpd`
+in `ddssl_ldct/helix2fan.py` was reading the per-readout `.dcm` files in
+alphabetic order**, which on Mayo DICOM-CT-PD data does not match
+acquisition order at all.
+
+Concrete evidence (`results/breast_debug/L014_file_order_check.png`,
+job 762035 — sample of 1500 alphabetic-sorted L014 fulldose files):
+
+| alphabetic filename | InstanceNumber | gantry angle | z (mm) |
+|---|---|---|---|
+| 00000001.dcm | 10298 | −1.18 | 137.7 |
+| 00000002.dcm | 23913 | −0.61 | 318.8 |
+| 00000003.dcm | 26560 | −1.55 | 354.0 |
+| 00000004.dcm | 37666 | −0.42 | 501.8 |
+| 00000005.dcm | 2811 | +0.39 | 38.0 |
+| 00000006.dcm | 35550 | −0.93 | 473.7 |
+| 00000007.dcm | 26625 | +4.56 | 354.9 |
+
+`InstanceNumber` is the time index (Mayo writes 1..n_proj sequentially
+during the helix sweep). Over 1500 alphabetic-sorted files, `InstanceNumber`
+spans 48..37 945 essentially uniformly random. Sorting by alphabetic
+filename therefore produces a sinogram whose source-z and gantry-angle
+oscillate chaotically across the full scan extent (visible in
+`L014_unwrap_check.png` and `L014_fulldose_raw_sino_inspect.png`).
+
+The SSR step in `rebin_helical_to_fan` indexes helical readouts as
+`idx_helix = arange(s_angle, n_proj, rotview)` — i.e. it assumes
+consecutive file indices are consecutive in the helix. With files
+shuffled, each rebinned `s_angle` bin gathers 60 readouts at wildly
+different physical angles and z-positions — explaining why the
+rebinned sino has no patient sinusoids and the FBP has no anatomy
+(SSIM 0.19 against an *also-misaligned* truth slice).
+
+**Patch applied 2026-05-23** (`ddssl_ldct/helix2fan.py`,
+`read_dicom_ctpd`): added a pre-pass that reads each file's
+`InstanceNumber` header and re-sorts the file list by it before
+the main pixel-read loop. ~1 extra second per 1000 files (~40 s for
+L014's 37 982 fulldose projections — a once-per-rebin overhead).
+
+L014 fulldose is being re-rebinned with this fix (job 762036). The
+old buggy artefact is preserved under
+`*_alphabetic_sort_buggy.{h5,json,npy}` for diagnostic comparison.
+
+Pending: re-validate FBP after the rebin. If the FBP now shows real
+anatomy (lungs / ribs / spine), the file-order patch is the dominant
+fix and Bug 1–6 may or may not still apply (most likely the rebin code
+was structurally correct all along; we'd only need to verify against
+torch-radon angle convention in the validator before scaling out to
+the other 9 patients).
+
+### Wagner papers do NOT validate helix2fan against image truth
+
+While diagnosing this, established that **no Wagner paper actually
+tests FBP-of-rebinned-sino against the Mayo reconstructed-image truth**:
+
+- **Wagner 2022 (Med. Phys., trainable BF)**: uses Mayo's reconstructed
+  CT image DICOMs (3411 slices) + Yu et al. noise simulation. **No
+  helix2fan at all.**
+- **Wagner 2023 (ISBI, dual-domain)**: uses helix2fan but reports only
+  LD-vs-HD PSNR within its own pipeline. If both LD and HD go through
+  the same broken pipeline, that PSNR can be 41–46 dB while the
+  recon is geometrically wrong.
+
+Wagner explicitly notes in the 2023 paper that of 36 Mayo LDCT papers,
+**only 4 use the projection data**; the other 32 work on the
+reconstructed images. Implication for Track A: the pragmatic LDCT
+pipeline is **reconstructed image DICOMs + Yu et al. noise simulation
++ forward project for the dual-domain training**, not helix2fan
+rebinning. We can keep helix2fan as a research curiosity once the
+file-order fix is verified; the Pentathlon's `mayo_ldct` track should
+default to the image-domain path.
+
+## 2026-05-23 — DD-UNet supervised L2 capacity saturates at c=32; c=64 overfits
+
+Extended the supervised-L2 dual-domain U-Net capacity sweep:
+
+| iter | unet_c | params | val_psnr | hr | notes |
+|---:|---:|---:|---:|---:|---|
+| 2 | 8  | 120 k  | 52.53 | 0.771 | undertrained |
+| 1 | 16 | 466 k  | 54.25 | 0.812 | sweet (prev top) |
+| 3 | 32 | 1.86 M | 54.94 | **0.826** | new top |
+| 4 | 64 | 7.41 M | 53.82 | 0.802 | **overfits 400-phantom train** |
+
+c=32 is the optimum. c=64 drops -0.024 hr — the 400-phantom train set
+can't support 7.4 M params. Diminishing returns curve (+0.041 from
+8→16, +0.014 from 16→32, **−0.024 from 32→64**).
+
+**For the autoresearch agent**: do not search above unet_c=32 on the
+400-phantom train set. To push past hr=0.826, the next lever is
+**more training data** (dispatched as iter-5: c=32 + train_n=1600 =
+4× more data, job 762044). If even that fails to break 0.826, the
+val_n=20 metric noise is likely the floor.
+
+## 2026-05-23 — Optuna TPE for LPD: subprocess timeout was 3600 s; bumped to 5400 s
+
+First attempt at LPD TPE (job 762038, slug
+`breast-ct-calibrated-tpe-lpd-search-20260523-01`) FAILED after trial 1:
+
+- Trial 1 (seed = iter-3 winner): `I=10, hidden=64, ep=20, lr=5e-4,
+  grad_clip=1.0` → hr=0.8204 on Q5000 (40 min wall — close to but
+  inside the 3600 s subprocess cap).
+- Trial 2 (TPE's first non-seed proposal): `I=12, hidden=64, ep=28,
+  lr=8e-4, grad_clip=0.5` → killed by the `subprocess.run(timeout=3600)`
+  in `learned_solver_search_agent.run_solver` at exactly 3600 s. Whole
+  TPE study died (raises `TimeoutExpired`).
+
+Two patches in `scripts/learned_solver_search_agent.py`:
+
+1. Bumped subprocess timeout 3600 → 5400 s (env-overridable via
+   `SEARCH_AGENT_SUBPROC_TIMEOUT_S`). Original cap was sized for
+   ITNet/USwin/NAF/R2G; LPD's bigger trials need more room on Q5000.
+2. Tightened LPD search bounds:
+   - `lpd_iters` choices `[8, 10, 12]` → `[8, 10]` (I=12 is over budget)
+   - `epochs` int `[15, 30]` → `[15, 25]` (ep=28 was over budget)
+
+Resubmitted as job 762043 (slug becomes
+`breast-ct-calibrated-tpe-lpd-search-20260523-02`). Note: Optuna
+study is keyed on slug, so the new sbatch starts fresh; the −01 study
+keeps trial 1 as a curiosity in `/cluster/maier/Agent4CT/optuna/*.db`
+but is otherwise orphaned.
+
+Also a minor observation: trial 1 reproduced iter-3 at hr=0.820 (vs
+iter-3's recorded hr=0.829). The 0.01 gap is within val_n=20 noise +
+Q5000 vs Q6000 cudnn nondeterminism. Not concerning.
+
+## 2026-05-23 — Breast-trained DDPM checkpoints EXIST but the diff-recon TPE-seed-config gives hr=0
+
+The hand-off correctly diagnosed that the earlier diff-recon TPE runs
+on breast-CT used the wrong (demo-phantom) DDPM checkpoint. The
+breast-trained checkpoints
+(`/cluster/maier/Agent4CT/checkpoints/ddpm_breast_{,un}constrained_final.pt`,
+3.86 MB each, dated 2026-05-20) DO exist; they were just not wired
+into the SOLVERS dict.
+
+Patched `learned_solver_search_agent.py` with two new entries
+(`diffusion_recon_dcstep_{,un}constrained_breast`) and dispatched
+20-iter TPE searches as jobs 762041 / 762042 with slugs
+
+```
+breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01
+breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01
+```
+
+Both are running.  Early results (each first 2 trials):
+
+| variant | trial 1 (seed) | trial 2 |
+|---|---|---|
+| unconstrained | hr=0.000  SSIM=0.431 | hr=0.000  SSIM=0.411 |
+| constrained   | hr=0.000  SSIM=0.470 | hr=0.000  SSIM=0.350 |
+
+The seed config is the **same** that won the demo-phantom TPE search
+(DPS, 500 sample steps, eta=30, every=3, n_cg=20, warmup=25,
+relax=1.0). Reuse-it-here gives **SSIM ≈ 0.4** — *far below baseline
+FBP (0.957)*. The recon is structurally failing.
+
+Possible causes (in order of probability):
+
+1. **Breast DDPM checkpoint quality**. Same architecture & file size
+   as the demo checkpoints; maybe trained on too little breast data /
+   too few epochs to learn a useful prior. The recon's pixel scale
+   may be off if the checkpoint expects μ-normalisation different from
+   the breast data's intensity range.
+2. **DPS-style guidance hyperparams don't transfer**. The demo phantoms
+   are simple ellipses; the breast phantoms have ~ 100× more fine
+   structure. The DPS step size that worked on ellipses may now be
+   too large and overshoot.
+3. **Initialisation issue**. `recon_init="fbp"` for the breast model
+   may produce out-of-distribution inputs.
+
+The TPE will explore the bounds and may find a non-seed config that
+works. Updates to come. **If both TPEs end at hr=0**, the next move
+is **retrain the breast DDPM** with more data / epochs — the current
+checkpoint is the bottleneck, not the search space.
+
+## 2026-05-23 — TV-iter L2 (unrolled-TV-GD supervised) is structurally bounded by FBP quality
+
+Built `solver_tv_iterative_supervised.py` — K unrolled gradient-descent
+steps on `½‖Rf − g‖² + λ TV(f)`, with per-iter learnable scalar `step_k`
+and `λ_k`, initialised from FBP(noisy), trained MSE vs clean phantom on
+breast-CT (400 train, 20 val). 20 trainable scalars total at K=10.
+
+Three iters (`breast-ct-claude-agentic-tv-iterative-supervised-search-20260523-01`):
+
+| iter | K  | step_init | λ_init  | val_psnr | hr   | training loss → |
+|---:|---:|---:|---:|---:|---:|---|
+| 1  | 10 | 1e-2      | 1e-3    | 30.07    | 0.00 | 0.0147 ⇨ 0.0145 |
+| 2  | 10 | **1e-4**  | **1e-5**| 32.05    | 0.00 | 0.0146 ⇨ 0.0145 |
+| 3  | 30 | 1e-4      | 1e-5    | 32.05    | 0.00 | 0.0146 ⇨ 0.0145 |
+
+iter-1's `step=1e-2` was 100× too large for stable GD: the data-grad
+overshoots, the optimiser compensated by growing late-iter λ's to 0.025
+(over-smoothing), recon ended **9.7 dB worse than baseline FBP**.
+
+iter-2's `step=1e-4` was conservative enough that the network learned to
+do *almost nothing*: per-iter steps stayed near the init for k≥2, only
+`step_0` drifted to ~2e-3. The recon ends *close to* FBP-init (val_ssim
+0.954 vs baseline 0.957 — 0.3 % below). PSNR 32.05 dB still well below
+baseline 39.74 dB.
+
+iter-3's `K=30` (3× more iters) made **zero difference**: same val_score,
+same loss trajectory, same learned scalar pattern. K≥2 iters are
+effectively no-ops because the data-fidelity gradient at f≈FBP(g) is
+≈0 (FBP is approximately R⁺, so R^T(R·FBP(g) − g) ≈ 0).
+
+**Verdict**: with FBP init and hand-crafted smooth-TV gradient, this
+architecture cannot exceed FBP quality on dense-view (128-view)
+breast-CT. The data-fidelity term is saturated; the only signal a
+supervised-L2 loss can give is "stay where you are". To beat FBP under
+this skeleton one must either:
+
+1. Replace `∇TV(f)` with a *learnable* prior (small CNN) → that's
+   ITNet / Learned Primal-Dual, which we already have as
+   `solver_learned_primal_dual.py` (hr=0.83 at I=10).
+2. Drop the FBP init and start from zero — risky and slow, K iters
+   must rediscover FBP first.
+3. Add a learnable additive bias (per-iter offset) → effectively turns
+   the algorithm into "FBP + light CNN", duplicating
+   `solver_dual_ddomain_supervised.py` (hr=0.81) without its U-Net
+   structure.
+
+**TV-iter L2 deprioritised for breast-CT.** Worth keeping as a
+sparse-view baseline where FBP itself is the bottleneck (the K iters
+have actual work to do), not for dense-view.
+
+## 2026-05-23 — Learned Primal-Dual saturates at I=10; pushing to I=15 hurts
+
+Following the LPD iter-3 result (hr 0.829, I=10, hidden=64 — top of
+breast-CT leaderboard), iter-5 tested whether more unrolled iterations
+help. Config: I=15, hidden=64, lr=2e-4 (lowered from 5e-4 in iter-4 to
+avoid the NaN that killed iter-4), grad_clip=0.5, 20 epochs, cosine
+schedule. Job 761921.
+
+| iter | I  | hidden | params  | epochs | lr     | val_psnr | hr     | notes |
+|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 3 | 10 | 64 | 875 k   | 20 | 5e-4 | **55.08** | **0.829** | breast-CT leaderboard top |
+| 4 | 15 | 64 | 1312 k  | 20 | 5e-4 | — | — | **NaN** from epoch 1; cancelled |
+| 5 | 15 | 64 | 1312 k  | 20 | 2e-4 | 52.48 | 0.769 | **train loss → 0 by ep 13; classic overfit** |
+
+The drop from hr=0.829 → 0.769 with 1.5× more iterations is a clear
+saturation signal: the I=10, hidden=64 model is already at its
+expressivity sweet spot for breast-CT, and adding more capacity
+(50% more parameters) overfits the 400-phantom train set rather than
+extracting more signal. The epoch-1 loss spike to 831 M is a known
+LPD initialisation transient (CNN proximal weights produce wild
+divergence on the first batch); the cosine LR schedule rescues it,
+but the recovered model still ends up worse than iter-3 because the
+deeper unrolling has more parameters to overfit per training pair.
+
+**For the autoresearch agent that picks up LPD**: do not search past
+I=10 on the breast-CT 400-phantom set. Iter-3 (`I=10, hidden=64,
+lr=5e-4, ep=20, cosine`) is the converged optimum. If the next move
+is more capacity, the right axis is `hidden=128` *with* the existing
+I=10 (modest +30% params), not more iterations. The other axis is
+**more training data** — the staged breast-CT set has 3600 train
+phantoms; iter-3 used 400.
+
+## 2026-05-23 — NAF on dense-view breast-CT: structurally hr=0, even at 5× n_iter
+
+Following the hand-off hypothesis "TPE n_iter cap (600) was compute
+starvation", agentic NAF iter-1 (job 761922) tested `naf_n_iter=12000`
+(20× the TPE cap) with `val_n=5`. Result: hr=0, SSIM=0.755,
+PSNR=15.78 dB — **24 dB *below* baseline FBP** (39.61 dB). The
+per-scene fit ran to completion in ~730 s with `last_loss ≈ 0.87`
+(should be much closer to 0 for a converged fit).
+
+The compute-starvation hypothesis is refuted: at 12 000 inner iters
+NAF still can't beat FBP on dense-view (128-angle) breast-CT. The
+issue is structural — NAF's coordinate-MLP with sin/cos positional
+encoding has the wrong inductive bias for a dense-view fan-beam
+reconstruction. The MLP's frequency-band partitioning is a useful
+inductive bias when *views are missing* (NAF's intended sparse-CBCT
+setting), but on a 128-view dense scan the FBP is already a strong
+reconstruction and a coordinate MLP can't outperform a properly-tuned
+back-projector + denoising chain.
+
+NAF iter-2 (job 762023, in flight at hand-off time) tests `lr=1e-3`
+(5× lower than iter-1) to check whether the high lr was causing
+optimizer bouncing around the minimum. If hr stays at 0, **NAF should
+be deprioritised on breast-CT** — it's the wrong architectural family
+for this challenge. Worth keeping as a sparse-view baseline.
+
 ## 2026-05-22 — Breast-CT DD-UNet supervised L2 reaches PSNR 54.25 dB (hr 0.81)
 
 Following the DD-BF supervised-L2 finding (next entry), ported the same

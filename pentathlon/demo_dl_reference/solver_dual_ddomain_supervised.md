@@ -114,11 +114,29 @@ The pipeline class is `FullViewUNetPipeline` (defined inline; mirrors
 
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
-| Source | Config | val_psnr | val_ssim | hr |
-|---|---|---:|---:|---:|
-| baseline FBP | — | 39.74 dB | 0.957 | 0 |
-| `claude-agentic-dual-domain-unet-l2-search-20260522-01/iter-1` | c=16, ep=10, lr=5e-4 | **54.25 dB** | **0.9986** | **0.812** |
-| `claude-agentic-dual-domain-unet-l2-search-20260522-01/iter-2` | c=8, ep=10, lr=5e-4 | 52.53 dB | 0.9979 | 0.771 |
+| Source | Config | params | val_psnr | val_ssim | hr |
+|---|---|---:|---:|---:|---:|
+| baseline FBP | — | 0 | 39.74 dB | 0.957 | 0 |
+| `claude-agentic-dual-domain-unet-l2-search-20260522-01/iter-2` | c=8, ep=10, lr=5e-4 | 0.12 M | 52.53 dB | 0.9979 | 0.771 |
+| `claude-agentic-dual-domain-unet-l2-search-20260522-01/iter-1` | c=16, ep=10, lr=5e-4 | 0.47 M | 54.25 dB | 0.9986 | 0.812 |
+| `claude-agentic-dual-domain-unet-l2-search-20260522-01/iter-3` (top) | **c=32**, ep=10, lr=5e-4 | **1.86 M** | **54.94 dB** | **0.9987** | **0.826** |
+| `claude-agentic-dual-domain-unet-l2-search-20260522-01/iter-4` | c=64, ep=10, lr=5e-4 | 7.41 M | 53.82 dB | 0.9983 | 0.802 ⚠ overfit |
 
-For reference, same architecture with N2I loss
+Capacity sweep:
+- c=8 → 16: **+0.041 hr** (+1.7 dB) at 4× params — strong gain
+- c=16 → 32: **+0.014 hr** (+0.7 dB) at 4× params — diminishing
+- c=32 → 64: **−0.024 hr** (−1.1 dB) at 4× params — **overfits** 400-phantom train
+
+**c=32 is the optimum on the 400-phantom train set.** The val_ssim at
+the peak (0.9987) is essentially at the val-set noise floor; further
+unet_c growth has nowhere to extract signal from and starts memorising
+training noise. For reference, same architecture with N2I loss
 (`solver_dual_ddomain_n2i.py`): val_psnr ≈ 38 dB, hr=0.
+
+**To beat hr=0.826**, the only remaining lever (capacity is exhausted)
+is **more training data**. The breast-CT staged set has ~3600 train
+phantoms available; iter-5 (job 762044, in flight as of 2026-05-23)
+tests c=32 + train_n=1600 (4× more data). Expected behaviour: small
+positive gain (probably 0.01–0.04 hr) if the 400-set was undersampling
+the phantom distribution; no gain if the val_n=20 metric noise is
+already the floor.

@@ -158,6 +158,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     with torch.no_grad():
         fbps = torch.clamp(proj_full.fbp(noisys), min=0.0)
 
+    outer_wall = float(cfg.get("gs_outer_wall_s", 600))
     t0 = time.time(); preds = []
     for i in range(cfg["val_n"]):
         s = noisys[i:i+1]
@@ -166,8 +167,9 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         if (i + 1) % 5 == 0:
             print(f"[fit] {i+1}/{cfg['val_n']}  elapsed={time.time()-t0:.1f}s",
                   flush=True)
-        if time.time() - t0 > 600:
-            print(f"[fit] 10-min wall at sample {i+1}", flush=True); break
+        if time.time() - t0 > outer_wall:
+            print(f"[fit] outer wall {outer_wall:.0f}s hit at sample {i+1}",
+                  flush=True); break
     train_time = time.time() - t0
     pred = torch.cat(preds, 0)
     val_ph = phs[:pred.shape[0]]; val_fbp = fbps[:pred.shape[0]]

@@ -29,3 +29,6 @@ papers/
 
 .env
 llm_api.toml
+
+# Cross-agent hand-off notes — ephemeral, regenerated per session.
+hand-off.md

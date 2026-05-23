@@ -260,6 +260,65 @@ SOLVERS = {
             "gs_tv_weight":   (1e-5, 1e-3, "log"),
         },
     },
+    # Learned Primal-Dual (Adler & Öktem 2018, IEEE TMI). The
+    # `breast-ct-claude-agentic-learned-primal-dual-search-20260522-01`
+    # autoresearch run found iter-3 (I=10, hidden=64, lr=5e-4, ep=20,
+    # cosine, grad_clip=1.0, ~0.875 M params) as the breast-CT top at
+    # hr=0.829 (PSNR 55.08 dB). iter-5 (I=15) confirmed I past 10
+    # *hurts* on the 400-phantom train set (hr → 0.77). TPE search
+    # bounds therefore center on the iter-3 sweet spot:
+    #   - I (lpd_iters) capped at 12 (15 known-overfit; 6 likely
+    #     too few — only sweep [8,10,12])
+    #   - hidden swept around 64 (32/48/64/96)
+    #   - lr restricted to the iter-3 ±1 decade window
+    #   - lpd_n_primal = lpd_n_dual = 5 fixed (Adler's default; not a
+    #     useful search axis for 20 trials)
+    #   - share_weights fixed False per Adler's recommendation
+    # Seed the study with the iter-3 winner so TPE has a strong prior.
+    "lpd": {
+        "solver": "pentathlon/demo_dl_reference/solver_learned_primal_dual.py",
+        "env_var": "LPD_CONFIG_PATH",
+        "slug_prefix": "demo-fair-lpd-search",
+        "agent_name": "lpd-search",
+        # Search bounds tightened 2026-05-23 (run -01 killed by trial 2's
+        # 1 h+ wall on Q5000): lpd_iters capped at 10 (12 with ep=28 took
+        # > 3600 s — exceeded subprocess timeout), epochs capped at 25.
+        # The original Q6000-equivalent runtime for iter-3 was 24 min; on
+        # Q5000 that's ~40 min, leaving room for ep up to ~25 within the
+        # bumped 5400 s subprocess cap.
+        "space": {
+            "lpd_iters":         ([8, 10], "choice"),
+            "lpd_hidden":        ([32, 48, 64, 96], "choice"),
+            "lpd_n_primal":      ([5], "choice"),
+            "lpd_n_dual":        ([5], "choice"),
+            "lpd_share_weights": ([False], "choice"),
+            "epochs":            (15, 25, "int"),
+            "lr":                (2e-4, 1e-3, "log"),
+            "lr_schedule":       (["cosine"], "choice"),
+            "batch_size":        ([1], "choice"),
+            "grad_clip":         ([0.3, 0.5, 1.0], "choice"),
+            "lambda_neg":        ([1.0], "choice"),
+            "loss_base":         (["mse"], "choice"),
+            "val_n":             ([20], "choice"),
+            "val_chunk":         ([4], "choice"),
+        },
+        "tpe_seed_trial": {
+            "lpd_iters":         10,
+            "lpd_hidden":        64,
+            "lpd_n_primal":      5,
+            "lpd_n_dual":        5,
+            "lpd_share_weights": False,
+            "epochs":            20,
+            "lr":                5.0e-4,
+            "lr_schedule":       "cosine",
+            "batch_size":        1,
+            "grad_clip":         1.0,
+            "lambda_neg":        1.0,
+            "loss_base":         "mse",
+            "val_n":             20,
+            "val_chunk":         4,
+        },
+    },
     "diffusion": {
         "solver": "pentathlon/demo_dl_reference/solver_diffusion.py",
         "env_var": "DIFFUSION_CONFIG_PATH",
@@ -385,6 +444,75 @@ SOLVERS = {
         # cfg-space favors the narrower 200-phantom trained prior.
         "tpe_seed_trial": {
             "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_constrained_final.pt",
+            "recon_mode":          "dps",
+            "recon_sample_steps":  500,
+            "recon_eta":           30.0,
+            "recon_init":          "fbp",
+            "recon_eta_clamp":     False,
+            "recon_dcstep_every":  3,
+            "recon_dcstep_n_cg":   20,
+            "recon_dcstep_warmup": 25,
+            "recon_dcstep_relax":  1.0,
+        },
+    },
+    # Breast-CT variants of the diff-recon DC-step searches (2026-05-23).
+    # The prior breast-CT diff-recon TPE runs all hit hr=0 because the
+    # SOLVERS entries above pointed at `ddpm_{,un}constrained_final.pt`
+    # — which were trained on demo-intensity *ellipse* phantoms, not
+    # breast tissue. The breast-trained checkpoints
+    # (`ddpm_breast_{,un}constrained_final.pt`, ~3.86 MB each, 2026-05-20)
+    # *do* exist in the same checkpoints dir; these entries point at
+    # them. Use with `--dataset breast_ct` so the slug becomes
+    # `breast-ct-calibrated-tpe-diff-recon-dcstep-{,un}constrained-breast-search-*`.
+    "diffusion_recon_dcstep_unconstrained_breast": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-fair-diff-recon-dcstep-unconstrained-breast-search",
+        "agent_name": "diff-recon-dcstep-unconstrained-breast-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_breast_unconstrained_final.pt"], "choice"),
+            "recon_mode":          (["dps"], "choice"),
+            "recon_sample_steps":  ([200, 500, 800], "choice"),
+            "recon_eta":           (3.0, 60.0, "log"),
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([False, True], "choice"),
+            "recon_dcstep_every":  ([3, 4, 5], "choice"),
+            "recon_dcstep_n_cg":   ([10, 15, 20, 25], "choice"),
+            "recon_dcstep_warmup": ([10, 25, 40], "choice"),
+            "recon_dcstep_relax":  ([0.85, 0.95, 1.0], "choice"),
+        },
+        "tpe_seed_trial": {
+            "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_breast_unconstrained_final.pt",
+            "recon_mode":          "dps",
+            "recon_sample_steps":  500,
+            "recon_eta":           30.0,
+            "recon_init":          "fbp",
+            "recon_eta_clamp":     False,
+            "recon_dcstep_every":  3,
+            "recon_dcstep_n_cg":   20,
+            "recon_dcstep_warmup": 25,
+            "recon_dcstep_relax":  1.0,
+        },
+    },
+    "diffusion_recon_dcstep_constrained_breast": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-fair-diff-recon-dcstep-constrained-breast-search",
+        "agent_name": "diff-recon-dcstep-constrained-breast-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_breast_constrained_final.pt"], "choice"),
+            "recon_mode":          (["dps"], "choice"),
+            "recon_sample_steps":  ([200, 500, 800], "choice"),
+            "recon_eta":           (3.0, 60.0, "log"),
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([False, True], "choice"),
+            "recon_dcstep_every":  ([3, 4, 5], "choice"),
+            "recon_dcstep_n_cg":   ([10, 15, 20, 25], "choice"),
+            "recon_dcstep_warmup": ([10, 25, 40], "choice"),
+            "recon_dcstep_relax":  ([0.85, 0.95, 1.0], "choice"),
+        },
+        "tpe_seed_trial": {
+            "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_breast_constrained_final.pt",
             "recon_mode":          "dps",
             "recon_sample_steps":  500,
             "recon_eta":           30.0,
@@ -577,8 +705,13 @@ def run_solver(solver_path, env_var, params, out_dir):
         str(REPO_ROOT) + (":" + env["PYTHONPATH"] if "PYTHONPATH" in env else "")
     )
     # Subprocess timeout must exceed the solver's internal per-iter wall.
-    # NAF / R2Gaussian use 40-min outer walls; 1 h subprocess cap leaves margin.
-    res = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=3600)
+    # NAF / R2Gaussian use 40-min outer walls; 1 h was the original budget.
+    # 2026-05-23: bumped to 1.5 h because LPD trials with (I=12, epochs=28)
+    # on Q5000 hardware hit the old 3600 s cap mid-search and killed the
+    # whole TPE study. Adjust upward (not downward) when adding new
+    # solvers with longer trials.
+    timeout_s = int(os.environ.get("SEARCH_AGENT_SUBPROC_TIMEOUT_S", "5400"))
+    res = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=timeout_s)
     if res.returncode != 0:
         print(f"[agent] solver failed (rc={res.returncode}):", file=sys.stderr)
         print(res.stderr[-2000:], file=sys.stderr)

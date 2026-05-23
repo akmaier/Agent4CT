@@ -50,6 +50,26 @@ SOLVER_MAP = {
     # wrapped as nn.Parameter and trained supervised-L2 vs clean phantom.
     "wu_2015_trainable": (
         "pentathlon/demo_dl_reference/solver_wu_2015_trainable.py", "WU_CONFIG_PATH"),
+    # Learned Primal-Dual (Adler & Öktem 2018, IEEE TMI; literature/
+    # 1707.06474). Unrolled PDHG with CNN proximals + PYRO-NN
+    # forward/back-projector kept differentiable inside the network.
+    "learned_primal_dual": (
+        "pentathlon/demo_dl_reference/solver_learned_primal_dual.py", "LPD_CONFIG_PATH"),
+    # Per-scene implicit-field / splat reconstructions (2026-05-23):
+    # both are stuck at hr=0 in TPE searches because the TPE bounds
+    # capped n_iter way below what the original papers use. Agentic
+    # first move: bump n_iter ~5-25x with smaller val_n.
+    "naf":         ("pentathlon/demo_dl_reference/solver_naf.py",        "NAF_CONFIG_PATH"),
+    "r2gaussian":  ("pentathlon/demo_dl_reference/solver_r2gaussian.py", "R2G_CONFIG_PATH"),
+    # Unrolled TV-GD with per-iter learnable step + lambda (2026-05-23):
+    # supervised-L2 mirror of solver_tv_iterative.py (non-trainable) and
+    # solver_tv_search.py (TPE-searched). 10 unrolled iters × 2 scalars
+    # = 20 trainable params. Mirrors the DD-BF / DD-UNet supervised-L2
+    # recipe (docs/findings.md 2026-05-22) on a TV iteration instead of
+    # a U-Net or BF chain.
+    "tv_iterative_supervised": (
+        "pentathlon/demo_dl_reference/solver_tv_iterative_supervised.py",
+        "TV_SUP_CONFIG_PATH"),
 }
 
 

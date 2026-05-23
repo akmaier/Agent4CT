@@ -97,7 +97,16 @@ def main() -> int:
     z_center = float(z_grid[nz_center])
     with h5py.File(sino_h5, "r") as f:
         sino_center = np.asarray(f["sino"][:, :, nz_center], dtype=np.float32)
-    print(f"[validate] z_center = {z_center:.2f} mm (slice {nz_center}/{nz})")
+    # "Siemens flip" along the u (detector) axis, per
+    # literature/wagner_helix2fan_algorithm.md (Bug 4). Wagner's
+    # reco_example_fan_beam.py does `np.flip(projections[:, :, i], axis=1)`
+    # before filtering — equivalent to axis=-1 for our 2D (rotview, nu)
+    # slice. This undoes the curved-detector channel flip applied at
+    # load time so the back-projection direction matches PYRO-NN's
+    # right-handed convention.
+    sino_center = np.ascontiguousarray(np.flip(sino_center, axis=-1))
+    print(f"[validate] z_center = {z_center:.2f} mm (slice {nz_center}/{nz}); "
+          f"Siemens-flipped u-axis")
 
     # Match truth slice via the staged manifest's z-ordered file list.
     # The truth h5 is shuffled by stage_h5; we need to recover (patient, z)
@@ -113,6 +122,15 @@ def main() -> int:
     # Build the matching fan-beam geometry. Per Wagner, image is 512^2 @
     # 0.7 mm pixel spacing; sdd/sod default values are baked into the
     # FanBeamGeometry dataclass.
+    # angle_start_corrected (Wagner's `+pi/2 -unwrap -pi` recipe) tells
+    # us where the first rebinned view sits in the absolute gantry
+    # frame; the full rotation spans 2π from there. See Bug 3 in
+    # literature/wagner_helix2fan_algorithm.md.
+    import math as _math
+    angle_start = float(geom_json.get("angle_start_corrected", 0.0))
+    angle_end = angle_start + 2.0 * _math.pi
+    print(f"[validate] angle_start={angle_start:.4f} rad, "
+          f"angle_end={angle_end:.4f} rad (1 full rotation)")
     geom = FanBeamGeometry(
         image_size=512,
         pixel_spacing=0.7,
@@ -121,6 +139,8 @@ def main() -> int:
         det_spacing=du,
         sod=float(geom_json.get("sod", 595.0)),
         sdd=float(geom_json.get("sdd", 1085.6)),
+        angle_start=angle_start,
+        angle_end=angle_end,
     )
     proj = PyronnFanBeamProjector(geom).to(args.device)
 
