@@ -275,6 +275,63 @@ SOLVERS = {
     #     useful search axis for 20 trials)
     #   - share_weights fixed False per Adler's recommendation
     # Seed the study with the iter-3 winner so TPE has a strong prior.
+    # Supervised-L2 dual-domain variants (2026-05-22+) — completes plan
+    # compliance for these solvers (agentic was already done; this adds
+    # TPE refinement around the agentic winners).
+    "dual_domain_supervised": {
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_supervised.py",
+        "env_var": "DD_CONFIG_PATH",
+        "slug_prefix": "demo-fair-dual-domain-supervised-search",
+        "agent_name": "dual-domain-supervised-search",
+        "space": {
+            "unet_c":     ([16, 24, 32, 48], "choice"),
+            "epochs":     (8, 18, "int"),
+            "lr":         (2e-4, 1e-3, "log"),
+            "batch_size": ([1, 2], "choice"),
+            "lambda_neg": (0.5, 1.5, "linear"),
+            "val_n":      ([20], "choice"),
+        },
+        "tpe_seed_trial": {
+            "unet_c":     32,
+            "epochs":     10,
+            "lr":         5e-4,
+            "batch_size": 1,
+            "lambda_neg": 1.0,
+            "val_n":      20,
+        },
+    },
+    "dual_domain_bilateral_supervised": {
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_supervised.py",
+        "env_var": "DD_CONFIG_PATH",
+        "slug_prefix": "demo-fair-dual-domain-bilateral-supervised-search",
+        "agent_name": "dual-domain-bilateral-supervised-search",
+        "space": {
+            "proj_n_bf":   ([1, 2, 3, 5], "choice"),
+            "img_n_bf":    ([1, 2, 3, 5, 7], "choice"),
+            "proj_kernel": ([3, 5], "choice"),
+            "img_kernel":  ([5, 7, 9, 11], "choice"),
+            "proj_sx":    (0.005, 0.05, "log"),
+            "proj_sy":    (0.1, 0.6, "linear"),
+            "proj_sr":    (0.0001, 0.002, "log"),
+            "img_sx":     (0.3, 1.0, "linear"),
+            "img_sr":     (0.005, 0.05, "log"),
+            "epochs":     (8, 15, "int"),
+            "lr":         (2e-3, 1e-2, "log"),
+        },
+        "tpe_seed_trial": {
+            "proj_n_bf":   3,
+            "img_n_bf":    3,
+            "proj_kernel": 3,
+            "img_kernel":  9,
+            "proj_sx":    0.01,
+            "proj_sy":    0.3,
+            "proj_sr":    0.0005,
+            "img_sx":     0.5,
+            "img_sr":     0.02,
+            "epochs":     10,
+            "lr":         5e-3,
+        },
+    },
     "lpd": {
         "solver": "pentathlon/demo_dl_reference/solver_learned_primal_dual.py",
         "env_var": "LPD_CONFIG_PATH",
