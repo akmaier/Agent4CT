@@ -90,6 +90,40 @@ For each val sample:
   DDPM with more epochs / data before further TPE search — checkpoint
   quality is the problem.
 
+## Cross-dataset observations
+
+| Dataset | DDPM variant | hr | Best SSIM | Notes |
+|---|---|---:|---:|---|
+| `demo_dl` | unconstrained (train_n=2000, disjoint seeds) | 0.4530 | 0.825 | TPE iter-17; eta=30 DPS+DC-step seed config wins |
+| `demo_dl` | constrained (train_n=200, same seeds as supervised) | 0.4418 | 0.809 | TPE iter-18; **+0.011 gap** when DDPM sees more training distribution |
+| `breast_ct` | unconstrained breast (train_n=3600) | **0.000** | 0.463 | All 20 TPE trials hr=0 — checkpoint visibly under-trained, recons SSIM<0.5 vs FBP 0.957 |
+| `breast_ct` | constrained breast (train_n=200) | **0.000** | 0.470 | Same — checkpoint also weak |
+| `mayo_ldct` | — | — | — | DDPM not yet trained on Mayo |
+
+**Pattern: this solver lives or dies by the checkpoint.** Two
+qualitatively different outcomes here:
+
+1. **`demo_dl`**: DDPM trained on simple Sidky ellipse phantoms
+   converged cleanly; diff-recon hits hr≈0.45, competitive with
+   ITNet v3 / USwin / RAM. The unconstrained-vs-constrained gap
+   (+0.011 hr) is the empirical answer to "how much does more
+   training distribution help?" — modest but positive.
+
+2. **`breast_ct`**: same architecture, but the breast-DDPM checkpoint
+   produces SSIM ~0.46 reconstructions across all 40 TPE trials of
+   (constrained, unconstrained). Even though the metadata says the
+   training went well (`val_loss=0.0013`, comparable to demo-DDPM's),
+   the resulting prior cannot guide reconstruction. **The breast DDPM
+   needs retraining** — likely a normalization, σ-schedule, or
+   data-pipeline issue we haven't yet pinned down.
+
+**Take-away for new datasets**: before running diff-recon TPE,
+**validate the trained DDPM checkpoint** by sampling unconditional
+images and comparing to truth-distribution. If samples look anatomically
+plausible, run the diff-recon TPE. If they look like blurry mush (the
+breast case), retrain the DDPM with different hyperparams before
+spending TPE budget on a broken prior.
+
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
 `breast-ct-calibrated-tpe-diff-recon-dcstep-{,un}constrained-search-*`

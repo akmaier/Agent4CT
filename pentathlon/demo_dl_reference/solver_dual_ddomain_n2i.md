@@ -105,6 +105,18 @@ is the symmetric average of the two half-set pipelines.
   training (≥ 50 epochs) on sparse-view abdomen CT — those land in
   a different operating point than 8-epoch breast-CT runs.
 
+## Cross-dataset observations
+
+| Dataset | Best hr | Notes |
+|---|---:|---|
+| `demo_dl` | 0.3811 | TPE iter-17. N2I works OK on simple sparse-view phantoms — the half-set FBP target has real signal there. |
+| `breast_ct` | **0.000** | Loss-bottleneck — N2I rewards over-smoothing on dense scans. Switching to the supervised-L2 twin gets hr=0.83. |
+| `mayo_ldct` | — | Not yet run. Mayo is dense-view (~2304 angles) — N2I unlikely to help here either. |
+
+**Pattern**: use N2I when (a) no clean target is available AND (b)
+views are sparse enough that half-view FBP carries genuine signal.
+For everything else, use `solver_dual_ddomain_supervised.py`.
+
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
 | Source | Config | val_psnr | val_ssim | hr |

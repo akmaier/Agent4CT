@@ -98,6 +98,19 @@ Per-scene optimisation: nothing transfers between scans.
 - **For sparse-view tracks**, this is still a reasonable baseline —
   the architecture is unchanged.
 
+## Cross-dataset observations
+
+| Dataset | Best hr | Config | Notes |
+|---|---:|---|---|
+| `demo_dl` | 0.2999 | n_gauss=1024, n_iter=600 (TPE iter-14) | Bottom-pack on demo_dl — still beats baseline FBP modestly. |
+| `breast_ct` | **0.000** | n_gauss=1024, n_iter=600, gs_outer_wall_s=3600 | Structural mismatch — 13 dB below baseline FBP. |
+| `mayo_ldct` | — | not yet run | Likely same outcome (dense-view, real anatomy). |
+
+**Pattern**: same as NAF — Gaussian primitives can compete on `demo_dl`
+(simple ellipse phantoms) but lose on `breast_ct` and any other
+dataset where baseline FBP is already strong. Wrong architectural
+family for dense-view tomography.
+
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
 | Source | Config | scenes fit | val_ssim | val_psnr | hr | notes |

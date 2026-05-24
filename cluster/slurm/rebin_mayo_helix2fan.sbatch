@@ -23,6 +23,11 @@ mkdir -p results/slurm
 VENV="$REPO/.venv"
 source "$VENV/bin/activate"
 
+# Disable HDF5 file locking. The cluster's NFS share at /cluster/maier
+# returns errno=37 ("No locks available") on h5py.File("w") sync, which
+# crashed the L014 rebin in this session. Single-writer; no locks needed.
+export HDF5_USE_FILE_LOCKING=FALSE
+
 echo "[rebin] host=$(hostname) job=$SLURM_JOB_ID cpus=$SLURM_CPUS_PER_TASK"
 df -h /cluster/maier | tail -1
 

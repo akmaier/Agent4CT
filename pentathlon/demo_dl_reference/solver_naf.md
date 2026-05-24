@@ -102,6 +102,22 @@ set, plus a per-scene wall derived from `outer / val_n`.
   solver change. Lower priority than fixing the breast DDPM
   checkpoint or extending the LPD search.
 
+## Cross-dataset observations
+
+| Dataset | Best hr | Config | Notes |
+|---|---:|---|---|
+| `demo_dl` | 0.4160 | naf_n_iter=2000, lr=5e-3, 5-layer 256-hidden MLP | TPE iter-19; performs ~average for the dataset (mid-pack). |
+| `breast_ct` | **0.000** | lr=1e-3, n_iter=12000 | Structural mismatch — 22 dB below baseline FBP. NAF's coordinate-MLP cannot beat a properly-tuned FBP+denoising chain on dense-view data. |
+| `mayo_ldct` | — | not yet run | Likely same outcome as breast_ct (also dense-view 2304-angle helical) |
+
+**Pattern**: NAF is competitive on `demo_dl` (simpler phantoms,
+sparse-view-like in the sense that the dataset is small) but fails on
+`breast_ct` (denser content, harder distributions). The dataset
+characteristic to predict success is **how good baseline FBP is** —
+if baseline FBP is already strong (SSIM > 0.95), per-scene NAF cannot
+recover the precision gap. If baseline FBP is mediocre (SSIM ~ 0.7-0.8
+on `demo_dl`), NAF closes the gap.
+
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
 | Source | Config | val_n | val_ssim | val_psnr | hr |

@@ -112,6 +112,19 @@ The pipeline class is `FullViewUNetPipeline` (defined inline; mirrors
   reference architecture — the N2I variant should be reserved for
   challenges that genuinely lack clean targets.
 
+## Cross-dataset observations
+
+| Dataset | Best hr | Config | Notes |
+|---|---:|---|---|
+| `breast_ct` | **0.826** | c=32, ep=10, lr=5e-4, 1.86 M params | #2 on the leaderboard (LPD at 0.91 is the only winner above). Capacity saturated at c=32; data sweep showed no gain past train_n=400 under val_n=20. |
+| `demo_dl`   | — | DD-UNet calibrated TPE got 0.3811 in N2I mode; supervised L2 not yet run on demo-dl | The N2I-vs-supervised-L2 lesson (loss = bottleneck) applies the same way: expect ~0.7-0.8 hr with supervised L2 if you also do a calibrated TPE pass. |
+| `mayo_ldct` | — | autoresearch not yet started | Geometry validated 2026-05-24. The dense-view supervised regime is exactly this architecture's sweet spot. |
+
+**Pattern**: U-Net-based dual-domain wins when (a) supervised loss is
+available and (b) the views are dense (128+ per rotation). Half the
+parameter efficiency of LPD on `breast_ct`, but conceptually simpler
+and trains faster.
+
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
 | Source | Config | params | val_psnr | val_ssim | hr |

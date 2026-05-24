@@ -164,6 +164,20 @@ hr=0.219.
    epochs, then unfreeze. Constrains where the optimization can
    start.
 
+## Cross-dataset observations
+
+| Dataset | Best hr | Config | Notes |
+|---|---:|---|---|
+| `demo_dl` | 0.2295 | TPE iter-18; non-trainable Wu | The non-trainable `solver_wu_2015.py` (calibrated TPE) reaches 0.2295 — Wu's classical algorithm with hand-tuned params. |
+| `breast_ct` | 0.2189 | lr=1e-3, ep=10, n_bands=4 (10 params trainable) | iter-2 of the 10-iter agentic loop. Non-trainable Wu only reaches 0.0425 here; **trainable variant is a 5× improvement** but hits a hard ceiling at 0.22. |
+| `mayo_ldct` | — | not yet run | Wu's algorithm is sparse-view-oriented; expected to be modest on dense-view Mayo. |
+
+**Pattern**: trainable scalars on top of a classical algorithm gives a
+small but real boost on `breast_ct` (5× improvement vs the
+non-trainable version). On `demo_dl` the non-trainable version is
+already at the ceiling — adding trainable scalars wouldn't help. The
+algorithm's expressivity, not the optimisation, is the limit.
+
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
 | Iter | Change vs default | val_psnr | val_ssim | hr |

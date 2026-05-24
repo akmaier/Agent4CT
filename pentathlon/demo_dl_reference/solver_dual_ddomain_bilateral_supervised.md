@@ -112,6 +112,19 @@ The pipeline class is `FullViewBilateralPipeline` (defined inline).
   variations.** On other datasets, recalibrate this — for Mayo (mu
   scale 0..0.05) proj_sr should be ~10× smaller than for breast-CT.
 
+## Cross-dataset observations
+
+| Dataset | Best hr | Config | Notes |
+|---|---:|---|---|
+| `demo_dl` | — | not run as supervised | The N2I twin (`solver_dual_ddomain_bilateral_n2i.py`) hits 0.3611 on demo_dl. Supervised L2 should improve on that. |
+| `breast_ct` | **0.2476** | proj_n=3, img_n=3, img_kernel=9 (18 params) | DD-BF supervised L2 hits 0.25 with just **18 trainable params** — within 0.05 hr of RAM zero-shot (0.30) which uses a frozen 10M-param pretrained net. Best parameter-efficiency reachable without a learned CNN denoiser. |
+| `mayo_ldct` | — | not yet run | |
+
+**Pattern**: useful as an **interpretable / ultra-low-parameter
+baseline** before scaling to a U-Net. On breast_ct, the supervised L2
+variant is a 6× improvement over the N2I variant (loss = bottleneck,
+same as for the U-Net twin).
+
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
 | Source | Config | params | val_psnr | val_ssim | hr |

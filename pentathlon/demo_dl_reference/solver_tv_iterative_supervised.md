@@ -120,6 +120,20 @@ the default K=10: 20 scalars total. Tiny.
   force the K iters to rediscover FBP, costing K×forward+backproj
   with no gain in the limit.
 
+## Cross-dataset observations
+
+| Dataset | Best hr | Config | Notes |
+|---|---:|---|---|
+| `demo_dl` | — | not run as supervised | The non-supervised `tv_iterative` (calibrated TPE) reaches 0.4056 on demo_dl — a useful baseline for that dataset where FBP alone is weaker. |
+| `breast_ct` | **0.000** | K∈{10,30}, step=1e-4, λ=1e-5 | **Structurally bounded by FBP** on dense-view CT — data-fidelity gradient saturates at FBP init. See main weaknesses section. |
+| `mayo_ldct` | — | not yet run | Likely same as breast_ct — dense view (2304 angles), FBP-init is already strong. |
+
+**Pattern**: hand-crafted smooth-TV gradient is **only useful when FBP
+is genuinely bad** (sparse-view / very-low-photon). At 128+ views with
+clean targets, learned priors (LPD, DD-UNet) absolutely dominate. The
+non-trainable `tv_iterative` is a more sensible baseline; trainable
+TV-iter L2 only makes sense if FBP isn't already at the truth.
+
 ## Empirical results on breast-CT (128 views, intensity-calibrated)
 
 `breast-ct-claude-agentic-tv-iterative-supervised-search-20260523-01`:
