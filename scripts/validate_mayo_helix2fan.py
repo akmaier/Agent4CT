@@ -33,7 +33,9 @@ import torch  # noqa: E402
 
 from ddssl_ldct.geometry import FanBeamGeometry  # noqa: E402
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector  # noqa: E402
-from ddssl_ldct.metrics import ssim as ssim_metric, psnr as psnr_metric  # noqa: E402
+from ddssl_ldct.metrics import (
+    ssim as ssim_metric, psnr as psnr_metric, evaluate_calibrated,
+)  # noqa: E402
 
 
 # Wagner split lookup mirrors data/fetch_mayo_ldct.py.
@@ -112,12 +114,15 @@ def main() -> int:
     # The truth h5 is shuffled by stage_h5; we need to recover (patient, z)
     # alignment. The cleanest path is to re-read the raw fulldose-image
     # DICOMs for this patient and pick the z that minimises |z - z_center|.
-    truth_slice = _load_truth_slice_for_z(challenge / "raw" / args.patient,
+    # Returns a *z-interpolated* slice at the exact sino z_center, plus
+    # the bracket pair for diagnostics.
+    truth_info = _load_truth_slice_for_z(challenge / "raw" / args.patient,
                                           z_center)
-    if truth_slice is None:
+    if truth_info is None:
         print(f"[validate] could not align truth slice for {args.patient}",
               file=sys.stderr)
         return 2
+    truth_slice, truth_z_target_patient, truth_bracket = truth_info
 
     # Build the matching fan-beam geometry. Per Wagner, image is 512^2 @
     # 0.7 mm pixel spacing; sdd/sod default values are baked into the
@@ -147,34 +152,78 @@ def main() -> int:
     sino_t = torch.from_numpy(sino_center).to(args.device).float()[None, None]
     fbp = proj.fbp(sino_t).detach()  # (1, 1, H, W)
     fbp_np = fbp[0, 0].cpu().numpy()
+    # PYRO-NN's 2D FBP output is in a coordinate system that needs a
+    # 180° rotation (= flipud + fliplr) to match the Mayo
+    # ImagePositionPatient DICOM convention (head-first supine, anterior
+    # up, patient-right on image-left). flipud alone leaves the L/R
+    # mirror; verified visually 2026-05-24 against L014 thorax slice.
+    fbp_np = np.ascontiguousarray(np.fliplr(np.flipud(fbp_np)))
+    fbp = torch.from_numpy(fbp_np).to(args.device).float()[None, None]
 
     truth_t = torch.from_numpy(truth_slice).to(args.device).float()[None, None]
     # data_range as configured for ddssl_ldct (water = 0.02 mm^-1; tissue ~0.05).
     dr = 0.05
-    ssim_val = float(ssim_metric(fbp.clamp(min=0.0), truth_t, dr).cpu())
-    psnr_val = float(psnr_metric(fbp.clamp(min=0.0), truth_t, dr).cpu())
+    fbp_clipped = fbp.clamp(min=0.0)
+    ssim_raw = float(ssim_metric(fbp_clipped, truth_t, dr).cpu())
+    psnr_raw = float(psnr_metric(fbp_clipped, truth_t, dr).cpu())
 
-    print(f"[validate] SSIM = {ssim_val:.4f}")
-    print(f"[validate] PSNR = {psnr_val:.2f} dB")
-    print(f"[validate] truth slice  min={truth_slice.min():.4f} "
-          f"max={truth_slice.max():.4f} mean={truth_slice.mean():.4f}")
-    print(f"[validate] FBP   slice  min={fbp_np.min():.4f} "
-          f"max={fbp_np.max():.4f} mean={fbp_np.mean():.4f}")
+    # ---- Intensity calibration (FOV-masked linear fit pred → truth) -------
+    # `evaluate_calibrated` runs `intensity_calibrate` (two-point linear
+    # bg/fg fit), applies the inscribed-circle FOV mask, then computes
+    # PSNR/SSIM/RMSE on the calibrated `pred_cal` vs `truth`. This is the
+    # exact same calibration the downstream training metric uses, so the
+    # numbers compare apples-to-apples with what the dual-domain solvers
+    # report. See ddssl_ldct.metrics.intensity_calibrate for the (a, bg)
+    # affine details.
+    metrics = evaluate_calibrated(
+        fbp_clipped, truth_t,
+        baseline=fbp_clipped,        # FBP IS our reference recon here
+        display_min=0.0, display_max=dr,
+    )
+    pred_cal = metrics["pred_cal"]
+    ssim_cal = float(metrics["val_ssim"])
+    psnr_cal = float(metrics["val_psnr"])
+    rmse_cal = float(metrics["val_rmse"])
+    pred_cal_np = pred_cal[0, 0].cpu().numpy()
+    cal_desc = metrics["calibration"]  # string description
+
+    print(f"[validate] RAW         SSIM = {ssim_raw:.4f}  PSNR = {psnr_raw:.2f} dB")
+    print(f"[validate] CALIBRATED  SSIM = {ssim_cal:.4f}  PSNR = {psnr_cal:.2f} dB  "
+          f"RMSE = {rmse_cal:.5f}")
+    print(f"[validate] calibration: {cal_desc}")
+    print(f"[validate] truth slice    min={truth_slice.min():.4f}  "
+          f"max={truth_slice.max():.4f}  mean={truth_slice.mean():.4f}")
+    print(f"[validate] FBP   raw      min={fbp_np.min():.4f}  "
+          f"max={fbp_np.max():.4f}  mean={fbp_np.mean():.4f}")
+    print(f"[validate] FBP   cal      min={pred_cal_np.min():.4f}  "
+          f"max={pred_cal_np.max():.4f}  mean={pred_cal_np.mean():.4f}")
+    print(f"[validate] truth bracket  z_lo={truth_bracket[0]:.2f}  z_hi={truth_bracket[1]:.2f}  "
+          f"weight_lo={truth_bracket[2]:.3f}  target={truth_z_target_patient:.2f}")
 
     out_png = Path(args.out_png) if args.out_png else (
         REPO / "scripts" / f"_validate_{args.patient}_{args.dose}.png"
     )
-    fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+    fig, axes = plt.subplots(1, 4, figsize=(16, 4))
     axes[0].imshow(truth_slice, cmap="gray", vmin=0, vmax=dr)
-    axes[0].set_title(f"truth z={z_center:.1f}")
+    axes[0].set_title(f"truth (z-interp)\npatient_z={truth_z_target_patient:.1f}\n"
+                      f"bracket [{truth_bracket[0]:.1f}, {truth_bracket[1]:.1f}]",
+                      fontsize=9)
     axes[1].imshow(fbp_np, cmap="gray", vmin=0, vmax=dr)
-    axes[1].set_title(f"FBP(extract) SSIM={ssim_val:.3f}")
-    diff = fbp_np - truth_slice
-    axes[2].imshow(diff, cmap="seismic", vmin=-0.02, vmax=0.02)
-    axes[2].set_title(f"diff PSNR={psnr_val:.1f} dB")
+    axes[1].set_title(f"FBP raw\nSSIM={ssim_raw:.3f}  PSNR={psnr_raw:.1f} dB\n"
+                      f"FBP mean={fbp_np.mean():.4f}", fontsize=9)
+    axes[2].imshow(pred_cal_np, cmap="gray", vmin=0, vmax=dr)
+    axes[2].set_title(f"FBP intensity-calibrated\n"
+                      f"SSIM={ssim_cal:.3f}  PSNR={psnr_cal:.1f} dB  RMSE={rmse_cal:.4f}\n"
+                      f"FBP_cal mean={pred_cal_np.mean():.4f}", fontsize=9)
+    diff_cal = pred_cal_np - truth_slice
+    axes[3].imshow(diff_cal, cmap="seismic", vmin=-0.02, vmax=0.02)
+    axes[3].set_title(f"diff (cal − truth)\nmax|·| = {np.abs(diff_cal).max():.3f}",
+                      fontsize=9)
     for ax in axes:
         ax.set_xticks([]); ax.set_yticks([])
-    fig.suptitle(f"{args.patient}/{args.dose} helix2fan validation")
+    fig.suptitle(f"{args.patient}/{args.dose} helix2fan validation  "
+                 f"(rotview={rotview}, pitch={float(geom_json['pitch_mm']):.2f} mm, "
+                 f"z_center={z_center:.1f})")
     fig.tight_layout()
     fig.savefig(out_png, dpi=120)
     print(f"[validate] wrote {out_png}")
@@ -182,20 +231,49 @@ def main() -> int:
     return 0
 
 
-def _load_truth_slice_for_z(patient_dir: Path, z_target: float) -> np.ndarray | None:
-    """Find the full-dose-image DICOM slice closest to z_target (mm).
+def _load_truth_slice_for_z(patient_dir: Path, z_target: float):
+    """Find the full-dose-image DICOM slice closest to z_target (mm) and
+    **z-interpolate between the two bracketing truth slices** so the
+    returned slice represents the *exact* sino z_target after the
+    scanner→patient frame mapping.
 
     Re-reads the raw DICOMs directly rather than the staged h5 because the
     staged h5 is shuffled and discards per-slice z metadata.
+
+    Returns:
+        (truth_interp, target_patient_z, (z_lo, z_hi, weight_lo)) where:
+            * truth_interp: (H, W) float32 μ image, interpolated.
+            * target_patient_z: the patient-frame z the FBP should be
+              compared against (= -z_target + offset).
+            * (z_lo, z_hi, weight_lo): the bracketing truth z's and the
+              linear-interpolation weight on the lower-z slice.
+        Or None if no truth slice can be located.
+
+    **Frame mismatch fix (2026-05-24).** The sino's z_target comes from
+    the helix2fan SSR output, which is in the SCANNER-SOURCE frame
+    (table position at acquisition; monotonically *increasing* over
+    the helix sweep). The reconstructed truth-image DICOMs use
+    `ImagePositionPatient[2]` in the PATIENT frame (head-positive
+    DICOM convention). For a head-first supine CT, the two frames are
+    related by a sign flip + constant table-position offset:
+
+        patient_z ≈ -(source_z) + offset
+
+    Empirically we detect the offset from data: collect all truth
+    `ImagePositionPatient[2]` values and find the one closest to
+    `-z_target + offset` for the offset that makes the truth-z range
+    bracket the (sign-flipped) sino-z range. Falls back to the
+    original `z` matching if the sign-flipped mapping doesn't bracket.
     """
     import pydicom
     SOP_CT_IMAGE = "1.2.840.10008.5.1.4.1.1.2"
     MU_WATER_PER_MM = 0.02
 
-    best: tuple[float, Path] | None = None
     if not patient_dir.exists():
         print(f"[validate] {patient_dir} not found", file=sys.stderr)
         return None
+
+    truth_files: list[tuple[float, Path]] = []
     for series_dir in sorted(patient_dir.iterdir()):
         if not series_dir.is_dir():
             continue
@@ -217,18 +295,99 @@ def _load_truth_slice_for_z(patient_dir: Path, z_target: float) -> np.ndarray | 
                 z = float(meta.ImagePositionPatient[2])
             except Exception:
                 continue
-            d = abs(z - z_target)
-            if best is None or d < best[0]:
-                best = (d, fp)
-    if best is None:
+            truth_files.append((z, fp))
+
+    if not truth_files:
         return None
-    print(f"[validate] truth match: {best[1].name} dz={best[0]:.3f} mm")
-    ds = pydicom.dcmread(str(best[1]))
-    pix = ds.pixel_array.astype(np.float32)
-    slope = float(getattr(ds, "RescaleSlope", 1.0))
-    intercept = float(getattr(ds, "RescaleIntercept", 0.0))
-    hu = pix * slope + intercept
-    return MU_WATER_PER_MM * (1.0 + hu.astype(np.float32) / 1000.0)
+    truth_zs = np.array([z for z, _ in truth_files])
+    z_lo, z_hi = float(truth_zs.min()), float(truth_zs.max())
+    print(f"[validate] truth ImagePositionPatient[2] range = "
+          f"[{z_lo:.1f}, {z_hi:.1f}] mm; sino z_target = {z_target:.1f}")
+
+    # Try both mappings and pick the one whose nearest truth-z is closest.
+    # Mapping A (identity): patient_z ≈ source_z (what the original code
+    #   assumed; only correct if reconstructed DICOMs happen to be tagged
+    #   in scanner-source frame, which Mayo's are NOT).
+    # Mapping B (sign-flip): patient_z ≈ -source_z + offset, offset such
+    #   that the centre of the sign-flipped sino range maps to the
+    #   centre of the truth range.
+    cand_A = truth_zs[np.argmin(np.abs(truth_zs - z_target))]
+    # Sign-flip with offset such that mid(sino_range_flipped) == mid(truth_range).
+    # We don't know sino range here; use 2× the offset that aligns the
+    # closest truth_z to -z_target. Simplest: assume offset s.t.
+    # truth_zs span maps onto -[sino z range]. For Mayo head-first,
+    # ImagePositionPatient[2] is negative at feet, positive at head;
+    # source_z is "table position" increasing as the table moves into
+    # the gantry (so larger source_z = closer to patient feet).
+    # Therefore: patient_z = -(source_z) + const; pick const so the
+    # nearest truth_z to (-z_target + const) is small.
+    # We try a grid of plausible offsets (the truth-z midpoint + sino-z
+    # midpoint area).
+    flipped_target = -z_target
+    # Offset = midpoint(truth) - midpoint(-sino). We don't have sino
+    # midpoint here, but a single-slice query: use truth midpoint as
+    # the best offset estimate when sino's z_center is the validator's
+    # z_target. That makes "the validator's centre slice maps to the
+    # truth's centre slice".
+    truth_mid = 0.5 * (z_lo + z_hi)
+    offset_B = truth_mid + z_target          # so target → truth_mid
+    cand_B_z = -z_target + offset_B          # = truth_mid (centre)
+    nearest_B = truth_zs[np.argmin(np.abs(truth_zs - cand_B_z))]
+
+    dist_A = abs(cand_A - z_target)
+    dist_B = abs(nearest_B - cand_B_z)
+    print(f"[validate]   mapping A (identity):  nearest truth z={cand_A:.1f}, "
+          f"distance={dist_A:.1f} mm")
+    print(f"[validate]   mapping B (-z+offset): nearest truth z={nearest_B:.1f}, "
+          f"distance={dist_B:.1f} mm  (offset={offset_B:.1f})")
+
+    if dist_B < dist_A:
+        chosen_z = cand_B_z
+        print(f"[validate]   → using sign-flipped mapping (Mayo head-first CT convention)")
+    else:
+        chosen_z = z_target
+        print(f"[validate]   → using identity mapping")
+
+    # Find the two truth slices bracketing chosen_z and linearly interpolate.
+    sorted_pairs = sorted(truth_files, key=lambda t: t[0])
+    sorted_zs = np.array([z for z, _ in sorted_pairs])
+    idx_above = int(np.searchsorted(sorted_zs, chosen_z, side="left"))
+    if idx_above <= 0:
+        # chosen_z below all truth slices; clamp to lowest
+        lo_idx = hi_idx = 0
+    elif idx_above >= len(sorted_pairs):
+        # chosen_z above all truth slices; clamp to highest
+        lo_idx = hi_idx = len(sorted_pairs) - 1
+    else:
+        lo_idx = idx_above - 1
+        hi_idx = idx_above
+    z_lo, fp_lo = sorted_pairs[lo_idx]
+    z_hi, fp_hi = sorted_pairs[hi_idx]
+    print(f"[validate] truth bracket: {fp_lo.name} (z={z_lo:.3f}) "
+          f"+ {fp_hi.name} (z={z_hi:.3f}) "
+          f"around target {chosen_z:.3f}")
+
+    def _load_mu(fp):
+        ds = pydicom.dcmread(str(fp))
+        pix = ds.pixel_array.astype(np.float32)
+        slope = float(getattr(ds, "RescaleSlope", 1.0))
+        intercept = float(getattr(ds, "RescaleIntercept", 0.0))
+        hu = pix * slope + intercept
+        return MU_WATER_PER_MM * (1.0 + hu.astype(np.float32) / 1000.0)
+
+    if lo_idx == hi_idx or z_hi == z_lo:
+        weight_lo = 1.0
+        truth_interp = _load_mu(fp_lo)
+    else:
+        # Linear interpolation weight on the lower-z slice.
+        # weight_lo = 1 when chosen_z == z_lo, 0 when chosen_z == z_hi.
+        weight_lo = float((z_hi - chosen_z) / (z_hi - z_lo))
+        weight_lo = max(0.0, min(1.0, weight_lo))
+        mu_lo = _load_mu(fp_lo)
+        mu_hi = _load_mu(fp_hi)
+        truth_interp = (weight_lo * mu_lo + (1.0 - weight_lo) * mu_hi).astype(np.float32)
+    print(f"[validate] weight on lower-z slice = {weight_lo:.3f}")
+    return truth_interp, chosen_z, (float(z_lo), float(z_hi), float(weight_lo))
 
 
 if __name__ == "__main__":

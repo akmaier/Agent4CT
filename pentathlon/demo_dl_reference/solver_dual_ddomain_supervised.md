@@ -133,10 +133,21 @@ unet_c growth has nowhere to extract signal from and starts memorising
 training noise. For reference, same architecture with N2I loss
 (`solver_dual_ddomain_n2i.py`): val_psnr ≈ 38 dB, hr=0.
 
-**To beat hr=0.826**, the only remaining lever (capacity is exhausted)
-is **more training data**. The breast-CT staged set has ~3600 train
-phantoms available; iter-5 (job 762044, in flight as of 2026-05-23)
-tests c=32 + train_n=1600 (4× more data). Expected behaviour: small
-positive gain (probably 0.01–0.04 hr) if the 400-set was undersampling
-the phantom distribution; no gain if the val_n=20 metric noise is
-already the floor.
+**To beat hr=0.826** within this architecture: tested. The data lever
+is also exhausted — `train_n=1600` (4× the iter-3 set, job 762080)
+gave hr=**0.818**, PSNR 54.54 dB. *Lower* than train_n=400's 0.826,
+likely because more data with the same capacity slightly over-smooths
+the val set (or just val-noise variance). So both capacity and data
+sweeps have closed:
+
+| sweep | levers tried | conclusion |
+|---|---|---|
+| capacity | c=8→16→32→64 | peak at c=32 |
+| training data | train_n=400→1600 | no improvement past 400 |
+
+**hr ≈ 0.82-0.83 is the val_n=20 metric ceiling for this architecture
+on breast-CT.** Further gains require either a (a) bigger val set
+(val_n=60 stage check would dilute slice-level noise), or (b) a
+qualitatively different architecture / loss. LPD's iter-3 reaches
+hr=0.829 with HALF the parameters, so the **architecture is the
+binding constraint** now, not capacity or data.

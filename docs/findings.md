@@ -9,6 +9,30 @@ verdicts belong in `docs/runs/<slug>/stages.tsv`. Things that belong here:
 **facts about the substrate or methodology that the next agent should not
 have to re-discover.**
 
+📋 **Method**: see [`solver_plan.md`](../solver_plan.md) (the canonical
+recipe for adapting solvers to a new dataset — FBP investigation,
+agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
+leaderboard + per-solver cross-dataset insights).
+
+## 2026-05-24 — `mayo_ldct` Wagner split is the on-disk convention
+
+Mirrors the Wagner et al. 2023 ISBI paper's experimental setup; defined
+once in `data/fetch_mayo_ldct.py` (`WAGNER_SPLITS`) and consumed by every
+Mayo-touching script:
+
+```
+Train: L145, L186, L209, L219      (4 patients, used to train supervised solvers)
+Val:   L277                         (1 patient, used for early-stopping / hyperparam selection)
+Test:  L014, L056, L058, L075, L123 (5 patients, only touched at final eval)
+```
+
+Every Mayo helix-2-fan rebinning and validator pass operates on
+patients sourced from this split. For the DDPM constrained/unconstrained
+distinction (see `solver_plan.md` Step 4), **constrained = train on
+L145/186/209/219 labels only**, **unconstrained = train on all 10
+patients** — the latter measures how much the diffusion prior benefits
+from having seen test-set anatomy.
+
 ## 2026-05-23 — Mayo helix2fan DOMINANT BUG FOUND: alphabetic `sorted(files)` ≠ acquisition order
 
 The "featureless disc" FBP from the previous-agent's rebin + this session's

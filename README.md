@@ -6,6 +6,27 @@
 128-view 2D fan-beam, perfectly-known truth. Iteration budget 150 (≈ one
 day). Follow on the [dashboard](https://akmaier.github.io/Agent4CT/dashboard.html).
 
+📋 **Working on this repo?** → start at [`solver_plan.md`](solver_plan.md)
+**before** touching any solver. It's the canonical recipe for adapting
+solvers to a new dataset (FBP-investigate the data, then agentic
+autoresearch + TPE refinement + DDPM constrained/unconstrained variants
++ leaderboard + per-solver cross-dataset insights). Then read
+[`docs/findings.md`](docs/findings.md) top-down for cross-cutting
+substrate facts.
+
+🏆 **Current leaderboards** (best-of-best per solver per dataset, all
+calibrated metrics):
+
+- [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) —
+  synthetic Sidky ellipse phantoms (128-view sparse).
+- [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) —
+  synthetic breast phantoms (128-view sparse).
+  Current champion: **Learned Primal-Dual hr 0.9062** (LPD TPE
+  trial 11, I=8, hidden=96, 1.49 M params).
+- [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) —
+  real AAPM 2016 LDCT, Wagner split. Geometry validated 2026-05-24;
+  autoresearch not yet started.
+
 ---
 
 
@@ -17,6 +38,27 @@ generalised to **five** CT-imaging benchmarks instead of one LLM training
 script, with five agents running in parallel and sharing a common scratch
 pad. The CT reconstruction backbone is
 [PYRO-NN](https://github.com/csyben/PYRO-NN) (Syben et al., Med. Phys. 2019).
+
+### Datasets currently wired in
+
+| Dataset key | Source | Split convention |
+|---|---|---|
+| `demo_dl` | Synthetic Sidky-style sparse-view ellipse phantoms (128 angles) | random-seed splits |
+| `breast_ct` | Synthetic breast phantoms (Sidky group, 128 angles, real μ range) | random-seed splits |
+| `mayo_ldct` | AAPM 2016 LDCT challenge, helical Siemens AS+, rebinned 2D fan-beam | **Wagner split** (below) |
+
+The **Wagner split** for `mayo_ldct` (mirrors the Wagner et al. 2023 ISBI
+paper's experimental setup):
+
+```
+Train: L145, L186, L209, L219     (4 patients)
+Val:   L277                        (1 patient)
+Test:  L014, L056, L058, L075, L123 (5 patients)
+```
+
+This split is defined once in `data/fetch_mayo_ldct.py`'s
+`WAGNER_SPLITS` constant and consumed by every Mayo-touching script
+(rebin, validator, autoresearch).
 
 The five benchmarks are the **Pentathlon**:
 

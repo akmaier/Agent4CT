@@ -269,9 +269,23 @@ def read_dicom_ctpd(series_dir: Path) -> tuple[np.ndarray, dict]:
     else:
         total_rotations = float("nan")
     geom["total_rotations"] = total_rotations
-    geom["pitch_mm"] = dz_per_view * (
-        n_proj / max(total_rotations, 1e-9)
-    ) if math.isfinite(dz_per_view) and math.isfinite(total_rotations) else float("nan")
+    # Helix pitch = total z displacement per full rotation. Compute from
+    # the actual z-span instead of `median(Δz) × n_proj/total_rotations`
+    # — the median form under-reports the pitch when Δz is non-uniform
+    # (e.g. Mayo SOMATOM AS+ with Z-FFS state interleaving gives Δz
+    # values in {0.0, 0.01, 0.02, 0.03} with median=0.01 but mean=0.0133;
+    # the median-based pitch was 23 mm while the true per-rotation
+    # displacement is ~30.6 mm). The narrow SSR window from a
+    # 23-mm pitch left a 25 % contiguous angular gap with zero
+    # contributing readouts (the "flat band" on the rebinned sino).
+    # Empirically this is the *only* pitch definition consistent with
+    # the stride z-spacing the SSR code actually uses (= mean(Δz) ×
+    # rotview = z_span / total_rotations).
+    if (math.isfinite(total_rotations) and total_rotations > 0
+            and np.all(np.isfinite(z_positions)) and n_proj > 1):
+        geom["pitch_mm"] = float(z_positions[-1] - z_positions[0]) / total_rotations
+    else:
+        geom["pitch_mm"] = float("nan")
     geom["n_proj"] = n_proj
 
     return proj_curved, geom
@@ -410,12 +424,20 @@ def _rebin_one_sangle(s_angle: int,
                       dv: float,
                       dsd: float,
                       dso: float,
-                      pitch_per_rot: float) -> np.ndarray:
-    """SSR for a single output view angle. See `rebin_helical_to_fan`."""
+                      pitch_per_rot: float,
+                      idx_helix: np.ndarray | None = None) -> np.ndarray:
+    """SSR for a single output view angle. See `rebin_helical_to_fan`.
+
+    If ``idx_helix`` is provided, use it directly (e.g. for FFS-dphi
+    corrected binning). Otherwise fall back to the simple stride
+    ``arange(s_angle, n_proj, rotview)`` which assumes integer-rotation
+    sampling and no FFS deflection.
+    """
     n_proj, nv, nu = proj_flat.shape
     nz_rebinned = z_out_grid.size
     # Indices of helical readouts that hit this output view (one per turn).
-    idx_helix = np.arange(s_angle, n_proj, rotview)
+    if idx_helix is None:
+        idx_helix = np.arange(s_angle, n_proj, rotview)
     z_src_list = z_positions[idx_helix]
 
     out_view = np.zeros((nu, nz_rebinned), dtype=np.float32)
@@ -473,6 +495,8 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
                          nz_rebinned: int,
                          z_start: float | None = None,
                          n_jobs: int = -1,
+                         u_centering_mode: str = "u0",
+                         ffs_correct_dphi: bool = False,
                          ) -> tuple[np.ndarray, np.ndarray]:
     """Helical -> circular fan-beam single-slice rebinning (Noo 1999).
 
@@ -488,11 +512,29 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
                start (z_positions.min()) + half a pitch so every output slice
                has a full helical window.
       n_jobs: passed to joblib for the s_angle outer loop.
-
-    Returns:
-      rebinned: (rotview, nu, nz_rebinned) float32. rotview is round(n_proj /
-                total_rotations).
-      z_out_grid: (nz_rebinned,) physical z positions of each output slice.
+      u_centering_mode: how to compute the per-pixel ``u_mm`` / ``v_grid``
+                        used in Noo Eq.(1)/(2). Options:
+            "u0" (default; legacy): ``u_mm = (i_u − u0) · du``,
+                ``v_grid = (i_v − v0) · dv``. The historical Wagner-style
+                code uses ``u0/v0`` here, but after the curved→flat remap
+                (which already centres the flat detector at ``nu − u0``)
+                this leaves a residual offset of ``u0 − (nu/2 − 0.5)`` ≈
+                4 mm on the L014 geometry — visible as faint shadow / sub-
+                pixel ghosts in the FBP.
+            "physical": ``u_mm = (i_u − (nu/2 − 0.5)) · du``,
+                ``v_grid = (i_v − (nv/2 − 0.5)) · dv``. The flat detector's
+                physical centre. Recommended when the curved→flat remap is
+                already correct (Bug 1 patched).
+      ffs_correct_dphi: if True, bin readouts into output ``s_angle`` slots
+                        by their *effective* gantry angle
+                        ``angles_eff = angles_corrected + ffs_dphi`` (mod
+                        2π) instead of the simple stride
+                        ``arange(s_angle, n_proj, rotview)``. Properly
+                        accounts for the Siemens SOMATOM AS+ azimuthal FFS
+                        deflection (≈ ±0.5 · 2π/rotview per readout). The
+                        stride approach treats those deflections as if
+                        they were on the nominal grid, leaving subtle
+                        angular shadowing in the recon.
     """
     n_proj, nv, nu = proj_flat.shape
     du = float(geom["du"])
@@ -537,16 +579,42 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
         z_start = z_min + 0.5 * abs(pitch_mm)
     z_out_grid = z_start + np.arange(nz_rebinned, dtype=np.float64) * dv_rebinned
 
-    # Per-flat-pixel u/v grids in mm.
+    # Per-flat-pixel u/v grids in mm. See `u_centering_mode` docstring.
     i_u = np.arange(nu, dtype=np.float64)
-    u_mm = (i_u - u0) * du
     i_v = np.arange(nv, dtype=np.float64)
-    v_grid = (i_v - v0) * dv
+    if u_centering_mode == "physical":
+        u_mm = (i_u - (nu / 2.0 - 0.5)) * du
+        v_grid = (i_v - (nv / 2.0 - 0.5)) * dv
+    elif u_centering_mode == "u0":
+        u_mm = (i_u - u0) * du
+        v_grid = (i_v - v0) * dv
+    else:
+        raise ValueError(f"unknown u_centering_mode={u_centering_mode!r}")
+
+    # Precompute per-s_angle readout-index lists.
+    if ffs_correct_dphi:
+        if angles_corr is None or not np.all(np.isfinite(angles_corr)):
+            raise RuntimeError(
+                "ffs_correct_dphi=True requires geom['gantry_angles_corrected'] "
+                "(Wagner-style +π/2 −unwrap −π). None found.")
+        # Bin each readout by its effective angle (mod 2π) into rotview slots.
+        # `angles_eff[0]` defines the s_angle=0 origin so the rebinned sino's
+        # angular phase matches the legacy-stride version. Each output slot
+        # receives ~total_rot readouts (one per helical turn).
+        step = (2.0 * math.pi) / rotview
+        bin_idx = np.round((angles_eff - angles_eff[0]) / step).astype(np.int64)
+        # Map to [0, rotview); negative remainders need to wrap correctly
+        # (Python % handles this for ints, but be explicit).
+        bin_idx = np.mod(bin_idx, rotview)
+        idx_helix_per_s = [np.where(bin_idx == s)[0] for s in range(rotview)]
+    else:
+        idx_helix_per_s = None   # _rebin_one_sangle will compute the stride.
 
     def _one(s):
+        idx = idx_helix_per_s[s] if idx_helix_per_s is not None else None
         return _rebin_one_sangle(
             s, rotview, proj_flat, z_eff, z_out_grid,
-            u_mm, v_grid, du, dv, sdd, sod, abs(pitch_mm),
+            u_mm, v_grid, du, dv, sdd, sod, abs(pitch_mm), idx_helix=idx,
         )
 
     try:
