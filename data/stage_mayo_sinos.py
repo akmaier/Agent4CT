@@ -43,11 +43,15 @@ REPO = Path(__file__).resolve().parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
-# Pull the same constants the truth-staging script used.
-from data.fetch_mayo_ldct import (
-    WAGNER_SPLITS, _collect_split, _find_fulldose_image_series,
-    raw_per_patient_to_raw_dir,
-)
+# Pull the same constants the truth-staging script used. Tolerant of
+# either invocation: `python data/stage_mayo_sinos.py` (data/ implicit
+# namespace package) or `cd data && python stage_mayo_sinos.py`.
+try:
+    from data.fetch_mayo_ldct import WAGNER_SPLITS, _collect_split
+except ImportError:
+    # Sibling-module import when REPO root happens to be `data/`.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from fetch_mayo_ldct import WAGNER_SPLITS, _collect_split   # type: ignore
 
 
 DEFAULT_DATA_ROOT = Path(os.environ.get(
