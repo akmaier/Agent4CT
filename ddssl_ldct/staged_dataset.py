@@ -291,16 +291,22 @@ _DEFAULT_DATA_ROOT = Path(_os.environ.get(
 GEOMETRIES: dict[str, DatasetInfo] = {
     "phantoms":   _DEMO_DL,           # synthetic ellipse-phantom fallback
     "breast_ct":  _DL_SPARSE_VIEW,    # Sidky 2021 DL-Sparse-View challenge
-    # mayo_ldct_2d geometry stays inline until Track A's helix2fan
-    # rebinning lands and we move it into challenges/mayo_ldct/geometry.py.
+    # mayo_ldct (helix2fan-rebinned 2D fan-beam, Wagner split). Real LD
+    # sinograms paired with HD reconstructed truth images. Solvers
+    # consume LOWDOSE sino as the input by convention (LDCT denoising
+    # task); override `sino_file_tmpl` to fulldose if you want the
+    # baseline noise floor instead. Path matches the existing
+    # `data/mayo_ldct/staged/` directory (where the truth h5s live).
+    # The aggregated per-split sino h5s are produced by
+    # `data/stage_mayo_sinos.py` after the helix2fan bulk rebin.
     "mayo_ldct_2d": DatasetInfo(
         image_size=512, pixel_spacing=0.5859375,
         n_angles=2304, n_det=736, det_spacing=1.2858,
         sod=595.0, sdd=1085.6,
         display_min=0.0, display_max=0.05,
         has_real_sino=True,
-        staged_dir=_DEFAULT_DATA_ROOT / "mayo_ldct_2d" / "staged",
-        sino_file_tmpl="{split}_sino_fulldose.h5",
+        staged_dir=_DEFAULT_DATA_ROOT / "mayo_ldct" / "staged",
+        sino_file_tmpl="{split}_sino_lowdose.h5",
     ),
 }
 
