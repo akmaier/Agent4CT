@@ -27,8 +27,13 @@ The rebin pipeline has been brought to a working state through this session:
 - Intensity calibration via `evaluate_calibrated` (matches other-dataset convention).
 
 L014 calibrated FBP-vs-truth — **best with 5-mm slab averaging**
-(matching truth SliceThickness=5 mm): **SSIM = 0.9436, PSNR = 37.35 dB,
-RMSE = 0.00068** (job 762112).
+(matching truth SliceThickness=5 mm):
+- At z-centre slab anchor: **SSIM = 0.9436, PSNR = 37.35 dB,
+  RMSE = 0.00068** (SLURM 762112).
+- At z=+3.5 mm slab anchor (sign-flip truth mapping): **SSIM =
+  0.9445, PSNR = 37.23 dB, RMSE = 0.00069** (SLURM 762115; the
+  +3.5 mm shift is essentially noise — within ±0.001 SSIM of the
+  centre anchor, confirming the geometry is anchor-insensitive).
 
 Without slab averaging (1-mm thin FBP vs 5-mm thick truth):
 SSIM = 0.9105, PSNR = 35.40 dB.
@@ -46,13 +51,22 @@ patient L014.**
 - 154 truth slices per dose, spanning patient_z ∈ [-482.5, -23.6] mm.
 
 **Remaining residuals** (sub-threshold):
-- FFS-`drho` not yet corrected (±5.45 mm radial source-deflection in
-  L014 — ~0.9% sod variation per readout).
+- FFS-`drho` (radial flying focal spot): correction code landed in
+  `helix2fan.py:rebin_helical_to_fan(ffs_correct_drho=True)`,
+  toggled via env `HELIX2FAN_FFS_DRHO=1`. L014 test rebin in
+  flight (SLURM 762117 + 762118 validator). Without correction,
+  SSR averages two magnifications (sdd/sod ≈ 1.8245 vs. 1.8170),
+  producing faint shadow / ghost edges. Pattern verified in
+  `results/breast_debug/L014_ffs_pattern.png`: period-2,
+  drho ∈ {0, +5.45 mm} every readout.
 - Kernel MTF mismatch (Hann ≠ B30f) shows as faint smoothing
   differences in the diff panel.
 
-Now need to re-rebin the remaining 9 patients (8 fulldose + 10 lowdose)
-with the fixed pipeline before starting autoresearch.
+Bulk rebin (SLURM 762097, started 2026-05-24) is producing the
+fixed-pipeline H5s WITHOUT FFS-drho correction (so the in-flight
+agentic seeds remain comparable to the existing TPE numbers). If the
+FFS-drho test (762117/762118) shows a clear gain, the bulk rebin
+will need to be redone.
 
 ## Plan (per solver_plan.md)
 
