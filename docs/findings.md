@@ -49,18 +49,55 @@ outward by `drho`, detector stays put.
 
 **Status:** Code landed in `ddssl_ldct/helix2fan.py:_rebin_one_sangle`
 + `rebin_helical_to_fan(ffs_correct_drho=True)`, gated by env var
-`HELIX2FAN_FFS_DRHO=1` in `data/fetch_mayo_ldct.py`. Default off so the
-in-flight bulk rebin (SLURM 762097) stays comparable to its pre-FFS
-seed runs. Validation on L014 fulldose in progress (SLURM 762117 +
-762118); baseline at +3.5 mm slab anchor is **SSIM 0.9445 / PSNR
-37.23 dB / RMSE 0.00069** (calibrated, 5-mm slab; SLURM 762115). Will
-update with FFS-drho result.
+`HELIX2FAN_FFS_DRHO=1` in `data/fetch_mayo_ldct.py`.
+
+**Validation result — NULL EFFECT on the calibrated metric** (SLURM
+762117 rebin + 762118 validator, 2026-05-25):
+
+| | RAW SSIM | RAW PSNR | CAL SSIM | CAL PSNR | RMSE |
+|---|---|---|---|---|---|
+| Baseline (no FFS-drho) | 0.8991 | 18.87 dB | **0.9445** | 37.23 dB | 0.00069 |
+| FFS-drho Step-2 ON     | 0.8990 | 18.87 dB | **0.9445** | 37.23 dB | 0.00069 |
+
+The Step-2 SSR correction alone (per-readout sod/sdd in Noo Eq.(1)/(2))
+produces visually and quantitatively identical reconstructions at the
++3.5 mm slab anchor. Two reasons it's a no-op here:
+
+1. **The intensity-calibration step absorbs the bias.** With
+   drho ∈ {0, +5.45 mm} alternating every readout, the magnification
+   correction `(sod_eff/sod) ≈ 1.0092` shifts the line-integral
+   amplitude by ≤ 0.92 % on half the rays. Two-point linear
+   FOV-masked calibration (`evaluate_calibrated`) absorbs the DC and
+   slope offset.
+2. **The Step-1 (curved→flat) correction was NOT applied.** Wagner's
+   item 1 (`literature/wagner_helix2fan_algorithm.md`) calls for the
+   bilinear remap to use per-readout sdd_eff for both the
+   `phi/dphi_curved` lookup and the cone-axis remap. That's not in my
+   code (would require rebuilding the lookup tables per readout — 5-10×
+   slower curved→flat pass). The dominant residual would be there.
+
+**Decision (2026-05-25):** keep `HELIX2FAN_FFS_DRHO=0` as the bulk-
+rebin default. The L014 test rebin (`L014_sino_fulldose_ffs_drho.h5`)
+stays on disk for future comparison if anyone revisits Step 1.
 
 The `ffs_dz` and `ffs_dphi` corrections were left off the test because:
 - `ffs_dphi` is sub-noise on L014 (verified in earlier SSR-variant
   sweep — see ssr_variants entry below from 2026-05-24)
 - `ffs_dz` is partially absorbed by the existing z_eff = z_positions
   + ffs_dz shift inside `rebin_helical_to_fan` (already on)
+
+The `ffs_dz` and `ffs_dphi` corrections were left off the test because:
+- `ffs_dphi` is sub-noise on L014 (verified in earlier SSR-variant
+  sweep — see ssr_variants entry below from 2026-05-24)
+- `ffs_dz` is partially absorbed by the existing z_eff = z_positions
+  + ffs_dz shift inside `rebin_helical_to_fan` (already on)
+
+The FFS-drho-corrected sino took ~63 min wall vs ~43 min for the
+non-FFS-drho baseline rebin — a 47 % slowdown coming from the Python-
+level per-readout `float()` calls in the inner SSR loop. If a future
+agent decides to enable FFS-drho by default, vectorise the
+`dsd_per_readout` / `dso_per_readout` lookups out of the inner loop
+first.
 
 ## 2026-05-24 — `mayo_ldct` Wagner split is the on-disk convention
 

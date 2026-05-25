@@ -51,22 +51,25 @@ patient L014.**
 - 154 truth slices per dose, spanning patient_z ∈ [-482.5, -23.6] mm.
 
 **Remaining residuals** (sub-threshold):
-- FFS-`drho` (radial flying focal spot): correction code landed in
-  `helix2fan.py:rebin_helical_to_fan(ffs_correct_drho=True)`,
-  toggled via env `HELIX2FAN_FFS_DRHO=1`. L014 test rebin in
-  flight (SLURM 762117 + 762118 validator). Without correction,
-  SSR averages two magnifications (sdd/sod ≈ 1.8245 vs. 1.8170),
-  producing faint shadow / ghost edges. Pattern verified in
-  `results/breast_debug/L014_ffs_pattern.png`: period-2,
-  drho ∈ {0, +5.45 mm} every readout.
+- FFS-`drho` (radial flying focal spot): **Step-2 SSR correction**
+  validated and confirmed to be a no-op at the calibrated metric
+  (SLURM 762117 rebin + 762118 validator, 2026-05-25): SSIM 0.9445 /
+  PSNR 37.23 / RMSE 0.00069 — **identical** to baseline to 4 decimals.
+  Two-point linear FOV-masked calibration absorbs the 0.92 %
+  magnification bias per alternate readout. Step-1 (curved→flat)
+  correction not implemented — would require per-readout lookup-table
+  rebuilds. The FFS-drho-corrected sino lives at
+  `data/mayo_ldct/staged_helix2fan/L014_sino_fulldose_ffs_drho.h5` for
+  any future Step-1 attempt. **Decision: ship with FFS-drho off.**
 - Kernel MTF mismatch (Hann ≠ B30f) shows as faint smoothing
-  differences in the diff panel.
+  differences in the diff panel. Mostly a calibration concern; the
+  SSIM is already at Wagner-grade.
 
-Bulk rebin (SLURM 762097, started 2026-05-24) is producing the
-fixed-pipeline H5s WITHOUT FFS-drho correction (so the in-flight
-agentic seeds remain comparable to the existing TPE numbers). If the
-FFS-drho test (762117/762118) shows a clear gain, the bulk rebin
-will need to be redone.
+Bulk rebin pipeline (SLURM 762097, started 2026-05-24, no FFS-drho)
+will produce all train+val H5s. Test-patient rebin (SLURM 762119,
+chained on 762097) handles the 4 stale May-20 test patients. The
+per-split aggregator (SLURM 762120, chained on 762119) builds the
+final train/val/test sino H5s for the agentic dispatchers.
 
 ## Plan (per solver_plan.md)
 
