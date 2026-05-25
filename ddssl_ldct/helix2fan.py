@@ -425,13 +425,20 @@ def _rebin_one_sangle(s_angle: int,
                       dsd: float,
                       dso: float,
                       pitch_per_rot: float,
-                      idx_helix: np.ndarray | None = None) -> np.ndarray:
+                      idx_helix: np.ndarray | None = None,
+                      dsd_per_readout: np.ndarray | None = None,
+                      dso_per_readout: np.ndarray | None = None) -> np.ndarray:
     """SSR for a single output view angle. See `rebin_helical_to_fan`.
 
     If ``idx_helix`` is provided, use it directly (e.g. for FFS-dphi
     corrected binning). Otherwise fall back to the simple stride
     ``arange(s_angle, n_proj, rotview)`` which assumes integer-rotation
     sampling and no FFS deflection.
+
+    If ``dsd_per_readout`` / ``dso_per_readout`` are provided, use them
+    per readout in Noo Eq.(1)/(2) for the radial-FFS correction
+    (per-readout effective sod/sdd = nominal ± drho_i). The scalar
+    ``dsd`` / ``dso`` args are still used as fallbacks.
     """
     n_proj, nv, nu = proj_flat.shape
     nz_rebinned = z_out_grid.size
@@ -463,12 +470,17 @@ def _rebin_one_sangle(s_angle: int,
         if i_hi <= i_lo:
             continue
 
+        # Per-readout effective sdd/sod (FFS-drho correction). Defaults
+        # to the nominal scalars if no per-readout array was passed.
+        dsd_i = float(dsd_per_readout[helix_idx]) if dsd_per_readout is not None else dsd
+        dso_i = float(dso_per_readout[helix_idx]) if dso_per_readout is not None else dso
+
         proj_view = proj_flat[helix_idx]   # (nv, nu)
         for i_z in range(i_lo, i_hi):
             dZ = z_src - z_out_grid[i_z]
             # Per-detector-column SSR. Noo (1999) Eq.(1):
             # v_precise = dZ * (u^2 + dsd^2) / (dso * dsd)
-            v_precise = dZ * (u_mm**2 + dsd**2) / (dso * dsd)
+            v_precise = dZ * (u_mm**2 + dsd_i**2) / (dso_i * dsd_i)
             # Linear interp along v axis. Out-of-range columns are skipped
             # (np.interp clamps to endpoint; we mask them instead).
             in_range = (v_precise >= v_grid[0]) & (v_precise <= v_grid[-1])
@@ -480,8 +492,8 @@ def _rebin_one_sangle(s_angle: int,
             for i_u in np.nonzero(in_range)[0]:
                 col = proj_view[:, i_u]
                 v_val = np.interp(v_precise[i_u], v_grid, col)
-                w = math.sqrt(u_mm[i_u]**2 + dsd**2) / math.sqrt(
-                    u_mm[i_u]**2 + v_precise[i_u]**2 + dsd**2
+                w = math.sqrt(u_mm[i_u]**2 + dsd_i**2) / math.sqrt(
+                    u_mm[i_u]**2 + v_precise[i_u]**2 + dsd_i**2
                 )
                 out_view[i_u, i_z] = w * v_val
 
@@ -497,6 +509,7 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
                          n_jobs: int = -1,
                          u_centering_mode: str = "u0",
                          ffs_correct_dphi: bool = False,
+                         ffs_correct_drho: bool = False,
                          ) -> tuple[np.ndarray, np.ndarray]:
     """Helical -> circular fan-beam single-slice rebinning (Noo 1999).
 
@@ -535,6 +548,27 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
                         stride approach treats those deflections as if
                         they were on the nominal grid, leaving subtle
                         angular shadowing in the recon.
+      ffs_correct_drho: if True, use per-readout effective ``sod`` and
+                        ``sdd`` in Noo Eq.(1)/(2) instead of the nominal
+                        scalars. For Mayo SOMATOM AS+ L014: drho
+                        alternates {0, +5.45 mm} every readout (period-2
+                        Z+radial FFS, characterised in
+                        ``results/breast_debug/L014_ffs_pattern.png``).
+                        Without correction the SSR averages two
+                        magnifications (sdd/sod ≈ 1.8245 and ≈ 1.8170),
+                        producing the faint shadow / ghost edges
+                        visible after the geometry fix.
+
+                        Convention (matches Wagner's literature note,
+                        ``literature/wagner_helix2fan_algorithm.md``):
+                            sod_eff_i = sod + ffs_drho[i]
+                            sdd_eff_i = sdd + ffs_drho[i]
+                        i.e. the source's perpendicular distance to
+                        isocentre and to detector both grow by the
+                        same drho — detector stays put, source moves
+                        radially outward. If a future dataset has
+                        opposite sign convention, flip the sign of
+                        the ``+ ffs_drho`` term and re-validate.
     """
     n_proj, nv, nu = proj_flat.shape
     du = float(geom["du"])
@@ -553,7 +587,22 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
     # in this first cut.
     ffs_dz   = np.asarray(geom.get("ffs_dz",   np.zeros(n_proj)), dtype=np.float64)
     ffs_dphi = np.asarray(geom.get("ffs_dphi", np.zeros(n_proj)), dtype=np.float64)
+    ffs_drho = np.asarray(geom.get("ffs_drho", np.zeros(n_proj)), dtype=np.float64)
     z_eff = z_positions + ffs_dz
+
+    # Per-readout effective sod/sdd for the radial FFS correction.
+    # Only built when `ffs_correct_drho` is True; otherwise the inner
+    # loop uses the nominal scalars.
+    if ffs_correct_drho:
+        dso_per_readout = (sod + ffs_drho).astype(np.float64)
+        dsd_per_readout = (sdd + ffs_drho).astype(np.float64)
+        print(f"[helix2fan] ffs_correct_drho=True: per-readout sod range "
+              f"[{dso_per_readout.min():.3f}, {dso_per_readout.max():.3f}], "
+              f"sdd range [{dsd_per_readout.min():.3f}, "
+              f"{dsd_per_readout.max():.3f}]", flush=True)
+    else:
+        dso_per_readout = None
+        dsd_per_readout = None
     if not math.isfinite(total_rot) or total_rot < 0.5:
         raise RuntimeError(
             f"Implausible total_rotations={total_rot}; check the z and gantry tags."
@@ -615,6 +664,8 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
         return _rebin_one_sangle(
             s, rotview, proj_flat, z_eff, z_out_grid,
             u_mm, v_grid, du, dv, sdd, sod, abs(pitch_mm), idx_helix=idx,
+            dsd_per_readout=dsd_per_readout,
+            dso_per_readout=dso_per_readout,
         )
 
     try:

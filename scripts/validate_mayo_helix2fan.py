@@ -65,6 +65,15 @@ def parse_args() -> argparse.Namespace:
                    help="Where to drop the comparison png. Default: "
                         "scripts/_validate_<patient>_<dose>.png")
     p.add_argument("--device", default="cuda")
+    p.add_argument("--z-offset-mm", type=float, default=3.5,
+                   help="Shift the FBP slab centre by this many mm "
+                        "(in source-z direction). Default +3.5 mm "
+                        "= fine-z-sweep SSIM peak for L014 (job 762111). "
+                        "Pass 0 to use the rebinned sino's middle slice.")
+    p.add_argument("--slab-half", type=int, default=2,
+                   help="Half-width of the FBP slab in 1-mm slices. "
+                        "Default 2 (= 5-slice = 5-mm slab matching "
+                        "the Mayo truth DICOM's SliceThickness=5 mm).")
     return p.parse_args()
 
 
@@ -94,17 +103,25 @@ def main() -> int:
     print(f"[validate] {sino_h5.name}: rotview={rotview} nu={nu} nz={nz} "
           f"du={du:.4f}")
 
-    # Load a 5-mm slab of the rebinned sino around the centre z to match
-    # the Mayo truth DICOM's SliceThickness=5 mm. dv_rebinned=1 mm in
-    # our helix2fan output, so 5 adjacent slices = 5 mm. We FBP each
-    # individually and average the recons — this matches the truth's
-    # 5-mm axial integration. Verified 2026-05-24 on L014: slab-averaging
-    # added +0.034 calibrated SSIM and +2.2 dB PSNR over single-slice.
-    SLAB_HALF = 2     # 2 below + centre + 2 above = 5 slices ≈ 5 mm
-    nz_center = nz // 2
+    # Load a 5-mm slab of the rebinned sino around the centre z (shifted
+    # by `--z-offset-mm`) to match the Mayo truth DICOM's
+    # SliceThickness=5 mm. dv_rebinned=1 mm in our helix2fan output, so
+    # 5 adjacent slices = 5 mm. We FBP each individually and average the
+    # recons — this matches the truth's 5-mm axial integration. Verified
+    # 2026-05-24 on L014: slab-averaging added +0.034 calibrated SSIM
+    # and +2.2 dB PSNR over single-slice; the +3.5 mm offset is the
+    # SSIM peak from the fine-z-sweep (job 762111) — barely above noise
+    # but worth keeping as the default until a per-patient drift study
+    # informs otherwise.
+    SLAB_HALF = int(args.slab_half)
+    nz_middle = nz // 2
+    nz_center = nz_middle + int(round(args.z_offset_mm))  # 1 mm/slice
+    nz_center = max(0, min(nz - 1, nz_center))
     z_center = float(z_grid[nz_center])
     slab_lo = max(0, nz_center - SLAB_HALF)
     slab_hi = min(nz, nz_center + SLAB_HALF + 1)
+    print(f"[validate] nz_middle={nz_middle}  z_offset={args.z_offset_mm:+.1f} mm  "
+          f"→ nz_center={nz_center}  z_center={z_center:.2f} mm")
     with h5py.File(sino_h5, "r") as f:
         sino_slab = [
             np.asarray(f["sino"][:, :, j], dtype=np.float32)
@@ -322,48 +339,30 @@ def _load_truth_slice_for_z(patient_dir: Path, z_target: float):
     print(f"[validate] truth ImagePositionPatient[2] range = "
           f"[{z_lo:.1f}, {z_hi:.1f}] mm; sino z_target = {z_target:.1f}")
 
-    # Try both mappings and pick the one whose nearest truth-z is closest.
-    # Mapping A (identity): patient_z ≈ source_z (what the original code
-    #   assumed; only correct if reconstructed DICOMs happen to be tagged
-    #   in scanner-source frame, which Mayo's are NOT).
-    # Mapping B (sign-flip): patient_z ≈ -source_z + offset, offset such
-    #   that the centre of the sign-flipped sino range maps to the
-    #   centre of the truth range.
-    cand_A = truth_zs[np.argmin(np.abs(truth_zs - z_target))]
-    # Sign-flip with offset such that mid(sino_range_flipped) == mid(truth_range).
-    # We don't know sino range here; use 2× the offset that aligns the
-    # closest truth_z to -z_target. Simplest: assume offset s.t.
-    # truth_zs span maps onto -[sino z range]. For Mayo head-first,
-    # ImagePositionPatient[2] is negative at feet, positive at head;
-    # source_z is "table position" increasing as the table moves into
-    # the gantry (so larger source_z = closer to patient feet).
-    # Therefore: patient_z = -(source_z) + const; pick const so the
-    # nearest truth_z to (-z_target + const) is small.
-    # We try a grid of plausible offsets (the truth-z midpoint + sino-z
-    # midpoint area).
-    flipped_target = -z_target
-    # Offset = midpoint(truth) - midpoint(-sino). We don't have sino
-    # midpoint here, but a single-slice query: use truth midpoint as
-    # the best offset estimate when sino's z_center is the validator's
-    # z_target. That makes "the validator's centre slice maps to the
-    # truth's centre slice".
-    truth_mid = 0.5 * (z_lo + z_hi)
-    offset_B = truth_mid + z_target          # so target → truth_mid
-    cand_B_z = -z_target + offset_B          # = truth_mid (centre)
-    nearest_B = truth_zs[np.argmin(np.abs(truth_zs - cand_B_z))]
-
-    dist_A = abs(cand_A - z_target)
-    dist_B = abs(nearest_B - cand_B_z)
-    print(f"[validate]   mapping A (identity):  nearest truth z={cand_A:.1f}, "
-          f"distance={dist_A:.1f} mm")
-    print(f"[validate]   mapping B (-z+offset): nearest truth z={nearest_B:.1f}, "
-          f"distance={dist_B:.1f} mm  (offset={offset_B:.1f})")
-
+    # The Mayo head-first DICOM convention is `patient_z = -source_z`
+    # (sign-flip, no constant offset). Verified empirically on L014:
+    # this gives truth_match dz ≤ slice_thickness/2 for the centre
+    # slice. Identity mapping (no flip) puts truth ~277 mm away.
+    # Earlier versions of this script tried to auto-detect an additive
+    # offset that mapped sino midpoint to truth midpoint, but that
+    # produced a degenerate "always pick truth midpoint" behaviour
+    # when the FBP slab was shifted to a non-midpoint z. The simple
+    # sign-flip is the right invariant.
+    cand_A_z = z_target                                  # identity
+    cand_B_z = -z_target                                 # sign-flip
+    cand_A = truth_zs[np.argmin(np.abs(truth_zs - cand_A_z))]
+    cand_B = truth_zs[np.argmin(np.abs(truth_zs - cand_B_z))]
+    dist_A = abs(cand_A - cand_A_z)
+    dist_B = abs(cand_B - cand_B_z)
+    print(f"[validate]   mapping A (identity):  cand_z={cand_A_z:+.1f}  "
+          f"nearest truth z={cand_A:+.1f}  dist={dist_A:.1f} mm")
+    print(f"[validate]   mapping B (sign-flip): cand_z={cand_B_z:+.1f}  "
+          f"nearest truth z={cand_B:+.1f}  dist={dist_B:.1f} mm")
     if dist_B < dist_A:
         chosen_z = cand_B_z
         print(f"[validate]   → using sign-flipped mapping (Mayo head-first CT convention)")
     else:
-        chosen_z = z_target
+        chosen_z = cand_A_z
         print(f"[validate]   → using identity mapping")
 
     # Find the two truth slices bracketing chosen_z and linearly interpolate.

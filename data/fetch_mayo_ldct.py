@@ -348,12 +348,20 @@ def _rebin_patient_series(series_dir: Path, out_h5: Path, out_zgrid: Path,
     nz_rebinned = max(1, int(np.floor((z_end - z_start) / dv_rebinned)) + 1)
     print(f"[rebin]   helical -> fan SSR (rotview~{int(round(proj_flat.shape[0] / geom['total_rotations']))}, "
           f"nz={nz_rebinned}, dv_rebinned={dv_rebinned})", flush=True)
+    # Read FFS-drho correction toggle from env (set by sbatch); default off
+    # for backwards compatibility with the legacy bulk-rebin pipeline.
+    import os as _os
+    ffs_correct_drho = _os.environ.get("HELIX2FAN_FFS_DRHO", "0") in ("1", "true", "True")
+    if ffs_correct_drho:
+        print(f"[rebin]   FFS-drho correction ENABLED (per-readout effective "
+              f"sod/sdd from ffs_drho tag)", flush=True)
     rebinned, z_grid = rebin_helical_to_fan(
         proj_flat, geom,
         dv_rebinned=dv_rebinned,
         nz_rebinned=nz_rebinned,
         z_start=z_start,
         n_jobs=n_jobs,
+        ffs_correct_drho=ffs_correct_drho,
     )
     del proj_flat
 
