@@ -16,14 +16,14 @@ baseline is FBP at SSIM 0.957 / PSNR 39.74 dB.
 |---:|---|---|---:|---:|---:|---:|---|
 | 1 | **Learned Primal-Dual** | I=8, hidden=96, ep=23, lr=3.2e-4, grad_clip=0.3 | 1.49 M | 0.9996 | ~56 | **0.9062** | `breast-ct-calibrated-tpe-lpd-search-20260524-01` / trial 11 |
 | 2 | LPD (agentic seed) | I=10, hidden=64, ep=20, lr=5e-4, grad_clip=1.0 | 0.88 M | 0.9985 | 55.08 | 0.8290 | `breast-ct-claude-agentic-learned-primal-dual-search-20260522-01` / iter-3 |
-| 3 | **DD-UNet supervised L2** | c=32, ep=10, lr=5e-4 | 1.86 M | 0.9987 | 54.94 | 0.8264 | `breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01` / iter-3 |
+| 3 | **DD-UNet supervised L2** | c=24, ep=18, lr=2.1e-4, λ_neg=0.58 (TPE) | 1.04 M | 0.999 | — | **0.8361** | `breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01` |
 | 4 | ITNet v3 | (TPE iter-18) | ~2.5 M | 0.9965 | — | 0.7342 | `breast-ct-calibrated-tpe-itnet-v3-search-20260521-01` / iter-18 |
 | 5 | USwin | (TPE iter-18) | — | 0.9970 | — | 0.7174 | `breast-ct-calibrated-tpe-uswin-search-20260521-01` / iter-18 |
 | 6 | ITNet v2 | (TPE iter-13) | — | 0.9918 | — | 0.5386 | `breast-ct-calibrated-tpe-itnet-v2-search-20260521-01` / iter-13 |
 | 7 | Hammernik VN | (TPE iter-12) | — | 0.9875 | — | 0.4883 | `breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01` / iter-12 |
 | 8 | Hammernik 2017 | (TPE iter-15) | — | 0.9834 | — | 0.4549 | `breast-ct-calibrated-tpe-hammernik-search-20260521-01` / iter-15 |
 | 9 | **RAM zero-shot** (pre-trained) | sigma=0.008, blend=0.42 (TPE iter-7) | (frozen) | 0.9879 | — | 0.3077 | `breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01` / iter-7 |
-| 10 | DD-BF supervised L2 | proj_n=3, img_n=3, img_kernel=9 | 18 | 0.9894 | 42.21 | 0.2476 | `breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01` / iter-3 |
+| 10 | DD-BF supervised L2 | proj_n=1, img_n=7, img_kernel=7 (TPE) | ~24 | — | — | **0.2634** | `breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01` |
 | 11 | Wu 2015 trainable | lr=1e-3, ep=10, n_bands=4 | 10 | 0.9691 | 41.74 | 0.2189 | `breast-ct-claude-agentic-wu-2015-l2-search-20260522-01` / iter-2 |
 | 12 | Wu 2015 (non-trainable) | TPE (iter-16) | 0 | 0.9699 | — | 0.0425 | `breast-ct-calibrated-tpe-wu-search-20260521-01` / iter-16 |
 | — | DD-UNet N2I | (best of TPE) | — | 0.9645 | — | 0.000 | `breast-ct-calibrated-tpe-dual-domain-search-20260521-01` (N2I loss bottleneck) |

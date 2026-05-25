@@ -94,11 +94,22 @@ def main() -> int:
     print(f"[validate] {sino_h5.name}: rotview={rotview} nu={nu} nz={nz} "
           f"du={du:.4f}")
 
-    # Load center z slice from rebinned sino: (rotview, nu, nz) -> (rotview, nu).
+    # Load a 5-mm slab of the rebinned sino around the centre z to match
+    # the Mayo truth DICOM's SliceThickness=5 mm. dv_rebinned=1 mm in
+    # our helix2fan output, so 5 adjacent slices = 5 mm. We FBP each
+    # individually and average the recons — this matches the truth's
+    # 5-mm axial integration. Verified 2026-05-24 on L014: slab-averaging
+    # added +0.034 calibrated SSIM and +2.2 dB PSNR over single-slice.
+    SLAB_HALF = 2     # 2 below + centre + 2 above = 5 slices ≈ 5 mm
     nz_center = nz // 2
     z_center = float(z_grid[nz_center])
+    slab_lo = max(0, nz_center - SLAB_HALF)
+    slab_hi = min(nz, nz_center + SLAB_HALF + 1)
     with h5py.File(sino_h5, "r") as f:
-        sino_center = np.asarray(f["sino"][:, :, nz_center], dtype=np.float32)
+        sino_slab = [
+            np.asarray(f["sino"][:, :, j], dtype=np.float32)
+            for j in range(slab_lo, slab_hi)
+        ]
     # "Siemens flip" along the u (detector) axis, per
     # literature/wagner_helix2fan_algorithm.md (Bug 4). Wagner's
     # reco_example_fan_beam.py does `np.flip(projections[:, :, i], axis=1)`
@@ -106,8 +117,10 @@ def main() -> int:
     # slice. This undoes the curved-detector channel flip applied at
     # load time so the back-projection direction matches PYRO-NN's
     # right-handed convention.
-    sino_center = np.ascontiguousarray(np.flip(sino_center, axis=-1))
-    print(f"[validate] z_center = {z_center:.2f} mm (slice {nz_center}/{nz}); "
+    sino_slab = [np.ascontiguousarray(np.flip(s, axis=-1)) for s in sino_slab]
+    print(f"[validate] z_center = {z_center:.2f} mm (centre slice {nz_center}/{nz}); "
+          f"averaging slab [{slab_lo}..{slab_hi - 1}] = {len(sino_slab)} slices "
+          f"(≈ {len(sino_slab)} mm thick to match truth SliceThk=5 mm); "
           f"Siemens-flipped u-axis")
 
     # Match truth slice via the staged manifest's z-ordered file list.
@@ -149,15 +162,20 @@ def main() -> int:
     )
     proj = PyronnFanBeamProjector(geom).to(args.device)
 
-    sino_t = torch.from_numpy(sino_center).to(args.device).float()[None, None]
-    fbp = proj.fbp(sino_t).detach()  # (1, 1, H, W)
-    fbp_np = fbp[0, 0].cpu().numpy()
-    # PYRO-NN's 2D FBP output is in a coordinate system that needs a
-    # 180° rotation (= flipud + fliplr) to match the Mayo
-    # ImagePositionPatient DICOM convention (head-first supine, anterior
-    # up, patient-right on image-left). flipud alone leaves the L/R
-    # mirror; verified visually 2026-05-24 against L014 thorax slice.
-    fbp_np = np.ascontiguousarray(np.fliplr(np.flipud(fbp_np)))
+    # FBP each slab member individually, then average — equivalent to
+    # the standard "thick-slice" reconstruction the scanner does at
+    # 5 mm SliceThickness on B30f.
+    fbp_slab_np = []
+    for s in sino_slab:
+        s_t = torch.from_numpy(s).to(args.device).float()[None, None]
+        fbp_one = proj.fbp(s_t).detach()[0, 0].cpu().numpy()
+        # PYRO-NN's 2D FBP output is in a coordinate system that needs a
+        # 180° rotation (= flipud + fliplr) to match the Mayo
+        # ImagePositionPatient DICOM convention (head-first supine, anterior
+        # up, patient-right on image-left). flipud alone leaves the L/R
+        # mirror; verified visually 2026-05-24 against L014 thorax slice.
+        fbp_slab_np.append(np.fliplr(np.flipud(fbp_one)))
+    fbp_np = np.ascontiguousarray(np.mean(np.stack(fbp_slab_np, axis=0), axis=0))
     fbp = torch.from_numpy(fbp_np).to(args.device).float()[None, None]
 
     truth_t = torch.from_numpy(truth_slice).to(args.device).float()[None, None]

@@ -26,10 +26,32 @@ The rebin pipeline has been brought to a working state through this session:
 - Z-interpolated truth (eliminates 1.5 mm slice-quantisation error vs FBP).
 - Intensity calibration via `evaluate_calibrated` (matches other-dataset convention).
 
-L014 calibrated FBP-vs-truth: **SSIM = 0.9105, PSNR = 35.40 dB,
-RMSE = 0.00085** (job 762096). Comparable to Wagner's reported ≥ 0.85
-target. The geometry is fully validated on the test patient L014. Now
-need to re-rebin the remaining 9 patients (8 fulldose + 10 lowdose)
+L014 calibrated FBP-vs-truth — **best with 5-mm slab averaging**
+(matching truth SliceThickness=5 mm): **SSIM = 0.9436, PSNR = 37.35 dB,
+RMSE = 0.00068** (job 762112).
+
+Without slab averaging (1-mm thin FBP vs 5-mm thick truth):
+SSIM = 0.9105, PSNR = 35.40 dB.
+
+Slab averaging adds +0.033 SSIM and +1.95 dB PSNR — it's the right
+apples-to-apples comparison for this dataset. Comparable to Wagner's
+reported ≥ 0.85 target. **The geometry is fully validated on the test
+patient L014.**
+
+**Reference recon details** (from L014 DICOMs):
+- Mayo "Full Dose Images" series uses kernel **B30f** (Siemens
+  medium-soft body-imaging kernel; PYRO-NN's `hann` is the closest
+  PYRO-NN filter approximation but not identical MTF).
+- SliceThickness = 5 mm at 3 mm centre spacing (overlapping slabs).
+- 154 truth slices per dose, spanning patient_z ∈ [-482.5, -23.6] mm.
+
+**Remaining residuals** (sub-threshold):
+- FFS-`drho` not yet corrected (±5.45 mm radial source-deflection in
+  L014 — ~0.9% sod variation per readout).
+- Kernel MTF mismatch (Hann ≠ B30f) shows as faint smoothing
+  differences in the diff panel.
+
+Now need to re-rebin the remaining 9 patients (8 fulldose + 10 lowdose)
 with the fixed pipeline before starting autoresearch.
 
 ## Plan (per solver_plan.md)
