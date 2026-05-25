@@ -559,8 +559,13 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
                         producing the faint shadow / ghost edges
                         visible after the geometry fix.
 
-                        Convention (matches Wagner's literature note,
-                        ``literature/wagner_helix2fan_algorithm.md``):
+                        Convention (deviates from Wagner's literature
+                        note in ``literature/wagner_helix2fan_algorithm.md``;
+                        Wagner's item 1 reads "use sod + drho for sdd",
+                        which appears to be a typo since that gives
+                        sdd_eff ≈ 600 mm ≠ nominal sdd ≈ 1086 mm; here
+                        we use the physically-consistent both-distances-
+                        grow convention):
                             sod_eff_i = sod + ffs_drho[i]
                             sdd_eff_i = sdd + ffs_drho[i]
                         i.e. the source's perpendicular distance to
