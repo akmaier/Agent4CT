@@ -305,10 +305,70 @@ def _find_projection_series(patient_dir: Path,
     return None
 
 
+SOP_CT_IMAGE = "1.2.840.10008.5.1.4.1.1.2"
+
+
+def _find_image_series(patient_dir: Path,
+                       description_filter: str) -> Path | None:
+    """Return the truth-image (CT-image SOP) DICOM-series directory whose
+    SeriesDescription contains ``description_filter`` (case-insensitive),
+    or ``None`` if not present. Companion to ``_find_projection_series``
+    (which filters on the raw-data SOP).
+    """
+    import pydicom
+    target = description_filter.lower()
+    for series_dir in sorted(patient_dir.iterdir()):
+        if not series_dir.is_dir():
+            continue
+        sample = next(series_dir.iterdir(), None)
+        if sample is None:
+            continue
+        try:
+            ds = pydicom.dcmread(str(sample), stop_before_pixels=True)
+        except Exception:
+            continue
+        if getattr(ds, "SOPClassUID", "") != SOP_CT_IMAGE:
+            continue
+        desc = getattr(ds, "SeriesDescription", "").lower()
+        if target in desc:
+            return series_dir
+    return None
+
+
+def _truth_z_anchor_source(image_series_dir: Path) -> float:
+    """Return the source-frame z anchor for the Mayo HFS sign-flip
+    convention: take the maximum ``ImagePositionPatient[2]`` across all
+    truth slices (the most-superior patient z) and negate it.
+
+    The choice of anchor is arbitrary (any truth slice works since
+    they're on a regular 3-mm grid in patient frame), but the
+    most-superior slice is unambiguously the smallest source z, which
+    keeps the alignment shift small.
+    """
+    import pydicom
+    zs = []
+    for fp in image_series_dir.iterdir():
+        try:
+            m = pydicom.dcmread(str(fp), stop_before_pixels=True)
+            zs.append(float(m.ImagePositionPatient[2]))
+        except Exception:
+            continue
+    if not zs:
+        raise RuntimeError(
+            f"no usable truth DICOMs found in {image_series_dir}"
+        )
+    return -max(zs)
+
+
 def _rebin_patient_series(series_dir: Path, out_h5: Path, out_zgrid: Path,
                           out_geom: Path, *,
-                          dv_rebinned: float, n_jobs: int) -> dict:
+                          dv_rebinned: float, n_jobs: int,
+                          z_truth_anchor: float | None = None) -> dict:
     """Run the full curved->flat->fan pipeline on one DICOM-CT-PD series.
+
+    If ``z_truth_anchor`` (source frame, mm) is provided, the output
+    z_start is shifted so the sino z-grid lands on the Mayo truth z
+    grid (every dv_rebinned-th slice hits a truth slice exactly).
 
     Writes `out_h5` (key "sino", shape (rotview, nu, nz) float32),
     `out_zgrid` (npy: per-output-slice z positions),
@@ -345,6 +405,30 @@ def _rebin_patient_series(series_dir: Path, out_h5: Path, out_zgrid: Path,
     # slice has a full helical window of contributing readouts.
     z_start = z_min + 0.5 * pitch
     z_end = z_max - 0.5 * pitch
+
+    # Optional truth-grid z alignment. The Mayo truth DICOMs sit at
+    # patient-frame z = z_truth_first - k * 3 mm for k = 0, 1, 2, ...
+    # After our sign-flip mapping (patient_z = -source_z), the truth
+    # z's land in the source frame at z_truth_anchor + k * 3 mm. To
+    # have every dv_rebinned-th sino slice hit a truth slice exactly,
+    # we shift z_start so that (z_start - z_truth_anchor) is an
+    # integer multiple of dv_rebinned. Shift is ≤ dv_rebinned/2 in
+    # either direction, then bumped up by dv_rebinned if it would
+    # fall below z_min + 0.5*pitch.
+    # `z_truth_anchor` is a function-level argument (see signature)
+    if z_truth_anchor is not None:
+        shift_mod = (z_truth_anchor - z_start) % dv_rebinned
+        if shift_mod <= dv_rebinned / 2.0:
+            z_start_new = z_start + shift_mod
+        else:
+            z_start_new = z_start - (dv_rebinned - shift_mod)
+        while z_start_new < z_min + 0.5 * pitch - 1e-6:
+            z_start_new += dv_rebinned
+        print(f"[rebin]   z_start aligned to truth grid: "
+              f"{z_start:.4f} → {z_start_new:.4f} mm (anchor={z_truth_anchor:.4f}, "
+              f"shift={z_start_new - z_start:+.4f} mm)", flush=True)
+        z_start = z_start_new
+
     nz_rebinned = max(1, int(np.floor((z_end - z_start) / dv_rebinned)) + 1)
     print(f"[rebin]   helical -> fan SSR (rotview~{int(round(proj_flat.shape[0] / geom['total_rotations']))}, "
           f"nz={nz_rebinned}, dv_rebinned={dv_rebinned})", flush=True)
@@ -418,17 +502,44 @@ def stage_h5_with_sino(raw_dir: Path, staged_dir: Path, *,
             if series_dir is None:
                 print(f"[rebin] {pid}: no '{desc}' series, skip.", flush=True)
                 continue
-            out_h5 = staged_dir / f"{pid}_sino_{kind}.h5"
-            out_z = staged_dir / f"{pid}_sino_{kind}_z_grid.npy"
-            out_g = staged_dir / f"{pid}_sino_{kind}_geometry.json"
+            # When HELIX2FAN_Z_ALIGN=1 we emit `*_aligned.h5` so the
+            # old (un-aligned) bulk-rebin outputs stay around for
+            # comparison. We also locate the matching truth-image
+            # series for this patient/dose to extract its z anchor.
+            import os as _os
+            z_align = _os.environ.get("HELIX2FAN_Z_ALIGN", "0") in ("1", "true", "True")
+            suffix = "_aligned" if z_align else ""
+            out_h5 = staged_dir / f"{pid}_sino_{kind}{suffix}.h5"
+            out_z = staged_dir / f"{pid}_sino_{kind}{suffix}_z_grid.npy"
+            out_g = staged_dir / f"{pid}_sino_{kind}{suffix}_geometry.json"
             if out_h5.exists():
                 print(f"[rebin] {pid}/{kind}: {out_h5.name} exists, skip.",
                       flush=True)
                 continue
+
+            z_truth_anchor = None
+            if z_align:
+                # Truth image-series DICOM tag whose ImagePositionPatient[2]
+                # gives the first (most-superior) reconstructed slice in
+                # patient frame. We sign-flip to the source frame because
+                # that's where z_start lives.
+                truth_desc = f"{'full' if kind == 'fulldose' else 'low'} dose image"
+                truth_series = _find_image_series(pdir, truth_desc)
+                if truth_series is None:
+                    print(f"[rebin] {pid}/{kind}: WARN — no '{truth_desc}' "
+                          f"series found; cannot derive z anchor, falling "
+                          f"back to unaligned z_start.", flush=True)
+                else:
+                    z_truth_anchor = _truth_z_anchor_source(truth_series)
+                    print(f"[rebin] {pid}/{kind}: z truth anchor "
+                          f"(source frame) = {z_truth_anchor:.4f} mm "
+                          f"from {truth_series.name}", flush=True)
+
             try:
                 info = _rebin_patient_series(
                     series_dir, out_h5, out_z, out_g,
                     dv_rebinned=dv_rebinned, n_jobs=n_jobs,
+                    z_truth_anchor=z_truth_anchor,
                 )
                 report["patients"][pid][kind] = info
             except Exception as e:  # pragma: no cover  (logged + skip)
