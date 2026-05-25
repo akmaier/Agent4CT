@@ -74,6 +74,11 @@ def parse_args() -> argparse.Namespace:
                    help="Half-width of the FBP slab in 1-mm slices. "
                         "Default 2 (= 5-slice = 5-mm slab matching "
                         "the Mayo truth DICOM's SliceThickness=5 mm).")
+    p.add_argument("--sino-suffix", default="",
+                   help="Optional suffix appended to the sino-h5 / z-grid "
+                        "/ geometry-json basename, e.g. '_ffs_drho' to "
+                        "read L014_sino_fulldose_ffs_drho.h5. Truth slice "
+                        "and out-png basename are unchanged.")
     return p.parse_args()
 
 
@@ -86,9 +91,10 @@ def main() -> int:
     sino_dir = challenge / "staged_helix2fan"
     truth_dir = challenge / "staged"
 
-    sino_h5 = sino_dir / f"{args.patient}_sino_{args.dose}.h5"
-    geom_path = sino_dir / f"{args.patient}_sino_{args.dose}_geometry.json"
-    zgrid_path = sino_dir / f"{args.patient}_sino_{args.dose}_z_grid.npy"
+    suffix = args.sino_suffix or ""
+    sino_h5 = sino_dir / f"{args.patient}_sino_{args.dose}{suffix}.h5"
+    geom_path = sino_dir / f"{args.patient}_sino_{args.dose}{suffix}_geometry.json"
+    zgrid_path = sino_dir / f"{args.patient}_sino_{args.dose}{suffix}_z_grid.npy"
     if not sino_h5.exists():
         print(f"[validate] missing {sino_h5}", file=sys.stderr)
         return 1

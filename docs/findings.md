@@ -14,6 +14,54 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-05-25 — Mayo SOMATOM AS+ flying focal spot is period-2; FFS-drho correction landed in helix2fan
+
+The DICOM-CT-PD private tags expose the FFS state per readout. For L014
+(verified in `results/breast_debug/L014_ffs_pattern.png` via
+`scripts/debug_l014_ffs_pattern.py`):
+
+```
+state 0 (50%):  dphi=+3.30e-04  dz=-0.66 mm  drho=+5.45 mm
+state 1 (50%):  dphi=+3.40e-04  dz= 0    mm  drho= 0    mm
+period-2 alternation @ 100% transition rate
+```
+
+This is the standard Siemens "z+ϕ" flying focal spot for body kernels: the
+source moves between two positions every readout, doubling the effective
+sampling in z and ϕ. The radial component (`drho`) is the product term
+that arises from the geometric coupling — every other view, the source
+sits 5.45 mm farther from isocentre.
+
+**Impact on SSR (Noo 1999 helix→fan):** without `drho` correction, the
+single-slice rebinning averages two different magnifications
+(sdd/sod ≈ 1.8245 vs. 1.8170), producing faint shadow / ghost edges
+visible in the reconstructed slice after the file-order, pitch, and
+slab-averaging fixes already landed. With correction:
+```
+sod_eff_i = sod + ffs_drho[i]
+sdd_eff_i = sdd + ffs_drho[i]
+v_precise_i = dZ × (u^2 + sdd_eff_i^2) / (sod_eff_i × sdd_eff_i)
+w_i        = √(u^2 + sdd_eff_i^2) / √(u^2 + v_precise_i^2 + sdd_eff_i^2)
+```
+The sign convention matches Wagner's literature note
+(`literature/wagner_helix2fan_algorithm.md`): source moves radially
+outward by `drho`, detector stays put.
+
+**Status:** Code landed in `ddssl_ldct/helix2fan.py:_rebin_one_sangle`
++ `rebin_helical_to_fan(ffs_correct_drho=True)`, gated by env var
+`HELIX2FAN_FFS_DRHO=1` in `data/fetch_mayo_ldct.py`. Default off so the
+in-flight bulk rebin (SLURM 762097) stays comparable to its pre-FFS
+seed runs. Validation on L014 fulldose in progress (SLURM 762117 +
+762118); baseline at +3.5 mm slab anchor is **SSIM 0.9445 / PSNR
+37.23 dB / RMSE 0.00069** (calibrated, 5-mm slab; SLURM 762115). Will
+update with FFS-drho result.
+
+The `ffs_dz` and `ffs_dphi` corrections were left off the test because:
+- `ffs_dphi` is sub-noise on L014 (verified in earlier SSR-variant
+  sweep — see ssr_variants entry below from 2026-05-24)
+- `ffs_dz` is partially absorbed by the existing z_eff = z_positions
+  + ffs_dz shift inside `rebin_helical_to_fan` (already on)
+
 ## 2026-05-24 — `mayo_ldct` Wagner split is the on-disk convention
 
 Mirrors the Wagner et al. 2023 ISBI paper's experimental setup; defined
