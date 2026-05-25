@@ -151,18 +151,32 @@ def main() -> int:
     # alignment. The cleanest path is to re-read the raw fulldose-image
     # DICOMs for this patient and pick the z that minimises |z - z_center|.
     # Returns a *z-interpolated* slice at the exact sino z_center, plus
-    # the bracket pair for diagnostics.
+    # the bracket pair for diagnostics, AND the truth DICOM's actual
+    # PixelSpacing (so the FBP geometry can match the truth grid exactly,
+    # not the 0.7 mm Wagner default).
     truth_info = _load_truth_slice_for_z(challenge / "raw" / args.patient,
                                           z_center)
     if truth_info is None:
         print(f"[validate] could not align truth slice for {args.patient}",
               file=sys.stderr)
         return 2
-    truth_slice, truth_z_target_patient, truth_bracket = truth_info
+    truth_slice, truth_z_target_patient, truth_bracket, truth_meta = truth_info
+    truth_pixel_spacing = float(truth_meta["pixel_spacing"])
+    truth_ipp = truth_meta["ipp"]
+    print(f"[validate] truth PixelSpacing = {truth_pixel_spacing:.6f} mm  "
+          f"(Wagner default would be 0.7 mm — using truth's value)")
+    print(f"[validate] truth ImagePositionPatient (UL pixel, mm) = "
+          f"({truth_ipp[0]:.2f}, {truth_ipp[1]:.2f}, {truth_ipp[2]:.2f}); "
+          f"image centre in patient frame = "
+          f"({truth_ipp[0] + 255.5*truth_pixel_spacing:+.2f}, "
+          f"{truth_ipp[1] + 255.5*truth_pixel_spacing:+.2f}) mm")
 
-    # Build the matching fan-beam geometry. Per Wagner, image is 512^2 @
-    # 0.7 mm pixel spacing; sdd/sod default values are baked into the
-    # FanBeamGeometry dataclass.
+    # Build the matching fan-beam geometry. The image grid must match the
+    # truth's grid exactly to avoid a sub-pixel scale-mismatch ring in
+    # the diff (visible as blue+red concentric contours at the patient
+    # outline). The Mayo truth grid is 512² @ 0.703125 mm — not the
+    # 0.7 mm Wagner default; the 0.45% mismatch is enough to draw a
+    # 0.5-1 px-wide fringe at the body boundary.
     # angle_start_corrected (Wagner's `+pi/2 -unwrap -pi` recipe) tells
     # us where the first rebinned view sits in the absolute gantry
     # frame; the full rotation spans 2π from there. See Bug 3 in
@@ -174,7 +188,7 @@ def main() -> int:
           f"angle_end={angle_end:.4f} rad (1 full rotation)")
     geom = FanBeamGeometry(
         image_size=512,
-        pixel_spacing=0.7,
+        pixel_spacing=truth_pixel_spacing,
         n_angles=rotview,
         n_det=nu,
         det_spacing=du,
@@ -208,18 +222,21 @@ def main() -> int:
     ssim_raw = float(ssim_metric(fbp_clipped, truth_t, dr).cpu())
     psnr_raw = float(psnr_metric(fbp_clipped, truth_t, dr).cpu())
 
-    # ---- Intensity calibration (FOV-masked linear fit pred → truth) -------
+    # ---- Intensity calibration (linear fit pred → truth, NO FOV mask) -----
     # `evaluate_calibrated` runs `intensity_calibrate` (two-point linear
-    # bg/fg fit), applies the inscribed-circle FOV mask, then computes
-    # PSNR/SSIM/RMSE on the calibrated `pred_cal` vs `truth`. This is the
-    # exact same calibration the downstream training metric uses, so the
-    # numbers compare apples-to-apples with what the dual-domain solvers
-    # report. See ddssl_ldct.metrics.intensity_calibrate for the (a, bg)
-    # affine details.
+    # bg/fg fit), then computes PSNR/SSIM/RMSE on the calibrated
+    # `pred_cal` vs `truth`. For Mayo LDCT we DISABLE the inscribed-circle
+    # FOV mask (`fov=False`): the Mayo recon (B30f, ReconDiameter=360 mm
+    # at 512² × 0.703125 mm) includes the table — masking would zero
+    # that out in `pred_cal` and produce a sharp arc in the diff. With
+    # the FOV mask off, the metric region is the full 512², matching the
+    # truth's reconstructed extent. See ddssl_ldct.metrics.intensity_calibrate
+    # for the (a, bg) affine details.
     metrics = evaluate_calibrated(
         fbp_clipped, truth_t,
         baseline=fbp_clipped,        # FBP IS our reference recon here
         display_min=0.0, display_max=dr,
+        fov=False,
     )
     pred_cal = metrics["pred_cal"]
     ssim_cal = float(metrics["val_ssim"])
@@ -244,27 +261,49 @@ def main() -> int:
     out_png = Path(args.out_png) if args.out_png else (
         REPO / "scripts" / f"_validate_{args.patient}_{args.dose}.png"
     )
-    fig, axes = plt.subplots(1, 4, figsize=(16, 4))
+    fig, axes = plt.subplots(1, 5, figsize=(20, 4))
     axes[0].imshow(truth_slice, cmap="gray", vmin=0, vmax=dr)
     axes[0].set_title(f"truth (z-interp)\npatient_z={truth_z_target_patient:.1f}\n"
-                      f"bracket [{truth_bracket[0]:.1f}, {truth_bracket[1]:.1f}]",
+                      f"bracket [{truth_bracket[0]:.1f}, {truth_bracket[1]:.1f}]  "
+                      f"kernel={truth_meta['recon_kernel']}",
                       fontsize=9)
     axes[1].imshow(fbp_np, cmap="gray", vmin=0, vmax=dr)
     axes[1].set_title(f"FBP raw\nSSIM={ssim_raw:.3f}  PSNR={psnr_raw:.1f} dB\n"
-                      f"FBP mean={fbp_np.mean():.4f}", fontsize=9)
+                      f"FBP mean={fbp_np.mean():.4f}\n"
+                      f"pixel={truth_pixel_spacing:.4f} mm (truth-matched)",
+                      fontsize=9)
     axes[2].imshow(pred_cal_np, cmap="gray", vmin=0, vmax=dr)
-    axes[2].set_title(f"FBP intensity-calibrated\n"
+    axes[2].set_title(f"FBP intensity-calibrated (no FOV mask)\n"
                       f"SSIM={ssim_cal:.3f}  PSNR={psnr_cal:.1f} dB  RMSE={rmse_cal:.4f}\n"
                       f"FBP_cal mean={pred_cal_np.mean():.4f}", fontsize=9)
     diff_cal = pred_cal_np - truth_slice
     axes[3].imshow(diff_cal, cmap="seismic", vmin=-0.02, vmax=0.02)
     axes[3].set_title(f"diff (cal − truth)\nmax|·| = {np.abs(diff_cal).max():.3f}",
                       fontsize=9)
+    # Channel-overlay panel: truth in CYAN, FBP_cal in RED. White =
+    # both agree, pure cyan = truth-only feature (FBP missing), pure
+    # red = FBP-only feature (truth missing). A translation between
+    # the two grids shows up as a clean cyan/red splitting at the
+    # patient outline; a scale mismatch shows up as a halo where the
+    # outlines cross at one diameter and diverge at the others.
+    truth_n = np.clip(truth_slice / dr, 0.0, 1.0)
+    fbp_n   = np.clip(pred_cal_np   / dr, 0.0, 1.0)
+    overlay = np.stack([
+        fbp_n,                # R = FBP
+        truth_n,              # G = truth
+        truth_n,              # B = truth → (R=FBP, G+B=truth) yields red/cyan
+    ], axis=-1)
+    axes[4].imshow(overlay)
+    axes[4].set_title("overlay: truth=cyan, FBP_cal=red\n"
+                      "(white = match, cyan-only = truth missing in FBP,\n"
+                      "red-only = FBP missing in truth)", fontsize=8)
     for ax in axes:
         ax.set_xticks([]); ax.set_yticks([])
     fig.suptitle(f"{args.patient}/{args.dose} helix2fan validation  "
                  f"(rotview={rotview}, pitch={float(geom_json['pitch_mm']):.2f} mm, "
-                 f"z_center={z_center:.1f})")
+                 f"z_center={z_center:.1f}, "
+                 f"pixel_spacing={truth_pixel_spacing:.4f} mm, "
+                 f"FOV-mask=off)")
     fig.tight_layout()
     fig.savefig(out_png, dpi=120)
     print(f"[validate] wrote {out_png}")
@@ -282,12 +321,16 @@ def _load_truth_slice_for_z(patient_dir: Path, z_target: float):
     staged h5 is shuffled and discards per-slice z metadata.
 
     Returns:
-        (truth_interp, target_patient_z, (z_lo, z_hi, weight_lo)) where:
+        (truth_interp, target_patient_z, (z_lo, z_hi, weight_lo), meta) where:
             * truth_interp: (H, W) float32 μ image, interpolated.
             * target_patient_z: the patient-frame z the FBP should be
               compared against (= -z_target + offset).
             * (z_lo, z_hi, weight_lo): the bracketing truth z's and the
               linear-interpolation weight on the lower-z slice.
+            * meta: dict with the truth DICOM's grid metadata —
+              ``pixel_spacing`` (mm), ``ipp`` (ImagePositionPatient, mm),
+              ``recon_kernel`` (e.g. 'B30f'), ``recon_diameter`` (mm).
+              Used by the caller to match the FBP grid to the truth grid.
         Or None if no truth slice can be located.
 
     **Frame mismatch fix (2026-05-24).** The sino's z_target comes from
@@ -410,7 +453,19 @@ def _load_truth_slice_for_z(patient_dir: Path, z_target: float):
         mu_hi = _load_mu(fp_hi)
         truth_interp = (weight_lo * mu_lo + (1.0 - weight_lo) * mu_hi).astype(np.float32)
     print(f"[validate] weight on lower-z slice = {weight_lo:.3f}")
-    return truth_interp, chosen_z, (float(z_lo), float(z_hi), float(weight_lo))
+
+    # Grab the truth DICOM's grid metadata from the lower-z slice (these
+    # are constant across all slices in the same series — verified on
+    # L014). Caller uses pixel_spacing to build a matching FBP grid.
+    ds_meta = pydicom.dcmread(str(fp_lo), stop_before_pixels=True)
+    meta = {
+        "pixel_spacing":   float(ds_meta.PixelSpacing[0]),
+        "ipp":             tuple(float(v) for v in ds_meta.ImagePositionPatient),
+        "recon_kernel":    str(getattr(ds_meta, "ConvolutionKernel", "?")),
+        "recon_diameter":  float(getattr(ds_meta, "ReconstructionDiameter", -1.0)),
+        "slice_thickness": float(getattr(ds_meta, "SliceThickness", -1.0)),
+    }
+    return truth_interp, chosen_z, (float(z_lo), float(z_hi), float(weight_lo)), meta
 
 
 if __name__ == "__main__":
