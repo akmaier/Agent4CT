@@ -25,6 +25,7 @@ Recon backbone & agentic framework:
 | [`2604.13282_Agent4MR.md`](2604.13282_Agent4MR.md) | Zaiss, Aly, …, Maier — *Agent4MR: Agentic MR sequence development with LLMs* (2026). <https://arxiv.org/abs/2604.13282> |
 | [`2201.10345_Wagner_TrainableBilateralFilter_MedPhys2022.md`](2201.10345_Wagner_TrainableBilateralFilter_MedPhys2022.md) | Wagner *et al.* — *Ultra-low Parameter Denoising: Trainable Bilateral Filter Layers in CT* (Med. Phys. 2022). <https://arxiv.org/abs/2201.10345> |
 | [`2211.01111_Wagner_DualDomainDenoising_LDCT.md`](2211.01111_Wagner_DualDomainDenoising_LDCT.md) | Wagner *et al.* — *On the Benefit of Dual-domain Denoising in a Self-Supervised LDCT Setting* (ISBI 2023). <https://arxiv.org/abs/2211.01111> |
+| [`2112.03678_Maier_ProprietaryDECT_BVM2022.md`](2112.03678_Maier_ProprietaryDECT_BVM2022.md) | Maier *et al.* — *Does Proprietary Software Still Offer Protection of Intellectual Property in the Age of Machine Learning? — A Case Study using Dual Energy CT Data* (BVM 2022). Cite when discussing SSIM-grade vendor-algorithm approximation. <https://arxiv.org/abs/2112.03678> |
 
 Pentathlon challenges (one report per challenge):
 
