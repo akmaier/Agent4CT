@@ -415,11 +415,15 @@ def main() -> int:
         # ReLU lower clip + soft upper clip at hi
         clipped = F.relu(scaled)
         clipped = torch.minimum(clipped, hi)
-        # Do NOT mask the prediction here — masking it would create a
-        # hard edge at the FoV boundary in the output image. Instead
-        # the FoV mask is applied as a per-pixel LOSS WEIGHT below
-        # (weighted-mean L2 = focus optimisation on the reconstructable
-        # region without zeroing the pred image).
+        # Apply the geometric-FoV mask to the PRED itself (not just the
+        # loss). The mask sits at r_fov_geom ≈ 237 mm — well outside
+        # the body (r≈150 mm) and table (r≈144 mm), so the only pixels
+        # zeroed are the tiny corner triangles where the fan-beam
+        # cannot reach. Mayo's truth is already ~0 in those corners,
+        # so the diff there becomes (0 − ~0) ≈ 0 and the artifacts
+        # the user flagged at r ≥ 358 px disappear from the figure.
+        fov_mask_img = compute_fov_mask(sod, sdd)
+        clipped = clipped * fov_mask_img
         return clipped, sino_slab, fbp_2d
 
     # ---- Adam loop ----
@@ -527,7 +531,7 @@ def main() -> int:
     out_dir = Path("/cluster/maier/Agent4CT/results/breast_debug")
     out_dir.mkdir(parents=True, exist_ok=True)
     diff_base = fbp_nom_cal_np - truth_mu_np
-    diff_fit  = pred_np - truth_mu_np
+    diff_fit  = (pred_np - truth_mu_np) * fov_mask_final
 
     fig, ax = plt.subplots(1, 4, figsize=(16, 4.2))
     ax[0].imshow(truth_mu_np, cmap="gray", vmin=0, vmax=dr)
