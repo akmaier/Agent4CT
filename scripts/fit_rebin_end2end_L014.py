@@ -277,6 +277,47 @@ def main() -> int:
     bg  = torch.nn.Parameter(torch.tensor(0.0,  device="cuda"))
     hi  = torch.nn.Parameter(torch.tensor(0.05, device="cuda"))
 
+    # ---- Image-space "geometric FoV" mask (new) ----
+    # The fan-beam FBP can reconstruct pixels at radius up to
+    #     r_max_fov = sod · sin(half_fan_angle)
+    #               = sod · sin(atan(n_det/2 · du / sdd))
+    # For Mayo L014: ≈ 237 mm. Beyond that the FBP cannot back-project
+    # (the source's fan-beam doesn't cover those pixels), and Mayo's
+    # truth is also 0 / background there. The corners of the 512²
+    # image (radius up to 254 mm) include thin triangular wedges
+    # outside the 237 mm circle — those are physically unreachable.
+    #
+    # The fan-beam FoV is DERIVED FROM the scanner geometry (sod, sdd,
+    # du, n_det), NOT a free parameter. We use it as a soft sigmoid
+    # loss WEIGHT (not a hard image mask) so the prediction image
+    # stays natural (FBP corner noise still visible for diagnostic).
+    fov_transition_mm = 1.0   # sigmoid steepness for the loss weight
+
+    # Precompute per-pixel radius (in mm, image-frame) using truth's
+    # PixelSpacing. Centered on the image centre (= where the body is in
+    # both truth and FBP, regardless of scanner-frame iso offset).
+    Himg, Wimg = truth.shape
+    yy_pix = torch.arange(Himg, device="cuda", dtype=torch.float32)
+    xx_pix = torch.arange(Wimg, device="cuda", dtype=torch.float32)
+    yy_grid, xx_grid = torch.meshgrid(yy_pix, xx_pix, indexing="ij")
+    cy_img = (Himg - 1) / 2.0
+    cx_img = (Wimg - 1) / 2.0
+    r_img_mm = torch.sqrt((yy_grid - cy_img) ** 2 + (xx_grid - cx_img) ** 2) * pixel_sp
+
+    # n_det · du from the rebin geometry (n_det is fixed = 736; du is
+    # fixed hardware = 1.28584).
+    n_det_eff = float(nu)
+    du_eff = float(du.item())
+
+    def compute_fov_mask(sod_t: torch.Tensor, sdd_t: torch.Tensor) -> torch.Tensor:
+        """Returns (H, W) soft sigmoid mask, 1 inside the fan-beam FoV,
+        0 outside. Differentiable in (sod, sdd) via the geometric reach
+        formula: r_max = sod · sin(atan(n_det/2 · du / sdd))."""
+        half_fan = torch.atan(torch.tensor(n_det_eff / 2.0 * du_eff,
+                                            device=sod_t.device) / sdd_t)
+        r_max = sod_t * torch.sin(half_fan)
+        return torch.sigmoid((r_max - r_img_mm) / fov_transition_mm)
+
     # ---- z-shift + slab profile (new) ----
     # Δz: sub-mm shift of the slab anchor (compensates the misalignment
     # between sino-z grid and GT-z grid; ~ 0.31 mm for Mayo L014).
@@ -374,12 +415,18 @@ def main() -> int:
         # ReLU lower clip + soft upper clip at hi
         clipped = F.relu(scaled)
         clipped = torch.minimum(clipped, hi)
+        # Do NOT mask the prediction here — masking it would create a
+        # hard edge at the FoV boundary in the output image. Instead
+        # the FoV mask is applied as a per-pixel LOSS WEIGHT below
+        # (weighted-mean L2 = focus optimisation on the reconstructable
+        # region without zeroing the pred image).
         return clipped, sino_slab, fbp_2d
 
     # ---- Adam loop ----
     # Learnable: rebin geometry (sod, sdd), z-shift (delta_z), slab
     # profile (w_slab_logits), radial filter (h_radial), intensity
-    # (a, bg, hi). du/dv stay fixed at hardware.
+    # (a, bg, hi). du/dv stay fixed at hardware. The FoV-loss-mask
+    # radius is geometry-derived (NOT a free param) — see compute_fov_mask.
     opt = torch.optim.Adam(
         [sod, sdd, delta_z, w_slab_logits, h_radial, a, bg, hi],
         lr=2e-3,
@@ -396,7 +443,14 @@ def main() -> int:
     for it in range(n_iters):
         opt.zero_grad()
         clipped, _, _ = forward()
-        data_loss = ((clipped - truth) ** 2).mean()
+        # FoV-weighted L2 — the mask is derived from the (learnable)
+        # scanner geometry: r_max = sod·sin(atan(n_det/2·du/sdd)) ≈ 237 mm
+        # for Mayo L014. Only the tiny triangles in the corners get
+        # down-weighted; the table at r≈144 mm and body at r≈150 mm
+        # are fully inside the mask (loss weight ≈ 1).
+        fov_mask = compute_fov_mask(sod, sdd)
+        sq_err = (clipped - truth) ** 2
+        data_loss = (sq_err * fov_mask).sum() / fov_mask.sum().clamp_min(1.0)
         smooth_loss = ((h_radial[2:] - 2 * h_radial[1:-1] + h_radial[:-2]) ** 2).mean()
         total = data_loss + lam_h * smooth_loss
         total.backward()
@@ -407,9 +461,13 @@ def main() -> int:
                                       truth_mu_np, dr=dr)
             with torch.no_grad():
                 w_show = F.softmax(w_slab_logits, dim=0).cpu().numpy()
+            # Diagnostic: current geometric FoV radius (function of sod, sdd)
+            with torch.no_grad():
+                r_fov_now = sod.item() * math.sin(math.atan(n_det_eff/2 * du_eff / sdd.item()))
             print(f"[fit] iter {it:4d}/{n_iters}  data_loss={data_loss.item():.3e}  "
                   f"sod={sod.item():.3f}  sdd={sdd.item():.3f}  Δz={delta_z.item():+.4f}  "
                   f"a={a.item():.3f} bg={bg.item():+.4f} hi={hi.item():.3f}  "
+                  f"r_fov_geom={r_fov_now:.2f}mm  "
                   f"w_slab=[{','.join(f'{x:.2f}' for x in w_show)}]  "
                   f"SSIM={m_it['ssim']:.4f} PSNR={m_it['psnr']:.2f} dB",
                   flush=True)
@@ -418,15 +476,25 @@ def main() -> int:
     with torch.no_grad():
         clipped_f, sino_f, fbp_2d_f = forward()
         pred_np = clipped_f.cpu().numpy()
-    m_fit = calc_metrics(pred_np, truth_mu_np, dr=dr)
+        fov_mask_final = compute_fov_mask(sod, sdd).cpu().numpy()
+    # Apples-to-apples metric inside the geometric FoV (~237 mm) — what
+    # the loss optimised. m_fit_full = legacy full 512² report (pred and
+    # truth both un-masked) for diagnostic.
+    pred_inside = pred_np * fov_mask_final
+    truth_inside = truth_mu_np * fov_mask_final
+    m_fit = calc_metrics(pred_inside, truth_inside, dr=dr)
+    m_fit_full = calc_metrics(pred_np, truth_mu_np, dr=dr)
     print()
     print("=== SUMMARY ===")
     print(f"BASELINE (nominal rebin + intensity_calibrate)")
     print(f"   SSIM={m_base['ssim']:.4f}  PSNR={m_base['psnr']:.2f} dB  "
           f"RMSE={m_base['rmse']:.5f}  diff_max={m_base['diff_max']:.4f}")
-    print(f"FITTED (end-to-end gradient descent on rebin geometry)")
+    print(f"FITTED (end-to-end gradient descent, on FOV-masked region)")
     print(f"   SSIM={m_fit['ssim']:.4f}  PSNR={m_fit['psnr']:.2f} dB  "
           f"RMSE={m_fit['rmse']:.5f}  diff_max={m_fit['diff_max']:.4f}")
+    print(f"FITTED (full 512² image, including FOV corners — diagnostic)")
+    print(f"   SSIM={m_fit_full['ssim']:.4f}  PSNR={m_fit_full['psnr']:.2f} dB  "
+          f"RMSE={m_fit_full['rmse']:.5f}  diff_max={m_fit_full['diff_max']:.4f}")
     print(f"Δ  ΔSSIM={m_fit['ssim']-m_base['ssim']:+.4f}  "
           f"ΔPSNR={m_fit['psnr']-m_base['psnr']:+.2f} dB  "
           f"ΔRMSE={(m_fit['rmse']-m_base['rmse'])/m_base['rmse']*100:+.1f}%")
@@ -446,8 +514,13 @@ def main() -> int:
     for off, w in zip(slab_offsets_mm, w_final):
         print(f"     {off:+5.1f} mm:  {w:.4f}")
     print(f"   Σw = {w_final.sum():.4f}")
+    r_fov_final = sod.item() * math.sin(math.atan(n_det_eff/2 * du_eff / sdd.item()))
     print(f"LEARNED POST-FBP:")
     print(f"   a={a.item():.4f}  bg={bg.item():+.5f}  hi={hi.item():.4f}")
+    print(f"   geometric FoV radius (derived) = {r_fov_final:.2f} mm  "
+          f"= sod·sin(atan(n_det/2·du/sdd))")
+    print(f"   (image corner radius = {255.5 * pixel_sp:.2f} mm, so loss "
+          f"down-weighted in the corner triangles outside r={r_fov_final:.0f} mm)")
     print(f"   H(ρ) range = [{h_radial.min().item():.3f}, {h_radial.max().item():.3f}]")
 
     # ---- Plots ----
@@ -504,6 +577,8 @@ def main() -> int:
         },
         "post_fbp_fitted": {
             "a": a.item(), "bg": bg.item(), "hi": hi.item(),
+            "fov_radius_mm_derived": r_fov_final,
+            "fov_radius_formula": "sod * sin(atan(n_det/2 * du / sdd))",
             "h_radial": h_radial.detach().cpu().numpy().tolist(),
         },
         "metrics_baseline": m_base, "metrics_fitted": m_fit,
