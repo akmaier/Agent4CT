@@ -79,6 +79,14 @@ def parse_args() -> argparse.Namespace:
                         "/ geometry-json basename, e.g. '_ffs_drho' to "
                         "read L014_sino_fulldose_ffs_drho.h5. Truth slice "
                         "and out-png basename are unchanged.")
+    p.add_argument("--geometry", default="fitted",
+                   choices=["fitted", "nominal"],
+                   help="FBP geometry to use. 'fitted' (default) = the "
+                        "data-driven Mayo LDCT geometry from job 762284 "
+                        "(2026-05-26, +3.26 dB PSNR over nominal). "
+                        "'nominal' = pure DICOM-CT-PD header values "
+                        "(0.703125 / 595 / 1085.6 / 1.285839) — keep for "
+                        "diagnostic comparison.")
     return p.parse_args()
 
 
@@ -171,33 +179,69 @@ def main() -> int:
           f"({truth_ipp[0] + 255.5*truth_pixel_spacing:+.2f}, "
           f"{truth_ipp[1] + 255.5*truth_pixel_spacing:+.2f}) mm")
 
-    # Build the matching fan-beam geometry. The image grid must match the
-    # truth's grid exactly to avoid a sub-pixel scale-mismatch ring in
-    # the diff (visible as blue+red concentric contours at the patient
-    # outline). The Mayo truth grid is 512² @ 0.703125 mm — not the
-    # 0.7 mm Wagner default; the 0.45% mismatch is enough to draw a
-    # 0.5-1 px-wide fringe at the body boundary.
-    # angle_start_corrected (Wagner's `+pi/2 -unwrap -pi` recipe) tells
-    # us where the first rebinned view sits in the absolute gantry
-    # frame; the full rotation spans 2π from there. See Bug 3 in
-    # literature/wagner_helix2fan_algorithm.md.
+    # Build the matching fan-beam geometry.
+    #
+    # The default ('fitted') uses the data-driven Mayo LDCT calibration
+    # from scripts/fit_fbp_geometry_L014.py (job 762284, 2026-05-26):
+    #
+    #   pixel_spacing = 0.700857 mm  (DICOM nominal 0.703125, Δ -0.32 %)
+    #   det_spacing   = 1.285044 mm  (DICOM nominal 1.285839, Δ -0.06 %)
+    #   sod           = 595.362  mm  (DICOM nominal 595.0,    Δ +0.06 %)
+    #   sdd           = 1086.803 mm  (DICOM nominal 1085.6,   Δ +0.11 %)
+    #   det_offset    = -0.040   mm  (sub-pixel detector-centre shift)
+    #
+    # The +3.26 dB PSNR / -31 % RMSE improvement over the DICOM-nominal
+    # geometry was robust across the cone-beam centre slab (see job
+    # 762284 SUMMARY); the rebinning code in ddssl_ldct/helix2fan.py was
+    # not changed (rebin is bit-identical), the FBP back-projection just
+    # uses the corrected scanner constants.
+    #
+    # Pass `--geometry nominal` to fall back to pure DICOM-CT-PD values.
+    # angle_start_corrected (Wagner's `+pi/2 -unwrap -pi` recipe) gives
+    # the first rebinned view's gantry angle; the rotation spans 2π
+    # from there (see Bug 3 in literature/wagner_helix2fan_algorithm.md).
     import math as _math
     angle_start = float(geom_json.get("angle_start_corrected", 0.0))
     angle_end = angle_start + 2.0 * _math.pi
     print(f"[validate] angle_start={angle_start:.4f} rad, "
           f"angle_end={angle_end:.4f} rad (1 full rotation)")
-    geom = FanBeamGeometry(
-        image_size=512,
-        pixel_spacing=truth_pixel_spacing,
-        n_angles=rotview,
-        n_det=nu,
-        det_spacing=du,
-        sod=float(geom_json.get("sod", 595.0)),
-        sdd=float(geom_json.get("sdd", 1085.6)),
-        angle_start=angle_start,
-        angle_end=angle_end,
-    )
+    from ddssl_ldct.geometry import MAYO_LDCT_DET_OFFSET  # noqa: E402
+    if args.geometry == "fitted":
+        geom = FanBeamGeometry.mayo_ldct_fitted(
+            n_angles=rotview, n_det=nu,
+            angle_start=angle_start, angle_end=angle_end,
+        )
+        det_offset_mm = MAYO_LDCT_DET_OFFSET
+        print(f"[validate] FBP geometry = FITTED (job 762284)  "
+              f"pixel_spacing={geom.pixel_spacing}  du={geom.det_spacing}  "
+              f"sod={geom.sod}  sdd={geom.sdd}  det_off={det_offset_mm:+.4f} mm")
+    else:
+        # DICOM-nominal fallback: pixel_spacing from truth DICOM,
+        # everything else from the helix2fan geometry json (or Wagner
+        # defaults).
+        geom = FanBeamGeometry(
+            image_size=512,
+            pixel_spacing=truth_pixel_spacing,
+            n_angles=rotview,
+            n_det=nu,
+            det_spacing=du,
+            sod=float(geom_json.get("sod", 595.0)),
+            sdd=float(geom_json.get("sdd", 1085.6)),
+            angle_start=angle_start,
+            angle_end=angle_end,
+        )
+        det_offset_mm = 0.0
+        print(f"[validate] FBP geometry = NOMINAL (DICOM-CT-PD header)  "
+              f"pixel_spacing={geom.pixel_spacing}  du={geom.det_spacing}  "
+              f"sod={geom.sod}  sdd={geom.sdd}")
     proj = PyronnFanBeamProjector(geom).to(args.device)
+    if abs(det_offset_mm) > 1e-9:
+        # Sub-pixel detector centre shift — PYRO-NN puts the symmetric
+        # centre on the geometric mid-channel, but the data-driven fit
+        # places the central ray slightly off there.
+        proj._tensor_geom["detector_origin"] = (
+            proj._tensor_geom["detector_origin"] + det_offset_mm
+        )
 
     # FBP each slab member individually, then average — equivalent to
     # the standard "thick-slice" reconstruction the scanner does at

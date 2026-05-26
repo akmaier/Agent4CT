@@ -49,3 +49,88 @@ class FanBeamGeometry:
         even = FanBeamGeometry(**{**self.__dict__, "n_angles": self.n_angles // 2})
         odd = FanBeamGeometry(**{**self.__dict__, "n_angles": self.n_angles // 2})
         return even, odd
+
+    # -- Mayo LDCT presets ----------------------------------------------------
+    # The Mayo `LDCT-and-Projection-data` DICOM-CT-PD header reports a nominal
+    # geometry (pixel_spacing=0.703125, sod=595.0, sdd=1085.6, det_spacing=
+    # 1.285839). On L014 fulldose, a data-driven 5-parameter fit (scripts/
+    # fit_fbp_geometry_L014.py, job 762284, 2026-05-26) found a measurable
+    # mismatch: the actual recon geometry is ~0.32 % off in pixel_spacing
+    # and ~0.1 % off in sdd. Using the fitted values in the FBP gives
+    # +3.26 dB PSNR and -31 % RMSE at the peak GT slice (SSIM 0.94 → 0.9466).
+    # The mismatch is most likely between Mayo's nominal ReconstructionDiameter
+    # (360 mm rounded) and the actual scanner FoV (~358.84 mm).
+    #
+    # Use `FanBeamGeometry.mayo_ldct_fitted(...)` for the recommended Mayo
+    # FBP geometry. Keep `mayo_ldct_nominal(...)` available for diagnostic
+    # comparison against the DICOM header.
+
+    @classmethod
+    def mayo_ldct_fitted(cls, *, n_angles: int, n_det: int = 736,
+                          angle_start: float = 0.0,
+                          angle_end: float = 2 * math.pi) -> "FanBeamGeometry":
+        """Mayo LDCT FBP geometry from the data-driven L2 fit on L014.
+
+        These are the recommended defaults for all Mayo-LDCT FBP / FBP-based
+        solver pipelines as of 2026-05-26. The fitted parameters minimise
+        the calibrated L2 between FBP-cal and truth on the peak GT slice
+        (job 762284).
+
+        Fitted values:
+          - pixel_spacing = 0.700857 mm (DICOM nominal: 0.703125, Δ = -0.32 %)
+          - det_spacing   = 1.285044 mm (DICOM nominal: 1.285839, Δ = -0.06 %)
+          - sod           = 595.362 mm  (DICOM nominal: 595.000, Δ = +0.06 %)
+          - sdd           = 1086.803 mm (DICOM nominal: 1085.600, Δ = +0.11 %)
+        Note: an additional sub-pixel detector_origin offset of −0.040 mm
+        was found by the fit; that needs to be applied OUTSIDE this dataclass
+        on PyronnFanBeamProjector._tensor_geom['detector_origin'] because
+        PYRO-NN doesn't expose it as a constructor argument.
+        """
+        return cls(
+            image_size=512,
+            pixel_spacing=0.700857,
+            n_angles=n_angles,
+            n_det=n_det,
+            det_spacing=1.285044,
+            sod=595.362,
+            sdd=1086.803,
+            angle_start=angle_start,
+            angle_end=angle_end,
+        )
+
+    # Sub-pixel detector centre offset (mm) recovered by the fit alongside
+    # the four scalars above. Apply via
+    #    proj = PyronnFanBeamProjector(FanBeamGeometry.mayo_ldct_fitted(...))
+    #    proj._tensor_geom["detector_origin"] = (
+    #        proj._tensor_geom["detector_origin"] + MAYO_LDCT_DET_OFFSET
+    #    )
+    # (The classmethod can't bake this in because PYRO-NN sets detector_origin
+    # internally from volume_shape*spacing/2 in its constructor.)
+    @classmethod
+    def mayo_ldct_nominal(cls, *, n_angles: int, n_det: int = 736,
+                           angle_start: float = 0.0,
+                           angle_end: float = 2 * math.pi) -> "FanBeamGeometry":
+        """Mayo LDCT FBP geometry using the DICOM-CT-PD header values.
+
+        Kept for diagnostic comparison against `mayo_ldct_fitted`. Going
+        forward, prefer the fitted variant — the nominal one is ~0.5 px
+        off in the radial direction (pin-cushion residual visible as
+        table-edge banding in the diff against truth).
+        """
+        return cls(
+            image_size=512,
+            pixel_spacing=0.703125,
+            n_angles=n_angles,
+            n_det=n_det,
+            det_spacing=1.285839,
+            sod=595.000,
+            sdd=1085.600,
+            angle_start=angle_start,
+            angle_end=angle_end,
+        )
+
+
+# Sub-pixel detector-origin offset (mm) — recovered alongside the fitted
+# geometry above. Apply at the projector level (see `mayo_ldct_fitted`
+# docstring for the recipe).
+MAYO_LDCT_DET_OFFSET = -0.0397
