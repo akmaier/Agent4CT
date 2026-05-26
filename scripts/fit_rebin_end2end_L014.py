@@ -128,11 +128,13 @@ def precompute_picks(z_positions_sub: torch.Tensor,
 def helical_ssr_torch(proj_flat: torch.Tensor,        # (n_sub, nv, nu)
                        z_positions_sub: torch.Tensor,  # (n_sub,)
                        picked_idx: torch.Tensor,       # (rotview,)
-                       z_target: float,
+                       z_target,                       # float OR 0-dim tensor
                        sod: torch.Tensor, sdd: torch.Tensor,
                        du: torch.Tensor, dv: torch.Tensor,
                        u_centre: float, v_centre: float) -> torch.Tensor:
-    """Vectorised SSR. Returns sino[rotview, nu] for one z_target."""
+    """Vectorised SSR. Returns sino[rotview, nu] for one z_target.
+    If z_target is a tensor, dZ becomes differentiable in it — gradient
+    flows from the SSR output through to z_target."""
     n_sub, nv, nu = proj_flat.shape
     rotview = picked_idx.shape[0]
     device = proj_flat.device
@@ -146,7 +148,8 @@ def helical_ssr_torch(proj_flat: torch.Tensor,        # (n_sub, nv, nu)
 
     # z_src per s_angle: (rotview,)
     z_src = z_positions_sub[picked_idx].to(torch.float32)
-    dZ = z_src - float(z_target)                                     # (rotview,)
+    # z_target may be a Python float or a tensor; subtraction broadcasts.
+    dZ = z_src - z_target                                            # (rotview,)
 
     # v_precise: (rotview, nu)
     v_precise = dZ[:, None] * (u_mm[None, :] ** 2 + sdd ** 2) / (sod * sdd)
@@ -274,15 +277,41 @@ def main() -> int:
     bg  = torch.nn.Parameter(torch.tensor(0.0,  device="cuda"))
     hi  = torch.nn.Parameter(torch.tensor(0.05, device="cuda"))
 
-    # ---- Pre-compute closest helix indices per s_angle ----
-    print(f"[fit] precomputing picked helix indices for {rotview} s_angles …",
+    # ---- z-shift + slab profile (new) ----
+    # Δz: sub-mm shift of the slab anchor (compensates the misalignment
+    # between sino-z grid and GT-z grid; ~ 0.31 mm for Mayo L014).
+    delta_z = torch.nn.Parameter(torch.tensor(0.0, device="cuda"))
+    # Slab: 7 z slices at offsets ±3 mm around the anchor, integrated
+    # via learnable softmax weights w_slab (= effective slice profile).
+    slab_offsets_mm = [-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0]
+    n_slab = len(slab_offsets_mm)
+    slab_offsets = torch.tensor(slab_offsets_mm, device="cuda", dtype=torch.float32)
+    # Initialise weights as uniform-over-central-5-mm (mimics what we
+    # had before with the 5-mm physical-overlap baseline): bins -2..+2
+    # at 0.2 each, -3 and +3 at 0.
+    init_logits = torch.tensor([-6.0, 0.0, 0.0, 0.0, 0.0, 0.0, -6.0],
+                                 device="cuda", dtype=torch.float32)
+    w_slab_logits = torch.nn.Parameter(init_logits.clone())
+
+    # ---- Pre-compute closest helix indices per s_angle, PER SLAB Z SLICE ----
+    # The picked-helix-index set changes per z slice (different "closest
+    # readout per s_angle"). Compute once at init for each slab offset and
+    # cache; Δz shifts (sub-mm) don't change which helix readout is
+    # closest, so these caches stay valid during the fit.
+    print(f"[fit] precomputing picked helix indices for {n_slab} slab slices …",
           flush=True)
-    picked_idx = precompute_picks(z_pos_sub, orig_idx, rotview, target_source_z)
-    n_picked = (picked_idx >= 0).sum().item()
-    print(f"[fit] picked {n_picked}/{rotview} s_angles  "
-          f"(min |Δz|={(z_pos_sub[picked_idx] - target_source_z).abs().min().item():.4f} mm  "
-          f"max |Δz|={(z_pos_sub[picked_idx] - target_source_z).abs().max().item():.4f} mm)",
-          flush=True)
+    picked_per_slab = []
+    for off in slab_offsets_mm:
+        z_eff = target_source_z + off
+        picks = precompute_picks(z_pos_sub, orig_idx, rotview, z_eff)
+        picked_per_slab.append(picks)
+        n_picked = (picks >= 0).sum().item()
+        print(f"[fit]   slab off={off:+.1f} mm: {n_picked}/{rotview} picks, "
+              f"|Δz| range [{(z_pos_sub[picks] - z_eff).abs().min().item():.4f}, "
+              f"{(z_pos_sub[picks] - z_eff).abs().max().item():.4f}] mm",
+              flush=True)
+    # For backwards-compatible baseline (single-z), keep the central pick.
+    picked_idx = picked_per_slab[n_slab // 2]
 
     # Precompute FFT2 radial grid for the filter
     fy = torch.fft.fftfreq(512, device="cuda").float()
@@ -315,11 +344,24 @@ def main() -> int:
 
     # ---- Forward pipeline (used in optimisation) ----
     def forward():
-        sino = helical_ssr_torch(
-            proj_flat, z_pos_sub, picked_idx, target_source_z,
-            sod, sdd, du, dv, u_centre_nom, v_centre_nom,
-        )
-        sino_input = torch.flip(sino, dims=[-1])[None, None]
+        # SLAB integration in sino domain: compute n_slab z slices,
+        # softmax-weight, sum. The FBP is linear so sino-domain slab
+        # average ≡ image-domain slab average (we save N - 1 FBPs).
+        w_slab = F.softmax(w_slab_logits, dim=0)                         # (n_slab,)
+        sino_slab = None
+        for k, off in enumerate(slab_offsets_mm):
+            # z_eff is target_source_z + off + delta_z. Δz is the
+            # learnable sub-mm shift; the per-slab pick set was computed
+            # at z = target + off (no Δz), so we keep using that pick
+            # but include Δz in dZ via the z_target argument.
+            z_eff = target_source_z + off + delta_z
+            sino_k = helical_ssr_torch(
+                proj_flat, z_pos_sub, picked_per_slab[k], z_eff,
+                sod, sdd, du, dv, u_centre_nom, v_centre_nom,
+            )
+            sino_slab = (w_slab[k] * sino_k) if sino_slab is None else (sino_slab + w_slab[k] * sino_k)
+        # SLAB→ FBP
+        sino_input = torch.flip(sino_slab, dims=[-1])[None, None]
         fbp_out = proj_fbp.fbp(sino_input, filter_name="ramlak")[0, 0]
         fbp_2d = torch.flip(torch.flip(fbp_out, dims=[0]), dims=[1])
         # Radial frequency filter
@@ -332,11 +374,16 @@ def main() -> int:
         # ReLU lower clip + soft upper clip at hi
         clipped = F.relu(scaled)
         clipped = torch.minimum(clipped, hi)
-        return clipped, sino, fbp_2d
+        return clipped, sino_slab, fbp_2d
 
     # ---- Adam loop ----
-    # Only sod, sdd are learnable rebin params; du/dv stay fixed at hardware.
-    opt = torch.optim.Adam([sod, sdd, h_radial, a, bg, hi], lr=2e-3)
+    # Learnable: rebin geometry (sod, sdd), z-shift (delta_z), slab
+    # profile (w_slab_logits), radial filter (h_radial), intensity
+    # (a, bg, hi). du/dv stay fixed at hardware.
+    opt = torch.optim.Adam(
+        [sod, sdd, delta_z, w_slab_logits, h_radial, a, bg, hi],
+        lr=2e-3,
+    )
     n_iters = 1500
     log_every = max(1, n_iters // 30)
     lam_h = 1e-4
@@ -358,10 +405,12 @@ def main() -> int:
             with torch.no_grad():
                 m_it = calc_metrics(clipped.detach().cpu().numpy(),
                                       truth_mu_np, dr=dr)
+            with torch.no_grad():
+                w_show = F.softmax(w_slab_logits, dim=0).cpu().numpy()
             print(f"[fit] iter {it:4d}/{n_iters}  data_loss={data_loss.item():.3e}  "
-                  f"sod={sod.item():.3f}  sdd={sdd.item():.3f}  "
+                  f"sod={sod.item():.3f}  sdd={sdd.item():.3f}  Δz={delta_z.item():+.4f}  "
                   f"a={a.item():.3f} bg={bg.item():+.4f} hi={hi.item():.3f}  "
-                  f"H_range=[{h_radial.min().item():.3f},{h_radial.max().item():.3f}]  "
+                  f"w_slab=[{','.join(f'{x:.2f}' for x in w_show)}]  "
                   f"SSIM={m_it['ssim']:.4f} PSNR={m_it['psnr']:.2f} dB",
                   flush=True)
 
@@ -389,6 +438,14 @@ def main() -> int:
           f"{(sdd.item()/sdd0-1)*100:+.4f} %)")
     print(f"   du   {du0:.5f}  (FIXED hardware)")
     print(f"   dv   {dv0:.5f}  (FIXED hardware)")
+    print(f"LEARNED Z-SHIFT + SLAB PROFILE:")
+    print(f"   Δz = {delta_z.item():+.4f} mm")
+    with torch.no_grad():
+        w_final = F.softmax(w_slab_logits, dim=0).cpu().numpy()
+    print(f"   w_slab (offsets {slab_offsets_mm} mm):")
+    for off, w in zip(slab_offsets_mm, w_final):
+        print(f"     {off:+5.1f} mm:  {w:.4f}")
+    print(f"   Σw = {w_final.sum():.4f}")
     print(f"LEARNED POST-FBP:")
     print(f"   a={a.item():.4f}  bg={bg.item():+.5f}  hi={hi.item():.4f}")
     print(f"   H(ρ) range = [{h_radial.min().item():.3f}, {h_radial.max().item():.3f}]")
@@ -440,6 +497,11 @@ def main() -> int:
                         "du_status": "fixed", "dv_status": "fixed"},
         "rebin_fitted": {"sod": sod.item(), "sdd": sdd.item(),
                           "du": du0, "dv": dv0},
+        "slab_fitted": {
+            "delta_z_mm": delta_z.item(),
+            "offsets_mm": slab_offsets_mm,
+            "w_slab": w_final.tolist(),
+        },
         "post_fbp_fitted": {
             "a": a.item(), "bg": bg.item(), "hi": hi.item(),
             "h_radial": h_radial.detach().cpu().numpy().tolist(),
