@@ -215,12 +215,19 @@ def main() -> int:
     proj_flat = blob["proj_flat"].to("cuda")                  # (n_sub, nv, nu)
     z_pos_sub = blob["z_positions"].to("cuda")
     orig_idx = blob["original_indices"].to("cuda")
+    # FFS-dz per readout — applied as z_eff = z_pos + α_dz · ffs_dz
+    # (α_dz init at +1.0; ablation #762363 confirmed this is the
+    # correct DICOM sign convention).
+    ffs_dz_sub = blob.get("ffs_dz", torch.zeros_like(z_pos_sub)).to("cuda")
     rotview = int(blob["rotview"])
     nu, nv = int(blob["nu"]), int(blob["nv"])
     pitch_mm = float(blob["pitch_mm"])
     angle_start = float(blob["angle_start_corrected"])
     target_source_z = float(blob["target_source_z"])
     target_pZ = -target_source_z         # sign-flip to patient frame
+    print(f"[fit] ffs_dz range [{float(ffs_dz_sub.min()):.4f}, "
+          f"{float(ffs_dz_sub.max()):.4f}] mm  "
+          f"unique={int(torch.unique(ffs_dz_sub).numel())}", flush=True)
 
     # Truth slice (single GT DICOM at -254.5 — note: target_source_z=256.86
     # corresponds to patient_z=-256.86, which sits between two GT slices.
@@ -310,6 +317,13 @@ def main() -> int:
     a   = torch.nn.Parameter(torch.tensor(1.0,  device="cuda"))
     bg  = torch.nn.Parameter(torch.tensor(0.0,  device="cuda"))
     hi  = torch.nn.Parameter(torch.tensor(0.05, device="cuda"))
+    # FFS-z correction: z_eff = z_pos + α_dz · ffs_dz, FIXED at +1.0
+    # (winner of the ablation, job 762363). Empirically: making α_dz
+    # learnable causes Adam to drift to ~0.72 (degenerate trade-off
+    # with Δz; both correct z-position) — and the result is SLIGHTLY
+    # WORSE than fixing α_dz at the ablation-proven optimum.
+    # The ablation was a clean controlled experiment; trust it.
+    alpha_dz = torch.tensor(1.0, device="cuda")   # FIXED, not a Parameter
 
     # ---- Image-space "geometric FoV" mask (new) ----
     # The fan-beam FBP can reconstruct pixels at radius up to
@@ -374,13 +388,21 @@ def main() -> int:
     # shifts during the fit are sub-mm, so picks stay valid.
     # Each GT slice has a source_z = -pZ_i; we map per-GT target source z's.
     target_source_z_per_gt = [-z for z in truth_pZ_list]   # source frame
+    # Picks use the FIXED z-FFS correction (α_dz = +1.0, the ablation
+    # optimum). This is intentional: the picks are integer-indexed and
+    # not differentiable; freezing them at the optimum lets the
+    # downstream SSR sampling still be differentiable in the LEARNED
+    # α_dz around 1.0. Sub-mm shifts in α_dz don't change the closest
+    # helix readout per s_angle for any reasonable optimum.
+    z_pos_for_picks = z_pos_sub + 1.0 * ffs_dz_sub
     print(f"[fit] precomputing picked helix indices for {N_GT} GT × {n_slab} slab = "
-          f"{N_GT * n_slab} combos …", flush=True)
+          f"{N_GT * n_slab} combos (with α_dz=+1 z-FFS applied to picks) …",
+          flush=True)
     picked_per_gt_per_slab = []   # [N_GT][n_slab] → (rotview,) tensor
     for i_gt, z_tgt_i in enumerate(target_source_z_per_gt):
         per_slab = []
         for off in slab_offsets_mm:
-            picks = precompute_picks(z_pos_sub, orig_idx, rotview, z_tgt_i + off)
+            picks = precompute_picks(z_pos_for_picks, orig_idx, rotview, z_tgt_i + off)
             per_slab.append(picks)
         picked_per_gt_per_slab.append(per_slab)
     # Diagnostic for the central GT
@@ -430,10 +452,15 @@ def main() -> int:
         sino_slab = None
         target_z_i = target_source_z_per_gt[i_gt]
         picks_per_slab_i = picked_per_gt_per_slab[i_gt]
+        # z-FFS: effective source z per readout is z_pos + α_dz · ffs_dz.
+        # α_dz is a learnable scalar (init at +1.0 = ablation winner).
+        # Picks are fixed (precomputed at α_dz=+1.0); the gradient flows
+        # through the SSR sampling step.
+        z_pos_eff = z_pos_sub + alpha_dz * ffs_dz_sub
         for k, off in enumerate(slab_offsets_mm):
             z_eff = target_z_i + off + delta_z
             sino_k = helical_ssr_torch(
-                proj_flat, z_pos_sub, picks_per_slab_i[k], z_eff,
+                proj_flat, z_pos_eff, picks_per_slab_i[k], z_eff,
                 sod, sdd, du, dv, u_centre_nom, v_centre_nom,
             )
             sino_slab = (w_slab[k] * sino_k) if sino_slab is None else (sino_slab + w_slab[k] * sino_k)
@@ -469,6 +496,7 @@ def main() -> int:
     # profile (w_slab_logits), radial filter (h_radial), intensity
     # (a, bg, hi). du/dv stay fixed at hardware. The FoV-loss-mask
     # radius is geometry-derived (NOT a free param) — see compute_fov_mask.
+    # α_dz is FIXED at +1.0, NOT in the optimizer (see init comment).
     opt = torch.optim.Adam(
         [sod, sdd, delta_z, w_slab_logits, h_radial, a, bg, hi],
         lr=2e-3,
@@ -513,6 +541,7 @@ def main() -> int:
                 r_fov_now = sod.item() * math.sin(math.atan(n_det_eff/2 * du_eff / sdd.item()))
             print(f"[fit] iter {it:4d}/{n_iters}  data_loss={data_loss.item():.3e}  "
                   f"sod={sod.item():.3f}  sdd={sdd.item():.3f}  Δz={delta_z.item():+.4f}  "
+                  f"α_dz={alpha_dz.item():+.4f}  "
                   f"a={a.item():.3f} bg={bg.item():+.4f} hi={hi.item():.3f}  "
                   f"r_fov_geom={r_fov_now:.2f}mm  "
                   f"w_slab=[{','.join(f'{x:.2f}' for x in w_show)}]  "
@@ -574,8 +603,9 @@ def main() -> int:
           f"{(sdd.item()/sdd0-1)*100:+.4f} %)")
     print(f"   du   {du0:.5f}  (FIXED hardware)")
     print(f"   dv   {dv0:.5f}  (FIXED hardware)")
-    print(f"LEARNED Z-SHIFT + SLAB PROFILE:")
-    print(f"   Δz = {delta_z.item():+.4f} mm")
+    print(f"LEARNED Z-SHIFT + SLAB PROFILE + FFS-z:")
+    print(f"   Δz       = {delta_z.item():+.4f} mm")
+    print(f"   α_dz     = {alpha_dz.item():+.4f}  (FIXED at ablation-optimum)")
     with torch.no_grad():
         w_final = F.softmax(w_slab_logits, dim=0).cpu().numpy()
     print(f"   w_slab (offsets {slab_offsets_mm} mm):")
@@ -663,7 +693,8 @@ def main() -> int:
         "rebin_init": {"sod": sod0, "sdd": sdd0, "du": du0, "dv": dv0,
                         "du_status": "fixed", "dv_status": "fixed"},
         "rebin_fitted": {"sod": sod.item(), "sdd": sdd.item(),
-                          "du": du0, "dv": dv0},
+                          "du": du0, "dv": dv0,
+                          "alpha_dz": alpha_dz.item()},
         "slab_fitted": {
             "delta_z_mm": delta_z.item(),
             "offsets_mm": slab_offsets_mm,
