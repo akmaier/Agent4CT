@@ -227,13 +227,47 @@ def main() -> int:
     # For end-to-end fitting, just use the nearest GT — no interp here.)
     truth_files = _list_truth(raw_dir)
     zs = np.array([t[0] for t in truth_files])
-    ti = int(np.argmin(np.abs(zs - target_pZ)))
-    pZ, fp = truth_files[ti]
-    truth_mu_np, ds = _mu(fp)
-    truth = torch.from_numpy(truth_mu_np).to("cuda").float()
-    pixel_sp = float(ds.PixelSpacing[0])
-    print(f"[fit] nearest GT #{ti}  pZ={pZ:.2f}  target_pZ={target_pZ:.2f}  "
-          f"(Δ={target_pZ - pZ:+.2f} mm)  pixel_sp={pixel_sp:.6f}", flush=True)
+    ti_center = int(np.argmin(np.abs(zs - target_pZ)))
+
+    # Multi-GT: load N_GT consecutive truth slices around the cone-beam
+    # centre. They share ALL learnable parameters (geometry, z-shift,
+    # slab profile, kernel filter, intensity, FoV).
+    N_GT = 10
+    half_gt = N_GT // 2
+    gt_indices = list(range(max(0, ti_center - half_gt),
+                              min(len(truth_files), ti_center + half_gt)))
+    if len(gt_indices) < N_GT:
+        # Pad on whichever side has room
+        if gt_indices[0] > 0:
+            gt_indices = list(range(gt_indices[0] - (N_GT - len(gt_indices)),
+                                      gt_indices[0])) + gt_indices
+        else:
+            gt_indices = gt_indices + list(range(gt_indices[-1] + 1,
+                                                   gt_indices[-1] + 1 + (N_GT - len(gt_indices))))
+
+    truth_list_np = []
+    truth_pZ_list = []
+    pixel_sp = None
+    for ti in gt_indices:
+        pZ_i, fp_i = truth_files[ti]
+        mu_i, ds_i = _mu(fp_i)
+        truth_list_np.append(mu_i)
+        truth_pZ_list.append(pZ_i)
+        if pixel_sp is None:
+            pixel_sp = float(ds_i.PixelSpacing[0])
+    truth_stack = torch.stack([torch.from_numpy(x).to("cuda").float() for x in truth_list_np], dim=0)  # (N_GT, H, W)
+    # The central one (closest to target_pZ) is the diagnostic plot anchor.
+    central_gt_idx = int(np.argmin([abs(z - target_pZ) for z in truth_pZ_list]))
+    truth = truth_stack[central_gt_idx]
+    truth_mu_np = truth_list_np[central_gt_idx]
+    print(f"[fit] Multi-GT fit, N_GT={N_GT}", flush=True)
+    for k, (idx, z) in enumerate(zip(gt_indices, truth_pZ_list)):
+        marker = " ★" if k == central_gt_idx else ""
+        print(f"[fit]    GT #{idx}: pZ={z:+.2f} mm{marker}", flush=True)
+    print(f"[fit] pixel_sp={pixel_sp:.6f}  central GT for plots = #{gt_indices[central_gt_idx]}",
+          flush=True)
+    pZ = truth_pZ_list[central_gt_idx]
+    ti = gt_indices[central_gt_idx]
 
     # ---- Geometry centres (kept fixed; mismatch is sub-pixel) ----
     u_centre_nom = (nu - 1) / 2.0     # PYRO-NN convention; the (nu - u0) flip is baked into proj_flat
@@ -334,25 +368,28 @@ def main() -> int:
                                  device="cuda", dtype=torch.float32)
     w_slab_logits = torch.nn.Parameter(init_logits.clone())
 
-    # ---- Pre-compute closest helix indices per s_angle, PER SLAB Z SLICE ----
-    # The picked-helix-index set changes per z slice (different "closest
-    # readout per s_angle"). Compute once at init for each slab offset and
-    # cache; Δz shifts (sub-mm) don't change which helix readout is
-    # closest, so these caches stay valid during the fit.
-    print(f"[fit] precomputing picked helix indices for {n_slab} slab slices …",
-          flush=True)
-    picked_per_slab = []
-    for off in slab_offsets_mm:
-        z_eff = target_source_z + off
-        picks = precompute_picks(z_pos_sub, orig_idx, rotview, z_eff)
-        picked_per_slab.append(picks)
-        n_picked = (picks >= 0).sum().item()
-        print(f"[fit]   slab off={off:+.1f} mm: {n_picked}/{rotview} picks, "
-              f"|Δz| range [{(z_pos_sub[picks] - z_eff).abs().min().item():.4f}, "
-              f"{(z_pos_sub[picks] - z_eff).abs().max().item():.4f}] mm",
-              flush=True)
-    # For backwards-compatible baseline (single-z), keep the central pick.
+    # ---- Pre-compute closest helix indices per (GT slice × slab bin) ----
+    # For each of N_GT × n_slab combinations of (z_target_i, slab_offset_k),
+    # find the helix readout closest to (target + slab + GT_offset). Δz
+    # shifts during the fit are sub-mm, so picks stay valid.
+    # Each GT slice has a source_z = -pZ_i; we map per-GT target source z's.
+    target_source_z_per_gt = [-z for z in truth_pZ_list]   # source frame
+    print(f"[fit] precomputing picked helix indices for {N_GT} GT × {n_slab} slab = "
+          f"{N_GT * n_slab} combos …", flush=True)
+    picked_per_gt_per_slab = []   # [N_GT][n_slab] → (rotview,) tensor
+    for i_gt, z_tgt_i in enumerate(target_source_z_per_gt):
+        per_slab = []
+        for off in slab_offsets_mm:
+            picks = precompute_picks(z_pos_sub, orig_idx, rotview, z_tgt_i + off)
+            per_slab.append(picks)
+        picked_per_gt_per_slab.append(per_slab)
+    # Diagnostic for the central GT
+    picked_per_slab = picked_per_gt_per_slab[central_gt_idx]
     picked_idx = picked_per_slab[n_slab // 2]
+    print(f"[fit]   central GT #{ti}: |Δz| at slab=0 = "
+          f"[{(z_pos_sub[picked_idx] - target_source_z_per_gt[central_gt_idx]).abs().min().item():.4f}, "
+          f"{(z_pos_sub[picked_idx] - target_source_z_per_gt[central_gt_idx]).abs().max().item():.4f}] mm",
+          flush=True)
 
     # Precompute FFT2 radial grid for the filter
     fy = torch.fft.fftfreq(512, device="cuda").float()
@@ -362,10 +399,11 @@ def main() -> int:
 
     dr = 0.05
 
-    # ---- Baseline: nominal geometry, no fit ----
+    # ---- Baseline: nominal geometry, no fit; central GT only for plots ----
     with torch.no_grad():
         sino_nom = helical_ssr_torch(
-            proj_flat, z_pos_sub, picked_idx, target_source_z,
+            proj_flat, z_pos_sub, picked_idx,
+            target_source_z_per_gt[central_gt_idx],
             sod, sdd, du, dv, u_centre_nom, v_centre_nom,
         )
         # FBP via PYRO-NN (input is differentiable; output is image)
@@ -384,47 +422,47 @@ def main() -> int:
     fbp_nom_cal_np = fbp_nom_cal.cpu().numpy()
 
     # ---- Forward pipeline (used in optimisation) ----
-    def forward():
-        # SLAB integration in sino domain: compute n_slab z slices,
-        # softmax-weight, sum. The FBP is linear so sino-domain slab
-        # average ≡ image-domain slab average (we save N - 1 FBPs).
-        w_slab = F.softmax(w_slab_logits, dim=0)                         # (n_slab,)
+    def _forward_one_gt(i_gt: int):
+        """Forward pass for one GT slice; uses the picked indices for
+        that GT × each slab bin. Shared (sod, sdd, w_slab, h_radial,
+        a, bg, hi) across all GTs."""
+        w_slab = F.softmax(w_slab_logits, dim=0)
         sino_slab = None
+        target_z_i = target_source_z_per_gt[i_gt]
+        picks_per_slab_i = picked_per_gt_per_slab[i_gt]
         for k, off in enumerate(slab_offsets_mm):
-            # z_eff is target_source_z + off + delta_z. Δz is the
-            # learnable sub-mm shift; the per-slab pick set was computed
-            # at z = target + off (no Δz), so we keep using that pick
-            # but include Δz in dZ via the z_target argument.
-            z_eff = target_source_z + off + delta_z
+            z_eff = target_z_i + off + delta_z
             sino_k = helical_ssr_torch(
-                proj_flat, z_pos_sub, picked_per_slab[k], z_eff,
+                proj_flat, z_pos_sub, picks_per_slab_i[k], z_eff,
                 sod, sdd, du, dv, u_centre_nom, v_centre_nom,
             )
             sino_slab = (w_slab[k] * sino_k) if sino_slab is None else (sino_slab + w_slab[k] * sino_k)
-        # SLAB→ FBP
         sino_input = torch.flip(sino_slab, dims=[-1])[None, None]
         fbp_out = proj_fbp.fbp(sino_input, filter_name="ramlak")[0, 0]
         fbp_2d = torch.flip(torch.flip(fbp_out, dims=[0]), dims=[1])
-        # Radial frequency filter
         fft_fbp = torch.fft.fft2(fbp_2d)
         h_2d = radial_filter_2d(h_radial, rho, n_bins)
         filt_fft = torch.complex(h_2d * fft_fbp.real, h_2d * fft_fbp.imag)
         filt = torch.fft.ifft2(filt_fft).real
-        # Intensity scale
         scaled = a * (filt - bg)
-        # ReLU lower clip + soft upper clip at hi
         clipped = F.relu(scaled)
         clipped = torch.minimum(clipped, hi)
-        # Apply the geometric-FoV mask to the PRED itself (not just the
-        # loss). The mask sits at r_fov_geom ≈ 237 mm — well outside
-        # the body (r≈150 mm) and table (r≈144 mm), so the only pixels
-        # zeroed are the tiny corner triangles where the fan-beam
-        # cannot reach. Mayo's truth is already ~0 in those corners,
-        # so the diff there becomes (0 − ~0) ≈ 0 and the artifacts
-        # the user flagged at r ≥ 358 px disappear from the figure.
         fov_mask_img = compute_fov_mask(sod, sdd)
         clipped = clipped * fov_mask_img
         return clipped, sino_slab, fbp_2d
+
+    def forward():
+        """Multi-GT forward. Returns (pred_stack[N_GT, H, W], sino[central], fbp[central])."""
+        preds = []
+        sino_central = None
+        fbp_central = None
+        for i_gt in range(N_GT):
+            clipped_i, sino_i, fbp_i = _forward_one_gt(i_gt)
+            preds.append(clipped_i)
+            if i_gt == central_gt_idx:
+                sino_central = sino_i
+                fbp_central = fbp_i
+        return torch.stack(preds, dim=0), sino_central, fbp_central
 
     # ---- Adam loop ----
     # Learnable: rebin geometry (sod, sdd), z-shift (delta_z), slab
@@ -453,15 +491,20 @@ def main() -> int:
         # down-weighted; the table at r≈144 mm and body at r≈150 mm
         # are fully inside the mask (loss weight ≈ 1).
         fov_mask = compute_fov_mask(sod, sdd)
-        sq_err = (clipped - truth) ** 2
-        data_loss = (sq_err * fov_mask).sum() / fov_mask.sum().clamp_min(1.0)
+        # Sum L2 over ALL N_GT slices, weighted by FoV mask. clipped is
+        # (N_GT, H, W); truth_stack is (N_GT, H, W); fov_mask is (H, W).
+        sq_err = (clipped - truth_stack) ** 2                 # (N_GT, H, W)
+        # Each GT contributes equally to the mean; mask weights pixels.
+        w_eff = fov_mask[None].expand_as(sq_err)              # (N_GT, H, W)
+        data_loss = (sq_err * w_eff).sum() / w_eff.sum().clamp_min(1.0)
         smooth_loss = ((h_radial[2:] - 2 * h_radial[1:-1] + h_radial[:-2]) ** 2).mean()
         total = data_loss + lam_h * smooth_loss
         total.backward()
         opt.step()
         if it % log_every == 0 or it == n_iters - 1:
             with torch.no_grad():
-                m_it = calc_metrics(clipped.detach().cpu().numpy(),
+                # Metric reported on the central GT (consistent w/ single-GT runs)
+                m_it = calc_metrics(clipped[central_gt_idx].detach().cpu().numpy(),
                                       truth_mu_np, dr=dr)
             with torch.no_grad():
                 w_show = F.softmax(w_slab_logits, dim=0).cpu().numpy()
@@ -478,16 +521,37 @@ def main() -> int:
 
     # ---- Final ----
     with torch.no_grad():
-        clipped_f, sino_f, fbp_2d_f = forward()
-        pred_np = clipped_f.cpu().numpy()
+        clipped_stack_f, sino_f, fbp_2d_f = forward()    # (N_GT, H, W)
+        pred_stack_np = clipped_stack_f.cpu().numpy()
+        pred_np = pred_stack_np[central_gt_idx]
         fov_mask_final = compute_fov_mask(sod, sdd).cpu().numpy()
-    # Apples-to-apples metric inside the geometric FoV (~237 mm) — what
-    # the loss optimised. m_fit_full = legacy full 512² report (pred and
-    # truth both un-masked) for diagnostic.
+    # Per-GT metrics (the FoV-mask is already applied inside `forward`).
+    per_gt_metrics = []
+    for i in range(N_GT):
+        m_i = calc_metrics(pred_stack_np[i], truth_list_np[i], dr=dr)
+        per_gt_metrics.append(m_i)
+    # Central-GT metric for headline comparison
     pred_inside = pred_np * fov_mask_final
     truth_inside = truth_mu_np * fov_mask_final
     m_fit = calc_metrics(pred_inside, truth_inside, dr=dr)
     m_fit_full = calc_metrics(pred_np, truth_mu_np, dr=dr)
+    # Aggregate across all GTs
+    ssims = np.array([m["ssim"] for m in per_gt_metrics])
+    psnrs = np.array([m["psnr"] for m in per_gt_metrics])
+    rmses = np.array([m["rmse"] for m in per_gt_metrics])
+    diff_maxs = np.array([m["diff_max"] for m in per_gt_metrics])
+    print(f"\n=== PER-GT METRICS ({N_GT} slices) ===")
+    print(f"{'idx':>4s}  {'pZ':>8s}  {'SSIM':>6s}  {'PSNR(dB)':>8s}  {'RMSE':>7s}  {'diff_max':>8s}")
+    for k, (gi, pZ_k, m_k) in enumerate(zip(gt_indices, truth_pZ_list, per_gt_metrics)):
+        marker = " ★" if k == central_gt_idx else "  "
+        print(f"{gi:4d}{marker} {pZ_k:+8.2f}  {m_k['ssim']:.4f}  "
+              f"{m_k['psnr']:6.2f}    {m_k['rmse']:.5f}  {m_k['diff_max']:.4f}",
+              flush=True)
+    print(f"  mean         {ssims.mean():.4f}  {psnrs.mean():6.2f}    "
+          f"{rmses.mean():.5f}  {diff_maxs.mean():.4f}")
+    print(f"  range  [{ssims.min():.4f}, {ssims.max():.4f}]  "
+          f"[{psnrs.min():.2f}, {psnrs.max():.2f}]  "
+          f"[{rmses.min():.5f}, {rmses.max():.5f}]")
     print()
     print("=== SUMMARY ===")
     print(f"BASELINE (nominal rebin + intensity_calibrate)")
@@ -568,6 +632,32 @@ def main() -> int:
     fig2.savefig(out_diff, dpi=120)
     print(f"[fit] wrote {out_diff}", flush=True)
 
+    # Multi-GT montage: 3 columns (truth | pred | diff) × N_GT rows
+    fig3, ax3 = plt.subplots(N_GT, 3, figsize=(11, 3.5 * N_GT))
+    if N_GT == 1:
+        ax3 = ax3[None, :]
+    for k, (gi, pZ_k, m_k) in enumerate(zip(gt_indices, truth_pZ_list, per_gt_metrics)):
+        diff_k = (pred_stack_np[k] - truth_list_np[k]) * fov_mask_final
+        is_centre = (k == central_gt_idx)
+        tag = " ★" if is_centre else ""
+        ax3[k, 0].imshow(truth_list_np[k], cmap="gray", vmin=0, vmax=dr)
+        ax3[k, 0].set_title(f"truth GT#{gi}  pZ={pZ_k:+.2f}{tag}", fontsize=9)
+        ax3[k, 1].imshow(np.clip(pred_stack_np[k], 0, None),
+                          cmap="gray", vmin=0, vmax=dr)
+        ax3[k, 1].set_title(f"end-to-end fit  "
+                              f"SSIM={m_k['ssim']:.4f}  PSNR={m_k['psnr']:.2f} dB",
+                              fontsize=9)
+        ax3[k, 2].imshow(diff_k, cmap="seismic", vmin=-0.02, vmax=0.02)
+        ax3[k, 2].set_title(f"diff  max|·|={np.abs(diff_k).max():.4f}", fontsize=9)
+        for a_ax in ax3[k]:
+            a_ax.set_xticks([]); a_ax.set_yticks([])
+    fig3.suptitle(f"L014 end-to-end multi-GT fit  ({N_GT} slices share all params)",
+                  fontsize=11)
+    fig3.tight_layout()
+    out_montage = out_dir / "L014_rebin_end2end_montage.png"
+    fig3.savefig(out_montage, dpi=110)
+    print(f"[fit] wrote {out_montage}", flush=True)
+
     out_json = out_dir / "L014_rebin_end2end_fit.json"
     out_json.write_text(json.dumps({
         "rebin_init": {"sod": sod0, "sdd": sdd0, "du": du0, "dv": dv0,
@@ -585,7 +675,26 @@ def main() -> int:
             "fov_radius_formula": "sod * sin(atan(n_det/2 * du / sdd))",
             "h_radial": h_radial.detach().cpu().numpy().tolist(),
         },
-        "metrics_baseline": m_base, "metrics_fitted": m_fit,
+        "metrics_baseline": m_base,
+        "metrics_fitted_central": m_fit,
+        "metrics_fitted_full_central": m_fit_full,
+        "per_gt": [
+            {"gt_index": gt_indices[k], "pZ": truth_pZ_list[k],
+              "ssim": per_gt_metrics[k]["ssim"],
+              "psnr": per_gt_metrics[k]["psnr"],
+              "rmse": per_gt_metrics[k]["rmse"],
+              "diff_max": per_gt_metrics[k]["diff_max"],
+              "is_central": (k == central_gt_idx)}
+            for k in range(N_GT)
+        ],
+        "aggregate": {
+            "ssim_mean": float(ssims.mean()), "ssim_min": float(ssims.min()),
+            "ssim_max": float(ssims.max()),
+            "psnr_mean": float(psnrs.mean()), "psnr_min": float(psnrs.min()),
+            "psnr_max": float(psnrs.max()),
+            "rmse_mean": float(rmses.mean()),
+            "diff_max_mean": float(diff_maxs.mean()),
+        },
         "target_pZ": target_pZ, "nearest_gt_pZ": pZ, "gt_index": ti,
     }, indent=2))
     print(f"[fit] wrote {out_json}", flush=True)
