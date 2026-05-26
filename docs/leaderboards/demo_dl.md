@@ -1,63 +1,93 @@
 ---
 title: Demo-DL leaderboard
-description: Calibrated-SSIM-headroom ranking, one row per solver family. See solver_plan.md for methodology.
+description: Calibrated headroom ranking of every solver family on the demo-DL 128-view sparse-view substrate.
 ---
 
 # Demo-DL leaderboard
 
-128-view 2-D fan-beam sparse synthetic phantoms (Sidky-style random
+128-view 2-D fan-beam sparse-view synthetic phantoms (Sidky-style random
 ellipse phantoms — the "demo" track used as a fast iteration substrate).
-Smaller and faster than `breast_ct`; useful for prototyping. **The
-post-2026-05-19 calibrated-scoring convention is the canonical metric**
-(legacy uncalibrated runs reported higher numbers that don't compare
-like-for-like with the rest of the pentathlon).
+Smaller and faster than the breast-CT track; useful for prototyping.
 
-All metrics through `evaluate_calibrated`: linear intensity calibration
-on the foreground inside an inscribed-circle FOV mask, then PSNR/SSIM
-on the calibrated pred. `hr = max(0, 1 − rmse/baseline_rmse)`.
+All metrics through
+[`ddssl_ldct.metrics.evaluate_calibrated`](../../ddssl_ldct/metrics.py):
+two-point linear intensity calibration on the foreground inside an
+inscribed-circle FoV mask, then PSNR/SSIM/RMSE on the calibrated
+prediction. `hr = max(0, 1 − rmse / baseline_rmse)` where the baseline is
+the calibrated FBP (`demo-intensity-calibrated-tpe-*` family).
+
+The **2026-05-19 calibrated-scoring convention** is the canonical metric;
+earlier uncalibrated runs (slug prefix `demo-dl-*`, `dl-sparse-view-*`)
+are kept at the bottom for historical context and **are not directly
+comparable**.
+
+## Top-5 visual comparison
+
+The top five calibrated rows (best `hr`) render their per-iteration
+comparison panel below.
+
+| 1 — ITNet v3 | 2 — USwin | 3 — RAM zero-shot |
+|---|---|---|
+| [![ITNet v3 comparison](../runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png)](../runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png) | [![USwin comparison](../runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png)](../runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png) | [![RAM zero-shot comparison](../runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png)](../runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png) |
+| **4 — ITNet v2** | **5 — Diff-recon DDPM unconstrained** | |
+| [![ITNet v2 comparison](../runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/iterations/iter-0020/comparison.png)](../runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/iterations/iter-0020/comparison.png) | [![Diff-recon unconstrained comparison](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0017/comparison.png)](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0017/comparison.png) | |
 
 ## Calibrated leaderboard (canonical)
 
-Slug prefix `demo-intensity-calibrated-tpe-*`.
+Slug prefix `demo-intensity-calibrated-tpe-*`. Sorted by `hr`; one row
+per solver family (best TPE iteration). `params (M)` is the number of
+trainable parameters in millions; `0` = non-trainable hand-tuned solver;
+`(frozen)` = pretrained checkpoint loaded without finetuning.
 
-| Rank | Solver | SSIM | hr | Source slug / iter |
-|---:|---|---:|---:|---|
-| 1 | **ITNet v3** | 0.9178 | 0.4676 | `demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01` / iter-9 |
-| 2 | USwin | 0.8722 | 0.4655 | `demo-intensity-calibrated-tpe-uswin-search-20260520-01` / iter-11 |
-| 3 | **RAM zero-shot** (pretrained) | 0.9181 | 0.4648 | `demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01` / iter-16 |
-| 4 | ITNet v2 | 0.9178 | 0.4567 | `demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01` / iter-20 |
-| 5 | **Diff-recon DC-step — DDPM unconstrained** | 0.8251 | 0.4530 | `demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01` / iter-17 |
-| 6 | **Diff-recon DC-step — DDPM constrained** | 0.8090 | 0.4418 | `demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01` / iter-18 |
-| 7 | NAF | 0.8534 | 0.4160 | `demo-intensity-calibrated-tpe-naf-search-20260521-01` / iter-19 |
-| 8 | TV-iterative | 0.8706 | 0.4056 | `demo-intensity-calibrated-tpe-tv-search-20260520-01` / iter-13 |
-| 9 | DD-UNet N2I | 0.6854 | 0.3811 | `demo-intensity-calibrated-tpe-dual-domain-search-20260520-01` / iter-17 |
-| 10 | Hammernik 2017 | 0.7890 | 0.3622 | `demo-intensity-calibrated-tpe-hammernik-search-20260520-01` / iter-6 |
-| 11 | Hammernik VN | 0.7722 | 0.3621 | `demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01` / iter-11 |
-| 12 | DD-BF N2I | 0.7605 | 0.3611 | `demo-intensity-calibrated-tpe-dual-domain-bf-search-20260520-01` / iter-1 |
-| 13 | R2Gaussian | 0.8324 | 0.2999 | `demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01` / iter-14 |
-| 14 | Wu 2015 (non-trainable) | 0.5495 | 0.2295 | `demo-intensity-calibrated-tpe-wu-search-20260521-01` / iter-18 |
+| Rank | Solver | Variant | params (M) | SSIM | hr | Source | Comparison |
+|---:|---|---|---:|---:|---:|---|---|
+| 1 | **ITNet v3** | ep=13, lr=7.5e-4, unet_c=16, k=3, α=9.1e-3, train_n=200 | 3.699 | 0.9178 | 0.4676 | [results](../runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/results.tsv) | [iter-9](../runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png) |
+| 2 | USwin | ep=14, lr=4.9e-4, c=24, win=8, heads=2, train_n=200 | 3.954 | 0.8722 | 0.4655 | [results](../runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/results.tsv) | [iter-11](../runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png) |
+| 3 | **RAM zero-shot** (pretrained) | σ=0.075, blend=0.42, factor=0.42, train_n=0 (frozen) | 35.619 *(frozen)* | 0.9181 | 0.4648 | [results](../runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/results.tsv) | [iter-16](../runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png) |
+| 4 | ITNet v2 | pre_ep=6, pre_lr=2.3e-4, k=3, α=0.032, residual=F, train_n=400 | 0.233 | 0.9178 | 0.4567 | [results](../runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/results.tsv) | [iter-20](../runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/iterations/iter-0020/comparison.png) |
+| 5 | **Diff-recon DC-step — DDPM unconstrained** | DPS, steps=200, η=4.11, η-clamp=T, dc_every=4, train_n=2000 | 0.958 *(frozen)* | 0.8251 | 0.4530 | [results](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/results.tsv) | [iter-17](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0017/comparison.png) |
+| 6 | **Diff-recon DC-step — DDPM constrained** | DPS, steps=500, η=4.98, η-clamp=F, dc_every=5, train_n=200 | 0.958 *(frozen)* | 0.8090 | 0.4418 | [results](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/results.tsv) | [iter-18](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/iterations/iter-0018/comparison.png) |
+| 7 | NAF | n_freqs=6, hidden=256, n_iter=2216, lr=1.95e-3, train_n=0 | 0.270 | 0.8534 | 0.4160 | [results](../runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/results.tsv) | [iter-19](../runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/iterations/iter-0019/comparison.png) |
+| 8 | TV-iterative | λ=3.6e-3, iters=382, lr=0.099, train_n=0 | 0.000 | 0.8706 | 0.4056 | [results](../runs/demo-intensity-calibrated-tpe-tv-search-20260520-01/results.tsv) | [iter-13](../runs/demo-intensity-calibrated-tpe-tv-search-20260520-01/iterations/iter-0013/comparison.png) |
+| 9 | DD-UNet N2I | ep=5, lr=1.9e-4, unet_c=16, train_n=400 | 0.466 | 0.6854 | 0.3811 | [results](../runs/demo-intensity-calibrated-tpe-dual-domain-search-20260520-01/results.tsv) | [iter-17](../runs/demo-intensity-calibrated-tpe-dual-domain-search-20260520-01/iterations/iter-0017/comparison.png) |
+| 10 | Hammernik 2017 | ep=30, lr=1.5e-3, T=3, filters=16, kernel=7, train_n=200 | 0.004 | 0.7890 | 0.3622 | [results](../runs/demo-intensity-calibrated-tpe-hammernik-search-20260520-01/results.tsv) | [iter-6](../runs/demo-intensity-calibrated-tpe-hammernik-search-20260520-01/iterations/iter-0006/comparison.png) |
+| 11 | Hammernik VN | ep=17, lr=2.0e-4, T=3, filters=16, kernel=9, init=fbp, train_n=200 | 0.005 | 0.7722 | 0.3621 | [results](../runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/results.tsv) | [iter-11](../runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/iterations/iter-0011/comparison.png) |
+| 12 | DD-BF N2I | ep=23, lr=2.3e-3, proj_k=7, img_k=5, train_n=400 | 0.000 | 0.7605 | 0.3611 | [results](../runs/demo-intensity-calibrated-tpe-dual-domain-bf-search-20260520-01/results.tsv) | [iter-1](../runs/demo-intensity-calibrated-tpe-dual-domain-bf-search-20260520-01/iterations/iter-0001/comparison.png) |
+| 13 | R2Gaussian | n_gauss=512, n_iter=544, lr_pos=2.5e-3, train_n=0 | 0.003 | 0.8324 | 0.2999 | [results](../runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01/results.tsv) | [iter-14](../runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0014/comparison.png) |
+| 14 | Wu 2015 (non-trainable) | n_bands=8, n_outer=1, range=3, thresh=1.2e-3, train_n=0 | 0.000 | 0.5495 | 0.2295 | [results](../runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-18](../runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/iterations/iter-0018/comparison.png) |
 
-## Constrained-vs-unconstrained DDPM (Step 4 of solver_plan.md)
+## Constrained vs. unconstrained DDPM (Step 4 of solver_plan.md)
 
 The Demo-DL DDPM was trained two ways:
-- `ddpm_constrained_final.pt` — train_n=200 (the same 200 phantoms the
+
+- `ddpm_constrained_final.pt` — `train_n=200` (the same 200 phantoms the
   supervised solvers train on; no test-set distribution leakage).
-- `ddpm_unconstrained_final.pt` — train_n=2000 (different seed range
+- `ddpm_unconstrained_final.pt` — `train_n=2000` (different seed range
   from training/test, larger sample → richer prior).
 
-The unconstrained variant scored hr=0.4530 vs constrained's 0.4418,
-**+0.0112 hr from "seeing more (random-seed-disjoint) ellipse phantoms"**.
-The gap is the empirical answer to "how much does the DDPM prior benefit
-from a larger / test-distribution-overlapping training set?" for this
-benchmark. Modest but real.
+The unconstrained variant scored `hr=0.4530` vs constrained's `0.4418`,
+**+0.0112 hr from "seeing more (random-seed-disjoint) ellipse
+phantoms"**. The gap is the empirical answer to "how much does the DDPM
+prior benefit from a larger / test-distribution-overlapping training
+set?" for this benchmark — modest but real.
 
 ## Earlier uncalibrated runs (not directly comparable)
 
-Slug prefix `demo-dl-*` (pre-2026-05-19 convention). Kept for historical
-context but **not used in the canonical leaderboard above**. The reported
-hr there comes from a different scoring rule and is systematically
-higher than the calibrated equivalent.
+Slug prefix `demo-dl-*` and `dl-sparse-view-*` (pre-2026-05-19
+convention). Kept for historical context; the reported `hr` comes from a
+different scoring rule and is systematically higher than the calibrated
+equivalent. Top entries only:
+
+| Solver | params (M) | hr (uncalibrated) | Source | Comparison |
+|---|---:|---:|---|---|
+| ITNet v3 | 2.082 | 0.8215 | [results](../runs/demo-dl-itnet-v3-search-20260516-02/results.tsv) | [iter-9](../runs/demo-dl-itnet-v3-search-20260516-02/iterations/iter-0009/comparison.png) |
+| USwin | 3.954 | 0.8103 | [results](../runs/demo-dl-uswin-search-20260516-01/results.tsv) | [iter-10](../runs/demo-dl-uswin-search-20260516-01/iterations/iter-0010/comparison.png) |
+| USwin (fair) | 3.954 | 0.8090 | [results](../runs/demo-dl-fair-uswin-search-20260517-01/results.tsv) | [iter-10](../runs/demo-dl-fair-uswin-search-20260517-01/iterations/iter-0010/comparison.png) |
+| Res-UNet | 0.225 | 0.6095 | [results](../runs/dl-sparse-view-res-20260513-01/results.tsv) | [iter-91](../runs/dl-sparse-view-res-20260513-01/iterations/iter-0091/comparison.png) |
+| BF / NAF / iter-UNet | 0.0–0.5 | 0.54–0.62 | (various `demo-dl-*` slugs) | — |
 
 ## Methodology
 
-See [`/solver_plan.md`](../../solver_plan.md).
+See [`solver_plan.md`](../../solver_plan.md) for the full benchmark
+protocol — dataset construction, baseline FBP definition, calibrated
+metric, and per-solver hyperparameter spaces.

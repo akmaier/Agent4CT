@@ -254,14 +254,23 @@ def main() -> int:
 
     truth_list_np = []
     truth_pZ_list = []
-    pixel_sp = None
+    pixel_sp_dicom = None
     for ti in gt_indices:
         pZ_i, fp_i = truth_files[ti]
         mu_i, ds_i = _mu(fp_i)
         truth_list_np.append(mu_i)
         truth_pZ_list.append(pZ_i)
-        if pixel_sp is None:
-            pixel_sp = float(ds_i.PixelSpacing[0])
+        if pixel_sp_dicom is None:
+            pixel_sp_dicom = float(ds_i.PixelSpacing[0])
+    # CRITICAL: r_img_mm / FoV-mask must use the SAME pixel_spacing as
+    # the FBP geometry, NOT the DICOM nominal value. Ablation job 762368
+    # showed Mayo's effective magnification needs pixel_spacing = 0.700857
+    # mm (not 0.703125 DICOM nominal) — there's a -0.3 % systematic
+    # scaling between DICOM PixelSpacing and Mayo's actual recon geometry,
+    # mirroring the sod offset (593.46 / 595 = 0.9974 ≈ 0.700857 /
+    # 0.703125 = 0.9968). Using the DICOM value here would put the FoV
+    # mask on the wrong physical grid relative to the FBP output.
+    pixel_sp = 0.700857    # fitted (matches mayo_ldct_fitted())
     truth_stack = torch.stack([torch.from_numpy(x).to("cuda").float() for x in truth_list_np], dim=0)  # (N_GT, H, W)
     # The central one (closest to target_pZ) is the diagnostic plot anchor.
     central_gt_idx = int(np.argmin([abs(z - target_pZ) for z in truth_pZ_list]))

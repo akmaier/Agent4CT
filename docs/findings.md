@@ -14,6 +14,139 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-05-26 — Multi-GT joint fit with consistent `pixel_spacing` finalises L014 calibration at SSIM 0.968 / PSNR 42.9 dB
+
+After the pixel-spacing ablation (entry below) revealed the fitted
+0.700857 mm value, the multi-GT fit script
+(`scripts/fit_rebin_end2end_L014.py`, SLURM 762369) was patched to use
+the SAME `pixel_spacing` for the FBP geometry and the `r_img_mm` /
+FoV-mask grid. Result on the 10 central L014 GT slices:
+
+```
+SSIM mean   = 0.9676   range [0.9646, 0.9704]
+PSNR mean   = 42.92 dB range [42.39, 43.35]
+RMSE mean   = 0.00036  range [0.00034, 0.00038]
+ΔSSIM   = +0.0833  vs baseline 0.8819
+ΔPSNR   = +8.69 dB vs baseline 34.47 dB
+ΔRMSE   = −63.2 %  vs baseline 0.00094
+```
+
+Fitted parameters (stable across re-runs):
+
+- `sod  = 593.461 mm` (Δ = −1.54 mm vs DICOM 595)
+- `sdd  = 1086.831 mm` (Δ = +1.23 mm vs DICOM 1085.6)
+- `du   = 1.28584 mm` (FIXED — hardware-defined detector pitch)
+- `dv   = 1.09472 mm` (FIXED)
+- `Δz   = −0.578 mm`
+- `α_dz = +1` (FIXED at ablation optimum)
+- `w_slab` (offsets −3…+3 mm): `[0.02, 0.25, 0.14, 0.18, 0.15, 0.22, 0.03]` — U-shaped
+- Post-FBP `a = 0.807`, `bg = −0.0003`, `hi = 0.0435`
+- `H(ρ)` range `[0.363, 1.149]` — gentle low-pass with mid-frequency boost
+
+Compared to the previous run with inconsistent `r_img_mm` (DICOM
+0.703125 mm), the consistent-pixel-spacing fit lands at the **same**
+metrics within 0.001 SSIM / 0.1 dB PSNR. The fix is correct on
+principle (the FBP grid and the FoV mask must share the same physical
+scale) but the previous inconsistency was small enough that the joint
+fit absorbed it via the other parameters. The fitted geometry is now
+recorded once and reused everywhere via
+`FanBeamGeometry.mayo_ldct_fitted()`.
+
+The remaining ~3 % SSIM gap (truth = 1.000, fit = 0.968) is
+architectural — 2-D SSR cannot match Mayo's full 3-D cone-beam
+recon; the B30f kernel MTF differs from PYRO-NN's `hann`; the
+optimum slab profile is U-shaped (favours the boundary readouts), so
+the fixed 5 mm slab integration loses some information vs. a more
+flexible 3-D weighting. None of these are fixable without rewriting
+the recon as a 3-D cone-beam model.
+
+## 2026-05-26 — Mayo `pixel_spacing` 0.700857 mm beats DICOM nominal 0.703125 mm by +8.4 dB PSNR
+
+User asked to re-test the pixel-spacing choice after all the other
+end-to-end-fit improvements landed. Earlier Powell scipy fit picked
+`pixel_spacing = 0.700857 mm` (a ~0.32 % shrink relative to Mayo's
+DICOM `PixelSpacing = 0.703125 mm = ReconDiameter / image_size`).
+
+Ablation at the L014 multi-GT fitted optimum (script
+`scripts/pixel_spacing_ablation_L014.py`, SLURM 762368) — 7-point
+sweep with all other params locked, `pixel_spacing` kept CONSISTENT
+between FBP geometry, `r_img_mm`, and the FoV mask:
+
+```
+pixel_sp (mm)   SSIM     PSNR (dB)   note
+0.695000        0.8628   26.23
+0.698000        0.9275   31.48
+0.700000        0.9575   38.85       Wagner default
+0.700857   ★    0.9622   42.27       Powell fitted (BEST)
+0.703125        0.9444   33.91       Mayo DICOM PixelSpacing (!!)
+0.705000        0.9076   29.22
+0.708000        0.8437   25.26
+```
+
+Sharp peak at 0.700857. The DICOM nominal 0.703125 is on the LOSING
+side — 8.4 dB worse. Wagner default 0.700 is closer to optimum than
+the DICOM tag.
+
+**Why:** Mayo's recon-geometry sod is ~593.5 mm (`mayo_ldct_fitted`
+finds this; multi-GT joint fit confirms), not the DICOM nominal
+595 mm. The Powell-fitted pixel-spacing absorbs the same fractional
+offset:
+
+- `sod_eff / sod_nominal      = 593.46 / 595      = 0.9974`
+- `px_sp_eff / px_sp_nominal  = 0.700857 / 0.703125 = 0.9968`
+
+Both ratios ≈ −0.3 %. **The DICOM `PixelSpacing` tag is the GRID
+spacing of Mayo's reconstructed image, NOT the effective
+fan-beam-geometry-derived spacing our FBP needs to match Mayo's
+image pixel-by-pixel.** Siemens's internal recon clearly uses a
+slightly different effective source-iso distance than the DICOM
+geometry tags report.
+
+**Implication for new agents touching Mayo data:**
+
+- DO use `FanBeamGeometry.mayo_ldct_fitted()` for the FBP geometry —
+  it has `pixel_spacing = 0.700857`.
+- DO use the **same** value for `r_img_mm` / FoV-mask computations.
+  Mixing 0.700857 (FBP) with 0.703125 (FoV) silently mis-aligns the
+  loss-weighting against the image.
+- DO NOT trust DICOM `PixelSpacing = 0.703125` as the "correct"
+  value for our pipeline. It is correct for the truth image grid
+  (= what Mayo wrote) but not for the recon we want pixel-aligned
+  with it.
+
+## 2026-05-26 — FFS sign convention: `α_dz = +1` confirmed; `α_drho` and `α_dphi` are no-ops / break recon
+
+A 3 × 3 ablation over `(α_dz, α_drho, α_dphi) ∈ {-1, 0, +1}` at L014
+GT#75, all other params locked at multi-GT optimum, settled the
+DICOM convention for each FFS tag (`scripts/ffs_sign_ablation_L014.py`,
+SLURM 762363 + 762367):
+
+- `ffs_dz`  →  `z_eff = z_pos + ffs_dz`  is the correct convention.
+  Ablation gain at fixed-other-params: **+0.85 dB PSNR** for
+  α_dz = +1 over α_dz = 0 (no FFS).
+- `ffs_drho` →  effect is **< 0.01 dB across {-1, 0, +1}**. The
+  radial FFS is below the calibrated-metric noise floor. Safe to
+  leave at 0 (the two-point linear intensity calibration absorbs the
+  per-readout 0.92 % magnification bias anyway).
+- `ffs_dphi` →  **catastrophically breaks the recon** for any
+  α_dphi ≠ 0 (PSNR drops 42 → 16 dB). The DICOM `ffs_dphi` values
+  cluster around 3.35e-4 rad (a constant 0.12-sino-bin column shift),
+  not a small oscillation. **It is not a per-readout correction
+  meant to be added to `gantry_angles_corrected`** — either it is
+  the absolute source offset already implicit in `gantry_corrected`,
+  or it is a sensor reading not meant for FBP correction. Leave at 0.
+
+**Surprising result on the joint Adam fit**: under joint Adam over
+ALL parameters (sod, sdd, Δz, w_slab, H(ρ), a, bg, hi), adding
+α_dz as a learnable scalar or freezing it at +1 BOTH produce
+essentially the same final metric as the no-FFS baseline. Adam
+absorbs the FFS-z correction into Δz (a constant z shift absorbs
+the mean of the period-2 oscillation; the residual jitter is
+sub-pixel and the other params compensate). The +0.85 dB gain is
+real but only realisable under a controlled ablation. We keep
+`α_dz = +1` in the production pipeline because it is physically
+correct, even though the joint metric does not improve.
+
 ## 2026-05-25 — Mayo SOMATOM AS+ flying focal spot is period-2; FFS-drho correction landed in helix2fan
 
 The DICOM-CT-PD private tags expose the FFS state per readout. For L014

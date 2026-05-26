@@ -1,12 +1,13 @@
 ---
 title: Mayo-LDCT leaderboard
-description: Real-helical-data leaderboard. See solver_plan.md methodology.
+description: Real-helical-data leaderboard. Geometry validation complete; solver autoresearch pending. See solver_plan.md for methodology.
 ---
 
 # Mayo-LDCT leaderboard (Wagner split)
 
-AAPM 2016 Low-Dose CT challenge data, helical Siemens SOMATOM AS+,
-rebinned to 2-D fan-beam via the `helix2fan` SSR pipeline. Wagner split:
+AAPM 2016 Low-Dose CT Grand Challenge data — helical Siemens SOMATOM
+AS+, rebinned to 2-D fan-beam via the in-house
+[`helix2fan`](../../ddssl_ldct/helix2fan.py) SSR pipeline. Wagner split:
 
 ```
 Train: L145, L186, L209, L219      (4 patients)
@@ -16,85 +17,88 @@ Test:  L014, L056, L058, L075, L123 (5 patients)
 
 ## Status
 
-🚧 **Geometry validated 2026-05-24; autoresearch not yet started.**
+**Geometry calibration complete (2026-05-26); solver autoresearch pending.**
 
-The rebin pipeline has been brought to a working state through this session:
-- File-order bug fixed (sort by InstanceNumber, not alphabetic). +0.47 SSIM.
-- Half-pitch SSR window enlarged from 23 → 30.6 mm (median-pitch → mean-pitch). +0.14 SSIM.
-- FBP up-down + left-right orientation matched to DICOM convention.
-- Truth-z mapping detected automatically (patient_z = −source_z + 0 for L014; head-first supine DICOM).
-- Z-interpolated truth (eliminates 1.5 mm slice-quantisation error vs FBP).
-- Intensity calibration via `evaluate_calibrated` (matches other-dataset convention).
+The helical-to-fan rebin pipeline has been calibrated end-to-end against
+the L014 B30f reference recon. Best L014 multi-GT joint fit (10 central
+slices sharing all parameters, with `pixel_spacing` consistent between
+FBP geometry and FoV mask; SLURM 762369):
 
-L014 calibrated FBP-vs-truth — **best with 5-mm slab averaging**
-(matching truth SliceThickness=5 mm):
-- At z-centre slab anchor: **SSIM = 0.9436, PSNR = 37.35 dB,
-  RMSE = 0.00068** (SLURM 762112).
-- At z=+3.5 mm slab anchor (sign-flip truth mapping): **SSIM =
-  0.9445, PSNR = 37.23 dB, RMSE = 0.00069** (SLURM 762115; the
-  +3.5 mm shift is essentially noise — within ±0.001 SSIM of the
-  centre anchor, confirming the geometry is anchor-insensitive).
+- **SSIM mean = 0.9676, PSNR mean = 42.92 dB, RMSE mean = 0.00036**
+- range over 10 slices: SSIM [0.9646, 0.9704], PSNR [42.39, 43.35] dB
+- vs. the original (uncalibrated) pipeline: SSIM = 0.882, PSNR = 34.5 dB
+- Δ ≈ **+8.7 dB PSNR / +0.083 SSIM / −63 % RMSE** from end-to-end joint
+  geometry fit.
 
-Without slab averaging (1-mm thin FBP vs 5-mm thick truth):
-SSIM = 0.9105, PSNR = 35.40 dB.
+The remaining ~3 % SSIM gap to truth is architectural (2-D SSR vs. full
+3-D cone-beam; B30f kernel MTF mismatch; slab-profile shape) and is not
+expected to close further without a 3-D recon model.
 
-Slab averaging adds +0.033 SSIM and +1.95 dB PSNR — it's the right
-apples-to-apples comparison for this dataset. Comparable to Wagner's
-reported ≥ 0.85 target. **The geometry is fully validated on the test
-patient L014.**
+### Key calibration findings
 
-**Reference recon details** (from L014 DICOMs):
-- Mayo "Full Dose Images" series uses kernel **B30f** (Siemens
-  medium-soft body-imaging kernel; PYRO-NN's `hann` is the closest
-  PYRO-NN filter approximation but not identical MTF).
-- SliceThickness = 5 mm at 3 mm centre spacing (overlapping slabs).
-- 154 truth slices per dose, spanning patient_z ∈ [-482.5, -23.6] mm.
+Documented in [`findings.md`](../findings.md):
 
-**Remaining residuals** (sub-threshold):
-- FFS-`drho` (radial flying focal spot): **Step-2 SSR correction**
-  validated and confirmed to be a no-op at the calibrated metric
-  (SLURM 762117 rebin + 762118 validator, 2026-05-25): SSIM 0.9445 /
-  PSNR 37.23 / RMSE 0.00069 — **identical** to baseline to 4 decimals.
-  Two-point linear FOV-masked calibration absorbs the 0.92 %
-  magnification bias per alternate readout. Step-1 (curved→flat)
-  correction not implemented — would require per-readout lookup-table
-  rebuilds. The FFS-drho-corrected sino lives at
-  `data/mayo_ldct/staged_helix2fan/L014_sino_fulldose_ffs_drho.h5` for
-  any future Step-1 attempt. **Decision: ship with FFS-drho off.**
-- Kernel MTF mismatch (Hann ≠ B30f) shows as faint smoothing
-  differences in the diff panel. Mostly a calibration concern; the
-  SSIM is already at Wagner-grade.
+- **Fitted pixel spacing = 0.700857 mm** beats Mayo's DICOM-nominal
+  `PixelSpacing = 0.703125 mm = 360/512` by **+8.4 dB PSNR** at the
+  joint-fit optimum (`ssim 0.9622 vs 0.9444` at fixed other params).
+  The −0.32 % deviation corresponds to a sub-percent detector-pitch /
+  effective-sdd correction that no DICOM tag exposes.
+- **FFS-z (flying-focal-spot, axial) sign**: α_dz = +1 (additive
+  convention, `ffs_dz` is added to source-z in the rebin step). Verified
+  by 3-point ablation `α_dz ∈ {−1, 0, +1}`. Effect is small (Δz
+  parameter absorbs most of it) but consistent.
+- **FFS-ρ (radial)**: no effect at the calibrated metric — two-point
+  linear FoV-masked calibration absorbs the 0.92 % alternate-readout
+  magnification.
+- **FFS-φ (in-plane)**: confirmed zero / no-op in the Mayo SOMATOM
+  AS+ data (no in-plane FFS programmed for these scans).
+- **B30f kernel mismatch**: PYRO-NN's `hann` filter is the closest
+  PYRO-NN approximation but is not identical MTF; shows up as faint
+  smoothing differences in the diff panel.
 
-Bulk rebin pipeline (SLURM 762097, started 2026-05-24, no FFS-drho)
-will produce all train+val H5s. Test-patient rebin (SLURM 762119,
-chained on 762097) handles the 4 stale May-20 test patients. The
-per-split aggregator (SLURM 762120, chained on 762119) builds the
-final train/val/test sino H5s for the agentic dispatchers.
+L014 calibrated FBP-vs-truth, top configurations (single-anchor slab
+averaging at truth `SliceThickness = 5 mm`):
 
-## Plan (per solver_plan.md)
+| Config | SSIM | PSNR (dB) | RMSE | Source |
+|---|---:|---:|---:|---|
+| Joint multi-GT fit (10 slices, consistent `pixel_spacing`) | **0.9676** | **42.92** | 0.00036 | `scripts/fit_rebin_end2end_L014.py` (SLURM 762369) |
+| Pixel-spacing ablation `ps=0.700857` | 0.9622 | 42.27 | — | `scripts/pixel_spacing_ablation_L014.py` |
+| Mayo DICOM nominal `ps=0.703125` | 0.9444 | 33.91 | — | `scripts/pixel_spacing_ablation_L014.py` |
+| Baseline rebin + intensity calibrate | 0.8819 | 34.47 | 0.00094 | (baseline in fit script) |
 
-Once the rebin is fully blessed:
+## Solver leaderboard
 
-1. **Re-rebin the remaining 9 patients** (lowdose + 9 missing fulldose)
-   with the fixed pipeline.
-2. **Per-solver autoresearch** + TPE refinement on the Wagner train/val
-   split. Solvers in order of expected promise (from breast-CT
-   leaderboard):
-   - Learned Primal-Dual (current breast-CT champ at hr=0.91)
-   - DD-UNet supervised L2 (hr=0.83)
+🚧 **No solver autoresearch has been run on the Mayo split yet.** The
+plan (from [`solver_plan.md`](../../solver_plan.md)) is to apply the
+breast-CT autoresearch protocol now that geometry is locked.
+
+| Rank | Solver | Variant | params (M) | SSIM | hr | Source | Comparison |
+|---:|---|---|---:|---:|---:|---|---|
+| _TBD_ | _autoresearch + TPE not yet run on Mayo-LDCT_ | | — | — | — | — | — |
+
+## Plan
+
+Once the rebin is fully blessed (job 762369 verification + bulk
+re-rebin):
+
+1. **Re-rebin the remaining 9 patients** (low-dose + 9 missing
+   full-dose) with the fitted geometry + FFS-z correction.
+2. **Per-solver autoresearch + TPE refinement** on the Wagner
+   train/val split. Solvers in order of expected promise (from
+   breast-CT leaderboard):
+   - Learned Primal-Dual (current breast-CT champion at `hr` = 0.91)
+   - DD-UNet supervised L2 (`hr` = 0.84)
    - ITNet v3, USwin
    - RAM zero-shot (pretrained — distribution match on Mayo TBD)
    - Hammernik VN
    - DD-BF supervised L2
 3. **DDPM training**: two variants per
-   `solver_plan.md` Step 4. Constrained uses Train: L145/186/209/219
-   labels; unconstrained uses all 10 patients.
-4. Diff-recon TPE on both DDPM variants.
-
-| Rank | Solver | Best config | SSIM | PSNR | hr | Source slug |
-|---:|---|---|---:|---:|---:|---|
-| _TBD_ | _autoresearch + TPE not yet run on Mayo-LDCT_ | | | | | |
+   [`solver_plan.md`](../../solver_plan.md) Step 4. Constrained uses
+   `Train: L145/186/209/219` labels; unconstrained uses all 10 patients.
+4. **Diff-recon TPE** on both DDPM variants.
 
 ## Methodology
 
-See [`/solver_plan.md`](../../solver_plan.md).
+See [`solver_plan.md`](../../solver_plan.md). Geometry-calibration
+methodology and the full pixel-spacing / FFS-sign ablation history are
+recorded in [`findings.md`](../findings.md) (newest entries first).

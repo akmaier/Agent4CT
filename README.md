@@ -14,18 +14,25 @@ autoresearch + TPE refinement + DDPM constrained/unconstrained variants
 [`docs/findings.md`](docs/findings.md) top-down for cross-cutting
 substrate facts.
 
-🏆 **Current leaderboards** (best-of-best per solver per dataset, all
-calibrated metrics):
+## 🏆 Current leaderboards
 
-- [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) —
-  synthetic Sidky ellipse phantoms (128-view sparse).
-- [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) —
-  synthetic breast phantoms (128-view sparse).
-  Current champion: **Learned Primal-Dual hr 0.9062** (LPD TPE
-  trial 11, I=8, hidden=96, 1.49 M params).
-- [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) —
-  real AAPM 2016 LDCT, Wagner split. Geometry validated 2026-05-24;
-  autoresearch not yet started.
+Best-of-best per solver per dataset, all metrics through the
+calibrated-SSIM-headroom scoring convention
+([`evaluate_calibrated`](ddssl_ldct/metrics.py)). Each leaderboard has
+unified columns (`Rank | Solver | Variant | params (M) | SSIM | hr |
+Source | Comparison`) with per-iteration comparison images linked
+inline.
+
+| Dataset | Top solver | SSIM | hr | Leaderboard |
+|---|---|---:|---:|---|
+| **Breast-CT** (128-view sparse) | Learned Primal-Dual (I=8, hidden=96, 1.49 M) | 0.9996 | **0.9062** | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
+| **Demo-DL** (Sidky ellipse, 128-view sparse) | ITNet v3 (3.7 M) | 0.9178 | 0.4676 | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | — *autoresearch pending; geometry calibrated 2026-05-26 to SSIM 0.9676 / PSNR 42.92 dB on L014 (10 GT slices)* | — | — | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+
+[![Breast-CT champion (LPD)](docs/runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](docs/leaderboards/breast_ct.md)
+
+*Top row: current breast-CT champion (Learned Primal-Dual, TPE iter-11).
+Click for the full leaderboard.*
 
 ---
 

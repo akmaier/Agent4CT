@@ -1,59 +1,97 @@
 ---
 title: Breast-CT leaderboard
-description: Calibrated-SSIM-headroom ranking, one row per solver family. See solver_plan.md for methodology.
+description: Calibrated headroom ranking of every solver family on the Sidky breast-CT 128-view sparse-view benchmark.
 ---
 
 # Breast-CT leaderboard
 
-128-view 2-D fan-beam sparse synthetic phantoms (Sidky-group breast model,
-real μ range up to ~0.5). All metrics through
-`ddssl_ldct.metrics.evaluate_calibrated`: linear intensity calibration on
-the foreground inside an inscribed-circle FOV mask, then PSNR/SSIM/RMSE
-on the calibrated pred. `hr = max(0, 1 − rmse/baseline_rmse)` where
-baseline is FBP at SSIM 0.957 / PSNR 39.74 dB.
+128-view 2-D fan-beam sparse-view synthetic phantoms (Sidky-group breast
+model, real μ range up to ~0.5). All metrics through
+[`ddssl_ldct.metrics.evaluate_calibrated`](../../ddssl_ldct/metrics.py):
+two-point linear intensity calibration on the foreground inside an
+inscribed-circle FoV mask, then PSNR/SSIM/RMSE on the calibrated
+prediction.
 
-| Rank | Solver | Best config | params | SSIM | PSNR (dB) | hr | Source slug / iter |
-|---:|---|---|---:|---:|---:|---:|---|
-| 1 | **Learned Primal-Dual** | I=8, hidden=96, ep=23, lr=3.2e-4, grad_clip=0.3 | 1.49 M | 0.9996 | ~56 | **0.9062** | `breast-ct-calibrated-tpe-lpd-search-20260524-01` / trial 11 |
-| 2 | LPD (agentic seed) | I=10, hidden=64, ep=20, lr=5e-4, grad_clip=1.0 | 0.88 M | 0.9985 | 55.08 | 0.8290 | `breast-ct-claude-agentic-learned-primal-dual-search-20260522-01` / iter-3 |
-| 3 | **DD-UNet supervised L2** | c=24, ep=18, lr=2.1e-4, λ_neg=0.58 (TPE) | 1.04 M | 0.999 | — | **0.8361** | `breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01` |
-| 4 | ITNet v3 | (TPE iter-18) | ~2.5 M | 0.9965 | — | 0.7342 | `breast-ct-calibrated-tpe-itnet-v3-search-20260521-01` / iter-18 |
-| 5 | USwin | (TPE iter-18) | — | 0.9970 | — | 0.7174 | `breast-ct-calibrated-tpe-uswin-search-20260521-01` / iter-18 |
-| 6 | ITNet v2 | (TPE iter-13) | — | 0.9918 | — | 0.5386 | `breast-ct-calibrated-tpe-itnet-v2-search-20260521-01` / iter-13 |
-| 7 | Hammernik VN | (TPE iter-12) | — | 0.9875 | — | 0.4883 | `breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01` / iter-12 |
-| 8 | Hammernik 2017 | (TPE iter-15) | — | 0.9834 | — | 0.4549 | `breast-ct-calibrated-tpe-hammernik-search-20260521-01` / iter-15 |
-| 9 | **RAM zero-shot** (pre-trained) | sigma=0.008, blend=0.42 (TPE iter-7) | (frozen) | 0.9879 | — | 0.3077 | `breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01` / iter-7 |
-| 10 | DD-BF supervised L2 | proj_n=1, img_n=7, img_kernel=7 (TPE) | ~24 | — | — | **0.2634** | `breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01` |
-| 11 | Wu 2015 trainable | lr=1e-3, ep=10, n_bands=4 | 10 | 0.9691 | 41.74 | 0.2189 | `breast-ct-claude-agentic-wu-2015-l2-search-20260522-01` / iter-2 |
-| 12 | Wu 2015 (non-trainable) | TPE (iter-16) | 0 | 0.9699 | — | 0.0425 | `breast-ct-calibrated-tpe-wu-search-20260521-01` / iter-16 |
-| — | DD-UNet N2I | (best of TPE) | — | 0.9645 | — | 0.000 | `breast-ct-calibrated-tpe-dual-domain-search-20260521-01` (N2I loss bottleneck) |
-| — | DD-BF N2I | (best of TPE) | — | 0.9715 | — | 0.000 | `breast-ct-calibrated-tpe-dual-domain-bf-search-20260521-01` (N2I loss bottleneck) |
-| — | **TV-iterative supervised** | K∈{10,30}, step=1e-4, λ=1e-5 | 20 | 0.9543 | 32.05 | 0.000 | `breast-ct-claude-agentic-tv-iterative-supervised-search-20260523-01` (structurally bounded by FBP) |
-| — | TV-iterative (non-trainable) | TPE | 0 | 0.9620 | — | 0.000 | `breast-ct-calibrated-tpe-tv-search-20260521-01` |
-| — | NAF | n_iter=12000, lr=1e-3 | — | 0.7914 | 16.90 | 0.000 | `breast-ct-claude-agentic-naf-search-20260523-01` / iter-2 (wrong inductive bias for dense view) |
-| — | R2Gaussian | n_gauss=1024, n_iter=600 | — | 0.8861 | 26.61 | 0.000 | `breast-ct-claude-agentic-r2gaussian-search-20260523-01` / iter-4 (wrong inductive bias) |
-| — | **Diffusion recon — DDPM constrained** | DPS+DC, breast-DDPM ckpt | (frozen) | 0.4702 | — | 0.000 | `breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01` (under-trained ckpt) |
-| — | **Diffusion recon — DDPM unconstrained** | DPS+DC, breast-DDPM ckpt | (frozen) | 0.4626 | — | 0.000 | `breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01` (under-trained ckpt) |
+**Baseline FBP**: SSIM = 0.957, PSNR = 39.74 dB, `hr = 0`.
+`hr = max(0, 1 − rmse / baseline_rmse)`.
 
-**Baseline FBP**: SSIM 0.957, PSNR 39.74 dB, hr 0.
+## Top-5 visual comparison
 
-**hr = 0 entries are structural deal-breakers**, not "just under the
-threshold". They mean the recon does not improve on baseline FBP under
-the calibrated metric:
-- *Self-supervised dual-domain*: Noise2Inverse rewards smoothing in
-  dense-view regime; the half-set FBP target carries noise the
-  optimiser tries to match. The DD-BF/DD-UNet supervised twins above
-  show what fixing the loss alone gets you (0.21 / 0.83).
-- *Per-scene neural-implicit (NAF / R2Gaussian)*: designed for sparse-view CBCT; can't compete with a properly-tuned FBP at 128 views.
-- *TV-iterative supervised L2 (unrolled)*: FBP init + smooth-TV gradient + supervised L2 → first GD step learns to do nothing; structural ceiling = baseline FBP.
-- *Diffusion-recon with breast-DDPM checkpoints*: the existing
-  `ddpm_breast_*_final.pt` checkpoints (n_train=3600 unconstrained /
-  n_train=200 constrained) produce SSIM ~0.46 — well below baseline
-  0.957. **The checkpoints themselves are weak**; needs retraining.
-  See `solver_diffusion_recon.md` for the diagnosis.
+The top five calibrated rows (best `hr`) render their per-iteration
+comparison panel below.
+
+| 1 — LPD | 2 — DD-UNet supervised L2 | 3 — LPD (agentic seed) |
+|---|---|---|
+| [![LPD comparison](../runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](../runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png) | [![DD-UNet sup comparison](../runs/breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01/iterations/iter-0019/comparison.png)](../runs/breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01/iterations/iter-0019/comparison.png) | [![LPD seed comparison](../runs/breast-ct-claude-agentic-learned-primal-dual-search-20260522-01/iterations/iter-0003/comparison.png)](../runs/breast-ct-claude-agentic-learned-primal-dual-search-20260522-01/iterations/iter-0003/comparison.png) |
+| **4 — ITNet v3** | **5 — USwin** | |
+| [![ITNet v3 comparison](../runs/breast-ct-calibrated-tpe-itnet-v3-search-20260521-01/iterations/iter-0018/comparison.png)](../runs/breast-ct-calibrated-tpe-itnet-v3-search-20260521-01/iterations/iter-0018/comparison.png) | [![USwin comparison](../runs/breast-ct-calibrated-tpe-uswin-search-20260521-01/iterations/iter-0018/comparison.png)](../runs/breast-ct-calibrated-tpe-uswin-search-20260521-01/iterations/iter-0018/comparison.png) | |
+
+## Calibrated leaderboard (canonical)
+
+Slug prefixes `breast-ct-calibrated-tpe-*` (TPE Bayesian search) and
+`breast-ct-claude-agentic-*` (Claude-agentic seed runs). Sorted by `hr`;
+one row per solver family (best iteration). `params (M)` is the number
+of trainable parameters in millions; `0` = non-trainable; `(frozen)` =
+pretrained checkpoint loaded without finetuning.
+
+| Rank | Solver | Variant | params (M) | SSIM | hr | Source | Comparison |
+|---:|---|---|---:|---:|---:|---|---|
+| 1 | **Learned Primal-Dual** | I=8, hidden=96, n_p=5, n_d=5, ep=23, lr=3.2e-4, clip=0.3, train_n=400 | 1.492 | 0.9996 | 0.9062 | [results](../runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/results.tsv) | [iter-11](../runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png) |
+| 2 | **DD-UNet supervised L2** | c=24, ep=18, lr=2.1e-4, λ_neg=0.58, train_n=400 | 1.045 | 0.9989 | 0.8361 | [results](../runs/breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01/results.tsv) | [iter-19](../runs/breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01/iterations/iter-0019/comparison.png) |
+| 3 | LPD (agentic seed) | I=10, hidden=64, n_p=5, n_d=5, ep=20, lr=5e-4, clip=1.0, train_n=400 | 0.875 | 0.9988 | 0.8290 | [results](../runs/breast-ct-claude-agentic-learned-primal-dual-search-20260522-01/results.tsv) | [iter-3](../runs/breast-ct-claude-agentic-learned-primal-dual-search-20260522-01/iterations/iter-0003/comparison.png) |
+| 4 | DD-UNet supervised L2 (agentic seed) | c=16, ep=10, lr=5e-4, λ_neg=1.0, train_n=400 | 0.466 | 0.9986 | 0.8120 | [results](../runs/breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01/results.tsv) | [iter-1](../runs/breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01/iterations/iter-0001/comparison.png) |
+| 5 | ITNet v3 | ep=15, lr=2.2e-4, c=16, k=2, α=2.6e-3, train_n=200 | 3.699 | 0.9965 | 0.7342 | [results](../runs/breast-ct-calibrated-tpe-itnet-v3-search-20260521-01/results.tsv) | [iter-18](../runs/breast-ct-calibrated-tpe-itnet-v3-search-20260521-01/iterations/iter-0018/comparison.png) |
+| 6 | USwin | ep=14, lr=1.8e-4, c=24, win=16, heads=8, train_n=200 | 3.954 | 0.9970 | 0.7174 | [results](../runs/breast-ct-calibrated-tpe-uswin-search-20260521-01/results.tsv) | [iter-18](../runs/breast-ct-calibrated-tpe-uswin-search-20260521-01/iterations/iter-0018/comparison.png) |
+| 7 | ITNet v2 | pre_ep=3, pre_lr=2.6e-4, k=4, α=2.6e-3, residual=T, train_n=400 | 0.233 | 0.9918 | 0.5386 | [results](../runs/breast-ct-calibrated-tpe-itnet-v2-search-20260521-01/results.tsv) | [iter-13](../runs/breast-ct-calibrated-tpe-itnet-v2-search-20260521-01/iterations/iter-0013/comparison.png) |
+| 8 | Hammernik VN | ep=18, lr=3.0e-4, T=3, filters=32, kernel=7, init=fbp, train_n=200 | 0.008 | 0.9875 | 0.4883 | [results](../runs/breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01/results.tsv) | [iter-12](../runs/breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01/iterations/iter-0012/comparison.png) |
+| 9 | Hammernik 2017 | ep=30, lr=9.6e-4, T=3, filters=16, kernel=9, λ=9.7e-3, train_n=200 | 0.005 | 0.9834 | 0.4549 | [results](../runs/breast-ct-calibrated-tpe-hammernik-search-20260521-01/results.tsv) | [iter-15](../runs/breast-ct-calibrated-tpe-hammernik-search-20260521-01/iterations/iter-0015/comparison.png) |
+| 10 | **RAM zero-shot** (pretrained) | σ=8.1e-3, factor=0.40, blend=0.50, multiscale=F, train_n=0 (frozen) | 35.619 *(frozen)* | 0.9879 | 0.3077 | [results](../runs/breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01/results.tsv) | [iter-7](../runs/breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01/iterations/iter-0007/comparison.png) |
+| 11 | DD-BF supervised L2 | proj_n=1, img_n=7, proj_k=5, img_k=7, ep=10, lr=5.9e-3, train_n=400 | 0.000 | 0.9898 | 0.2634 | [results](../runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/results.tsv) | [iter-12](../runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/iterations/iter-0012/comparison.png) |
+| 12 | DD-BF supervised L2 (agentic seed) | proj_n=3, img_n=3, proj_k=3, img_k=9, ep=10, lr=5e-3 | 0.000 | 0.9894 | 0.2476 | [results](../runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/results.tsv) | [iter-3](../runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/iterations/iter-0003/comparison.png) |
+| 13 | Wu 2015 trainable | n_bands=4, n_outer=2, range=5, ep=10, lr=1e-3, train_n=400 | 0.000 | 0.9691 | 0.2189 | [results](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/results.tsv) | [iter-2](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/iterations/iter-0002/comparison.png) |
+| 14 | Wu 2015 (non-trainable) | n_bands=4, n_outer=1, range=8, thresh=1.1e-3, train_n=0 | 0.000 | 0.9699 | 0.0425 | [results](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-16](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/iterations/iter-0016/comparison.png) |
+
+## Structural deal-breakers (`hr = 0`)
+
+These solvers were **TPE-tuned but never reach above the FBP baseline**
+under the calibrated metric. Listed for transparency — they are not
+"just under the threshold", they are structurally bounded.
+
+| Solver | Variant | params (M) | SSIM | hr | Source | Comparison |
+|---|---|---:|---:|---:|---|---|
+| DD-UNet N2I | ep=6, lr=4.2e-4, c=24, train_n=400 | 1.045 | 0.9645 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-dual-domain-search-20260521-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-dual-domain-search-20260521-01/iterations/iter-0001/comparison.png) |
+| DD-BF N2I | ep=23, lr=2.3e-3, proj_k=7, img_k=5, train_n=400 | 0.000 | 0.9715 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-dual-domain-bf-search-20260521-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-dual-domain-bf-search-20260521-01/iterations/iter-0001/comparison.png) |
+| TV-iterative supervised | K∈{10,30}, step=1e-4, λ=1e-5 | 0.000 | 0.9543 | 0.000 | (deprioritised — structurally bounded by FBP) | — |
+| TV-iterative (non-trainable) | λ=1.8e-3, iters=214, lr=4.0e-2, train_n=0 | 0.000 | 0.9467 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-tv-search-20260521-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-tv-search-20260521-01/iterations/iter-0001/comparison.png) |
+| NAF | n_freqs=10, hidden=256, n_iter=2143, lr=1.2e-3, train_n=0 | 0.143 | 0.8334 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-naf-search-20260521-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-naf-search-20260521-01/iterations/iter-0001/comparison.png) |
+| R2Gaussian | n_gauss=512, n_iter=483, lr_pos=1.9e-3, train_n=0 | 0.003 | 0.8261 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-r2gaussian-search-20260521-01/results.tsv) | [iter-2](../runs/breast-ct-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0002/comparison.png) |
+| **Diff-recon — DDPM constrained (breast)** | DPS+DC, breast-DDPM ckpt, train_n=200 | 0.958 *(frozen)* | 0.4702 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01/iterations/iter-0001/comparison.png) |
+| **Diff-recon — DDPM unconstrained (breast)** | DPS+DC, breast-DDPM ckpt, train_n=3600 | 0.958 *(frozen)* | 0.4626 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01/results.tsv) | [iter-17](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01/iterations/iter-0017/comparison.png) |
+
+### Why these fail structurally
+
+- **Self-supervised dual-domain (N2I)**: Noise2Inverse rewards smoothing
+  in the dense-view regime; the half-set FBP target carries noise the
+  optimiser tries to match. The DD-BF/DD-UNet supervised L2 twins above
+  show what fixing the loss alone gets you (`hr` = 0.26 / 0.84).
+- **Per-scene neural-implicit (NAF / R2Gaussian)**: designed for
+  sparse-view CBCT; can't compete with a properly-tuned FBP at 128
+  views on this dataset.
+- **TV-iterative supervised L2 (unrolled)**: FBP init + smooth-TV
+  gradient + supervised L2 → the first GD step learns to do nothing;
+  structural ceiling = baseline FBP.
+- **Diffusion-recon with breast-DDPM checkpoints**: the existing
+  `ddpm_breast_*_final.pt` checkpoints (`train_n=3600` unconstrained /
+  `train_n=200` constrained) produce SSIM ≈ 0.46 — **well below baseline
+  0.957**. The diff-recon pipeline is sound (it works on demo-DL with
+  `hr` = 0.45); the breast-DDPM checkpoint itself is weak / under-trained.
+  Confirmed via manifest inspection that the breast-DDPM checkpoint was
+  loaded; the failure is in the prior, not the wiring. See
+  [`solver_diffusion_recon.md`](../solver_diffusion_recon.md) for the
+  diagnosis. **Action**: re-train the breast-DDPM with more steps /
+  better config before re-running diff-recon.
 
 ## Methodology
 
-Methodology of how this leaderboard is generated is in
-[`/solver_plan.md`](../../solver_plan.md). One row per solver family;
-"variant" picks the best config across all autoresearch + TPE iterations.
+See [`solver_plan.md`](../../solver_plan.md). One row per solver family;
+"Variant" picks the best config across all autoresearch + TPE iterations.
