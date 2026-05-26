@@ -6,16 +6,93 @@ benchmark. It tells you exactly what to run, in what order, and where
 to write the results down — so the answer to *"how do I add dataset X?"*
 is always the same.
 
-The recipe has been used (with retrospective alignment) for the
-existing three datasets:
-
-| Dataset | Source | Status |
-|---|---|---|
-| `demo_dl` | Synthetic Sidky-style sparse-view ellipse phantoms, 128 angles | ✅ leaderboard frozen as of 2026-05-22 |
-| `breast_ct` | Synthetic breast phantoms (Sidky group), 128 angles, real-tissue μ range | ✅ leaderboard frozen as of 2026-05-23, LPD-TPE running |
-| `mayo_ldct` | AAPM 2016 Low-Dose CT challenge, helical Siemens AS+, **Wagner split**: train = L145/186/209/219, val = L277, test = L014/056/058/075/123 | 🚧 rebin geometry validated 2026-05-24, autoresearch starting |
-
 When a new dataset lands, work through the five steps below in order.
+
+---
+
+## Datasets in the repo (current state of fitness)
+
+Each row is a benchmark that ships with a `data/fetch_<name>.py`
+staging script. "Fitness" is whether the dataset is currently ready
+to run solvers on (geometry validated, train/val/test split frozen,
+baseline FBP confirmed).
+
+| Dataset | Source | Geometry | Fitness | Leaderboard | Notes |
+|---|---|---|---|---|---|
+| **`demo_dl`** | Synthetic Sidky-style sparse-view 2-D phantoms (128 angles, ~256×256, fan-beam) | n_angles = 128, fan-beam, dense FBP ground truth | ✅ Mature — leaderboard frozen 2026-05-22 | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) | Fast iteration substrate. Top hr = 0.4676 (ITNet v3). |
+| **`breast_ct`** | Synthetic Sidky breast phantoms (128 angles, real-tissue μ range up to 0.05 / mm) | n_angles = 128, fan-beam, breast μ-distribution | ✅ Mature — leaderboard frozen 2026-05-23 | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) | Top hr = 0.9062 (LPD, I=8 hidden=96). |
+| **`mayo_ldct`** | AAPM 2016 Low-Dose CT challenge — real Siemens SOMATOM AS+ helical scans (Mayo) | 736 channels × 64 rows curved detector, helical 60-rotations, B30f truth recon, 5-mm thick slices @ 3-mm spacing. **Wagner split**: train = L145/186/209/219, val = L277, test = L014/056/058/075/123 | 🚧 **In active geometry-debug 2026-05-26** — pin-cushion fisheye found via radial-warp fit (`c1=-0.00438`), data-driven FBP-geometry fit in progress (job 762284). Bulk rebin paused. | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) (skeleton) | Currently SSIM 0.93 / PSNR 35 dB at peak after intensity calibration; +1.94 dB headroom available from geometry correction. |
+| `dl_sparse_view` | AAPM 2021 DL-Sparse-View Grand Challenge (Sidky & Pan, Med. Phys. 2022) | n_angles = 128, fan-beam | 📦 Staged but not benchmarked in current run | — | Earlier 150-iter Claude campaign (May 2026) — see `pentathlon/dl_sparse_view*/` and `docs/runs/dl-sparse-view-*-20260513-*/`. Superseded by `demo_dl` for fast iteration. |
+| `dl_spectral` | AAPM 2022 DL-Spectral CT Grand Challenge | 2-material decomposition, dual-energy | 📦 Staged via `fetch_dl_spectral.py`, not yet onboarded as a benchmark | — | Future work — needs spectral-decomposition solver class. |
+| `ct_mar` | AAPM 2024 CT Metal Artifact Reduction Grand Challenge | Metal-contaminated sinograms + ground truth | 📦 Staged via `fetch_ct_mar.py`, not yet onboarded | — | Future work — needs MAR-aware solver wrappers. |
+
+Legacy in-repo benchmark (`truect`, AAPM 2022 TrueCT Challenge) is
+documented in `data/INVESTIGATE_truect.md` but no staging script is
+wired up yet.
+
+---
+
+## Solvers in the repo
+
+Reference / agentic solvers live in
+[`pentathlon/demo_dl_reference/`](pentathlon/demo_dl_reference/). Each
+has a matching `solver_<name>.md` design doc with hyperparam ranges,
+cross-dataset table, and "hints for next agent" notes.
+
+### Sparse-view / dual-domain learned solvers
+
+| Solver | Family | Description | Trainable? |
+|---|---|---|---|
+| **`solver_learned_primal_dual.py`** | Unrolled iterative | Adler & Öktem 2018 LPD — alternating primal/dual updates with shared-weight conv blocks. Top breast-CT hr=0.9062. | ✅ |
+| **`solver_dual_ddomain_supervised.py`** | Dual-domain (sino + image) | DD-UNet with L2 supervised loss. Strong on dense-view sparse-view CT. | ✅ |
+| **`solver_dual_ddomain_n2i.py`** | Dual-domain N2I | Same architecture, Noise2Inverse self-supervised loss. Structurally bounded by FBP on hr metric. | ✅ |
+| **`solver_dual_ddomain_bilateral_supervised.py`** | DD + trainable BF | Wagner 2022 bilateral filter in image domain + 1-iter sino-net. Few parameters (≈24). | ✅ |
+| **`solver_dual_ddomain_bilateral_n2i.py`** | DD + BF + N2I | N2I variant of the BF stack. | ✅ |
+| **`solver_itnet.py`** | Iterative-net (v1) | Original ItNet 5-iter unrolled scheme. Superseded by v2/v3. | ✅ |
+| **`solver_itnet_v2.py`** | Iterative-net (v2) | More stable v2 (gradient clipping + LR schedule). | ✅ |
+| **`solver_itnet_v3.py`** | Iterative-net (v3) | Current canonical ItNet. Top demo_dl hr=0.4676. | ✅ |
+| **`solver_uswin.py`** | Swin transformer | UNet-Swin hybrid. Competitive on demo_dl (hr=0.4655). | ✅ |
+| **`solver_hammernik_2017.py`** | Variational network | Hammernik et al. 2017 (limited-angle CT). | ✅ |
+| **`solver_hammernik_vn.py`** | Variational network | Hammernik MRI VN ported to CT (2018). | ✅ |
+
+### Classical iterative
+
+| Solver | Family | Description | Trainable? |
+|---|---|---|---|
+| **`solver_tv_iterative.py`** | TV + gradient descent | Total-variation regulariser, scipy / hand-rolled. Non-trainable. | ❌ |
+| **`solver_tv_iterative_supervised.py`** | TV + learnable | Learnable step size + λ schedule. | ✅ |
+| **`solver_tv_search.py`** | TV search wrapper | Hyperparameter search over the classical TV variant. | ❌ |
+| **`solver_wu_2015.py`** | Wu 2015 FBP | Novel FBP for sparse-view CT (filter-band modulation). No params. | ❌ |
+| **`solver_wu_2015_trainable.py`** | Wu 2015 trainable | Same but with learnable band coefficients. 10 params. | ✅ |
+| **`solver_fbp_baseline.py`** | FBP baseline | Plain Hann-windowed FBP. Used as the `hr` baseline in all leaderboards. | ❌ |
+
+### Diffusion / score-based
+
+| Solver | Family | Description | Trainable? |
+|---|---|---|---|
+| **`solver_ddpm.py`** | DDPM training | Trains a per-dataset DDPM prior (constrained / unconstrained). Architecture: `SmallDDPM`, default ch=32. | ✅ |
+| **`solver_diffusion_recon.py`** | DPS / MCG / DC-step | Posterior sampling with a pretrained DDPM prior + sinogram data-consistency steps. Used as solver, **needs** a `solver_ddpm.py` checkpoint. | (frozen prior) |
+| **`solver_diffusion.py`** | Legacy stub | Earlier prototype, superseded by `solver_diffusion_recon.py`. | — |
+
+### Implicit-neural / per-scan optimisation
+
+| Solver | Family | Description | Trainable? |
+|---|---|---|---|
+| **`solver_naf.py`** | NeRF-style INR | Neural Attenuation Field — per-scan MLP fit. Best for sparse-view sparse-angle CT, **wrong inductive bias** on dense-view benchmarks. | ✅ (per-scan) |
+| **`solver_r2gaussian.py`** | Gaussian splatting | R²-Gaussian (CT volume as anisotropic 3-D Gaussians). Same wrong-bias caveat as NAF. | ✅ (per-scan) |
+
+### Foundation / pretrained zero-shot
+
+| Solver | Family | Description | Trainable? |
+|---|---|---|---|
+| **`solver_ram.py`** | Foundation model | RAM (Terris 2025) zero-shot reconstruction with `ram.pth.tar`. Inference-only — no per-dataset training. Top demo_dl hr=0.4648. | ❌ (frozen) |
+
+### Status legend per leaderboard column
+
+- **hr (calibrated headroom) ≥ 0.5**: solver is competitive on the dataset.
+- **0.1 ≤ hr < 0.5**: solver works but isn't top-tier; revisit if it's a small-params interpretability win (e.g. DD-BF, Wu 2015).
+- **hr ≈ 0**: structural deal-breaker — wrong inductive bias for the dataset (NAF / R²-Gaussian on dense-view), under-trained checkpoint (DDPM on breast), or loss-formulation issue (DD-* with N2I on dense-view).
+- **No entry**: not yet evaluated on this dataset.
 
 ---
 
