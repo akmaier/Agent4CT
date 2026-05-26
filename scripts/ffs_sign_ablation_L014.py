@@ -2,23 +2,27 @@
 """FFS sign-flip ablation on the L014 single-GT (central) reconstruction.
 
 Locks ALL parameters at the multi-GT fitted values (from job 762296
-JSON) and sweeps the 9 combinations of (alpha_dz, alpha_drho) ∈
+JSON) and sweeps the 9 combinations of (alpha_dz, alpha_dphi) ∈
 {-1, 0, +1}², applying:
 
-    z_src_eff(idx) = z_positions[idx] + alpha_dz   · ffs_dz[idx]
-    sod_eff(idx)   = sod_global       + alpha_drho · ffs_drho[idx]
-    sdd_eff(idx)   = sdd_global       + alpha_drho · ffs_drho[idx]
+    z_src_eff(idx)   = z_positions[idx]      + alpha_dz · ffs_dz[idx]
+    gantry_eff(idx)  = gantry_angles[idx]    + alpha_dphi · ffs_dphi[idx]
 
 Per combination, report SSIM/PSNR/RMSE/diff_max on the central GT
 slice. Output as a 3×3 grid table + a 9-panel image montage so the
 user can visually compare.
 
-Rationale: the multi-GT fit already absorbed any AVERAGE geometric
-bias into (sod, sdd). The FFS-dz / FFS-drho effects are PERIOD-2
-oscillating biases — if they're not modelled, the residual contains
-alternating-readout streaks that the rebin can't compensate. The
-sign tells us which direction the source moves (or which DICOM tag
-convention Mayo uses).
+α_drho is fixed at 0 — prior ablation (job 762363) showed it has
+< 0.01 dB effect across {-1, 0, +1}, so this experiment removes it
+from the cross-product and focuses on the two remaining DICOM FFS
+tags (z and ϕ).
+
+In-plane FFS implementation: the per-readout effective gantry angle
+shifts each sino column k by Δbins = (gantry_eff[picked[k]] −
+angle_assumed[k]) / (2π / rotview). We apply a sub-bin shift in
+the s_angle axis via torch.grid_sample BEFORE the FBP — so the
+back-projection sees the data as if each column came from the
+actually-observed source angle, not the uniform-stride assumption.
 """
 from __future__ import annotations
 
@@ -185,6 +189,8 @@ def main() -> int:
     orig_idx = blob["original_indices"].to("cuda")
     ffs_dz = blob["ffs_dz"].to("cuda")
     ffs_drho = blob["ffs_drho"].to("cuda")
+    ffs_dphi = blob["ffs_dphi"].to("cuda")        # in-plane FFS
+    gantry_angles_corrected = blob["gantry_angles_corrected"].to("cuda")
     rotview = int(blob["rotview"])
     nu, nv = int(blob["nu"]), int(blob["nv"])
     du = float(blob["du"])
@@ -196,6 +202,11 @@ def main() -> int:
     print(f"[abl] ffs_dz   range [{float(ffs_dz.min()):.4f}, {float(ffs_dz.max()):.4f}] mm",
           flush=True)
     print(f"[abl] ffs_drho range [{float(ffs_drho.min()):.4f}, {float(ffs_drho.max()):.4f}] mm",
+          flush=True)
+    print(f"[abl] ffs_dphi range [{float(ffs_dphi.min()):.6e}, "
+          f"{float(ffs_dphi.max()):.6e}] rad  "
+          f"(period-2 alternation; (2π/rotview) bin = {2*math.pi/rotview:.6e} rad, "
+          f"so max shift = {float(ffs_dphi.max()) / (2*math.pi/rotview):.4f} bins)",
           flush=True)
 
     # ---- Load multi-GT-fitted params (job 762296) ----
@@ -285,18 +296,28 @@ def main() -> int:
     v_centre_nom = (nv - 1) / 2.0
     dr = 0.05
 
+    # Bin width in angle (radians per sino column)
+    bin_width_rad = 2.0 * math.pi / rotview
+    # Pre-allocate the uniform-stride assumed gantry angle for each output bin
+    s_angle_idx = torch.arange(rotview, device="cuda", dtype=torch.float32)
+    angle_assumed = angle_start + s_angle_idx * bin_width_rad  # (rotview,)
+
     # ---- Forward function with FFS sign flags ----
-    def forward(alpha_dz: float, alpha_drho: float):
-        # Effective per-readout z and sod/sdd
+    def forward(alpha_dz: float, alpha_dphi: float):
+        # Effective per-readout z (FFS-z correction)
         z_pos_eff = z_pos + alpha_dz * ffs_dz
-        sod_per_readout = torch.full_like(ffs_drho, sod_global) + alpha_drho * ffs_drho
-        sdd_per_readout = torch.full_like(ffs_drho, sdd_global) + alpha_drho * ffs_drho
+        # FFS-drho fixed at 0 — ablation showed it has < 0.01 dB effect
+        sod_per_readout = torch.full_like(ffs_drho, sod_global)
+        sdd_per_readout = torch.full_like(ffs_drho, sdd_global)
 
         # Build the slab: for each slab offset, compute SSR and weight
         sino_slab = None
+        picked_for_slab_centre = None
         for k_slab, off in enumerate(slab_offsets_mm):
             z_target = target_source_z + delta_z + float(off)
             picked = precompute_picks(z_pos_eff, orig_idx, rotview, z_target)
+            if k_slab == len(slab_offsets_mm) // 2:
+                picked_for_slab_centre = picked
             sino_k = helical_ssr_torch_ffs(
                 proj_flat, z_pos_eff, sod_per_readout, sdd_per_readout,
                 picked, z_target, du, dv, u_centre_nom, v_centre_nom,
@@ -305,6 +326,31 @@ def main() -> int:
                 sino_slab = w_slab[k_slab] * sino_k
             else:
                 sino_slab = sino_slab + w_slab[k_slab] * sino_k
+
+        # In-plane FFS: shift each sino column k by Δbins in the s_angle
+        # axis, where Δbins is the difference between actual gantry angle
+        # (gantry_corrected + α_dphi · ffs_dphi) and the uniform-assumed
+        # angle. Use grid_sample for sub-bin accuracy. Picks from the
+        # central slab bin (most representative). For α_dphi = 0 this
+        # is a no-op (Δbins = 0).
+        if alpha_dphi != 0.0 and picked_for_slab_centre is not None:
+            gantry_eff = gantry_angles_corrected[picked_for_slab_centre] + \
+                          alpha_dphi * ffs_dphi[picked_for_slab_centre]
+            delta_bins = (gantry_eff.to(torch.float32) -
+                          angle_assumed) / bin_width_rad      # (rotview,)
+            # grid_sample expects normalised coords in [-1, +1] over (H, W).
+            # We shift only along the s_angle axis (axis=0 of sino_slab).
+            H_s, W_u = sino_slab.shape
+            row_idx = (s_angle_idx + delta_bins).clamp(0, H_s - 1)
+            col_idx = torch.arange(W_u, device="cuda", dtype=torch.float32)
+            # Build grid: (1, H_s, W_u, 2) with last dim (x_norm, y_norm)
+            y_norm = 2.0 * row_idx[:, None].expand(H_s, W_u) / (H_s - 1) - 1.0
+            x_norm = 2.0 * col_idx[None, :].expand(H_s, W_u) / (W_u - 1) - 1.0
+            grid = torch.stack([x_norm, y_norm], dim=-1)[None]
+            sino_slab = F.grid_sample(
+                sino_slab[None, None], grid,
+                mode="bilinear", padding_mode="border", align_corners=True,
+            )[0, 0]
 
         # FBP
         sino_input = torch.flip(sino_slab, dims=[-1])[None, None]
@@ -327,21 +373,22 @@ def main() -> int:
     # ---- Run 3×3 sweep ----
     sweep = [-1.0, 0.0, +1.0]
     rows = []
-    print(f"\n=== FFS sign ablation (α_dz, α_drho) ∈ {{-1, 0, +1}}² ===", flush=True)
+    print(f"\n=== FFS sign ablation (α_dz, α_dphi) ∈ {{-1, 0, +1}}² ===", flush=True)
+    print(f"  α_drho fixed at 0 (prior ablation: < 0.01 dB effect)", flush=True)
     print(f"  All other params LOCKED at multi-GT fitted values", flush=True)
     print(f"  Comparing central GT #{ti}, pZ={pZ:.2f} (NO z-interp on GT)\n", flush=True)
     with torch.no_grad():
         for s_dz in sweep:
-            for s_drho in sweep:
-                pred, mask, rfov = forward(s_dz, s_drho)
+            for s_dphi in sweep:
+                pred, mask, rfov = forward(s_dz, s_dphi)
                 pred_np = pred.cpu().numpy()
                 m = calc_metrics(pred_np, truth_mu_np, dr=dr)
-                rows.append({"alpha_dz": s_dz, "alpha_drho": s_drho,
+                rows.append({"alpha_dz": s_dz, "alpha_dphi": s_dphi,
                              "ssim": m["ssim"], "psnr": m["psnr"],
                              "rmse": m["rmse"], "diff_max": m["diff_max"],
                              "pred": pred_np})
-                tag = "★" if (s_dz == 0 and s_drho == 0) else " "
-                print(f"  α_dz={s_dz:+.0f}  α_drho={s_drho:+.0f}  {tag}  "
+                tag = "★" if (s_dz == 0 and s_dphi == 0) else " "
+                print(f"  α_dz={s_dz:+.0f}  α_dphi={s_dphi:+.0f}  {tag}  "
                       f"SSIM={m['ssim']:.4f}  PSNR={m['psnr']:.2f} dB  "
                       f"RMSE={m['rmse']:.5f}  diff_max={m['diff_max']:.4f}",
                       flush=True)
@@ -350,10 +397,10 @@ def main() -> int:
     rows_sorted = sorted(rows, key=lambda r: -r["psnr"])
     print(f"\n=== RANKED BY PSNR ===", flush=True)
     for k, r in enumerate(rows_sorted):
-        baseline = (r["alpha_dz"] == 0 and r["alpha_drho"] == 0)
+        baseline = (r["alpha_dz"] == 0 and r["alpha_dphi"] == 0)
         tag = "  ← (no FFS correction baseline)" if baseline else ""
         marker = "★" if k == 0 else " "
-        print(f"  {marker} #{k+1}: α_dz={r['alpha_dz']:+.0f}  α_drho={r['alpha_drho']:+.0f}  "
+        print(f"  {marker} #{k+1}: α_dz={r['alpha_dz']:+.0f}  α_dphi={r['alpha_dphi']:+.0f}  "
               f"SSIM={r['ssim']:.4f}  PSNR={r['psnr']:.2f} dB  "
               f"RMSE={r['rmse']:.5f}  diff_max={r['diff_max']:.4f}{tag}",
               flush=True)
@@ -362,16 +409,16 @@ def main() -> int:
     out_dir = Path("/cluster/maier/Agent4CT/results/breast_debug")
     out_dir.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(3, 3, figsize=(13, 13))
-    rows_by_grid = {(int(r["alpha_dz"]), int(r["alpha_drho"])): r for r in rows}
+    rows_by_grid = {(int(r["alpha_dz"]), int(r["alpha_dphi"])): r for r in rows}
     for i_dz, s_dz in enumerate(sweep):
-        for j_drho, s_drho in enumerate(sweep):
-            r = rows_by_grid[(int(s_dz), int(s_drho))]
+        for j_dphi, s_dphi in enumerate(sweep):
+            r = rows_by_grid[(int(s_dz), int(s_dphi))]
             diff = r["pred"] - truth_mu_np
-            ax = axes[i_dz, j_drho]
+            ax = axes[i_dz, j_dphi]
             ax.imshow(diff, cmap="seismic", vmin=-0.02, vmax=0.02)
-            baseline = (s_dz == 0 and s_drho == 0)
+            baseline = (s_dz == 0 and s_dphi == 0)
             tag = "  (no FFS)" if baseline else ""
-            ax.set_title(f"α_dz={int(s_dz):+d}  α_drho={int(s_drho):+d}{tag}\n"
+            ax.set_title(f"α_dz={int(s_dz):+d}  α_dphi={int(s_dphi):+d}{tag}\n"
                           f"SSIM={r['ssim']:.4f}  PSNR={r['psnr']:.2f} dB  "
                           f"RMSE={r['rmse']:.5f}",
                           fontsize=9)
@@ -388,7 +435,7 @@ def main() -> int:
     out_json = out_dir / "L014_ffs_sign_ablation.json"
     out_json.write_text(json.dumps({
         "results": [{k: v for k, v in r.items() if k != "pred"} for r in rows],
-        "ranked": [(r["alpha_dz"], r["alpha_drho"], r["ssim"], r["psnr"], r["rmse"]) for r in rows_sorted],
+        "ranked": [(r["alpha_dz"], r["alpha_dphi"], r["ssim"], r["psnr"], r["rmse"]) for r in rows_sorted],
         "central_gt": {"index": ti, "pZ": pZ},
         "fitted_params": {"sod": sod_global, "sdd": sdd_global, "delta_z": delta_z,
                           "a": a_val, "bg": bg_val, "hi": hi_val,
