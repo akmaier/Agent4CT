@@ -95,11 +95,32 @@ def main() -> int:
           f"= {proj_sub.nbytes / 1e9:.2f} GB", flush=True)
 
     out_pt = out_dir / "L014_proj_flat_peak.pt"
+    # Also subset the per-readout flying-focal-spot arrays. These are
+    # known (DICOM private tags 0x7033100B/C/D) — read by read_dicom_ctpd.
+    # We save them per-readout so the fit can investigate sign /
+    # presence of FFS corrections.
+    ffs_dz   = np.asarray(geom.get("ffs_dz",   np.zeros(len(z_positions))),
+                          dtype=np.float64)[indices].astype(np.float64)
+    ffs_dphi = np.asarray(geom.get("ffs_dphi", np.zeros(len(z_positions))),
+                          dtype=np.float64)[indices].astype(np.float64)
+    ffs_drho = np.asarray(geom.get("ffs_drho", np.zeros(len(z_positions))),
+                          dtype=np.float64)[indices].astype(np.float64)
+    print(f"[cache] FFS per-readout values (subset):", flush=True)
+    print(f"[cache]   ffs_dz   range [{ffs_dz.min():.4f}, {ffs_dz.max():.4f}]  "
+          f"unique={np.unique(np.round(ffs_dz, 5)).size}", flush=True)
+    print(f"[cache]   ffs_dphi range [{ffs_dphi.min():.6e}, {ffs_dphi.max():.6e}]  "
+          f"unique={np.unique(np.round(ffs_dphi, 7)).size}", flush=True)
+    print(f"[cache]   ffs_drho range [{ffs_drho.min():.4f}, {ffs_drho.max():.4f}]  "
+          f"unique={np.unique(np.round(ffs_drho, 5)).size}", flush=True)
+
     blob = {
         "proj_flat": torch.from_numpy(proj_sub),
         "z_positions": torch.from_numpy(z_sub),
         "gantry_angles_corrected": torch.from_numpy(angles_sub),
         "original_indices": torch.from_numpy(indices.astype(np.int64)),
+        "ffs_dz":   torch.from_numpy(ffs_dz),
+        "ffs_dphi": torch.from_numpy(ffs_dphi),
+        "ffs_drho": torch.from_numpy(ffs_drho),
         "rotview": rotview,
         "n_proj_full": n_proj_full,
         "nu": nu, "nv": nv,
