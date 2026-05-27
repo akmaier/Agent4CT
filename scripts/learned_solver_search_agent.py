@@ -181,6 +181,44 @@ SOLVERS = {
             "wu_soft_thresh":    (5e-4, 5e-3, "log"),
         },
     },
+    # Trainable Wu 2015 (10 params: per-band scales + per-outer-iter
+    # residual blends + soft threshold). On breast-ct hit hr=0.22 with
+    # 10 trainable scalars; agentic search found ep=10, lr=1e-3 sweet
+    # spot. The trainable knobs are continuous; the structural ones
+    # (n_bands, n_outer, motion_range, motion_window) stay fixed at the
+    # solver-script defaults.
+    "wu_2015_trainable": {
+        "solver": "pentathlon/demo_dl_reference/solver_wu_2015_trainable.py",
+        "env_var": "WU_CONFIG_PATH",
+        "slug_prefix": "demo-fair-wu-2015-trainable-search",
+        "agent_name": "wu-2015-trainable-search",
+        "space": {
+            "epochs":           (5, 18, "int"),
+            "lr":               (1e-4, 5e-3, "log"),
+            "batch_size":       ([1, 2], "choice"),
+            "wu_n_bands":       ([4, 6, 8], "choice"),
+            "wu_n_outer":       ([1, 2], "choice"),
+            "wu_motion_range":  ([3, 5, 8], "choice"),
+            "wu_motion_window": ([1, 2], "choice"),
+            "wu_soft_thresh":   (5e-4, 5e-3, "log"),
+            "loss_base":        (["mse", "l1"], "choice"),
+            "lambda_neg":       (0.5, 1.5, "linear"),
+            "val_n":            ([20], "choice"),
+        },
+        "tpe_seed_trial": {
+            "epochs":           10,
+            "lr":               1e-3,
+            "batch_size":       1,
+            "wu_n_bands":       4,
+            "wu_n_outer":       2,
+            "wu_motion_range":  5,
+            "wu_motion_window": 2,
+            "wu_soft_thresh":   1.5e-3,
+            "loss_base":        "mse",
+            "lambda_neg":       1.0,
+            "val_n":            20,
+        },
+    },
     "hammernik": {
         "solver": "pentathlon/demo_dl_reference/solver_hammernik_2017.py",
         "env_var": "HAMMERNIK_CONFIG_PATH",
@@ -251,7 +289,13 @@ SOLVERS = {
         "agent_name": "r2gaussian-search",
         "space": {
             "gs_n_gaussians": ([512, 1024, 2048], "choice"),
-            "gs_n_iter":      (300, 800, "int"),
+            # Bumped 2026-05-27 from (300, 800) → (10000, 40000) to match
+            # the R²-Gaussian paper's reported convergence window
+            # (20k–30k iters for X3D). The earlier (300, 800) bound was
+            # ~50× too low: the per-scene fit hadn't actually converged
+            # before TPE moved on. Per-trial wall now ~5–15 min on Q5000
+            # (val_n=20 phantoms × ~30 s each at 40k iters).
+            "gs_n_iter":      (10000, 40000, "int"),
             "gs_lr_pos":      (1e-3, 2e-2, "log"),
             "gs_lr_scale":    (5e-3, 5e-2, "log"),
             "gs_lr_amp":      (5e-3, 5e-2, "log"),
