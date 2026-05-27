@@ -1,22 +1,23 @@
 #!/usr/bin/env python -u
-"""Pixel-spacing ablation on L014 single-GT (central) reconstruction.
+"""Detector-spacing ablation on L014 single-GT (central) reconstruction.
 
-The earlier Powell scipy fit (FanBeamGeometry.mayo_ldct_fitted) picked
-pixel_spacing = 0.700857 mm. The Mayo truth DICOM PixelSpacing tag
-is 0.703125 mm. The original Wagner default was 0.700000 mm.
+Mirrors `pixel_spacing_ablation_L014.py` but sweeps `det_spacing`
+(detector channel pitch) instead of `pixel_spacing`. Goal: settle
+whether the Powell-fit `det_spacing = 1.285044 mm` is meaningfully
+better than the DICOM-CT-PD nominal `1.285839 mm` (Δ = -0.06 %), or
+whether the metric is flat at the noise floor in this neighbourhood.
 
-This ablation locks ALL other parameters at the multi-GT fitted
-values (job 762296) and sweeps pixel_spacing over a range
-{0.695, 0.698, 0.700, 0.700857, 0.703125, 0.705, 0.708} mm. For
-each, report SSIM / PSNR / RMSE on the central GT (no z-interp).
+DICOM and SSR currently use different values (which is a known
+inconsistency we want to characterise):
+  - SSR rebin step (`helical_ssr`) uses `du = blob["du"] = 1.285839`
+    (DICOM private tag 0x7029,0x1002).
+  - FBP step (`FanBeamGeometry.mayo_ldct_fitted()`) uses
+    `det_spacing = 1.285044` (Powell fit, job 762284).
 
-Goal: settle whether the 0.700857 fitted value is genuinely better
-than the truth 0.703125 (= "Powell absorbed some other residual into
-pixel_spacing") or whether the metric peaks at the physically
-correct 0.703125.
-
-Also keeps pixel_sp CONSISTENT between FBP geometry and r_img_mm
-(unlike the inconsistent setup in fit_rebin_end2end_L014.py).
+This ablation sweeps a single value applied CONSISTENTLY to both
+steps (the physically meaningful choice — detector pitch is one
+number), at the multi-GT-fitted (sod, sdd, Δz, slab, post-FBP, H(ρ))
+loaded from the json the multi-GT fit produced.
 """
 from __future__ import annotations
 
@@ -155,22 +156,19 @@ def main() -> int:
     ffs_dz = blob["ffs_dz"].to("cuda")
     rotview = int(blob["rotview"])
     nu, nv = int(blob["nu"]), int(blob["nv"])
-    du = float(blob["du"])
-    dv = float(blob["dv"])
+    du_dicom = float(blob["du"])              # 1.285839 (DICOM nominal)
+    dv_blob  = float(blob["dv"])              # 1.094723 (DICOM)
     target_source_z = float(blob["target_source_z"])
     target_pZ = -target_source_z
     angle_start = float(blob["angle_start_corrected"])
 
     # ---- Multi-GT fitted SSR params (SLURM 762369, α_dz = +1 FFS-z) ----
-    # SSR-step (sod, sdd) come from MAYO_LDCT_SSR_DEFAULTS — these are
-    # the multi-GT joint Adam fit values. They are SEPARATE from the
-    # FBP-step (sod, sdd) in `FanBeamGeometry.mayo_ldct_fitted()` (which
-    # holds the Powell-fit values; do not collapse them — see the
-    # SSR-vs-FBP-sod note in ddssl_ldct/geometry.py).
-    # The Δz / slab / post-FBP knobs come from L014_rebin_end2end_fit.json
-    # if available — that file is the multi-GT fit's persistent output.
+    # SSR-step (sod, sdd) from MAYO_LDCT_SSR_DEFAULTS — distinct from
+    # the FBP-step values in `FanBeamGeometry.mayo_ldct_fitted()`. See
+    # the SSR-vs-FBP-sod note in ddssl_ldct/geometry.py.
     sod_global = MAYO_LDCT_SSR_DEFAULTS["sod"]    # 593.461 mm (SSR step)
     sdd_global = MAYO_LDCT_SSR_DEFAULTS["sdd"]    # 1086.831 mm (SSR step)
+    pixel_sp   = FanBeamGeometry.mayo_ldct_fitted(n_angles=2).pixel_spacing
     delta_z = MAYO_LDCT_SSR_DEFAULTS["delta_z_mm"]
     w_slab_np = np.asarray(MAYO_LDCT_SSR_DEFAULTS["w_slab"], dtype=np.float32)
     a_val  = MAYO_LDCT_SSR_DEFAULTS["post_fbp_a"]
@@ -202,7 +200,12 @@ def main() -> int:
 
     n_bins = len(h_radial_np)
     print(f"[abl] locked params: sod={sod_global:.3f}  sdd={sdd_global:.3f}  "
-          f"Δz={delta_z:+.4f}  a={a_val:.4f}", flush=True)
+          f"pixel_sp={pixel_sp:.6f}  Δz={delta_z:+.4f}  a={a_val:.4f}", flush=True)
+    print(f"[abl] DICOM du (0x7029,0x1002) = {du_dicom:.6f} mm  "
+          f"dv (0x7029,0x1006) = {dv_blob:.6f} mm", flush=True)
+    print(f"[abl] Powell-fit default det_spacing = "
+          f"{FanBeamGeometry.mayo_ldct_fitted(n_angles=2).det_spacing:.6f} mm",
+          flush=True)
 
     # Use α_dz = +1 (the FFS-z winner)
     z_pos_eff = z_pos + 1.0 * ffs_dz
@@ -214,9 +217,7 @@ def main() -> int:
     pZ, fp = truth_files[ti]
     truth_mu_np, ds = _mu(fp)
     truth = torch.from_numpy(truth_mu_np).to("cuda").float()
-    pixel_sp_truth = float(ds.PixelSpacing[0])
-    print(f"[abl] central GT #{ti}  pZ={pZ:.2f}  truth PixelSpacing={pixel_sp_truth:.6f} mm",
-          flush=True)
+    print(f"[abl] central GT #{ti}  pZ={pZ:.2f}", flush=True)
 
     # Tensors
     w_slab = torch.from_numpy(w_slab_np).to("cuda")
@@ -226,29 +227,43 @@ def main() -> int:
     v_centre_nom = (nv - 1) / 2.0
     dr = 0.05
 
-    # Precompute picks (done once, depends only on z_pos_eff and target_source_z)
+    # Precompute picks (depends only on z_pos_eff and target_source_z)
     picks_per_slab = []
     for off in slab_offsets_mm:
         z_target = target_source_z + delta_z + float(off)
         picks = precompute_picks(z_pos_eff, orig_idx, rotview, z_target)
         picks_per_slab.append(picks)
 
-    def forward_at_pixel_spacing(pixel_sp: float):
-        """Build FBP geometry using `pixel_sp` everywhere consistently
-        (FBP, FoV mask, image grid). Returns metrics + pred.
+    # Pre-compute the fixed r_img_mm grid (pixel_sp doesn't change here).
+    Himg, Wimg = truth.shape
+    yy_pix = torch.arange(Himg, device="cuda", dtype=torch.float32)
+    xx_pix = torch.arange(Wimg, device="cuda", dtype=torch.float32)
+    yy_grid, xx_grid = torch.meshgrid(yy_pix, xx_pix, indexing="ij")
+    cy_img = (Himg - 1) / 2.0
+    cx_img = (Wimg - 1) / 2.0
+    r_img_mm = torch.sqrt((yy_grid - cy_img) ** 2 + (xx_grid - cx_img) ** 2) * pixel_sp
 
-        The other FBP-geometry knobs (det_spacing, sod, sdd) come from
-        `FanBeamGeometry.mayo_ldct_fitted()` — see ddssl_ldct/geometry.py
-        for the current production defaults."""
+    fy = torch.fft.fftfreq(Wimg, device="cuda").float()
+    fx = torch.fft.fftfreq(Himg, device="cuda").float()
+    fyy, fxx = torch.meshgrid(fy, fx, indexing="ij")
+    rho = torch.sqrt(fyy ** 2 + fxx ** 2)
+
+    def forward_at_det_spacing(det_sp: float):
+        """Build SSR + FBP using `det_sp` consistently (SSR's du and
+        FBP's det_spacing both = det_sp). Returns metrics + pred.
+
+        Note: changing det_sp changes the fan half-angle, so the
+        geometric FoV r_max also moves accordingly.
+        """
         _base = FanBeamGeometry.mayo_ldct_fitted(
             n_angles=rotview, n_det=nu,
             angle_start=angle_start, angle_end=angle_start + 2 * math.pi,
         )
         fbp_geom = FanBeamGeometry(
             image_size=_base.image_size,
-            pixel_spacing=pixel_sp,            # the swept knob
+            pixel_spacing=_base.pixel_spacing,
             n_angles=_base.n_angles, n_det=_base.n_det,
-            det_spacing=_base.det_spacing,
+            det_spacing=det_sp,                 # the swept knob
             sod=_base.sod, sdd=_base.sdd,
             angle_start=_base.angle_start, angle_end=_base.angle_end,
         )
@@ -257,45 +272,27 @@ def main() -> int:
             proj_fbp._tensor_geom["detector_origin"] + MAYO_LDCT_DET_OFFSET
         )
 
-        # r_img_mm and FoV at the SAME pixel_spacing (consistent)
-        Himg, Wimg = truth.shape
-        yy_pix = torch.arange(Himg, device="cuda", dtype=torch.float32)
-        xx_pix = torch.arange(Wimg, device="cuda", dtype=torch.float32)
-        yy_grid, xx_grid = torch.meshgrid(yy_pix, xx_pix, indexing="ij")
-        cy_img = (Himg - 1) / 2.0
-        cx_img = (Wimg - 1) / 2.0
-        r_img_mm_local = torch.sqrt((yy_grid - cy_img) ** 2 + (xx_grid - cx_img) ** 2) * pixel_sp
-
-        # Geometric FoV radius
-        half_det = (nu / 2.0) * du
+        half_det = (nu / 2.0) * det_sp
         r_fov_mm = sod_global * math.sin(math.atan(half_det / sdd_global))
-        fov_mask = torch.sigmoid((r_fov_mm - r_img_mm_local) / 1.0)
+        fov_mask = torch.sigmoid((r_fov_mm - r_img_mm) / 1.0)
 
-        fy = torch.fft.fftfreq(Wimg, device="cuda").float()
-        fx = torch.fft.fftfreq(Himg, device="cuda").float()
-        fyy, fxx = torch.meshgrid(fy, fx, indexing="ij")
-        rho = torch.sqrt(fyy ** 2 + fxx ** 2)
-
-        # Slab
         sino_slab = None
         for k_slab, off in enumerate(slab_offsets_mm):
             z_target = target_source_z + delta_z + float(off)
             sino_k = helical_ssr(
                 proj_flat, z_pos_eff, picks_per_slab[k_slab],
                 z_target, sod_global, sdd_global,
-                du, dv, u_centre_nom, v_centre_nom,
+                det_sp, dv_blob, u_centre_nom, v_centre_nom,
             )
             if sino_slab is None:
                 sino_slab = w_slab[k_slab] * sino_k
             else:
                 sino_slab = sino_slab + w_slab[k_slab] * sino_k
 
-        # FBP
         sino_input = torch.flip(sino_slab, dims=[-1])[None, None]
         fbp_out = proj_fbp.fbp(sino_input, filter_name="ramlak")[0, 0]
         fbp_2d = torch.flip(torch.flip(fbp_out, dims=[0]), dims=[1])
 
-        # Filter
         fft_fbp = torch.fft.fft2(fbp_2d)
         h_2d = radial_filter_2d(h_radial, rho, n_bins)
         filt_fft = torch.complex(h_2d * fft_fbp.real, h_2d * fft_fbp.imag)
@@ -308,28 +305,25 @@ def main() -> int:
         return clipped, fov_mask
 
     # ---- Sweep ----
-    sweep_values = [0.695, 0.698, 0.700, 0.700857, 0.703125, 0.705, 0.708]
+    sweep_values = [1.2830, 1.2845, 1.285044, 1.285839, 1.2870, 1.2880]
     rows = []
-    print(f"\n=== Pixel-spacing ablation (FBP geom + r_img_mm CONSISTENT) ===",
+    print(f"\n=== Det-spacing ablation (SSR du + FBP det_spacing CONSISTENT) ===",
           flush=True)
     print(f"  All other params LOCKED at multi-GT fitted values "
           f"(+ α_dz = +1 FFS-z applied)", flush=True)
-    print(f"  Comparing central GT #{ti}, pZ={pZ:.2f} (NO z-interp on GT)\n",
-          flush=True)
+    print(f"  Comparing central GT #{ti}, pZ={pZ:.2f}\n", flush=True)
     with torch.no_grad():
-        for ps in sweep_values:
-            pred, mask = forward_at_pixel_spacing(ps)
+        for ds_val in sweep_values:
+            pred, mask = forward_at_det_spacing(ds_val)
             pred_np = pred.cpu().numpy()
             m = calc_metrics(pred_np, truth_mu_np, dr=dr)
             note = ""
-            if abs(ps - 0.700857) < 1e-6:
+            if abs(ds_val - 1.285044) < 1e-6:
                 note = "  ← Powell fitted (mayo_ldct_fitted)"
-            elif abs(ps - 0.703125) < 1e-6:
-                note = "  ← Mayo truth PixelSpacing"
-            elif abs(ps - 0.700) < 1e-6:
-                note = "  ← Wagner default"
-            rows.append({"pixel_sp": ps, **m, "pred": pred_np})
-            print(f"  pixel_sp = {ps:.6f} mm  "
+            elif abs(ds_val - 1.285839) < 1e-5:
+                note = "  ← DICOM nominal (0x7029,0x1002)"
+            rows.append({"det_sp": ds_val, **m, "pred": pred_np})
+            print(f"  det_spacing = {ds_val:.6f} mm  "
                   f"SSIM={m['ssim']:.4f}  PSNR={m['psnr']:.2f} dB  "
                   f"RMSE={m['rmse']:.5f}  diff_max={m['diff_max']:.4f}{note}",
                   flush=True)
@@ -338,55 +332,46 @@ def main() -> int:
     print(f"\n=== RANKED BY PSNR ===", flush=True)
     for k, r in enumerate(rows_sorted):
         note = ""
-        if abs(r["pixel_sp"] - 0.700857) < 1e-6:
+        if abs(r["det_sp"] - 1.285044) < 1e-6:
             note = "  (Powell fitted)"
-        elif abs(r["pixel_sp"] - 0.703125) < 1e-6:
-            note = "  (Mayo truth)"
-        elif abs(r["pixel_sp"] - 0.700) < 1e-6:
-            note = "  (Wagner default)"
+        elif abs(r["det_sp"] - 1.285839) < 1e-5:
+            note = "  (DICOM nominal)"
         marker = "★" if k == 0 else " "
-        print(f"  {marker} #{k+1}: pixel_sp = {r['pixel_sp']:.6f} mm  "
+        print(f"  {marker} #{k+1}: det_spacing = {r['det_sp']:.6f} mm  "
               f"SSIM={r['ssim']:.4f}  PSNR={r['psnr']:.2f} dB  "
               f"RMSE={r['rmse']:.5f}{note}",
               flush=True)
 
-    # Plot — SSIM/PSNR curves
     out_dir = Path("/cluster/maier/Agent4CT/results/breast_debug")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    pss = np.array([r["pixel_sp"] for r in rows])
+    dss = np.array([r["det_sp"] for r in rows])
     ssims = np.array([r["ssim"] for r in rows])
     psnrs = np.array([r["psnr"] for r in rows])
     rmses = np.array([r["rmse"] for r in rows])
 
     fig, ax = plt.subplots(1, 3, figsize=(15, 4.5))
-    ax[0].plot(pss, ssims, "o-", lw=1.5)
-    ax[0].axvline(0.700, color="C1", ls=":", label="Wagner 0.700")
-    ax[0].axvline(0.700857, color="C2", ls=":", label="Powell 0.700857")
-    ax[0].axvline(0.703125, color="C3", ls=":", label="Truth 0.703125")
-    ax[0].set_xlabel("pixel_spacing (mm)"); ax[0].set_ylabel("SSIM")
-    ax[0].set_title("SSIM vs pixel_spacing"); ax[0].grid(alpha=0.3); ax[0].legend(fontsize=8)
-    ax[1].plot(pss, psnrs, "o-", lw=1.5, color="C1")
-    ax[1].axvline(0.700, color="C1", ls=":")
-    ax[1].axvline(0.700857, color="C2", ls=":")
-    ax[1].axvline(0.703125, color="C3", ls=":")
-    ax[1].set_xlabel("pixel_spacing (mm)"); ax[1].set_ylabel("PSNR (dB)")
-    ax[1].set_title("PSNR vs pixel_spacing"); ax[1].grid(alpha=0.3)
-    ax[2].plot(pss, rmses * 1e4, "o-", lw=1.5, color="C3")
-    ax[2].axvline(0.700, color="C1", ls=":")
-    ax[2].axvline(0.700857, color="C2", ls=":")
-    ax[2].axvline(0.703125, color="C3", ls=":")
-    ax[2].set_xlabel("pixel_spacing (mm)"); ax[2].set_ylabel("RMSE × 10⁴")
-    ax[2].set_title("RMSE vs pixel_spacing"); ax[2].grid(alpha=0.3)
-    fig.suptitle(f"L014 pixel-spacing ablation, central GT #{ti}", fontsize=11)
+    for a in ax:
+        a.axvline(1.285044, color="C2", ls=":", label="Powell 1.285044")
+        a.axvline(1.285839, color="C3", ls=":", label="DICOM 1.285839")
+        a.grid(alpha=0.3)
+    ax[0].plot(dss, ssims, "o-", lw=1.5)
+    ax[0].set_xlabel("det_spacing (mm)"); ax[0].set_ylabel("SSIM")
+    ax[0].set_title("SSIM vs det_spacing"); ax[0].legend(fontsize=8)
+    ax[1].plot(dss, psnrs, "o-", lw=1.5, color="C1")
+    ax[1].set_xlabel("det_spacing (mm)"); ax[1].set_ylabel("PSNR (dB)")
+    ax[1].set_title("PSNR vs det_spacing")
+    ax[2].plot(dss, rmses * 1e4, "o-", lw=1.5, color="C3")
+    ax[2].set_xlabel("det_spacing (mm)"); ax[2].set_ylabel("RMSE × 10⁴")
+    ax[2].set_title("RMSE vs det_spacing")
+    fig.suptitle(f"L014 det-spacing ablation, central GT #{ti}", fontsize=11)
     fig.tight_layout()
-    out_curve = out_dir / "L014_pixel_spacing_ablation_curve.png"
+    out_curve = out_dir / "L014_det_spacing_ablation_curve.png"
     fig.savefig(out_curve, dpi=120)
     print(f"\n[abl] wrote {out_curve}", flush=True)
 
-    # Image montage: diff per pixel_spacing
     n = len(rows)
-    cols = min(n, 4)
+    cols = min(n, 3)
     rows_grid = (n + cols - 1) // cols
     fig2, axes2 = plt.subplots(rows_grid, cols, figsize=(4.5 * cols, 4.5 * rows_grid))
     if rows_grid == 1: axes2 = axes2[None, :]
@@ -396,10 +381,9 @@ def main() -> int:
         diff = r["pred"] - truth_mu_np
         ax2.imshow(diff, cmap="seismic", vmin=-0.02, vmax=0.02)
         note = ""
-        if abs(r["pixel_sp"] - 0.700857) < 1e-6: note = " (Powell)"
-        elif abs(r["pixel_sp"] - 0.703125) < 1e-6: note = " (truth)"
-        elif abs(r["pixel_sp"] - 0.700) < 1e-6: note = " (Wagner)"
-        ax2.set_title(f"px={r['pixel_sp']:.6f}{note}\n"
+        if abs(r["det_sp"] - 1.285044) < 1e-6: note = " (Powell)"
+        elif abs(r["det_sp"] - 1.285839) < 1e-5: note = " (DICOM)"
+        ax2.set_title(f"ds={r['det_sp']:.6f}{note}\n"
                        f"SSIM={r['ssim']:.4f}  PSNR={r['psnr']:.2f} dB",
                        fontsize=9)
         ax2.set_xticks([]); ax2.set_yticks([])
@@ -407,14 +391,14 @@ def main() -> int:
         i, j = divmod(k, cols)
         axes2[i, j].axis("off")
     fig2.tight_layout()
-    out_montage = out_dir / "L014_pixel_spacing_ablation_diffs.png"
+    out_montage = out_dir / "L014_det_spacing_ablation_diffs.png"
     fig2.savefig(out_montage, dpi=120)
     print(f"[abl] wrote {out_montage}", flush=True)
 
-    out_json = out_dir / "L014_pixel_spacing_ablation.json"
+    out_json = out_dir / "L014_det_spacing_ablation.json"
     out_json.write_text(json.dumps({
         "results": [{k: v for k, v in r.items() if k != "pred"} for r in rows],
-        "ranked": [(r["pixel_sp"], r["ssim"], r["psnr"], r["rmse"]) for r in rows_sorted],
+        "ranked": [(r["det_sp"], r["ssim"], r["psnr"], r["rmse"]) for r in rows_sorted],
     }, indent=2))
     print(f"[abl] wrote {out_json}", flush=True)
     return 0

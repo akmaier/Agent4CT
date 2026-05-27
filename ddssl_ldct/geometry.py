@@ -53,13 +53,27 @@ class FanBeamGeometry:
     # -- Mayo LDCT presets ----------------------------------------------------
     # The Mayo `LDCT-and-Projection-data` DICOM-CT-PD header reports a nominal
     # geometry (pixel_spacing=0.703125, sod=595.0, sdd=1085.6, det_spacing=
-    # 1.285839). On L014 fulldose, a data-driven 5-parameter fit (scripts/
-    # fit_fbp_geometry_L014.py, job 762284, 2026-05-26) found a measurable
-    # mismatch: the actual recon geometry is ~0.32 % off in pixel_spacing
-    # and ~0.1 % off in sdd. Using the fitted values in the FBP gives
-    # +3.26 dB PSNR and -31 % RMSE at the peak GT slice (SSIM 0.94 → 0.9466).
-    # The mismatch is most likely between Mayo's nominal ReconstructionDiameter
-    # (360 mm rounded) and the actual scanner FoV (~358.84 mm).
+    # 1.285839). On L014 fulldose, a data-driven 5-parameter Powell fit
+    # (scripts/fit_fbp_geometry_L014.py, job 762284, 2026-05-26) found a
+    # measurable mismatch — the actual FBP geometry is ~0.32 % off in
+    # pixel_spacing and ~0.1 % off in sdd. Using the fitted values in the
+    # FBP gives +3.26 dB PSNR and -31 % RMSE at the peak GT slice (SSIM
+    # 0.94 → 0.9466).
+    #
+    # **Important — SSR step has DIFFERENT defaults than FBP step:**
+    # The helical→fan rebin (SSR) and the back-projection (FBP) are two
+    # SEPARATE stages with two SEPARATE (sod, sdd) pairs that the joint
+    # fit can move independently. The multi-GT joint Adam fit (SLURM
+    # 762369, 2026-05-27) holds the FBP geometry FIXED at the Powell
+    # values below and optimises ONLY the SSR sod/sdd, finding the SSR
+    # optimum at (593.461, 1086.831). Empirically validated by ablation
+    # (SLURM 762403 / 762404, 2026-05-27): replacing the FBP Powell
+    # values with the SSR multi-GT values DEGRADES SSIM by ~0.018 at
+    # the same pixel_sp and shifts the optimum off the Powell value.
+    #
+    # See `MAYO_LDCT_SSR_DEFAULTS` below for the SSR-step values used by
+    # `scripts/fit_rebin_end2end_L014.py`, `cache_proj_flat_L014.py`, and
+    # the ablation scripts. Keep these distinct.
     #
     # Use `FanBeamGeometry.mayo_ldct_fitted(...)` for the recommended Mayo
     # FBP geometry. Keep `mayo_ldct_nominal(...)` available for diagnostic
@@ -69,22 +83,28 @@ class FanBeamGeometry:
     def mayo_ldct_fitted(cls, *, n_angles: int, n_det: int = 736,
                           angle_start: float = 0.0,
                           angle_end: float = 2 * math.pi) -> "FanBeamGeometry":
-        """Mayo LDCT FBP geometry from the data-driven L2 fit on L014.
+        """Mayo LDCT FBP geometry from the 5-parameter Powell fit on L014.
 
-        These are the recommended defaults for all Mayo-LDCT FBP / FBP-based
-        solver pipelines as of 2026-05-26. The fitted parameters minimise
-        the calibrated L2 between FBP-cal and truth on the peak GT slice
-        (job 762284).
+        Recommended defaults for all Mayo-LDCT FBP / FBP-based solver
+        pipelines (job 762284). Re-validated by ablation 2026-05-27
+        (SLURM 762403): at these FBP values + SSR-step values from
+        `MAYO_LDCT_SSR_DEFAULTS`, pixel_sp=0.700857 hits SSIM 0.9622 /
+        PSNR 42.27 dB on the central L014 GT.
 
-        Fitted values:
+        Fitted values (all DICOM-nominal-minus-fit deltas are sub-percent):
           - pixel_spacing = 0.700857 mm (DICOM nominal: 0.703125, Δ = -0.32 %)
           - det_spacing   = 1.285044 mm (DICOM nominal: 1.285839, Δ = -0.06 %)
-          - sod           = 595.362 mm  (DICOM nominal: 595.000, Δ = +0.06 %)
+          - sod           = 595.362 mm  (DICOM nominal: 595.000,  Δ = +0.06 %)
           - sdd           = 1086.803 mm (DICOM nominal: 1085.600, Δ = +0.11 %)
-        Note: an additional sub-pixel detector_origin offset of −0.040 mm
-        was found by the fit; that needs to be applied OUTSIDE this dataclass
-        on PyronnFanBeamProjector._tensor_geom['detector_origin'] because
-        PYRO-NN doesn't expose it as a constructor argument.
+
+        Note: an additional sub-pixel `detector_origin` offset of −0.040 mm
+        was found alongside the four scalars above. It must be applied
+        OUTSIDE this dataclass on PyronnFanBeamProjector._tensor_geom
+        ['detector_origin'] (see MAYO_LDCT_DET_OFFSET below) because
+        PYRO-NN doesn't expose detector_origin as a constructor argument.
+
+        Do NOT replace these values with the SSR-step optimum — see
+        `MAYO_LDCT_SSR_DEFAULTS` for that. The two are independent.
         """
         return cls(
             image_size=512,
@@ -134,3 +154,50 @@ class FanBeamGeometry:
 # geometry above. Apply at the projector level (see `mayo_ldct_fitted`
 # docstring for the recipe).
 MAYO_LDCT_DET_OFFSET = -0.0397
+
+
+# ---------------------------------------------------------------------------
+# Mayo LDCT SSR-step defaults
+# ---------------------------------------------------------------------------
+#
+# The SSR (single-slice rebinning, helix→fan, Noo 1999 Eq. 1/2) step has
+# its OWN (sod, sdd) pair, distinct from the FBP back-projection step
+# above. They parameterise different operators:
+#
+#   * SSR sod/sdd: govern v_precise = dZ · (u² + sdd²) / (sod · sdd)
+#       — i.e. how helical rays at offset dZ get mapped to the v-row of
+#       the virtual fan-beam detector. This is a geometric correction
+#       term that scales how aggressively z-offset rays get pulled
+#       toward the central slice.
+#
+#   * FBP sod/sdd: govern the back-projection trajectory inside PYRO-NN's
+#       parallel/fan FBP operator (Hann-/RamLak-filtered, then
+#       integration over angles).
+#
+# These two pairs were assumed to be one and the same prior to 2026-05-26.
+# The multi-GT joint Adam fit (SLURM 762369) showed that the LOSS GRADIENT
+# pushes them in different directions when the model also has Δz / slab /
+# post-FBP-scale knobs — the SSR sod is pulled to 593.461 mm while the FBP
+# sod stays at the Powell value 595.362 mm. Ablation confirms this is the
+# correct way to interpret the result (SLURM 762403 / 762404).
+#
+# These are the SSR-step defaults that go into the cached
+# `L014_proj_flat_peak.pt` blob via `scripts/cache_proj_flat_L014.py` and
+# into the fit/ablation scripts as the initial / locked values:
+MAYO_LDCT_SSR_DEFAULTS = {
+    # SSR rebin geometry (multi-GT joint Adam fit, SLURM 762369)
+    "sod": 593.461,    # mm — DICOM nominal 595.000 (Δ = -0.26 %)
+    "sdd": 1086.831,   # mm — DICOM nominal 1085.600 (Δ = +0.11 %)
+    # Detector pitch — held FIXED at DICOM-CT-PD private tags during the
+    # multi-GT fit (detector pitch is hardware).
+    "du":  1.285839,   # mm — DICOM tag (0x7029, 0x1002)
+    "dv":  1.094723,   # mm — DICOM tag (0x7029, 0x1006)
+    # Slab / z-shift / post-FBP (also from SLURM 762369)
+    "delta_z_mm": -0.578,
+    "alpha_dz":   +1.0,     # FFS-z sign (ablation winner 762363)
+    "slab_offsets_mm": (-3, -2, -1, 0, 1, 2, 3),
+    "w_slab":     (0.02, 0.25, 0.14, 0.18, 0.15, 0.22, 0.03),
+    "post_fbp_a":  0.807,
+    "post_fbp_bg": -0.0003,
+    "post_fbp_hi": 0.0435,
+}

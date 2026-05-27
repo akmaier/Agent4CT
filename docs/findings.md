@@ -14,6 +14,146 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-05-27 — FBP sod ≠ SSR sod: the two pipeline stages need separate defaults
+
+When SLURM 762369's multi-GT fit landed, the obvious move was to bake
+its `(sod=593.461, sdd=1086.831)` into `FanBeamGeometry.mayo_ldct_fitted()`.
+Two ablations (SLURM 762403 / 762404) immediately falsified that:
+
+- **Pixel-spacing ablation with new defaults**: optimum drifted from
+  0.700857 mm → **0.698 mm**, peak SSIM **dropped 0.9622 → 0.9592** and
+  peak PSNR **dropped 42.27 → 40.04 dB** at the *same* pixel_sp 0.700857.
+- **Det-spacing ablation with new defaults**: optimum hit the **sweep
+  edge at 1.288 mm** (vs Powell 1.285044 / DICOM 1.285839), a textbook
+  "the swept knob is being pulled to compensate for a wrong fixed knob"
+  signal.
+
+Root cause: `mayo_ldct_fitted()` parameterises the **FBP back-projection**
+step, while the multi-GT joint fit holds those FBP values *fixed* (at
+the Powell-fit numbers from job 762284) and only optimises the **SSR
+(helical→fan rebin) sod/sdd**. The two stages have *independent*
+(sod, sdd) pairs and the loss gradient pushes them in different
+directions when the model has Δz / slab / post-FBP-scale knobs to
+disentangle them. Setting both to 593.461 collapsed the pair and broke
+the magnification chain.
+
+**Resolution (validated by SLURM 762407 / 762408 / 762410)**:
+
+- `FanBeamGeometry.mayo_ldct_fitted()` reverted to the Powell fit
+  defaults: `(sod=595.362, sdd=1086.803, pixel_spacing=0.700857,
+  det_spacing=1.285044)`. Re-running the pixel-spacing ablation
+  recovers **SSIM 0.9623 / PSNR 42.27 dB at pixel_sp = 0.700857**;
+  re-running the det-spacing ablation recovers
+  **SSIM 0.9624 / PSNR 42.27 dB at det_spacing = 1.285044** (DICOM
+  1.285839 is 1.2 dB worse).
+- Added `MAYO_LDCT_SSR_DEFAULTS` constant in
+  `ddssl_ldct/geometry.py` to hold the SSR-step optimum
+  `(sod=593.461, sdd=1086.831, du=1.285839, dv=1.094723, Δz=-0.578,
+  α_dz=+1, slab=[…], post_fbp_a/bg/hi)` from SLURM 762369.
+- Both ablation scripts now consume `mayo_ldct_fitted()` for the FBP
+  and `MAYO_LDCT_SSR_DEFAULTS` for the SSR (no more hardcoded numbers).
+
+Going forward: **never collapse FBP sod/sdd with SSR sod/sdd** in the
+Mayo pipeline. They look like the same physical quantity (the scanner
+geometry) but they parameterise different operators and the joint fit
+will drift them apart by ~0.3 % at the SSIM-noise-floor optimum.
+
+## 2026-05-27 — DICOM-nominal vs fitted: empirical gap on L014 central GT
+
+Direct comparison on the central L014 GT slice (SLURM 762409), same
+projection data, same `evaluate_calibrated` metric; only the
+recon-pipeline configuration differs:
+
+| Config | SSIM | PSNR (dB) | RMSE | \|diff\|max |
+|---|---:|---:|---:|---:|
+| **(1) DICOM-nominal** | 0.8740 | 33.01 | 0.00112 | 0.0149 |
+| **(2) Fitted (Powell FBP + multi-GT SSR)** | **0.9623** | **42.27** | 0.00039 | 0.0064 |
+| Δ (fitted − DICOM) | **+0.0883** | **+9.26 dB** | **−65.6 %** | −0.0085 |
+
+![DICOM-nominal vs fitted comparison (L014 central GT)](_breast_geom_debug/L014_dicom_vs_fitted.png)
+
+Config (1) uses *only* DICOM tags — `sod=595.0`, `sdd=1085.6`,
+`pixel_spacing=0.703125`, `det_spacing=1.285839`, `du=1.285839`,
+`dv=1.094723` — with no Δz, no slab averaging, no FFS-z correction,
+no fitted H(ρ), no post-FBP scaling beyond two-point linear
+`intensity_calibrate`. Config (2) is what the project now ships.
+
+### Where the 9.26 dB comes from (per-knob attribution from the
+multi-GT fit log + ablation history)
+
+| Knob | Contribution (rough) | Source |
+|---|---:|---|
+| FBP geometry (pixel_spacing 0.703125 → 0.700857) | +8.4 dB | 762368 pixel-sp ablation |
+| FBP geometry (det_spacing 1.285839 → 1.285044) | +1.2 dB | 762410 det-sp ablation |
+| FBP geometry (sod, sdd Powell offsets) | +0.6 dB | (absorbed in pixel-sp curve at fixed multi-GT context) |
+| SSR geometry (sod 595 → 593.461, sdd 1085.6 → 1086.831) | +0.7 dB | multi-GT iter 0 → 100 in 762369 |
+| Δz alignment (-0.578 mm) | +0.5–1 dB | Δz sweep iters 100–400 in 762369 |
+| 7-tap slab averaging (matches B30f 5 mm SliceThickness) | +1–2 dB | slab-profile fit in 762369 |
+| α_dz = +1 FFS-z correction | +0.85 dB | 762363 FFS-sign ablation |
+| Post-FBP scaling (a=0.807, hi=0.0435) | (overlaps with intensity_calibrate; ~0–1 dB net) | post-FBP fit in 762369 |
+| Radial filter H(ρ) — gentle low-pass + mid boost | +1–2 dB on high freq | filter fit in 762369 |
+
+The dominant single contributor is **pixel_spacing**: the DICOM
+`PixelSpacing = ReconDiameter / image_size = 360 / 512 = 0.703125`
+is the grid spacing of Mayo's reconstructed truth image, NOT the
+effective fan-beam-geometry spacing our FBP needs to match Mayo's
+image pixel-by-pixel. Siemens's internal reconstructor evidently uses a
+slightly different effective `sod` that propagates through the
+magnification chain into a 0.32 % shrink. Wagner's default 0.700 mm
+turns out to be closer to optimum than Mayo's own DICOM tag.
+
+### Why DICOM is not enough — explanation
+
+DICOM-CT-PD encodes the **nominal mechanical / geometric properties of
+the acquisition** (scanner make/model, source-isocentre distance,
+detector pitch, gantry angle per readout, FFS deflections). It does
+NOT encode:
+
+1. The **effective magnification** the reconstructor actually used.
+   Siemens's internal recon picks an effective `sod` ~0.26 % smaller
+   than the nominal mechanical 595 mm — invisible in DICOM tags.
+2. **Inter-stage geometry coupling**. The rebin (SSR) and back-projection
+   (FBP) can use *different* effective (sod, sdd) pairs in the
+   reconstructor (each stage's loss gradient pulls them independently),
+   and DICOM-CT-PD has no concept of "two geometries".
+3. **Slice-anchor sub-mm alignment** (our Δz = −0.578 mm). DICOM
+   `ImagePositionPatient` is quantised to the reconstructed-slice grid
+   (3 mm centre spacing on Mayo); the actual slab anchor floats inside
+   that 3 mm cell.
+4. **Reconstruction-kernel MTF** (B30f). DICOM exposes the *name* of
+   the kernel but not its frequency response. PYRO-NN's `ramlak` +
+   our fitted radial H(ρ) approximates B30f's gentle low-pass +
+   mid-band boost; the bare DICOM-name choice loses this entirely.
+5. **Slab integration profile**. Mayo's truth recon is a 5 mm slab
+   from 3 mm-spaced source data — that's a U-shaped weighting in z
+   ([0.02, 0.25, 0.14, 0.18, 0.15, 0.22, 0.03] at ±3 mm offsets).
+   DICOM has `SliceThickness = 5 mm` but the *shape* of the
+   integration kernel is not exposed.
+6. **FFS sign convention**. DICOM-CT-PD lists `ffs_dz`, `ffs_dphi`,
+   `ffs_drho` per readout but does NOT specify the sign convention
+   for applying them. We empirically validated α_dz = +1 (additive,
+   `z_eff = z_pos + ffs_dz`) by ablation; α_dphi ≠ 0 catastrophically
+   breaks the recon despite being a non-zero DICOM tag.
+
+### Consolidated DICOM-information problems list
+
+What the next agent should NOT trust from DICOM-CT-PD for Mayo-LDCT:
+
+| DICOM source | Trust as-is? | Reason |
+|---|:---:|---|
+| `PixelSpacing` (0x0028,0x0030) = 0.703125 mm | ❌ | Truth image grid; not the geometry-derived FBP spacing. Use 0.700857 (Powell fit). |
+| `sod` (0x7031,0x1003) = 595.000 mm | ❌ (FBP) / ❌ (SSR) | Mechanical-nominal. FBP needs 595.362; SSR needs 593.461 (independent). |
+| `sdd` (0x7031,0x1031) = 1085.600 mm | ❌ (FBP) / ❌ (SSR) | FBP needs 1086.803; SSR needs 1086.831. |
+| `det_spacing du` (0x7029,0x1002) = 1.285839 mm | ❌ (FBP) / ✅ (SSR) | FBP wants 1.285044 (Powell, +1.2 dB vs DICOM); SSR uses DICOM. |
+| `det_spacing dv` (0x7029,0x1006) = 1.094723 mm | ✅ | Verified consistent — held fixed at DICOM in multi-GT fit. |
+| File ordering (filename) | ❌ | Must sort by `InstanceNumber` (alphabetic ≠ time on Mayo CT-PD). |
+| `ImagePositionPatient[2]` for z anchor | ❌ | Quantised to 3 mm slice grid; need ±0.578 mm sub-anchor offset. |
+| `ConvolutionKernel = B30f` | ⚠️ | Kernel *name* only; MTF not exposed. PYRO-NN ramlak + fitted H(ρ) approximates it. |
+| `SliceThickness = 5 mm` | ⚠️ | Thickness yes; integration *profile* (our U-shape) not exposed. |
+| `ffs_dphi` (0x7033,0x100B) | ❌ | Catastrophically breaks recon if applied as per-readout correction. Leave at 0. |
+| `ffs_drho` (0x7033,0x100D) | ⚠️ | <0.01 dB effect; safe to ignore. |
+| `ffs_dz` (0x7033,0x100C) | ⚠️ | Apply as `z_eff = z_pos + α_dz · ffs_dz` with α_dz = +1 (sign not in DICOM). |
+
 ## 2026-05-26 — Multi-GT joint fit with consistent `pixel_spacing` finalises L014 calibration at SSIM 0.968 / PSNR 42.9 dB
 
 After the pixel-spacing ablation (entry below) revealed the fitted
