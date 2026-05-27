@@ -14,6 +14,99 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-05-27 — Rigid 2D alignment yields +0.001 SSIM: the geometry fit already absorbed all rigid misregistration
+
+Hypothesis (SLURM 762412): after `pixel_spacing`, `sod`, `sdd`,
+`det_spacing`, Δz, slab, post-FBP scaling, H(ρ), and α_dz=+1 have all
+been fitted, is there any residual rigid 2D misregistration (rotation
++ translation in the image plane) between the fitted recon and Mayo's
+B30f truth? A 3-parameter rigid Adam fit (θ, tx, ty) against the truth
+on the FoV-masked region, MSE loss, 800 iters:
+
+| Metric | Before rigid | After rigid | Δ |
+|---|---:|---:|---:|
+| SSIM | 0.9623 | 0.9633 | **+0.0010** |
+| PSNR (dB) | 42.27 | 42.35 | +0.08 |
+| RMSE | 0.00039 | 0.00038 | −0.00001 |
+
+Fitted transform:
+- θ = **−0.022 °** (≈ −3.8 × 10⁻⁴ rad)
+- tx = **−0.012 mm** (−0.017 px)
+- ty = **+0.010 mm** (+0.014 px)
+
+The fitted (θ, tx, ty) are essentially zero — sub-millidegree rotation
+and sub-30-μm translation. The +0.001 SSIM / +0.08 dB PSNR gain is at
+the optimiser-noise floor. **The geometry fit has already absorbed all
+rigid 2D misregistration**; the remaining 3 % gap to perfect SSIM is
+purely in non-rigid signal content (kernel MTF mismatch between
+PYRO-NN ramlak·H(ρ) and Siemens B30f; slab-profile shape vs. Mayo's
+unknown integration kernel; sub-pixel anatomical noise).
+
+![L014 rigid-2D alignment of fitted recon to truth (before / after)](_breast_geom_debug/L014_rigid_align.png)
+
+## 2026-05-27 — Implications of the SSR-vs-FBP geometry split for the bulk rebin pipeline
+
+The "FBP sod ≠ SSR sod" finding has a knock-on for the bulk rebin
+pipeline that produces the staged sinogram H5s for every patient. The
+pipeline (`ddssl_ldct.helix2fan.rebin_helical_to_fan`,
+`data/fetch_mayo_ldct.py:stage_h5`) currently runs SSR with the
+**DICOM-nominal** `sod = 595.0` and `sdd = 1085.6`, because the
+`geometry` dict it consumes comes straight from `read_dicom_ctpd`
+(which pulls those values from the DICOM-CT-PD private tags). The
+SSR-step optimum we just established (`sod = 593.461`, `sdd =
+1086.831`, `MAYO_LDCT_SSR_DEFAULTS`) **is not yet applied to the bulk
+rebin**.
+
+Empirical impact on L014 central GT (slab → FBP → calibrate, same
+post-FBP knobs locked):
+
+- SSR with DICOM nominal (current bulk-rebin behavior): the multi-GT
+  fit's "iter 0" log line shows it converges from this initial state
+  to ~+9 dB over the first 500 iters. The first 1 dB of that gain is
+  the SSR sod/sdd correction; the bulk of the rest is Δz/slab/H(ρ).
+- SSR with multi-GT defaults (what every L014 ablation script uses):
+  SSIM 0.962 / PSNR 42.3 dB.
+
+**Recommended action**: re-run `data/fetch_mayo_ldct.py:stage_h5` for
+all 10 Wagner patients with the SSR step parameterised by
+`MAYO_LDCT_SSR_DEFAULTS` (sod=593.461, sdd=1086.831, plus the same
+Δz/slab/α_dz post-corrections at the same step). Cost: ~60 min per
+patient sequential, ~10 GPU-hours total. Until that re-rebin lands,
+every downstream solver on Mayo data trains and evaluates against a
+sinogram set that has an SSR-magnification error of ~0.26 % — which
+matters for any solver whose loss is sensitive to sub-pixel scale
+(LPD, ITNet, DD-UNet supervised).
+
+**The detector pitch (du, dv) is correct** in the current bulk rebin
+— it comes from the DICOM-CT-PD private tags, which match the SSR-step
+choice of `du = 1.285839`, `dv = 1.094723` (these are the hardware
+values; only the FBP-step `det_spacing = 1.285044` differs, and that
+lives in `mayo_ldct_fitted()` not in the rebin pipeline).
+
+## 2026-05-27 — Added `MAYO_LDCT_SSR_NOMINAL` for one-line switch to DICOM-tags-only config
+
+Sibling constant to `MAYO_LDCT_SSR_DEFAULTS` in
+`ddssl_ldct/geometry.py`, exposing the "what the DICOM header alone
+gives you" SSR config (sod=595.000, sdd=1085.600, du=1.285839,
+dv=1.094723, Δz=0, single-slice picks, identity H(ρ), no post-FBP
+clip). Plus a tiny dispatcher:
+
+```python
+from ddssl_ldct.geometry import mayo_ldct_ssr_config
+cfg = mayo_ldct_ssr_config("fitted")   # the production defaults
+cfg = mayo_ldct_ssr_config("nominal")  # the DICOM-tags-only baseline
+```
+
+Both arms are validated empirically:
+
+| Config name | SSIM | PSNR | Job |
+|---|---:|---:|---|
+| `"fitted"` (multi-GT) | 0.9623 | 42.27 dB | SLURM 762407 |
+| `"nominal"` (DICOM tags) | 0.8740 | 33.01 dB | SLURM 762409 |
+
+Any downstream script can now compare the two without hardcoding magic
+numbers.
+
 ## 2026-05-27 — FBP sod ≠ SSR sod: the two pipeline stages need separate defaults
 
 When SLURM 762369's multi-GT fit landed, the obvious move was to bake

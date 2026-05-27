@@ -201,3 +201,42 @@ MAYO_LDCT_SSR_DEFAULTS = {
     "post_fbp_bg": -0.0003,
     "post_fbp_hi": 0.0435,
 }
+
+
+# Pure DICOM-CT-PD-nominal SSR config — the "what would you get if you
+# trusted the DICOM tags only" fallback. Same schema as MAYO_LDCT_SSR_DEFAULTS,
+# but every value comes straight from the DICOM header (or is set to the
+# no-op identity for knobs DICOM cannot express). Useful as the comparison
+# arm against the fitted recon, and as a "challenge-reported" baseline
+# for any agent that wants to reproduce the DICOM-nominal SSIM 0.874 /
+# PSNR 33.0 dB (SLURM 762409).
+MAYO_LDCT_SSR_NOMINAL = {
+    "sod": 595.000,    # mm — DICOM tag (0x7031, 0x1003)
+    "sdd": 1085.600,   # mm — DICOM tag (0x7031, 0x1031)
+    "du":  1.285839,   # mm — DICOM tag (0x7029, 0x1002)
+    "dv":  1.094723,   # mm — DICOM tag (0x7029, 0x1006)
+    # Knobs DICOM cannot express → identity / no-op:
+    "delta_z_mm": 0.0,                       # no sub-mm anchor offset
+    "alpha_dz":   0.0,                       # no FFS-z correction
+    "slab_offsets_mm": (0,),                 # single-slice (no slab averaging)
+    "w_slab":     (1.0,),                    # ditto
+    "post_fbp_a":  1.0,                      # identity (rely on intensity_calibrate)
+    "post_fbp_bg": 0.0,
+    "post_fbp_hi": float("inf"),             # no upper clip
+}
+
+
+def mayo_ldct_ssr_config(name: str = "fitted") -> dict:
+    """One-line switch between the multi-GT-fitted SSR defaults and the
+    DICOM-nominal fallback.
+
+    Pass ``name="fitted"`` (default, recommended — SSIM 0.962 / PSNR
+    42.3 dB on L014 central GT) or ``name="nominal"`` (SSIM 0.874 /
+    PSNR 33.0 dB — what you'd get from trusting DICOM tags alone).
+    """
+    if name == "fitted":
+        return dict(MAYO_LDCT_SSR_DEFAULTS)
+    if name == "nominal":
+        return dict(MAYO_LDCT_SSR_NOMINAL)
+    raise ValueError(f"unknown ssr config name: {name!r}; "
+                      f"expected 'fitted' or 'nominal'")
