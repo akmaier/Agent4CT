@@ -32,6 +32,7 @@ Run from the cluster:
 from __future__ import annotations
 import argparse
 import json
+import os
 import sys
 import urllib.parse
 import urllib.request
@@ -394,6 +395,23 @@ def _rebin_patient_series(series_dir: Path, out_h5: Path, out_zgrid: Path,
           f"dv={geom['dv']:.4f} total_rot={geom['total_rotations']:.3f}",
           flush=True)
 
+    # Optional override: replace the DICOM-nominal SSR sod/sdd with the
+    # multi-GT-fitted optimum (SLURM 762369 → MAYO_LDCT_SSR_DEFAULTS in
+    # ddssl_ldct/geometry.py). Gated by env var so the legacy DICOM-nominal
+    # path stays the default for backwards compatibility. See findings.md
+    # 2026-05-27 entry "SSR-vs-FBP geometry split" for rationale.
+    if os.environ.get("HELIX2FAN_SSR_FITTED", "0") in ("1", "true", "True"):
+        from ddssl_ldct.geometry import MAYO_LDCT_SSR_DEFAULTS
+        sod_old, sdd_old = float(geom["sod"]), float(geom["sdd"])
+        sod_new = float(MAYO_LDCT_SSR_DEFAULTS["sod"])
+        sdd_new = float(MAYO_LDCT_SSR_DEFAULTS["sdd"])
+        print(f"[rebin]   SSR sod {sod_old:.3f} → {sod_new:.3f} "
+              f"(Δ = {sod_new - sod_old:+.3f} mm; multi-GT)", flush=True)
+        print(f"[rebin]   SSR sdd {sdd_old:.3f} → {sdd_new:.3f} "
+              f"(Δ = {sdd_new - sdd_old:+.3f} mm; multi-GT)", flush=True)
+        geom["sod"] = sod_new
+        geom["sdd"] = sdd_new
+
     print(f"[rebin]   curved -> flat (n_jobs={n_jobs}) ...", flush=True)
     proj_flat = rebin_curved_to_flat(proj_curved, geom, n_jobs=n_jobs)
     del proj_curved  # free ~3 GB
@@ -574,7 +592,14 @@ def main(argv: list[str] | None = None) -> int:
     challenge_dir = root / CHALLENGE
     raw_dir = challenge_dir / "raw"
     staged_dir = challenge_dir / "staged"
-    staged_sino_dir = challenge_dir / "staged_helix2fan"
+    # Output subdir for the helix2fan-rebinned sinos. Default
+    # "staged_helix2fan/" matches the legacy DICOM-nominal rebin output;
+    # set STAGED_HELIX2FAN_SUBDIR to e.g. "staged_helix2fan_ssr_fitted"
+    # to write the new SSR-fitted rebin into a sibling directory without
+    # clobbering the existing 86 GB of legacy data.
+    staged_sino_subdir = os.environ.get("STAGED_HELIX2FAN_SUBDIR",
+                                          "staged_helix2fan")
+    staged_sino_dir = challenge_dir / staged_sino_subdir
 
     print(f"[plan] AGENT4CT_DATA = {root}")
     print(f"[plan] subset = Wagner 10 patients = {WAGNER_PATIENT_IDS}")
