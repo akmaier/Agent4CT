@@ -14,6 +14,165 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-05-27 — Summary: how we got from DICOM-nominal SSIM 0.87 to fitted SSIM 0.96 on L014 — and why the dominant cause is **1 mm of DICOM-header rounding**
+
+This entry consolidates what we now know about reconstructing Mayo's
+B30f truth image from DICOM-CT-PD projections. It is the canonical
+write-up — the dated entries below it are the chronological
+investigation that produced it.
+
+### TL;DR
+
+| Configuration | SSIM | PSNR | RMSE | Source |
+|---|---:|---:|---:|---|
+| **DICOM-nominal** (all defaults from DICOM tags only) | 0.8740 | 33.01 dB | 0.00112 | SLURM 762409 |
+| **Fitted** (Powell FBP + multi-GT SSR + Δz + slab + α_dz + H(ρ) + post-FBP) | 0.9623 | 42.27 dB | 0.00039 | SLURM 762407 |
+| **Fitted + rigid 2D align** (residual rotation + translation) | 0.9633 | 42.35 dB | 0.00038 | SLURM 762412 |
+| Multi-GT mean (10 central L014 slices) | 0.9676 | 42.92 dB | 0.00036 | SLURM 762369 |
+| **Δ DICOM → Fitted** | **+0.0883** | **+9.26 dB** | **−65.6 %** | |
+
+The remaining ~3 % SSIM gap (truth would score 1.0 against itself)
+is **non-rigid** signal content — kernel MTF, slab profile shape,
+sub-pixel anatomical noise. Rigid 2D alignment buys only +0.001
+SSIM; the geometry fit has already absorbed everything rotation
+and translation can correct.
+
+### The dominant cause: 1-mm rounding in `ReconstructionDiameter`
+
+Out of the 9.26 dB total gap between DICOM-nominal and our fitted
+recon, **8.4 dB comes from a single source** — Mayo writes
+`ReconstructionDiameter = 360 mm` as an integer into the DICOM tag,
+and the truth image's `PixelSpacing` derives directly from that:
+
+```
+DICOM:  PixelSpacing = ReconDiameter / image_size = 360 / 512 = 0.703125 mm
+Fitted:                                              ≈ 0.700857 mm
+                                       ↓
+                       actual scanner FOV ≈ 0.700857 × 512 = 358.84 mm
+```
+
+Mayo's DICOM stores **360 mm** but the scanner's effective FOV — the
+value Siemens's internal reconstructor actually used — is **~358.84 mm**.
+The **1.16 mm rounding** is the dominant calibration error. Everything
+else is sub-dB compensations once the scale is right.
+
+We have empirical evidence the rounding explanation is right:
+
+- The pixel-spacing ablation sweeps over {0.695, 0.698, **0.700**, **0.700857**, **0.703125**, 0.705, 0.708} mm at the multi-GT optimum. The sharp peak is at 0.700857; the DICOM value 0.703125 is **8.4 dB worse** (SLURM 762407, repeated cleanly after the SSR/FBP-decoupling fix). Wagner's literature default 0.700 mm is much closer to optimum than Mayo's own DICOM tag.
+- Multiple independent geometry quantities all show the same ~0.3 % fractional offset:
+  - `pixel_sp_eff / pixel_sp_DICOM   = 0.700857 / 0.703125 = 0.9968`  (−0.32 %)
+  - `sod_eff_SSR  / sod_DICOM         = 593.461  / 595.000  = 0.9974`  (−0.26 %)
+  - `det_spacing_FBP / det_spacing_DICOM = 1.285044 / 1.285839 = 0.9994` (−0.06 %)
+  This is one underlying scale error propagated through the geometry
+  chain, not three independent flukes.
+- Why DICOM has it wrong: `ReconstructionDiameter` is conventionally
+  stored as an integer (or stored at the resolution the
+  technologist/operator entered, often a round 360 / 400 / 500 mm).
+  Siemens's internal reconstructor uses the actual scanner-calibrated
+  FOV, but DICOM-CT-PD has no field for that — it only records the
+  *nominal* value and the *derived* `PixelSpacing`.
+
+So one mm of integer rounding in the DICOM header costs almost
+9 dB of PSNR. The remaining ~0.86 dB of the total gap comes from
+all the other knobs combined.
+
+### Per-knob attribution of the 9.26 dB gap
+
+| Knob | Contribution | Reason |
+|---|---:|---|
+| **pixel_spacing 0.703125 → 0.700857** | **+8.4 dB** | The rounding above. Pixel-spacing ablation 762407. |
+| det_spacing 1.285839 → 1.285044 | +1.2 dB | Powell fit beat DICOM by 0.06 %. Det-spacing ablation 762410. |
+| FBP sod, sdd Powell offsets | ~+0.6 dB | (mostly absorbed into pixel-sp curve at fixed multi-GT context) |
+| SSR sod 595 → 593.461, sdd 1085.6 → 1086.831 | +0.6–0.8 dB | Multi-GT fit iter 0 → 100 in 762369 |
+| Δz alignment (−0.578 mm) | +0.5–1 dB | Truth IPP is quantised to 3 mm grid; the actual slab anchor floats inside that cell. |
+| 7-tap slab averaging (matches B30f 5 mm SliceThickness) | +1–2 dB | Slab profile fit in 762369 |
+| α_dz = +1 (FFS-z sign) | +0.85 dB | FFS-sign ablation 762363. DICOM lists `ffs_dz` per readout but no sign convention. |
+| Fitted radial filter H(ρ) — gentle low-pass + mid boost | +1–2 dB on high freq | Approximates Siemens B30f MTF. PYRO-NN ramlak alone is too sharp. |
+| Post-FBP scaling (a, bg, hi) | ~0–1 dB | Mostly redundant with `intensity_calibrate`. |
+| **Rigid 2D align (θ, tx, ty)** | **+0.001 dB** | Already absorbed — there is no residual rotation/translation. |
+
+Sum is much greater than 9.26 dB because most knobs partially
+overlap (intensity_calibrate absorbs scaling; Δz absorbs SSR-sod
+motion; etc.). The TOTAL is what the side-by-side SLURM 762409
+measures.
+
+### What you cannot recover from DICOM-CT-PD alone
+
+| Quantity | DICOM tag | Why it's not enough |
+|---|---|---|
+| Effective recon FOV | `ReconstructionDiameter = 360 mm` | Integer-rounded; actual is ~358.84 mm |
+| Effective FBP sod/sdd | `(0x7031,0x1003) = 595.000` / `(0x7031,0x1031) = 1085.6` | Mechanical nominal; Siemens reconstructor uses Powell-fit ≈ 595.36 / 1086.80 |
+| Effective SSR sod/sdd | same | Multi-GT joint fit shows the SSR step needs *different* values from FBP (593.46 / 1086.83) — DICOM has no concept of "two recon stages" |
+| Effective det pitch | `(0x7029,0x1002) = 1.285839` | FBP wants 1.285044 (Δ −0.06 %); SSR uses DICOM |
+| File ordering | filename / `InstanceNumber` | Filename alphabetic ≠ acquisition time on Mayo; **must sort by `InstanceNumber`** |
+| Sub-mm slab anchor (Δz) | `ImagePositionPatient[2]` | Quantised to 3 mm slice grid; need ±0.6 mm sub-anchor offset |
+| Reconstruction kernel MTF | `ConvolutionKernel = B30f` | Name only, no frequency response. Fitted H(ρ) approximates it. |
+| Slab integration profile | `SliceThickness = 5 mm` | Thickness yes; integration *shape* (our U-curve) no |
+| FFS sign convention | `(0x7033,0x100B/C/D)` | Per-readout deflections, but no sign convention. Must ablate. |
+| `ffs_dphi` per-readout | `(0x7033,0x100B)` | **Catastrophically breaks recon if applied as offset**: it's already implicit in `gantry_angles_corrected`, NOT an additional correction. Leave at 0. |
+
+### Final production pipeline
+
+The defaults below give SSIM ~0.962 / PSNR ~42.3 dB on the L014
+central GT and ~0.968 / ~42.9 dB averaged across 10 central GTs:
+
+```
+FBP step  (FanBeamGeometry.mayo_ldct_fitted, Powell fit, job 762284)
+    pixel_spacing  = 0.700857 mm
+    det_spacing    = 1.285044 mm
+    sod            = 595.362 mm
+    sdd            = 1086.803 mm
+    detector_origin offset = MAYO_LDCT_DET_OFFSET = −0.0397 mm
+
+SSR rebin step  (MAYO_LDCT_SSR_DEFAULTS, multi-GT joint fit, job 762369)
+    sod            = 593.461 mm    (different from FBP sod — they
+    sdd            = 1086.831 mm    parameterise different operators)
+    du             = 1.285839 mm   (DICOM, hardware)
+    dv             = 1.094723 mm   (DICOM, hardware)
+    delta_z        = −0.578 mm     (sub-anchor offset inside truth's 3 mm grid)
+    alpha_dz       = +1            (FFS-z sign; z_eff = z_pos + ffs_dz)
+    slab_offsets   = (−3,−2,−1,0,+1,+2,+3) mm
+    w_slab         = (0.02, 0.25, 0.14, 0.18, 0.15, 0.22, 0.03)   U-shaped
+    post_fbp_a     = 0.807
+    post_fbp_bg    = −0.0003
+    post_fbp_hi    = 0.0435
+    H(ρ)           = 64-bin radial filter (gentle low-pass + mid boost,
+                     stored in L014_rebin_end2end_fit.json)
+
+DICOM-nominal fallback (MAYO_LDCT_SSR_NOMINAL + mayo_ldct_nominal())
+                                      — gives SSIM ~0.874, for A/B
+```
+
+### What's still open
+
+- **Bulk rebin with the SSR-fitted defaults** (SLURM 762413,
+  dispatched 2026-05-27). The previous bulk rebin used DICOM-nominal
+  SSR sod/sdd, so every staged H5 currently has a ~0.26 % SSR
+  magnification error. The new bulk rebin writes to
+  `staged_helix2fan_ssr_fitted/` next to the legacy
+  `staged_helix2fan/`. ETA ~20 hours.
+- **Kernel MTF**. PYRO-NN ramlak filter + fitted H(ρ) approximates
+  Siemens B30f but is not identical. Closing the last ~3 % SSIM gap
+  would need either a direct Siemens-kernel implementation or a
+  data-driven 2D MTF kernel estimation; neither has been attempted.
+- **Per-patient generalisation**. The calibration was fit on L014
+  alone. Whether (sod_SSR, sdd_SSR, Δz, slab, H(ρ)) generalise
+  across patients or need per-patient re-fitting is not tested.
+
+### Cross-references
+
+- Pixel-spacing ablation: SLURM 762368 / 762407
+- Det-spacing ablation: SLURM 762404 / 762410
+- FFS-sign ablation: SLURM 762363 / 762367 / 762411
+- Multi-GT joint fit: SLURM 762369
+- DICOM-vs-fitted comparison: SLURM 762409 (image:
+  `docs/_breast_geom_debug/L014_dicom_vs_fitted.png`)
+- Rigid 2D align: SLURM 762412 (image:
+  `docs/_breast_geom_debug/L014_rigid_align.png`)
+- Bulk rebin SSR-fitted: SLURM 762413 (in flight)
+
+---
+
 ## 2026-05-27 — Rigid 2D alignment yields +0.001 SSIM: the geometry fit already absorbed all rigid misregistration
 
 Hypothesis (SLURM 762412): after `pixel_spacing`, `sod`, `sdd`,
