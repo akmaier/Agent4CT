@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-27T10:38:25Z",
+  "run_id": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
+  "iter": 14,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "lpd-search-tpe-calibrated: lpd_iters=8, lpd_hidden=96, lpd_n_primal=5, lpd_n_dual=5, lpd_share_weights=False, epochs=17, lr=0.00042218, lr_schedule=cosine, batch_size=1, grad_clip=0.5, lambda_neg=1, loss_base=mse, val_n=20, val_chunk=4",
+  "val_score": 0.5726240277290344,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 1.492304,
+  "train_n": 400,
+  "agent": "lpd-search-tpe-calibrated",
+  "model": "random-search",
+  "advice_for_others": "lpd-search-tpe-calibrated: lpd_iters=8, lpd_hidden=96, lpd_n_primal=5, lpd_n_dual=5, lpd_share_weights=False, epochs=17, lr=0.00042218, lr_schedule=cosine, batch_size=1, grad_clip=0.5, lambda_neg=1, loss_base=mse, val_n=20, val_chunk=4 -> hr=0.0000",
+  "comparison_image": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0014/comparison.png"
+}

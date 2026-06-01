@@ -1,0 +1,29 @@
+{
+  "slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-intensity-calibrated-tpe-lpd-search",
+  "started": "2026-05-27T04:07:03Z",
+  "agent": "lpd-search-tpe-calibrated",
+  "model": "optuna-tpe",
+  "status": "done",
+  "notes": "LPD TPE search on demo-DL (intensity-calibrated); fills the gap vs breast-ct where LPD is leader",
+  "finished": "2026-05-27T13:06:22Z",
+  "sampler": "tpe",
+  "best_params": {
+    "lpd_iters": 8,
+    "lpd_hidden": 96,
+    "lpd_n_primal": 5,
+    "lpd_n_dual": 5,
+    "lpd_share_weights": false,
+    "epochs": 18,
+    "lr": 0.00025972722816701676,
+    "lr_schedule": "cosine",
+    "batch_size": 1,
+    "grad_clip": 0.5,
+    "lambda_neg": 1.0,
+    "loss_base": "mse",
+    "val_n": 20,
+    "val_chunk": 4
+  },
+  "best_headroom": 0.4947240928024762
+}
