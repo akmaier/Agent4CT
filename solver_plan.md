@@ -146,7 +146,39 @@ What this looked like in practice (for `mayo_ldct`):
 ## Step 2 — Agentic autoresearch per solver
 
 For every solver in `pentathlon/demo_dl_reference/solver_*.py`, run a
-**Claude-driven autoresearch loop**:
+**Claude-driven autoresearch loop**. *This is a loop, not a one-shot
+ablation* — Claude is the agent inside the loop and is responsible
+for proposing every iter after iter 1 based on what was observed.
+
+### The loop (Claude's per-iter responsibility)
+
+```
+        ┌── start: propose iter-1 config (seed from cross-dataset leader)
+        │
+        ▼
+   1.  Dispatch ONE iter to SLURM (claude_agentic_one_iter.sbatch).
+   2.  Wait for the cluster job to finish (~5–60 min, solver-dependent).
+   3.  READ docs/runs/<slug>/iterations/iter-NN/{observation.json,
+       comparison.png, solver.py.txt} and results.tsv.
+   4.  DIAGNOSE: what does the result + image tell us about the
+       solver's failure mode? Smoothing? Hallucinations? Convergence?
+       Capacity? Loss landscape?
+   5.  PROPOSE iter-(N+1): pick a SINGLE knob to change, name the
+       hypothesis ("if I do X, I expect Y because Z").
+   6.  Goto 1.
+
+   STOP condition: two consecutive iters with Δhr < 0.005, OR
+                   iter-15 reached, OR a clear architectural ceiling
+                   has been demonstrated (then file as deprioritised).
+```
+
+**Crucial**: control does NOT return to the user between iters. Claude
+runs the full loop end-to-end and only reports when the plateau /
+stop condition is met. A single dispatch + "I'll report when it
+lands" is NOT autoresearch — it is an ablation. Autoresearch is the
+WHOLE chain of dispatch → review → propose → dispatch.
+
+### Per-iter dispatch
 
 ```bash
 # One iter at a time; the agent reads the prior iters' results from
@@ -162,20 +194,19 @@ sbatch --export=ALL,... cluster/slurm/claude_agentic_one_iter.sbatch
 might help on this dataset class — hyperparams (lr, epochs, batch,
 weight_decay, lr_schedule, …), capacity (channels, layers, unrolled
 iterations), loss-formulation (supervised L2 vs Noise2Inverse, L1,
-perceptual…), training-set size, init scheme.
-
-**Rule of thumb**: 10–15 iterations is enough to plateau. Stop when
-two consecutive iters fail to improve hr by > 0.005.
+perceptual…), training-set size, init scheme, architectural variants
+(EMA, attention, residual blocks, …). One change per iter so the
+journal stays interpretable.
 
 **Slug convention**: `<dataset-prefix>-claude-agentic-<solver>-search-YYYYMMDD-NN`
 e.g. `breast-ct-claude-agentic-learned-primal-dual-search-20260522-01`.
 
-**Inputs the agent reads each iter**:
+**Inputs the agent reads each iter** (Claude REQUIRED to inspect ALL):
 - `docs/runs/<slug>/results.tsv` — full prior iter history.
 - `docs/runs/<slug>/iterations/iter-NNNN/observation.json` — per-iter
   rationale + scores.
 - `docs/runs/<slug>/iterations/iter-NNNN/comparison.png` — for visual
-  diagnosis of artefacts.
+  diagnosis of artefacts. Open the image; do not skip this.
 - The matching solver design doc in `pentathlon/demo_dl_reference/solver_<name>.md`
   — "Hints for the next autoresearch agent" section.
 
