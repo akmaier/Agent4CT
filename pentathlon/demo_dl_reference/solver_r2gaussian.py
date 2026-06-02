@@ -47,6 +47,19 @@ CONFIG = {
     "gs_scale_init": 0.04,    # in normalised [-1,1] coords; ~10 px at 512
     "gs_tv_weight": 1e-4,
     "gs_n_clip": 0.05,
+    # Agentic iter (2026-06-02): when True, initialise Gaussian positions
+    # from the FBP-of-noisy image instead of uniform random in [-0.6, 0.6].
+    # Hypothesis: R²-G's hr=0 on dense-view breast comes from the cold
+    # uniform init — many Gaussians waste capacity on the background. With
+    # FBP-warm-start, Gaussians anchor on actual anatomy from iter 0 and
+    # only have to refine local detail. Sampling uses FBP-intensity as a
+    # per-pixel weight; positions are drawn from `multinomial(p ∝ fbp²)`
+    # so brighter regions get more Gaussians.
+    "gs_init_from_fbp": False,
+    # When gs_init_from_fbp=True, initialise amp_raw from the FBP intensity
+    # at each Gaussian's position (clamped to gs_amp_init_max), so the
+    # warm start matches the truth scale on iter 0.
+    "gs_amp_init_max": 0.05,
 }
 
 
@@ -62,21 +75,69 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
                           geom=geom)
 
 
+def _fbp_init_positions(fbp_image: torch.Tensor, n: int,
+                          amp_init_max: float) -> tuple[torch.Tensor, torch.Tensor]:
+    """Sample Gaussian positions from an FBP image.
+
+    Returns (pos, amp_init):
+      pos:       (n, 2) in normalised [-1, +1] coords.
+      amp_init:  (n,) — FBP intensity at each sampled position,
+                 clamped to ``amp_init_max`` so a noisy FBP peak
+                 doesn't drive the amp parameter to inf.
+
+    Probability is proportional to clamp(fbp, 0, inf)**2 — squaring
+    biases the sampling toward bright anatomy and away from the
+    diffuse background. Falls back to uniform sampling if the FBP is
+    all zero.
+    """
+    H, W = fbp_image.shape
+    weights = fbp_image.clamp(min=0.0).reshape(-1) ** 2
+    s = float(weights.sum())
+    if not (s > 0 and math.isfinite(s)):
+        # Degenerate FBP — fall back to uniform random.
+        device = fbp_image.device
+        pos = torch.empty(n, 2, device=device).uniform_(-0.6, 0.6)
+        amp = torch.full((n,), 1e-3, device=device)
+        return pos, amp
+    idx_flat = torch.multinomial(weights / s, num_samples=n, replacement=True)
+    yi = (idx_flat // W).to(torch.float32)
+    xi = (idx_flat %  W).to(torch.float32)
+    # Map (y, x) ∈ [0, H-1] to normalised [-1, +1].
+    pos = torch.stack([
+        (xi / (W - 1)) * 2.0 - 1.0,
+        (yi / (H - 1)) * 2.0 - 1.0,
+    ], dim=-1)
+    # Jitter by ±0.5 pix to avoid duplicate positions at the same peak.
+    pos = pos + torch.randn_like(pos) * (1.0 / max(H, W))
+    amp_at_pos = fbp_image[yi.long(), xi.long()].clamp(min=1e-4, max=amp_init_max)
+    return pos.to(fbp_image.device), amp_at_pos.to(fbp_image.device)
+
+
 class GS2D(nn.Module):
     """N anisotropic 2-D Gaussians rasterised to an (H, W) image."""
-    def __init__(self, n, image_size, amp_init, scale_init):
+    def __init__(self, n, image_size, amp_init, scale_init,
+                  init_fbp: torch.Tensor | None = None,
+                  amp_init_max: float = 0.05):
         super().__init__()
         self.n = n
         self.H = image_size
-        # Positions in normalised [-1, 1].
-        self.pos = nn.Parameter(torch.empty(n, 2).uniform_(-0.6, 0.6))
+        if init_fbp is not None:
+            # FBP-warm-start: sample positions ∝ fbp² and seed amp from
+            # the FBP intensity at each picked location.
+            pos0, amp_at_pos = _fbp_init_positions(init_fbp, n, amp_init_max)
+            self.pos = nn.Parameter(pos0)
+            # Per-Gaussian inverse-softplus(amp) so softplus(amp_raw) = amp.
+            amp_at_pos = amp_at_pos.clamp(min=1e-5)
+            self.amp_raw = nn.Parameter(torch.log(torch.expm1(amp_at_pos)))
+        else:
+            # Cold init (original behaviour).
+            self.pos = nn.Parameter(torch.empty(n, 2).uniform_(-0.6, 0.6))
+            inv_sp = math.log(math.expm1(amp_init))
+            self.amp_raw = nn.Parameter(torch.full((n,), inv_sp))
         # Log-scales for x, y (positive via exp).
         self.log_scale = nn.Parameter(torch.full((n, 2), math.log(scale_init)))
         # Rotation angle.
         self.rot = nn.Parameter(torch.empty(n).uniform_(0.0, math.pi))
-        # Amplitude (positive via softplus).
-        inv_sp = math.log(math.expm1(amp_init))
-        self.amp_raw = nn.Parameter(torch.full((n,), inv_sp))
 
     def forward(self):
         device = self.pos.device
@@ -110,10 +171,13 @@ def _tv(img):
            (img[..., :, 1:] - img[..., :, :-1]).abs().mean()
 
 
-def fit_one_scene(noisy_sino, geom, cfg, device):
+def fit_one_scene(noisy_sino, geom, cfg, device, fbp_init: torch.Tensor | None = None):
     proj = PyronnFanBeamProjector(geom).to(device)
+    init_fbp = fbp_init if cfg.get("gs_init_from_fbp", False) else None
     model = GS2D(cfg["gs_n_gaussians"], cfg["image_size"],
-                 cfg["gs_amp_init"], cfg["gs_scale_init"]).to(device)
+                 cfg["gs_amp_init"], cfg["gs_scale_init"],
+                 init_fbp=init_fbp,
+                 amp_init_max=cfg.get("gs_amp_init_max", 0.05)).to(device)
     opt = torch.optim.Adam([
         {"params": [model.pos],       "lr": cfg["gs_lr_pos"]},
         {"params": [model.log_scale], "lr": cfg["gs_lr_scale"]},
@@ -162,7 +226,9 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     t0 = time.time(); preds = []
     for i in range(cfg["val_n"]):
         s = noisys[i:i+1]
-        pred_i = fit_one_scene(s, geom, cfg, device)
+        # When gs_init_from_fbp=True, pass the per-slice FBP to seed positions.
+        fbp_init_i = fbps[i, 0] if cfg.get("gs_init_from_fbp", False) else None
+        pred_i = fit_one_scene(s, geom, cfg, device, fbp_init=fbp_init_i)
         preds.append(pred_i.detach())
         if (i + 1) % 5 == 0:
             print(f"[fit] {i+1}/{cfg['val_n']}  elapsed={time.time()-t0:.1f}s",
