@@ -171,8 +171,16 @@ def main():
     data_root = Path(args.data_root)
     challenge = data_root / "mayo_ldct"
     raw_dir = challenge / "raw"
-    sino_dir = challenge / "staged_helix2fan"
+    # Source directory for per-patient helix2fan sinos. Mirrors the
+    # env-var pattern in fetch_mayo_ldct.py: default "staged_helix2fan/"
+    # (legacy DICOM-nominal SSR), or set STAGED_HELIX2FAN_SUBDIR=
+    # "staged_helix2fan_ssr_fitted" to read the multi-GT-fitted rebin
+    # produced by `rebin_mayo_helix2fan_ssr_fitted.sbatch`.
+    sino_subdir = os.environ.get("STAGED_HELIX2FAN_SUBDIR",
+                                   "staged_helix2fan")
+    sino_dir = challenge / sino_subdir
     staged_dir = challenge / "staged"
+    print(f"[stage-sino] sino_dir = {sino_dir}", flush=True)
     if not staged_dir.exists():
         raise FileNotFoundError(
             f"{staged_dir} missing — run data/fetch_mayo_ldct.py first "
@@ -180,7 +188,7 @@ def main():
     if not sino_dir.exists():
         raise FileNotFoundError(
             f"{sino_dir} missing — run "
-            "cluster/slurm/rebin_mayo_helix2fan.sbatch first.")
+            "cluster/slurm/rebin_mayo_helix2fan{_ssr_fitted}.sbatch first.")
 
     doses = ["fulldose", "lowdose"] if args.dose == "both" else [args.dose]
     for split, pids in WAGNER_SPLITS.items():

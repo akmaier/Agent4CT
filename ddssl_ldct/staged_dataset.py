@@ -299,10 +299,15 @@ GEOMETRIES: dict[str, DatasetInfo] = {
     # `data/mayo_ldct/staged/` directory (where the truth h5s live).
     # The aggregated per-split sino h5s are produced by
     # `data/stage_mayo_sinos.py` after the helix2fan bulk rebin.
+    # Geometry from FanBeamGeometry.mayo_ldct_fitted() — the Powell 5-param
+    # fit on L014 (job 762284). DO NOT replace with MAYO_LDCT_SSR_DEFAULTS:
+    # this is the FBP-step geometry, not the SSR-step geometry; they're
+    # independent and only the FBP one belongs here. See findings.md
+    # 2026-05-27 "FBP sod ≠ SSR sod" for context.
     "mayo_ldct_2d": DatasetInfo(
-        image_size=512, pixel_spacing=0.5859375,
-        n_angles=2304, n_det=736, det_spacing=1.2858,
-        sod=595.0, sdd=1085.6,
+        image_size=512, pixel_spacing=0.700857,    # was 0.5859375 (stale)
+        n_angles=2304, n_det=736, det_spacing=1.285044,   # was 1.2858
+        sod=595.362, sdd=1086.803,                  # was 595.0 / 1085.6 (DICOM)
         display_min=0.0, display_max=0.05,
         has_real_sino=True,
         staged_dir=_DEFAULT_DATA_ROOT / "mayo_ldct" / "staged",
