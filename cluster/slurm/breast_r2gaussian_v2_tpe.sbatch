@@ -30,6 +30,12 @@ export PYTHONPATH="$REPO:${PYTHONPATH:-}"
 echo "[breast-r2g-v2-tpe] host=$(hostname) job=$SLURM_JOB_ID"
 nvidia-smi -L
 
+# Bumped from default 5400s — previous TPE 762629 timed out per-trial
+# on breast-CT phantoms (denser → slower per iter than demo). Also
+# capped n_gaussians at 1024 in learned_solver_search_agent.py (was
+# OOMing at 2048 × 40k iter on Q5000 24GB).
+export SEARCH_AGENT_SUBPROC_TIMEOUT_S=9000
+
 python scripts/learned_solver_search_agent.py \
     --solver r2gaussian \
     --sampler tpe \
@@ -37,6 +43,6 @@ python scripts/learned_solver_search_agent.py \
     --dataset breast_ct \
     --iterations 20 \
     --tpe-startup 5 \
-    --notes "R²-Gaussian TPE on breast-CT, extended n_iter bound to [10000, 40000] (was [300, 800])"
+    --notes "R²-Gaussian TPE on breast-CT, n_iter [10k-40k] + n_gauss capped at 1024 (v2 retry after 762629 timeout)"
 
 echo "[breast-r2g-v2-tpe] done."

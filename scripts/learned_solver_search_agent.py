@@ -288,13 +288,20 @@ SOLVERS = {
         "slug_prefix": "demo-fair-r2gaussian-search",
         "agent_name": "r2gaussian-search",
         "space": {
-            "gs_n_gaussians": ([512, 1024, 2048], "choice"),
+            # 2026-06-02 update: dropped 2048 from choices — the 2048
+            # × 40k-iter combination OOMs on Q5000 24GB in solver's
+            # `(dx/sx)**2 + (dy/sy)**2` (one 1024×1024×2048 float32
+            # intermediate ~8 GB). Keep 512/1024 only; let TPE find
+            # the right n_iter for each.
+            "gs_n_gaussians": ([512, 1024], "choice"),
             # Bumped 2026-05-27 from (300, 800) → (10000, 40000) to match
             # the R²-Gaussian paper's reported convergence window
             # (20k–30k iters for X3D). The earlier (300, 800) bound was
             # ~50× too low: the per-scene fit hadn't actually converged
-            # before TPE moved on. Per-trial wall now ~5–15 min on Q5000
-            # (val_n=20 phantoms × ~30 s each at 40k iters).
+            # before TPE moved on.
+            #
+            # Per-trial wall on demo-DL: ~3–8 min at n_gauss=512,
+            # n_iter=20k–40k. On breast-CT (denser phantoms): ~6–15 min.
             "gs_n_iter":      (10000, 40000, "int"),
             "gs_lr_pos":      (1e-3, 2e-2, "log"),
             "gs_lr_scale":    (5e-3, 5e-2, "log"),
@@ -614,6 +621,72 @@ SOLVERS = {
         },
         "tpe_seed_trial": {
             "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_breast_constrained_final.pt",
+            "recon_mode":          "dps",
+            "recon_sample_steps":  500,
+            "recon_eta":           30.0,
+            "recon_init":          "fbp",
+            "recon_eta_clamp":     False,
+            "recon_dcstep_every":  3,
+            "recon_dcstep_n_cg":   20,
+            "recon_dcstep_warmup": 25,
+            "recon_dcstep_relax":  1.0,
+        },
+    },
+    # v2 breast diff-recon — uses the LARGER + LONGER-trained DDPM
+    # checkpoints (ch=64, 80 epochs, SLURM 762624) instead of the
+    # under-trained v1 (ch=32, 25 epochs, val_eps_loss 0.005 → 0.003).
+    # Same search space as v1, just pointed at the v2 .pt files. Run
+    # with `--dataset breast_ct` → slug
+    # `breast-ct-calibrated-tpe-diff-recon-dcstep-{,un}constrained-breast-v2-search-*`.
+    "diffusion_recon_dcstep_unconstrained_breast_v2": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-fair-diff-recon-dcstep-unconstrained-breast-v2-search",
+        "agent_name": "diff-recon-dcstep-unconstrained-breast-v2-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_breast_unconstrained_v2.pt"], "choice"),
+            "recon_mode":          (["dps"], "choice"),
+            "recon_sample_steps":  ([200, 500, 800], "choice"),
+            "recon_eta":           (3.0, 60.0, "log"),
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([False, True], "choice"),
+            "recon_dcstep_every":  ([3, 4, 5], "choice"),
+            "recon_dcstep_n_cg":   ([10, 15, 20, 25], "choice"),
+            "recon_dcstep_warmup": ([10, 25, 40], "choice"),
+            "recon_dcstep_relax":  ([0.85, 0.95, 1.0], "choice"),
+        },
+        "tpe_seed_trial": {
+            "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_breast_unconstrained_v2.pt",
+            "recon_mode":          "dps",
+            "recon_sample_steps":  500,
+            "recon_eta":           30.0,
+            "recon_init":          "fbp",
+            "recon_eta_clamp":     False,
+            "recon_dcstep_every":  3,
+            "recon_dcstep_n_cg":   20,
+            "recon_dcstep_warmup": 25,
+            "recon_dcstep_relax":  1.0,
+        },
+    },
+    "diffusion_recon_dcstep_constrained_breast_v2": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-fair-diff-recon-dcstep-constrained-breast-v2-search",
+        "agent_name": "diff-recon-dcstep-constrained-breast-v2-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_breast_constrained_v2.pt"], "choice"),
+            "recon_mode":          (["dps"], "choice"),
+            "recon_sample_steps":  ([200, 500, 800], "choice"),
+            "recon_eta":           (3.0, 60.0, "log"),
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([False, True], "choice"),
+            "recon_dcstep_every":  ([3, 4, 5], "choice"),
+            "recon_dcstep_n_cg":   ([10, 15, 20, 25], "choice"),
+            "recon_dcstep_warmup": ([10, 25, 40], "choice"),
+            "recon_dcstep_relax":  ([0.85, 0.95, 1.0], "choice"),
+        },
+        "tpe_seed_trial": {
+            "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_breast_constrained_v2.pt",
             "recon_mode":          "dps",
             "recon_sample_steps":  500,
             "recon_eta":           30.0,

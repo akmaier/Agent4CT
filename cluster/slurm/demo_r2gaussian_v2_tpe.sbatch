@@ -29,12 +29,18 @@ export PYTHONPATH="$REPO:${PYTHONPATH:-}"
 echo "[demo-r2g-v2-tpe] host=$(hostname) job=$SLURM_JOB_ID"
 nvidia-smi -L
 
+# Bumped from default 5400s — the 40k-iter trials can take 60-90 min
+# on dense phantoms; previous TPE 762628 timed out per-trial. Also
+# capped n_gaussians at 1024 in learned_solver_search_agent.py (was
+# OOMing at 2048 × 40k iter on Q5000 24GB).
+export SEARCH_AGENT_SUBPROC_TIMEOUT_S=9000
+
 python scripts/learned_solver_search_agent.py \
     --solver r2gaussian \
     --sampler tpe \
     --calibrated \
     --iterations 20 \
     --tpe-startup 5 \
-    --notes "R²-Gaussian TPE on demo-DL, extended n_iter bound to [10000, 40000] (paper-reported convergence window)"
+    --notes "R²-Gaussian TPE on demo-DL, extended n_iter [10k-40k] + n_gauss capped at 1024 (v2 retry after 762628 OOM)"
 
 echo "[demo-r2g-v2-tpe] done."
