@@ -698,6 +698,73 @@ SOLVERS = {
             "recon_dcstep_relax":  1.0,
         },
     },
+    # Breast-CT diff-recon entries pointing at the v3 DDPM ckpts
+    # (`ddpm_breast_{,un}constrained_v3.pt`, 61 MB each, ch=128, 60 epochs;
+    # SLURM 762638, 2026-06-02). v3 trained with val_eps_loss=0.0020 —
+    # 2.5× better than v2's 0.0050. Iter-1 of the diff-recon-v3
+    # autoresearch loop tests whether the bigger DDPM finally produces
+    # samples good enough to clear baseline. If still hr=0, the DDPM
+    # path on breast-CT is structurally dead.
+    "diffusion_recon_dcstep_unconstrained_breast_v3": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-fair-diff-recon-dcstep-unconstrained-breast-v3-search",
+        "agent_name": "diff-recon-dcstep-unconstrained-breast-v3-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_breast_unconstrained_v3.pt"], "choice"),
+            "recon_mode":          (["dps"], "choice"),
+            "recon_sample_steps":  ([200, 500, 800], "choice"),
+            "recon_eta":           (3.0, 60.0, "log"),
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([False, True], "choice"),
+            "recon_dcstep_every":  ([3, 4, 5], "choice"),
+            "recon_dcstep_n_cg":   ([10, 15, 20, 25], "choice"),
+            "recon_dcstep_warmup": ([10, 25, 40], "choice"),
+            "recon_dcstep_relax":  ([0.85, 0.95, 1.0], "choice"),
+        },
+        "tpe_seed_trial": {
+            "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_breast_unconstrained_v3.pt",
+            "recon_mode":          "dps",
+            "recon_sample_steps":  500,
+            "recon_eta":           30.0,
+            "recon_init":          "fbp",
+            "recon_eta_clamp":     False,
+            "recon_dcstep_every":  3,
+            "recon_dcstep_n_cg":   20,
+            "recon_dcstep_warmup": 25,
+            "recon_dcstep_relax":  1.0,
+        },
+    },
+    "diffusion_recon_dcstep_constrained_breast_v3": {
+        "solver": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "env_var": "DIFFUSION_RECON_CONFIG_PATH",
+        "slug_prefix": "demo-fair-diff-recon-dcstep-constrained-breast-v3-search",
+        "agent_name": "diff-recon-dcstep-constrained-breast-v3-search",
+        "space": {
+            "recon_ckpt":          (["/cluster/maier/Agent4CT/checkpoints/ddpm_breast_constrained_v3.pt"], "choice"),
+            "recon_mode":          (["dps"], "choice"),
+            "recon_sample_steps":  ([200, 500, 800], "choice"),
+            "recon_eta":           (3.0, 60.0, "log"),
+            "recon_init":          (["fbp", "noise"], "choice"),
+            "recon_eta_clamp":     ([False, True], "choice"),
+            "recon_dcstep_every":  ([3, 4, 5], "choice"),
+            "recon_dcstep_n_cg":   ([10, 15, 20, 25], "choice"),
+            "recon_dcstep_warmup": ([10, 25, 40], "choice"),
+            "recon_dcstep_relax":  ([0.85, 0.95, 1.0], "choice"),
+        },
+        "tpe_seed_trial": {
+            "recon_ckpt":          "/cluster/maier/Agent4CT/checkpoints/ddpm_breast_constrained_v3.pt",
+            "recon_mode":          "dps",
+            "recon_sample_steps":  500,
+            "recon_eta":           30.0,
+            "recon_init":          "fbp",
+            "recon_eta_clamp":     False,
+            "recon_dcstep_every":  3,
+            "recon_dcstep_n_cg":   20,
+            "recon_dcstep_warmup": 25,
+            "recon_dcstep_relax":  1.0,
+        },
+    },
     # ----- RAM (Terris 2025) zero-shot: TPE around iter-20 Claude winner ---
     "ram_zeroshot": {
         "solver": "pentathlon/demo_dl_reference/solver_ram.py",
