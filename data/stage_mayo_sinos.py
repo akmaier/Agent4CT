@@ -109,9 +109,41 @@ def _find_sino_z_slice(sino_h5: Path, z_grid: np.ndarray,
     return arr
 
 
+def _interp_slice_from_ram(sino_arr: np.ndarray, z_grid: np.ndarray,
+                            target_source_z: float) -> np.ndarray:
+    """In-memory z-interpolation. `sino_arr` shape (rotview, nu, nz);
+    returns (rotview, nu) float32."""
+    n_z = z_grid.size
+    if target_source_z <= z_grid[0]:
+        return sino_arr[:, :, 0].astype(np.float32, copy=False)
+    if target_source_z >= z_grid[-1]:
+        return sino_arr[:, :, n_z - 1].astype(np.float32, copy=False)
+    idx = int(np.searchsorted(z_grid, target_source_z, side="left"))
+    i_hi = idx
+    i_lo = idx - 1
+    z_lo, z_hi = float(z_grid[i_lo]), float(z_grid[i_hi])
+    w = (z_hi - target_source_z) / (z_hi - z_lo)
+    w = float(max(0.0, min(1.0, w)))
+    arr_lo = sino_arr[:, :, i_lo]
+    arr_hi = sino_arr[:, :, i_hi]
+    return (w * arr_lo + (1.0 - w) * arr_hi).astype(np.float32, copy=False)
+
+
 def stage_split_sinos(split: str, triples_ordered, staged_dir: Path,
                       sino_dir: Path, dose: str, force: bool):
-    """Pack one split's sinos."""
+    """Pack one split's sinos.
+
+    Performance note (2026-06-03): the original per-slice path opened
+    each per-patient H5 sino once per slice. Combined with chunks=
+    (1, nu, nz) — chunk along the rotview axis — extracting an axis-2
+    z-slice required decompressing ALL ~2304 chunks (≈2 GB) per slice,
+    giving ~1 slice/min throughput (SLURM 762641 timed out at 10 h with
+    only 1.25/8 H5s done).
+
+    Fix: group triples by patient, open each patient's H5 ONCE, load
+    the full ~3 GB sino into RAM, and z-interp from memory. Peak RAM
+    ~3 GB per patient is comfortable on a 24 GB node. Expected
+    speedup: ~50–100× (~ minutes per split instead of hours)."""
     out_h5 = staged_dir / f"{split}_sino_{dose}.h5"
     if out_h5.exists() and not force:
         print(f"[stage-sino] {out_h5.name} exists; pass --force to overwrite.")
@@ -121,26 +153,27 @@ def stage_split_sinos(split: str, triples_ordered, staged_dir: Path,
         print(f"[stage-sino] split={split} dose={dose}: empty, skip.")
         return
 
-    # Cache per-patient z_grid so we don't reload it per slice.
-    z_grid_cache: dict[str, np.ndarray] = {}
+    # Group triples by patient ID. ordered_indices preserves the global
+    # output-slot mapping the truth h5 used.
+    per_patient: dict[str, list[tuple[int, Path]]] = {}
+    for out_idx, (pid, _k, fp) in enumerate(triples_ordered):
+        per_patient.setdefault(pid, []).append((out_idx, fp))
+    n_patients = len(per_patient)
 
-    def _load_zgrid(pid: str) -> np.ndarray:
-        if pid not in z_grid_cache:
-            z_grid_cache[pid] = np.load(
-                sino_dir / f"{pid}_sino_{dose}_z_grid.npy")
-        return z_grid_cache[pid]
-
-    # First pass: determine output (rotview, nu) shape from the first sino.
-    pid0, _k, _fp = triples_ordered[0]
+    # First pass: determine output (rotview, nu) shape from the first patient.
+    pid0 = next(iter(per_patient))
     sino_h5_0 = sino_dir / f"{pid0}_sino_{dose}.h5"
     if not sino_h5_0.exists():
         raise FileNotFoundError(f"missing helix2fan sino: {sino_h5_0}")
     with h5py.File(sino_h5_0, "r") as f:
         rotview, nu, _ = f["sino"].shape
-    print(f"[stage-sino] {split}/{dose}: {n} slices, "
-          f"target shape ({n}, {rotview}, {nu})")
+    print(f"[stage-sino] {split}/{dose}: {n} slices across {n_patients} "
+          f"patients, target shape ({n}, {rotview}, {nu})", flush=True)
 
     import hdf5plugin
+    import time
+    t0 = time.time()
+    written = 0
     with h5py.File(out_h5, "w") as fout:
         ds = fout.create_dataset(
             "sino", shape=(n, rotview, nu), dtype="float32",
@@ -150,20 +183,35 @@ def stage_split_sinos(split: str, triples_ordered, staged_dir: Path,
         # Also store per-slice patient_z + source_z for diagnostic.
         z_meta = fout.create_dataset("z_meta", shape=(n, 2), dtype="float64")
 
-        for i, (pid, _k, fp) in enumerate(triples_ordered):
-            patient_z = _patient_z_from_dicom(fp)
-            source_z = -patient_z  # mapping verified for L014; same for all
-                                    # head-first Mayo scans
+        for k_pat, (pid, idx_fp_list) in enumerate(per_patient.items()):
             sino_h5 = sino_dir / f"{pid}_sino_{dose}.h5"
-            z_grid = _load_zgrid(pid)
-            slc = _find_sino_z_slice(sino_h5, z_grid, source_z)
-            ds[i] = slc
-            z_meta[i] = (patient_z, source_z)
-            if (i + 1) % 50 == 0 or i == 0:
-                print(f"[stage-sino] {split}/{dose}: {i+1}/{n}  "
-                      f"pid={pid} patient_z={patient_z:.2f} "
-                      f"source_z={source_z:.2f}", flush=True)
-    print(f"[stage-sino] {split}/{dose}: wrote {out_h5}  ({n} slices)")
+            z_grid_path = sino_dir / f"{pid}_sino_{dose}_z_grid.npy"
+            if not sino_h5.exists() or not z_grid_path.exists():
+                print(f"[stage-sino] {split}/{dose}: {pid} missing files, "
+                      f"skipping its {len(idx_fp_list)} slices", flush=True)
+                continue
+            z_grid = np.load(z_grid_path)
+            t1 = time.time()
+            # Full read into RAM — ~3 GB for a 24 GB Mayo node, easy.
+            with h5py.File(sino_h5, "r") as f:
+                sino_arr = f["sino"][:]
+            load_s = time.time() - t1
+            print(f"[stage-sino] {split}/{dose}: patient {k_pat+1}/{n_patients} "
+                  f"{pid} loaded {sino_arr.nbytes/1e9:.2f} GB in {load_s:.1f}s, "
+                  f"interpolating {len(idx_fp_list)} slices …", flush=True)
+            for out_idx, fp in idx_fp_list:
+                patient_z = _patient_z_from_dicom(fp)
+                source_z = -patient_z   # head-first Mayo convention
+                slc = _interp_slice_from_ram(sino_arr, z_grid, source_z)
+                ds[out_idx] = slc
+                z_meta[out_idx] = (patient_z, source_z)
+                written += 1
+            del sino_arr  # free 3 GB before next patient
+
+    elapsed = time.time() - t0
+    print(f"[stage-sino] {split}/{dose}: wrote {out_h5}  ({written} slices, "
+          f"{elapsed:.1f}s total = {written/max(elapsed,1.0):.1f} slices/s)",
+          flush=True)
 
 
 def main():
