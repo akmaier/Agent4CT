@@ -266,6 +266,83 @@ Both arms are validated empirically:
 Any downstream script can now compare the two without hardcoding magic
 numbers.
 
+## 2026-06-03 — Breast-CT R²-Gaussian + DDPM diff-recon: structural verdicts after two retry rounds each
+
+Both classes had earlier hr=0 results that were dismissed as "wrong
+TPE bounds" or "under-trained checkpoint". Each got an agentic
+retry round; both now have empirical confirmation that the problem
+is structural for breast-CT.
+
+### R²-Gaussian on dense-view breast — structurally bounded
+
+The original 2026-05-21 breast-CT R²-G TPE (slug `…r2gaussian-search-
+20260521-01`) gave all hr=0 at `gs_n_iter ∈ [300, 800]`. Two retries:
+
+| Run | Setup | Best hr | Best SSIM | Why |
+|---|---|---:|---:|---|
+| **762635 v2** (extended iter budget) | n_iter ∈ [10k, 40k], n_gauss ≤ 1024, cold uniform-random init | **0.000** | 0.894 | More iters don't help |
+| **762651/762639 v3 FBP-warm-start** | n_gauss=1024, FBP-of-noisy as Gaussian init (positions ∝ FBP², amps from FBP intensity) | **0.000** | 0.892 | Warm start doesn't help either |
+
+Both retries are below the FBP baseline (SSIM 0.957). The two iterations
+together cover the obvious hypothesis space: *the iter budget was too
+tight* (refuted by v2) and *the cold init was the bottleneck*
+(refuted by v3 — warm start gives same SSIM ~0.89 as cold). What's
+left after that pair is the **structural** interpretation: R²-G's
+anisotropic-Gaussian basis is too sparse to represent the densely
+distributed soft tissue of breast phantoms at the resolution that
+clears baseline FBP — and FBP itself is already very strong on
+dense 128-view scans (baseline SSIM 0.957). The R²-Gaussian paper
+benchmarks on **sparse-view CBCT (≤ 50 views)** where FBP is much
+weaker; the inductive bias is right there. On dense-view 2-D
+sparse-CT it is the wrong tool, with or without warm-start.
+
+**Decision**: R²-Gaussian stays in the breast-CT structural-deal-
+breaker block. No further breast-CT iters. Keep it as a future
+sparse-view-CBCT baseline.
+
+### Breast-DDPM diff-recon — three checkpoint sizes all hr=0
+
+Three breast-DDPM training rounds + three corresponding diff-recon
+TPEs:
+
+| DDPM ckpt | Arch | Epochs | Final val_eps_loss | Diff-recon TPE (40 trials) | Best hr | Sample SSIM range |
+|---|---|---:|---:|---|---:|---|
+| **v1** (`ddpm_breast_*_final.pt`) | SmallDDPM ch=32 (≈1 M params) | 25 | unknown (legacy) | 762041/762042 | 0.000 | ~0.46 |
+| **v2** (`ddpm_breast_*_v2.pt`) | SmallDDPM ch=64 (≈3.8 M params) | 80 | 0.0050 | 762636 | 0.000 | 0.30–0.49 |
+| **v3** (`ddpm_breast_*_v3.pt`) | SmallDDPM ch=128 (≈15.3 M params) | 60 | 0.0020 | 762652 (in flight, 5/40 done) | 0.000 so far | 0.33–0.48 |
+
+The DDPM training curves get monotonically better (ε-loss
+0.005 → 0.002 from v2 → v3) but the diff-recon SSIM stays in
+roughly the same 0.3–0.5 band, far below baseline FBP 0.957.
+Across 4×–16× capacity scaling and 2.5× longer training, the
+posterior-sampling reconstructions look essentially the same:
+plausible breast tissue texture but wrong intensities / coarse
+features misaligned with the true sino.
+
+**Diagnosis**: SmallDDPM (the project's stock prior architecture) is
+generating samples that are *individually plausible breast images*
+but **not conditionally faithful to the input sino** under DPS/DC
+posterior sampling. The failure is not capacity (ch=32 vs 128 give
+the same SSIM band), not training duration (25 vs 80 epochs), and
+not sampler hyperparameters (~40 trials across `recon_mode`, `eta`,
+`init`, `dc_step_every/n_cg/warmup/relax` — none clear baseline).
+
+What's likely the real obstacle: the SmallDDPM ε-prediction +
+linear noise schedule doesn't capture the fine-frequency content
+of breast phantoms well enough for DPS to land on the sino-
+consistent mode. A different prior class would be needed (score-SDE
+with variance-exploding schedule, EDM with adaptive variance, or a
+U-ViT-style transformer prior). All of those would require new
+solver code, not just config sweeps.
+
+**Decision**: SmallDDPM diff-recon on breast-CT stays in the
+structural-deal-breaker block with the "under-trained" hypothesis
+removed. The actual issue is the prior class, not the training
+budget. No further DDPM-architecture retries on breast — would need
+a structurally different prior to unblock this path.
+
+---
+
 ## 2026-05-27 — FBP sod ≠ SSR sod: the two pipeline stages need separate defaults
 
 When SLURM 762369's multi-GT fit landed, the obvious move was to bake

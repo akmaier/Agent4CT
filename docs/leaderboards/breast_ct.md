@@ -64,9 +64,13 @@ under the calibrated metric. Listed for transparency — they are not
 | TV-iterative supervised | K∈{10,30}, step=1e-4, λ=1e-5 | 0.000 | 0.9543 | 0.000 | (deprioritised — structurally bounded by FBP) | — |
 | TV-iterative (non-trainable) | λ=1.8e-3, iters=214, lr=4.0e-2, train_n=0 | 0.000 | 0.9467 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-tv-search-20260521-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-tv-search-20260521-01/iterations/iter-0001/comparison.png) |
 | NAF | n_freqs=10, hidden=256, n_iter=2143, lr=1.2e-3, train_n=0 | 0.143 | 0.8334 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-naf-search-20260521-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-naf-search-20260521-01/iterations/iter-0001/comparison.png) |
-| R2Gaussian | n_gauss=512, n_iter=483, lr_pos=1.9e-3, train_n=0 | 0.003 | 0.8261 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-r2gaussian-search-20260521-01/results.tsv) | [iter-2](../runs/breast-ct-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0002/comparison.png) |
-| **Diff-recon — DDPM constrained (breast)** | DPS+DC, breast-DDPM ckpt, train_n=200 | 0.958 *(frozen)* | 0.4702 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01/iterations/iter-0001/comparison.png) |
-| **Diff-recon — DDPM unconstrained (breast)** | DPS+DC, breast-DDPM ckpt, train_n=3600 | 0.958 *(frozen)* | 0.4626 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01/results.tsv) | [iter-17](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01/iterations/iter-0017/comparison.png) |
+| R²-Gaussian (cold init, n_iter≤800) | n_gauss=512, n_iter=483, lr_pos=1.9e-3, train_n=0 | 0.003 | 0.8261 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-r2gaussian-search-20260521-01/results.tsv) | [iter-2](../runs/breast-ct-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0002/comparison.png) |
+| R²-Gaussian **v2** (n_iter ∈ [10k, 40k], cold init) | n_gauss=1024, n_iter=11434, lr_pos=1.7e-2, train_n=0 | 0.003 | 0.8942 | 0.000 | (in agentic search; partial timeout, 6/20 iters all hr=0) — extended iter budget **did not** clear baseline | — |
+| R²-Gaussian **v3** (FBP-warm-start init) | n_gauss=1024, n_iter=5000, FBP-of-noisy as Gaussian positions/amps, train_n=0 | 0.003 | 0.8919 | 0.000 | (agentic iter-2, slug `…r2g-fbp-init-search-20260602-01`) — FBP warm-start **did not** clear baseline either | — |
+| **Diff-recon — DDPM constrained (breast, v1 ch=32)** | DPS+DC, breast-DDPM v1 ckpt, train_n=200 | 0.958 *(frozen)* | 0.4702 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01/results.tsv) | [iter-1](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01/iterations/iter-0001/comparison.png) |
+| **Diff-recon — DDPM unconstrained (breast, v1 ch=32)** | DPS+DC, breast-DDPM v1 ckpt, train_n=3600 | 0.958 *(frozen)* | 0.4626 | 0.000 | [results](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01/results.tsv) | [iter-17](../runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01/iterations/iter-0017/comparison.png) |
+| Diff-recon — DDPM **v2** (ch=64, 80 ep) | retrained with 4× capacity + 3× training | 3.823 *(frozen)* | 0.30–0.49 | 0.000 | SLURM 762636 — all 40 trials hr=0 | — |
+| Diff-recon — DDPM **v3** (ch=128, 60 ep) | retrained with 16× capacity vs v1 | 15.272 *(frozen)* | 0.33–0.48 | 0.000 | SLURM 762652 (5/40 iters at writing) | — |
 
 ### Why these fail structurally
 
@@ -74,22 +78,31 @@ under the calibrated metric. Listed for transparency — they are not
   in the dense-view regime; the half-set FBP target carries noise the
   optimiser tries to match. The DD-BF/DD-UNet supervised L2 twins above
   show what fixing the loss alone gets you (`hr` = 0.26 / 0.84).
-- **Per-scene neural-implicit (NAF / R2Gaussian)**: designed for
+- **Per-scene neural-implicit (NAF / R²-Gaussian)**: designed for
   sparse-view CBCT; can't compete with a properly-tuned FBP at 128
-  views on this dataset.
+  views on this dataset. **Two retry rounds confirmed this empirically
+  for R²-G** (2026-06-03 agentic): extending `gs_n_iter` from [300,
+  800] to [10k, 40k] left SSIM at 0.89 (still hr=0); FBP-warm-starting
+  the Gaussian positions also left SSIM at 0.89. The basis is too
+  sparse to represent dense soft tissue at the resolution that clears
+  baseline FBP; the inductive bias is fundamentally for sparse-view
+  scans where FBP is weak. See findings.md 2026-06-03 entry.
 - **TV-iterative supervised L2 (unrolled)**: FBP init + smooth-TV
   gradient + supervised L2 → the first GD step learns to do nothing;
   structural ceiling = baseline FBP.
-- **Diffusion-recon with breast-DDPM checkpoints**: the existing
-  `ddpm_breast_*_final.pt` checkpoints (`train_n=3600` unconstrained /
-  `train_n=200` constrained) produce SSIM ≈ 0.46 — **well below baseline
-  0.957**. The diff-recon pipeline is sound (it works on demo-DL with
-  `hr` = 0.45); the breast-DDPM checkpoint itself is weak / under-trained.
-  Confirmed via manifest inspection that the breast-DDPM checkpoint was
-  loaded; the failure is in the prior, not the wiring. See
-  [`solver_diffusion_recon.md`](../solver_diffusion_recon.md) for the
-  diagnosis. **Action**: re-train the breast-DDPM with more steps /
-  better config before re-running diff-recon.
+- **Diffusion-recon with breast-DDPM checkpoints**: **three checkpoint
+  arches retrained, all hr=0 across ≥40 trials each.** v1 (ch=32,
+  25 ep) → SSIM ~0.46; v2 (ch=64, 80 ep, val_eps_loss=0.0050) →
+  SSIM 0.30–0.49; v3 (ch=128, 60 ep, val_eps_loss=0.0020) →
+  SSIM 0.33–0.48 (first 5 iters). The training metric improves
+  monotonically (loss 0.0050 → 0.0020) but the posterior-sampling
+  reconstructions stay in the same SSIM band — **the failure is the
+  prior class, not capacity or training duration.** SmallDDPM
+  generates *individually plausible* breast images but they are not
+  conditionally faithful to the input sino under DPS/DC sampling.
+  Closing this path requires a structurally different prior
+  (score-SDE / EDM / U-ViT) — not in scope for current solver code.
+  Full diagnosis in findings.md 2026-06-03 entry.
 
 ## Methodology
 
