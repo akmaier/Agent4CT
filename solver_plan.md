@@ -178,6 +178,27 @@ stop condition is met. A single dispatch + "I'll report when it
 lands" is NOT autoresearch — it is an ablation. Autoresearch is the
 WHOLE chain of dispatch → review → propose → dispatch.
 
+### Per-iter wall budget — 5–15 minutes (NOT hours)
+
+Karpathy's original autoresearch loop fits one iter in **5 minutes**
+on purpose: the LLM must run many iters to be in the loop. Each iter
+tests ONE hypothesis; full convergence is for Step 3 TPE.
+
+| Phase | Wall budget | Purpose | Typical config |
+|---|---|---|---|
+| **iter-1** (feasibility) | 30–60 min | "Does this solver work on this dataset at all?" Seed from cross-dataset champion, full epochs / val_n. | epochs=10, val_n=20, train_n=400 |
+| **iter-2..N** (hypothesis) | **5–15 min** | Single targeted knob change. Need SIGNAL not CONVERGENCE — if the change moves SSIM beyond val-noise, keep; else discard. | epochs=1–3, val_n=5–10, train_n=100 |
+
+For Mayo specifically (2304 angles, 18× bigger sino than DL-Sparse-
+View): expect iter-2+ walls to be 10–15 min even at the tight config
+above. If a solver's per-epoch wall is so high that 1 epoch on
+train_n=100 still takes > 20 min, the solver is too expensive for
+the iterative protocol — file the verdict and move on.
+
+Anti-pattern: dispatching iter-2 at the same full config as iter-1.
+That gives you ~6 iters/day per solver, which is what slow grid
+search looks like — not autoresearch.
+
 ### Per-iter dispatch
 
 ```bash
