@@ -68,6 +68,30 @@ EOF
   "epochs": 10, "lr": 5.0e-3, "val_n": 20 }
 EOF
     ;;
+  ram_zeroshot)
+    # Frozen RAM (Terris 2025) — no training, just inference. Seed
+    # from breast-CT iter-7 winner (hr 0.3077): adjoint_max + sigma=0.008
+    # + post-FBP blend=0.42. Same network ckpt used across all datasets.
+    CFG_JSON=/cluster/maier/Agent4CT/agentic_cfgs/mayo_ram_iter_01.json
+    cat > "$CFG_JSON" << 'EOF'
+{ "ram_ckpt_path": "/cluster/maier/Agent4CT/checkpoints/ram.pth.tar",
+  "ram_input_norm": "adjoint_max", "ram_clamp_output": true,
+  "ram_finetune": false, "ram_finetune_epochs": 0,
+  "ram_disable_multiscale": false, "ram_disable_cudnn": false,
+  "ram_sigma": 0.008, "ram_factor": 0.42, "ram_post_fbp_blend": 0.5,
+  "val_n": 20 }
+EOF
+    ;;
+  uswin)
+    # Breast-CT TPE (iter-7) winner: ep=11, lr=7.3e-4, c=24, win=16,
+    # heads=8 (hr=0.7174). Image-domain Swin — should fit on Mayo's
+    # 512² recon without sino-side issues.
+    CFG_JSON=/cluster/maier/Agent4CT/agentic_cfgs/mayo_uswin_iter_01.json
+    cat > "$CFG_JSON" << 'EOF'
+{ "epochs": 11, "lr": 7.3e-4, "batch_size": 1, "uswin_c": 24,
+  "swin_window": 16, "swin_heads": 8, "val_n": 20 }
+EOF
+    ;;
   *)
     echo "Unknown SOLVER=$SOLVER; add a seed config above." >&2
     exit 1

@@ -70,6 +70,19 @@ SOLVER_MAP = {
     "tv_iterative_supervised": (
         "pentathlon/demo_dl_reference/solver_tv_iterative_supervised.py",
         "TV_SUP_CONFIG_PATH"),
+    # Image-domain transformers / unrolled networks (added 2026-06-03 for
+    # the Mayo-LDCT autoresearch rollout — all three were used in TPE
+    # searches but were not yet wired into the agentic dispatcher).
+    "uswin":
+        ("pentathlon/demo_dl_reference/solver_uswin.py", "USWIN_CONFIG_PATH"),
+    "itnet_v3":
+        ("pentathlon/demo_dl_reference/solver_itnet_v3.py", "ITNET_V3_CONFIG_PATH"),
+    "itnet_v2":
+        ("pentathlon/demo_dl_reference/solver_itnet_v2.py", "ITNET_V2_CONFIG_PATH"),
+    "hammernik_vn":
+        ("pentathlon/demo_dl_reference/solver_hammernik_vn.py", "HAMMERNIK_VN_CONFIG_PATH"),
+    "hammernik":
+        ("pentathlon/demo_dl_reference/solver_hammernik_2017.py", "HAMMERNIK_CONFIG_PATH"),
 }
 
 
