@@ -150,6 +150,40 @@ For every solver in `pentathlon/demo_dl_reference/solver_*.py`, run a
 ablation* — Claude is the agent inside the loop and is responsible
 for proposing every iter after iter 1 based on what was observed.
 
+> ### 🛑 STOP — read this checklist before dispatching ANYTHING
+>
+> Every previous agent has stumbled here. **If you cannot honestly tick
+> all six boxes below before dispatching iter-N, you are doing
+> something other than autoresearch.**
+>
+> 1. ☐ Have you READ the previous iter's `observation.json`,
+>    `comparison.png`, AND `results.tsv`? (Not just the JSON — open
+>    the image. Visual diagnosis is the highest-bandwidth signal.)
+> 2. ☐ Can you name the SPECIFIC failure mode you observed
+>    ("smoothing", "ringing", "OOM", "loss landscape too sharp",
+>    "val curve plateaued", "kept memorising the train subset")?
+> 3. ☐ Does your iter-N config change EXACTLY ONE knob? Multi-knob
+>    changes make the journal uninterpretable.
+> 4. ☐ Have you NAMED THE HYPOTHESIS in the commit message and the
+>    config's `rationale` field? Format: "if I do X, I expect Y
+>    because Z."
+> 5. ☐ Is the per-iter wall budget appropriate (see table below)?
+>    iter-1 may take 30–60 min; **iter-2+ MUST be ≤ 15 min**.
+> 6. ☐ Will you DISPATCH iter-(N+1) yourself when iter-N lands,
+>    without returning control to the user? (User comes back only on
+>    plateau / iter-15 / demonstrated architectural ceiling.)
+>
+> If all six are ✅: dispatch. If any are ❌: stop and resolve before
+> sending the job.
+>
+> **Common past mistakes filed here so the next agent can avoid them:**
+>
+> | Date | Anti-pattern | Why it's not autoresearch |
+> |---|---|---|
+> | 2026-06-02 | Dispatched one `*_agentic_iter1.sbatch` and called it "the agentic round" | Single dispatch is an ablation. Loop = dispatch → review → propose → repeat. |
+> | 2026-06-03 | Mayo iter-2 dispatched with 4 h wall (same config as iter-1) | At 4 h/iter on 4 slots, ~6 iters/day per solver = slow grid search, not autoresearch. iter-2+ MUST be 5–15 min. |
+> | 2026-05-20 | "Best hr" reported as the best of two iters in a sweep | A two-point sweep isn't autoresearch either; it's a comparison. Need ≥ 5 hypothesis-driven iters to plateau. |
+
 ### The loop (Claude's per-iter responsibility)
 
 ```

@@ -14,6 +14,14 @@ autoresearch + TPE refinement + DDPM constrained/unconstrained variants
 [`docs/findings.md`](docs/findings.md) top-down for cross-cutting
 substrate facts.
 
+> ⚠️ **Autoresearch ≠ ablation.** If you're running an agentic loop,
+> Step 2 of `solver_plan.md` lists the **six-box checklist** you MUST
+> tick before each dispatch (read previous result, name failure mode,
+> change ONE knob, name hypothesis, ≤ 15 min wall on iter-2+, do not
+> return control to the user between iters). Previous agents have
+> stumbled on this; the table of historical anti-patterns is preserved
+> in Step 2 so the next agent can avoid them.
+
 ## 🏆 Current leaderboards
 
 Best-of-best per solver per dataset, all metrics through the
