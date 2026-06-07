@@ -95,6 +95,15 @@ SOLVER_MAP = {
     "diffusion_recon_dcstep_constrained_mayo_v2": (
         "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
         "DIFFUSION_RECON_CONFIG_PATH"),
+    # Diff_recon against the v3 Mayo DDPM ckpts (ch=96, batch=1, 8.594 M
+    # params — 2.25× v2's 3.823 M). Trained 2026-06-07. Bet: bigger prior
+    # lifts UNCON beyond v2's hr=0.2095 plateau.
+    "diffusion_recon_dcstep_unconstrained_mayo_v3": (
+        "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "DIFFUSION_RECON_CONFIG_PATH"),
+    "diffusion_recon_dcstep_constrained_mayo_v3": (
+        "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "DIFFUSION_RECON_CONFIG_PATH"),
 }
 
 
