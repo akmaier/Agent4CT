@@ -107,23 +107,37 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | **DD-BF N2I** | iter-1 hr=0.0047, iter-2 (ep 3→6) hr=0.0035 — Δhr = −0.0012 (plateau) | The 18 BF scalars kept moving (σ_y 1.973→1.953 from ep-3 to ep-6) but val SSIM stayed flat at 0.485 and hr actually slipped. iter-1 stays as rank 5; cap is structural (18 trainable params can't beat the FBP baseline by more than the noise floor). |
 | **R²-Gaussian** | iter-1 TIMEOUT at 30 min (per-scene fit takes longer than the autoresearch sbatch wall allows) | gs_n_iter=3000 + FBP² init at train_n=2, val_n=2 still didn't complete a single per-scene fit within the 30-min cluster_guide §4.6 budget. Same breast-CT structural verdict applies — R²-Gaussian's per-scene optimisation is too expensive for the autoresearch loop on Mayo's 2304-angle, 512² scenes. Would need a TPE-scale 4-h job to test seriously. |
 | **NAF** plateau verdict | iter-1 hr=**0.0202** (the rank-4 entry); iter-4 (naf_n_iter 2000 → 3000 at val_n=5) regressed to hr=0.0010, SSIM 0.5395 → 0.4843 | NAF **overshoots** beyond 2000 iters on Mayo: the implicit-field MLP starts hallucinating high-frequency detail that does not match the truth slab, pulling SSIM down by ~5.5 pts. iter-1's `naf_n_iter=2000` is the optimum. iter-1 stays as rank 4 — Step 3 TPE would need to bracket below 2000 iters, not above. |
+| **diff_recon v3 (ch=96 prior)** | UNCON best iter-3 hr=0.0641 (eta=30); CON best iter-1 hr=0.0686 (eta=10). All v3 results sit at ⅓ of the corresponding v2 ckpt. | Bigger ≠ better here: the v3 ckpt (8.594 M params, 60 ep at batch=1) is structurally weaker than v2 (3.823 M params, 60 ep at batch=2) for DPS posterior sampling. Root cause is likely insufficient gradient updates per parameter (half the batch size at 2.25× the params ⇒ ¼ the effective training). A v4 attempt should pair ch=96 with batch=2 (likely OOMs on Q6000) or train ch=96 for 120+ epochs. For now the v2 ckpts stay as the rank-2/rank-5 priors. |
 
 ### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~20:21:**
+**Autoresearch loop — Mayo Step-2 converged as of 2026-06-07 ~20:30. No active jobs.**
 
-| Solver | Latest result | Next hypothesis |
-|---|---|---|
-| **diff_recon UNCON v3** | iter-2 (eta 3→10) hr=0.0521 — recovered from iter-1's 0, but ¼ of v2's 0.2095. v3 has its own eta gradient. | iter-3 (**762865**): push `eta` 10 → 30 (top). Hyp: if hr ≥ 0.10, v3 optimum is at high eta and search continues; if Δhr<0.005, file v3 plateau/structural-inferiority. |
-| **diff_recon CON v3** | iter-2 (eta 10→30) hr=0.0604 — regressed from iter-1's 0.0686. CON v3 wants eta=10, not 30. | iter-3 (**762866**): revert eta to 10 (iter-1 winner for v3), try `warmup` 40→25 (the UNCON v2 winner). Hyp: hr ~0.08. |
+iter-3 closed the v3 exploration:
+- 762865 UNCON v3 iter-3 (eta=30, top of log space) → hr=0.0641 (v3 best, still ~⅓ of v2's 0.2095)
+- 762866 CON v3 iter-3 (warmup 40→25) → hr=0.0668 ≈ iter-1's 0.0686 (v3 plateau at ~0.069)
 
-**v3 prior verdict (preliminary):** at every tested eta, v3 underperforms v2 — bigger ≠ better here. Possible cause: ch=96 at batch=1 ep=60 was under-trained (val ε-loss=0.006 vs v2's 0.005). If iter-3 also confirms v3 < v2, both v3 variants get filed as structurally inferior; the v2 ckpts (and v2 winner cfgs) stay as the recorded rank-2/rank-5 entries.
+The v3 prior is **structurally inferior to v2** for DPS posterior sampling (see verdict in the table above). The v2 ckpts (3.823 M params, ch=64, batch=2) stay as the recorded rank-2/rank-5 entries:
 
-The previous batch outcome:
-- 762863 UNCON v3 iter-2 → hr=0.0521 (recovered from 0 but still ¼ of v2's 0.2095).
-- 762864 CON v3 iter-2 → hr=0.0604 (regression from iter-1's 0.0686 — eta=30 too high for CON v3).
+- **diff_recon UNCON v2** at hr=0.2095 — iter-6 cfg: `eta=3, warmup=25, clamp=True, every=3, init=fbp, relax=1.0`
+- **diff_recon CON v2**   at hr=0.0847 — iter-6 cfg: `eta=10, warmup=40, clamp=False, every=3, init=fbp, relax=1.0`
+
+**Final Mayo Step-2 summary (8 ranks above baseline, 10 structural STOPs filed):**
+
+| Rank | Solver | hr |
+|---:|---|---:|
+| 1 | Learned Primal-Dual            | 0.2445 |
+| 2 | diff_recon DCstep UNCON (v2)   | 0.2095 |
+| 3 | USwin                          | 0.1425 |
+| 4 | DD-UNet supervised L2          | 0.1337 |
+| 5 | diff_recon DCstep CON (v2)     | 0.0847 |
+| 6 | TV-iterative (non-trainable)   | 0.0557 |
+| 7 | NAF (per-scene MLP)            | 0.0202 |
+| 8 | DD-BF N2I                      | 0.0047 |
+
+Next phase: Step 3 TPE refinement on the four highest-rank learned solvers (LPD, diff_recon UNCON v2, USwin, DD-UNet). Needs a Mayo TPE sbatch (not yet scaffolded — see `cluster/slurm/` for breast/demo-dl analogues).
 
 **Both Mayo DDPM v3 ckpts landed:**
 - `ddpm_mayo_unconstrained_v3.pt` (33 MB, 8.594 M params, best val ε-loss=0.0061)
