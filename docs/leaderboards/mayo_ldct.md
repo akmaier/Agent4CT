@@ -108,18 +108,20 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | **R²-Gaussian** | iter-1 TIMEOUT at 30 min (per-scene fit takes longer than the autoresearch sbatch wall allows) | gs_n_iter=3000 + FBP² init at train_n=2, val_n=2 still didn't complete a single per-scene fit within the 30-min cluster_guide §4.6 budget. Same breast-CT structural verdict applies — R²-Gaussian's per-scene optimisation is too expensive for the autoresearch loop on Mayo's 2304-angle, 512² scenes. Would need a TPE-scale 4-h job to test seriously. |
 | **NAF** plateau verdict | iter-1 hr=**0.0202** (the rank-4 entry); iter-4 (naf_n_iter 2000 → 3000 at val_n=5) regressed to hr=0.0010, SSIM 0.5395 → 0.4843 | NAF **overshoots** beyond 2000 iters on Mayo: the implicit-field MLP starts hallucinating high-frequency detail that does not match the truth slab, pulling SSIM down by ~5.5 pts. iter-1's `naf_n_iter=2000` is the optimum. iter-1 stays as rank 4 — Step 3 TPE would need to bracket below 2000 iters, not above. |
 | **diff_recon v3 (ch=96 prior)** | UNCON best iter-3 hr=0.0641 (eta=30); CON best iter-1 hr=0.0686 (eta=10). All v3 results sit at ⅓ of the corresponding v2 ckpt. | Bigger ≠ better here: the v3 ckpt (8.594 M params, 60 ep at batch=1) is structurally weaker than v2 (3.823 M params, 60 ep at batch=2) for DPS posterior sampling. Root cause is likely insufficient gradient updates per parameter (half the batch size at 2.25× the params ⇒ ¼ the effective training). A v4 attempt should pair ch=96 with batch=2 (likely OOMs on Q6000) or train ch=96 for 120+ epochs. For now the v2 ckpts stay as the rank-2/rank-5 priors. |
+| **ItNet v1** | iter-1 OOM in `filter_sino` (2.53 GiB FFT pad) | Same cfg-merge bug as v2: `solver_itnet.py` ignores the agentic JSON cfg and uses hardcoded `train_n=400`, `val_n=100`, `itnet_k=5`. Two unrelated solvers (v1 and v2) have the same defect; the fix is structural (read `CFG_JSON` env like solver_itnet_v3.py does). Cannot retry on Mayo without a code patch. |
+| **Wu 2015 non-trainable** | iter-1 hr=0 SSIM 0.350 PSNR 12.35 < baseline 12.59 (closed-form, 7.6 s) | The closed-form filter-band modulation matches the trainable variant's SSIM ceiling at 0.35 — the 10 filter coefficients (frozen or trained) cannot reach the Mayo dynamic range. Same structural verdict as the trainable variant. |
 
 ### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop — coverage audit reopened 2026-06-07 ~22:22; 2 jobs queued.**
+**Autoresearch loop — coverage audit CLOSED 2026-06-07 ~22:23. All 15 solver_plan.md entries now run on Mayo.**
 
-Per-user coverage audit found two solver_plan.md entries that had never been explicitly tested on Mayo:
-- **ITNet v1** (`solver_itnet.py`) — original ItNet, superseded by v2/v3 in design docs but never run on Mayo. iter-1 job **762874** (k=2, c=16, train_n=50 — same conservative seed as v2/v3 attempts).
-- **Wu 2015 non-trainable** (`solver_wu_2015.py`) — frozen filter-band modulation FBP (the trainable variant tested and STOPped at hr=0). iter-1 job **762875**.
+Last-2 results:
+- **ITNet v1** (job 762874) → **OOM in `filter_sino`** (2.53 GiB FFT pad). Same cfg-merge bug as v2 — `solver_itnet.py` ignores the JSON cfg. STOP filed in the deal-breakers table.
+- **Wu 2015 non-trainable** (job 762875) → hr=**0** SSIM 0.350 PSNR 12.35 < baseline. Closed-form 10-coefficient filter cannot reach the Mayo dynamic range, same as the trainable variant. STOP filed.
 
-20-min polling cadence as requested. SOLVER_MAP keys added in commit `f0383216`.
+**Final Mayo Step-2 status:** 8 ranks above baseline, 12 structural STOPs filed across the full inventory. Loop closed for Step 2.
 
 **Original Step-2 convergence summary (preserved below):**
 
