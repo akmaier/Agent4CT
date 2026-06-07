@@ -330,6 +330,42 @@ scancel <jobid>
 scancel -u $(whoami) --name=<jobname>     # all your jobs with that name
 ```
 
+### 4.6 Polling cadence — prefer scheduled snapshots over open SSH
+
+When you're waiting for a long-running job, **do not leave a Monitor
+or `tail -f` SSH session open across iterations.** Holding outbound
+SSH sockets keeps TIME_WAIT entries on the operator's machine and
+stale TCP state on the bastion; over an hour-long session that
+exhausts the local ephemeral port pool and breaks fresh SSH attempts
+with `connect: Can't assign requested address`. This was diagnosed
+on 2026-06-03 (a single Claude session accumulated 28 k TIME_WAIT
+entries and couldn't reach the cluster until the kernel drained
+naturally over ~minutes).
+
+The right pattern is **one SSH per wake-up**, scheduled at an
+interval set by the job's expected wall time, not by user impatience:
+
+| Job class | Typical wall | Polling interval |
+|---|---:|---:|
+| Autoresearch iter (short budget) | 5–30 min | 5–10 min |
+| iter-1 feasibility test | 30–60 min | 15–20 min |
+| DDPM training / bulk rebin | 5–24 h | 30–60 min |
+| TPE search (20 trials) | 4–14 h | 30 min |
+
+Concretely:
+
+- Use `ScheduleWakeup(delaySeconds=<interval>)` between checks
+  (session-local) or `/schedule` (cloud, survives session close).
+- Each wake-up runs ONE `ssh lme-bastion "squeue + sacct + tail -N"`
+  command and disconnects.
+- Do NOT use `Monitor` against a `tail -f` over SSH unless the job is
+  truly under 5 minutes — the persistent connection is worse than the
+  occasional cache miss.
+
+The exception is genuinely cheap localhost monitoring (e.g.
+`netstat` for diagnosing your own laptop, no remote socket involved)
+— that's safe with Monitor.
+
 ---
 
 ## 5. GPU memory × workload table (illustrative)
