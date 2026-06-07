@@ -84,7 +84,7 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | 3 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
 | 4 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
 | 5 | **diff_recon DCstep constrained** (DDPM v2 prior) | DPS, sample_steps=200, **eta=10, dcstep_warmup=40**, dcstep_n_cg=10, FBP init (iter-6) | 3.823 | 0.5108 | **0.0847** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/results.tsv) | [iter-6](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/iterations/iter-0006/comparison.png) |
-| 6 | **TV-iterative** (non-trainable) | tv_iterations=6400, tv_lambda=0.01, tv_step=0.5 (iter-7) | 0 | 0.5416 | **0.0498** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-7](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0007/comparison.png) |
+| 6 | **TV-iterative** (non-trainable) | tv_iterations=12800, tv_lambda=0.01, tv_step=0.5 (iter-8) | 0 | 0.5439 | **0.0557** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-8](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0008/comparison.png) |
 | 7 | **NAF** (per-scene MLP) | n_freqs=6, hidden=192, layers=5, n_iter=2000 (iter-1) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
 | 8 | **DD-BF N2I** | proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50 (iter-1) | 0.000018 | 0.4868 | **0.0047** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/iterations/iter-0001/comparison.png) |
 
@@ -112,20 +112,25 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~17:30:**
+**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~17:58:**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **TV-iterative** (non-trainable) | iter-8 still running (11250/12800, loss=3.04). | (await iter-8) |
-| **diff_recon UNCON** | iter-6 (eta_clamp=True) hr=**0.2095**, +0.006 over iter-5 (0.2033) — eta-axis exhausted. | iter-7 (**762849**): transfer the CON winner — `dcstep_warmup` 25 → 40. Hyp: lifts hr above 0.22 by giving DDPM more denoise iters before DC reins; if Δhr<0.005, plateau at the eta+clamp+warmup corner. |
-| **diff_recon CON** | iter-6 (warmup 25→40) hr=**0.0847**, +0.010 over iter-4 (0.0745) — productive axis. | iter-7 (**762850**): keep warmup=40, try `dcstep_relax` 1.0 → 0.95 (slightly damped DC step). Hyp: hr ~0.09–0.10. |
+| **TV-iterative** (non-trainable) | iter-8 hr=**0.0557** (was 0.0498). Δhr=+0.006 — converging slowly toward plateau. | iter-9 (**762851**, 60-min wall): `tv_iterations` 12800 → 25600. Likely the last useful TV doubling. |
+| **diff_recon UNCON** | iter-7 (warmup 25→40) regressed to hr=0.1638 — UNCON wants warmup=25, opposite of CON. iter-6 (hr=0.2095) stays as rank 2. | iter-8 (**762852**): revert warmup=25, try `dcstep_relax` 1.0 → 0.95. Hyp: hr ~0.21; if Δhr<0.005 plateau. |
+| **diff_recon CON** | iter-7 (relax 1.0→0.95) hr=**0.0847** — IDENTICAL to iter-6; relax is inert for CON. | iter-8 (**762853**): try `dcstep_every` 3 → 4 (less frequent DC). Hyp: ~0.09. If Δhr<0.005, plateau confirmed across 2 consecutive iters (iter-7+iter-8) → file CON at hr=0.0847. |
 
-**Knob-search status:** UNCON has now exhausted three axes (`sample_steps`↓, `n_cg`↑, `eta`↓ × 2 then clamp). iter-7 explores `warmup`. CON has hit one productive axis (`warmup`); iter-7 tries `relax`.
+**Asymmetric optima between UNCON and CON:**
+| axis | UNCON winner | CON winner |
+|---|---|---|
+| `recon_eta` | 3 (floor) | 10 (moderate) |
+| `recon_dcstep_warmup` | 25 (early DC) | 40 (late DC) |
+| `recon_eta_clamp` | True | (untested) |
 
 The previous batch outcome:
-- 762845 TV iter-8 → still running (loss 3.04 at iter 11250/12800).
-- 762846 diff_recon UNCON iter-6 → hr=**0.2095** (rank 2 lifted by +0.006).
-- 762847 diff_recon CON iter-6 → hr=**0.0847** (rank 5 lifted by +0.010).
+- 762845 TV iter-8 → hr=0.0557 (rank 6 up from 0.0498).
+- 762849 diff_recon UNCON iter-7 → hr=0.1638 (warmup-axis regression). iter-6 stays as rank 2.
+- 762850 diff_recon CON iter-7 → hr=0.0847 (relax inert). iter-6 stays as rank 5.
 
 ## Plan
 
