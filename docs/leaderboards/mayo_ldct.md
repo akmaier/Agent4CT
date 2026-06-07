@@ -76,18 +76,21 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 
 | Rank | Solver | Variant | params (M) | SSIM | hr | Source | Comparison |
 |---:|---|---|---:|---:|---:|---|---|
-| 1 | **Learned Primal-Dual** | I=4, hidden=32, n_p=n_d=3, ep=15, lr=3.2e-4, train_n=400 | 0.092 | 0.5930 | **0.2389** | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0002/comparison.png) |
-| 2 | DD-BF supervised L2 | proj_n=3, img_n=3, ep=10, lr=5e-3, train_n=400 (img σ runaway 0.5→27) | 0.000 | 0.4856 | 0.0209 | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260603-01/iterations/iter-0001/comparison.png) |
+| 1 | **Learned Primal-Dual** | I=4, hidden=48, n_p=n_d=3, ep=3, lr=3.2e-4, train_n=100 (short-budget iter-3) | 0.193 | 0.4681 | **0.2445** | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png) |
+| 2 | **USwin** | c=16, win=8, heads=8, ep=3, lr=7.3e-4, train_n=50 | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
+| 3 | **DD-UNet supervised L2** | c=16, ep=3, lr=5e-4, train_n=100 | — | 0.4386 | **0.1282** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0002/comparison.png) |
+| 4 | DD-BF supervised L2 | proj_n=3, img_n=3, ep=10, lr=5e-3, train_n=400 (img σ runaway 0.5→27) | 0.000 | 0.4856 | 0.0209 | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260603-01/iterations/iter-0001/comparison.png) |
+| — | RAM zero-shot (pretrained) | σ=0.005, blend=0.2 — still below baseline PSNR | (frozen) | 0.4755 | 0.000 | [results](../runs/mayo-ldct-claude-agentic-ram-zeroshot-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-ram-zeroshot-search-20260603-01/iterations/iter-0002/comparison.png) |
 
-**Autoresearch loop active — iter-2+ in flight as of 2026-06-03:**
+**Autoresearch loop active — iter-3+ in flight as of 2026-06-03 ~11:30:**
 
-| Solver | iter-1 outcome | iter-2 hypothesis (short budget, 30-min wall) |
+| Solver | iter-2 / iter-3 result | iter-N+1 hypothesis (short budget, 30-min wall) |
 |---|---|---|
-| LPD | iter-2 hr=0.2389 ★ | iter-3: hidden 32 → 48 (more capacity within Q6000 budget) |
-| DD-UNet sup | OOM in val (1 GB at group_norm) | iter-2: unet_c 32 → 16 + val_chunk=1 |
-| DD-BF sup | hr=0.0209 (marginal, img σ runaway 0.5→27) | iter-2: lr 5e-3 → 1e-3 + λ_neg 1 → 5 (dampen σ explosion) |
-| RAM zero-shot | hr=0 SSIM 0.40 (below baseline) | iter-2: post_fbp_blend 0.5 → 0.2 (retain raw FBP intensity) |
-| USwin | OOM in FBP itself (5 GB FFT) | iter-2: c 24→16, win 16→8, val_n 20→3 — if still OOMs, chunked-FBP required |
+| LPD | iter-3 hr=**0.2445** ★ (hidden 48, 193 k) | iter-4: hidden 48 → 64 — still capacity-limited; predicted hr +0.01–0.03 |
+| USwin | iter-2 hr=**0.1425** (first working, c=16) | iter-3: c 16 → 24, win 8 → 16 — breast-CT champion shape now that memory is solved |
+| DD-UNet sup | iter-2 hr=**0.1282** (first working, c=16) | iter-3: c 16 → 24 — scale back up within val_chunk=1 budget |
+| DD-BF sup | iter-2 hr=0 (λ_neg=5 over-damped) | iter-3: λ_neg 5 → 2 (middle ground; restore signal while keeping σ stable) |
+| RAM zero-shot | iter-2 SSIM 0.48 ↑ but hr=0 | iter-3: blend 0.2 → 0.0 — test whether ANY FBP-blending helps or RAM-only is the bound |
 
 ## Plan
 
