@@ -112,14 +112,25 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 4 jobs in flight as of 2026-06-07 ~18:58:**
+**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~19:25:**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **TV-iterative** | TV TIMED OUT at iter-9 (~48 % done in 60 min wall). iter-8 hr=**0.0557** is the final rank-6 entry. | Closed. |
-| **diff_recon UNCON** | iter-9 (every 3→4) hr=0.1578 — regressed from iter-6's 0.2095. | iter-10 (**762859**): from iter-6 winner, try last untested axis: `recon_init` "fbp"→"noise". If Δhr<0.005, file plateau. |
-| **diff_recon CON** | iter-9 (init "fbp"→"noise") hr=0.0759 — marginal regression from iter-6's 0.0847. | iter-10 (**762860**): from iter-6 winner, try last untested axis: `recon_eta_clamp` False→True. If Δhr<0.005, file plateau. |
-| **Mayo DDPM v3** (training, **762856**) | RUNNING at ep 36/60, val ε-loss best=0.006 (vs v2's 0.005). 8.594 M params. | Land ckpt then dispatch diff_recon_mayo_v3 iter-1 against it; the bet is whether a bigger prior lifts UNCON beyond 0.2095. |
+| **diff_recon UNCON v2** | iter-10 (init noise) hr=**0.2034** — within 0.006 of iter-6's 0.2095. **PLATEAU**: iter-6 stays rank 2 at hr=0.2095. | Closed for v2; v3 iter-1 below. |
+| **diff_recon CON v2** | iter-10 (clamp=True) hr=**0.0760** — regressed from iter-6's 0.0847. **PLATEAU**: iter-6 stays rank 5 at hr=0.0847. | Closed for v2; v3 iter-1 below. |
+| **diff_recon UNCON v3** (new) | (just dispatched) | iter-1 (**762861**): seed from v2 UNCON winner cfg (eta=3, warmup=25, clamp=True), only change ckpt v2→v3 (3.823M→8.594M params, ch=64→96). Hyp: bigger prior lifts hr above 0.22. |
+| **diff_recon CON v3** (new) | (just dispatched) | iter-1 (**762862**): seed from v2 CON winner cfg, ckpt v2→v3. Hyp: bigger prior lifts hr above 0.09. |
+
+**Both Mayo DDPM v3 ckpts landed:**
+- `ddpm_mayo_unconstrained_v3.pt` (33 MB, 8.594 M params, best val ε-loss=0.0061)
+- `ddpm_mayo_constrained_v3.pt` (33 MB, 8.594 M params, best val ε-loss=0.0077)
+
+**v2 plateau confirmation:** UNCON iter-7..10 (4 knob tests) all stayed within Δhr<0.01 of iter-6's 0.2095 — confirms the iter-6 corner is the v2 optimum on the explored breast_v3 search space. Same for CON across iter-6..10.
+
+The previous batch outcome:
+- 762856 DDPM v3 → both ckpts saved (faster than expected, 48 min total).
+- 762859 UNCON iter-10 (init noise) → hr=0.2034 (≈ iter-6).
+- 762860 CON iter-10 (clamp True) → hr=0.0760 (≈ iter-6).
 
 **Diff_recon knob exploration summary (across 9 iters per variant):**
 
