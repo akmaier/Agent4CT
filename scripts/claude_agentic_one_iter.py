@@ -83,6 +83,15 @@ SOLVER_MAP = {
         ("pentathlon/demo_dl_reference/solver_hammernik_vn.py", "HAMMERNIK_VN_CONFIG_PATH"),
     "hammernik":
         ("pentathlon/demo_dl_reference/solver_hammernik_2017.py", "HAMMERNIK_CONFIG_PATH"),
+    # Final two solver_plan.md inventory entries (added 2026-06-07 for Mayo
+    # coverage audit): ItNet v1 (the original 5-iter version that the v2/v3
+    # variants superseded) and Wu 2015 non-trainable (frozen filter-band
+    # modulation FBP, no params — the baseline that the trainable variant
+    # extends).
+    "itnet":
+        ("pentathlon/demo_dl_reference/solver_itnet.py", "ITNET_CONFIG_PATH"),
+    "wu_2015":
+        ("pentathlon/demo_dl_reference/solver_wu_2015.py", "WU_CONFIG_PATH"),
     # Diffusion posterior sampling with a Mayo-trained DDPM prior
     # (2026-06-07). Two variants share the same solver and env var; the
     # ckpt path is passed inside the per-iter CFG_JSON as `recon_ckpt`.
