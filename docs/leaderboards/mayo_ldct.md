@@ -80,7 +80,8 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 | 2 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
 | 3 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
 | 4 | **NAF** (per-scene MLP) | n_freqs=6, hidden=192, layers=5, n_iter=2000 (iter-1) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
-| 5 | **DD-BF N2I** | proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50 (iter-1) | 0.000018 | 0.4868 | **0.0047** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/iterations/iter-0001/comparison.png) |
+| 5 | **TV-iterative** (non-trainable) | tv_n_iter=200, tv_lambda=0.01, tv_step=0.5 (iter-1) | 0 | 0.5127 | **0.0108** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0001/comparison.png) |
+| 6 | **DD-BF N2I** | proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50 (iter-1) | 0.000018 | 0.4868 | **0.0047** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/iterations/iter-0001/comparison.png) |
 
 ### Structural deal-breakers + plateaued (filed 2026-06-03)
 
@@ -100,25 +101,27 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 | **DD-UNet N2I** | iter-1 hr=0 SSIM 0.46, PSNR 12.52 < baseline 12.59 (loss 0.00001 from epoch 1) | Same N2I noise-floor over-smoothing as breast-CT: loss is already at the N2I supervision floor by ep-1, so the network has nowhere to climb. Supervised L2 (rank 3, hr=0.13) is the right DD-UNet variant for Mayo. |
 | **DD-BF N2I** | iter-1 hr=0.0047, iter-2 (ep 3→6) hr=0.0035 — Δhr = −0.0012 (plateau) | The 18 BF scalars kept moving (σ_y 1.973→1.953 from ep-3 to ep-6) but val SSIM stayed flat at 0.485 and hr actually slipped. iter-1 stays as rank 5; cap is structural (18 trainable params can't beat the FBP baseline by more than the noise floor). |
 | **R²-Gaussian** | iter-1 TIMEOUT at 30 min (per-scene fit takes longer than the autoresearch sbatch wall allows) | gs_n_iter=3000 + FBP² init at train_n=2, val_n=2 still didn't complete a single per-scene fit within the 30-min cluster_guide §4.6 budget. Same breast-CT structural verdict applies — R²-Gaussian's per-scene optimisation is too expensive for the autoresearch loop on Mayo's 2304-angle, 512² scenes. Would need a TPE-scale 4-h job to test seriously. |
+| **NAF** plateau verdict | iter-1 hr=**0.0202** (the rank-4 entry); iter-4 (naf_n_iter 2000 → 3000 at val_n=5) regressed to hr=0.0010, SSIM 0.5395 → 0.4843 | NAF **overshoots** beyond 2000 iters on Mayo: the implicit-field MLP starts hallucinating high-frequency detail that does not match the truth slab, pulling SSIM down by ~5.5 pts. iter-1's `naf_n_iter=2000` is the optimum. iter-1 stays as rank 4 — Step 3 TPE would need to bracket below 2000 iters, not above. |
 
 ### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~13:13:**
+**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~13:43:**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **NAF** | iter-3 TIMEOUT at 30-min sbatch wall (naf_n_iter=4000 / val_n=5 ≈ 70 min projected) | iter-4 (**762813**, 60-min wall): `naf_n_iter` 4000 → 3000 at val_n=5. Splits the difference and fits in a 60-min wall; cleanly resolves the convergence-vs-plateau question. |
-| **TV-iterative** (non-trainable) | (just started) | iter-1 (**762814**): classical TV proximal gradient (`tv_n_iter=200`, λ=0.01) — one of the last untested solvers from `solver_plan.md`. Pure classical optimisation, no training. |
-| **Mayo DDPM v1** (training) | (just started) | Architecture mirrors breast v3 winner: `ch=128`, ep=60, batch=4, lr=1e-4. ~22 h wall. Unlocks `diff_recon_dcstep_mayo` variants once the checkpoint lands. Job **762812**. |
+| **TV-iterative** (non-trainable) | iter-1 hr=**0.0108** SSIM 0.5127, PSNR 12.68 vs baseline 12.59 (new rank 5 positive!) | iter-2 (**762816**): `tv_n_iter` 200 → 400. Loss was still dropping at iter-200 (7 % drop from iter-150 to iter-200) → not converged. Hyp: more iters push hr into the 0.015–0.025 range; if hr <0.012 at n_iter=400, plateau. |
+| **Mayo DDPM v2** (training) | v1 OOMed in 20 s at ch=128 batch=4 (Mayo 512² needs 4× the breast 256² memory) | v2 (**762815**): ch 128 → 64 + batch 4 → 2 (8× total memory reduction). 22-h wall. Unlocks `diff_recon_dcstep_mayo` once the ckpt lands. |
+
+Step-2 coverage of `solver_plan.md` is now essentially exhausted (TV-iterative was the last untested entry in the solver inventory). Open work:
+- Wait for Mayo DDPM v2 ckpt → dispatch `diff_recon_dcstep_mayo_v2` iter-1 variants.
+- Step 3 TPE refinement on the four plateaued positives (LPD rank 1, USwin rank 2, DD-UNet sup rank 3, NAF rank 4) — needs a Mayo TPE sbatch (not yet scaffolded).
 
 The previous batch outcome:
-- 762802 NAF iter-2 → inconclusive (val_n change).
-- 762806 R²-G iter-1 → **TIMEOUT** — too expensive for the autoresearch 30-min budget. Verdict filed in the table above.
-- 762807 DD-UNet N2I iter-1 → **STOP** (N2I noise-floor over-smoothing). Filed above.
-- 762808 DD-BF N2I iter-1 → marginal hit hr=0.0047; iter-2 (ep 3→6) regressed to hr=0.0035 → **PLATEAU**. iter-1 stays as rank 5.
-- 762810 NAF iter-3 → TIMEOUT (see iter-4 above).
+- 762812 Mayo DDPM v1 → **FAILED (OOM)**. Retried as v2 above.
+- 762813 NAF iter-4 → hr=0.0010 SSIM 0.4843 (regressed from iter-1's hr=0.0202). NAF overshoots beyond 2000 iters — **iter-1 stays as rank 4**. Verdict filed in the table above.
+- 762814 TV-iter iter-1 → hr=0.0108 (rank 5). Iter-2 dispatched above.
 
 ## Plan
 
