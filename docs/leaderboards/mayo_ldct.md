@@ -84,18 +84,22 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 
 | Solver | Final state | Why deprioritised |
 |---|---|---|
-| **DD-BF supervised L2** | iter-3 hr=0 (2 consecutive hr=0 iters) | Loss stuck at 0.00016 across both λ_neg=5 and λ_neg=2 — the 18-parameter BF stack is too low-capacity for Mayo's complexity. The variant that worked on breast-CT at hr=0.26 cannot transfer. |
-| **RAM zero-shot (pretrained)** | iter-3 hr=0 (3 consecutive hr=0 iters) | SSIM monotonically increased 0.40 → 0.48 → 0.48 across blend sweep, but PSNR ceiling 12.45 dB < baseline 12.59 dB. The pretrained `ram.pth.tar` (natural images) cannot bridge to Mayo's μ-intensity range; would need finetuning, not zero-shot. |
+| **DD-BF supervised L2** | iter-3 hr=0 (2 consecutive hr=0) | Loss stuck at 0.00016 across both λ_neg=5 and λ_neg=2 — the 18-parameter BF stack is too low-capacity for Mayo's complexity. The variant that worked on breast-CT at hr=0.26 cannot transfer. |
+| **RAM zero-shot (pretrained)** | iter-3 hr=0 (3 consecutive hr=0) | SSIM monotonically increased 0.40 → 0.48 → 0.48 across blend sweep, but PSNR ceiling 12.45 dB < baseline 12.59 dB. The pretrained `ram.pth.tar` (natural images) cannot bridge to Mayo's μ-intensity range. |
+| **Learned Primal-Dual — agentic loop plateaued** | iter-3 hr=0.2445 is the winner; iter-4 (hidden 64) and iter-5 (lpd_iters=6) both regressed (gradient instability with deeper / wider nets at train_n=100). | iter-3 stays as Mayo LPD agentic winner. Both width-up (iter-4) and depth-up (iter-5) attempts broke the loss landscape — short-budget train_n=100 isn't enough to support more capacity. Step 3 (TPE around iter-3) is the next move. |
 
-**Autoresearch loop active — iter-4+ in flight as of 2026-06-03 ~11:30:**
+### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
-| Solver | iter-3 result | iter-N+1 hypothesis (short budget, 30-min wall) |
+`PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
+
+**Autoresearch loop active — iter-5+ in flight as of 2026-06-03 ~11:45:**
+
+| Solver | Latest result | iter-N+1 hypothesis (short budget, 30-min wall) |
 |---|---|---|
-| LPD | iter-4 hr=**0** (hidden 48→64 regressed; loss explosion) | iter-5: revert hidden=48, try lpd_iters 4 → 6 (depth instead of width) |
-| DD-UNet sup | iter-3 hr=**0.1337** (c 16→24, +0.005) | iter-4: c 24 → 32 (continue scaling, breast-CT champion) |
-| USwin | iter-3 ❌ exit 1 (c 16→24, win 8→16 OOMed) | iter-4: c=20 (smaller step), keep win=8 |
-| **ITNet v3** | (just started) | iter-1: small (k=2, c=16) per LPD-iter-1 OOM lesson |
-| **Hammernik VN** | (just started) | iter-1: small (T=3, filters=16) per same lesson |
+| DD-UNet sup | iter-3 hr=**0.1337** (c=24); iter-4 (c=32) regressed to 0.089 | iter-5: ep 3 → 6 at c=24 (more training of best config; capacity scaling exhausted) |
+| USwin | iter-2 hr=**0.1425** (c=16, train_n=50); iter-3/4 OOMed at train_n=100 | iter-5: ep 3 → 6 at iter-2 config + train_n=50 (FBP fits, more training) |
+| ITNet v3 | iter-1 ❌ FBP-OOM at train_n=100 | iter-2: train_n 100 → 50 (feasibility re-test, then iter-3 moves on real knob) |
+| Hammernik VN | iter-1 ❌ FBP-OOM at train_n=100 | iter-2: train_n 100 → 50 (same fix) |
 
 ## Plan
 
