@@ -82,8 +82,8 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | 1 | **Learned Primal-Dual** | I=4, hidden=48, n_p=n_d=3, ep=3, lr=3.2e-4, train_n=100 (iter-3) | 0.193 | 0.4681 | **0.2445** | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png) |
 | 2 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
 | 3 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
-| 4 | **diff_recon DCstep unconstrained** (DDPM v2 prior) | DPS, sample_steps=200, eta=30, dcstep_n_cg=10, FBP init (iter-1) | 3.823 | 0.5309 | **0.0647** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/iterations/iter-0001/comparison.png) |
-| 5 | **diff_recon DCstep constrained** (DDPM v2 prior) | DPS, sample_steps=200, eta=30, dcstep_n_cg=10, FBP init (iter-1) | 3.823 | 0.4892 | **0.0560** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/iterations/iter-0001/comparison.png) |
+| 4 | **diff_recon DCstep unconstrained** (DDPM v2 prior) | DPS, sample_steps=200, **eta=10**, dcstep_n_cg=10, FBP init (iter-4) | 3.823 | 0.5482 | **0.1279** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/results.tsv) | [iter-4](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/iterations/iter-0004/comparison.png) |
+| 5 | **diff_recon DCstep constrained** (DDPM v2 prior) | DPS, sample_steps=200, **eta=10**, dcstep_n_cg=10, FBP init (iter-4) | 3.823 | 0.5077 | **0.0745** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/results.tsv) | [iter-4](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/iterations/iter-0004/comparison.png) |
 | 6 | **TV-iterative** (non-trainable) | tv_iterations=3200, tv_lambda=0.01, tv_step=0.5 (iter-6) | 0 | 0.5387 | **0.0433** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-6](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0006/comparison.png) |
 | 7 | **NAF** (per-scene MLP) | n_freqs=6, hidden=192, layers=5, n_iter=2000 (iter-1) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
 | 8 | **DD-BF N2I** | proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50 (iter-1) | 0.000018 | 0.4868 | **0.0047** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/iterations/iter-0001/comparison.png) |
@@ -112,20 +112,20 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~16:07:**
+**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~16:35 (diff_recon DOUBLED at eta=10!):**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **TV-iterative** (non-trainable) | iter-6 hr=**0.0433** (was 0.0362 at iter-5). Δhr: +0.011 → +0.009 → +0.008 → +0.007 — converging. Loss 3.25 at iter-3200, still falling. | iter-7 (**762839**, 60-min wall): `tv_iterations` 3200 → 6400. Hyp: hr lifts above 0.05 if loss keeps falling; if Δhr<0.005, plateau finally lands. |
-| **diff_recon UNCON** | iter-3 (n_cg 10→20) hr=0.0544 — also **REGRESSED** from iter-1's 0.0647. Both compute-axis knobs (sample_steps, n_cg) hurt. | iter-4 (**762840**): try lower step size `recon_eta` 30 → 10. Hyp: more-conservative DPS updates = less hallucination = hr ≥ 0.07. If Δhr<0.005, the iter-1 corner of the space is the optimum and we plateau. |
-| **diff_recon CON** | iter-3 (n_cg 10→20) hr=0.0526 — marginal regression from iter-1's 0.0560 (Δhr=-0.003 already within plateau threshold). | iter-4 (**762841**): same `recon_eta` 30 → 10 test as uncon iter-4. If marginal regression, file plateau at iter-1's 0.0560. |
+| **TV-iterative** (non-trainable) | iter-7 still running (5650/6400, loss=3.14, still falling). | (await iter-7) |
+| **diff_recon UNCON** | iter-4 hr=**0.1279** SSIM 0.5482 PSNR 15.16 — **DOUBLED** from iter-1's 0.0647 (just by `recon_eta` 30 → 10). | iter-5 (**762843**): push `recon_eta` 10 → 3 (floor of breast_v3 log space). Hyp: monotone gradient → hr in 0.18–0.22 range. If Δhr<0.005, plateau in eta∈[3,10]. |
+| **diff_recon CON** | iter-4 hr=**0.0745** — also lifted from iter-1's 0.0560 (same eta knob, smaller magnitude). | iter-5 (**762844**): same `recon_eta` 10 → 3 push as uncon. Hyp: hr ~0.10. |
+
+**Major correction to previous "compute-saturated" diagnosis:** the iter-3 regressions (both sample_steps↑ and n_cg↑) made me file the iter-1 corner as the optimum. WRONG — the bottleneck was the DPS step size (`recon_eta`). Lowering eta 30→10 doubled the UNCON hr. The space is **eta-dominated**, not compute-dominated. Lesson: when two "more compute" knobs both hurt, try the orthogonal "different dynamics" axis before declaring plateau.
 
 The previous batch outcome:
-- 762833 TV-iter iter-6 → hr=0.0433 (rank 6, climbing). iter-7 dispatched.
-- 762834 diff_recon UNCON iter-3 → hr=0.0544 (knob-axis #2 regression). iter-1 still rank 4.
-- 762835 diff_recon CON iter-3 → hr=0.0526 (marginal regression). iter-1 still rank 5.
-
-**Diff-recon space map so far:** iter-1 config (`sample_steps=200`, `n_cg=10`, `eta=30`, `fbp init`) is at a local optimum. Two compute-up directions (more sample_steps, more n_cg) both hurt → the system is **compute-saturated** at iter-1. iter-4 tests the orthogonal axis (smaller `eta` = different dynamics, not more compute) before filing plateau.
+- 762839 TV iter-7 → still running (will catch next cycle).
+- 762840 diff_recon UNCON iter-4 → **hr=0.1279** ▲▲ (rank 4 jumped, +0.063 from iter-1).
+- 762841 diff_recon CON iter-4 → **hr=0.0745** ▲ (rank 5 lifted, +0.019 from iter-1).
 
 ## Plan
 
