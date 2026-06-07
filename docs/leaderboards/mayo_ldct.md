@@ -76,21 +76,26 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 
 | Rank | Solver | Variant | params (M) | SSIM | hr | Source | Comparison |
 |---:|---|---|---:|---:|---:|---|---|
-| 1 | **Learned Primal-Dual** | I=4, hidden=48, n_p=n_d=3, ep=3, lr=3.2e-4, train_n=100 (short-budget iter-3) | 0.193 | 0.4681 | **0.2445** | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png) |
-| 2 | **USwin** | c=16, win=8, heads=8, ep=3, lr=7.3e-4, train_n=50 | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
-| 3 | **DD-UNet supervised L2** | c=16, ep=3, lr=5e-4, train_n=100 | — | 0.4386 | **0.1282** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0002/comparison.png) |
-| 4 | DD-BF supervised L2 | proj_n=3, img_n=3, ep=10, lr=5e-3, train_n=400 (img σ runaway 0.5→27) | 0.000 | 0.4856 | 0.0209 | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260603-01/iterations/iter-0001/comparison.png) |
-| — | RAM zero-shot (pretrained) | σ=0.005, blend=0.2 — still below baseline PSNR | (frozen) | 0.4755 | 0.000 | [results](../runs/mayo-ldct-claude-agentic-ram-zeroshot-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-ram-zeroshot-search-20260603-01/iterations/iter-0002/comparison.png) |
+| 1 | **Learned Primal-Dual** | I=4, hidden=48, n_p=n_d=3, ep=3, lr=3.2e-4, train_n=100 (iter-3) | 0.193 | 0.4681 | **0.2445** | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png) |
+| 2 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
+| 3 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
 
-**Autoresearch loop active — iter-3+ in flight as of 2026-06-03 ~11:30:**
+### Structural deal-breakers (filed 2026-06-03)
 
-| Solver | iter-2 / iter-3 result | iter-N+1 hypothesis (short budget, 30-min wall) |
+| Solver | Final state | Why deprioritised |
 |---|---|---|
-| LPD | iter-3 hr=**0.2445** ★ (hidden 48, 193 k) | iter-4: hidden 48 → 64 — still capacity-limited; predicted hr +0.01–0.03 |
-| USwin | iter-2 hr=**0.1425** (first working, c=16) | iter-3: c 16 → 24, win 8 → 16 — breast-CT champion shape now that memory is solved |
-| DD-UNet sup | iter-2 hr=**0.1282** (first working, c=16) | iter-3: c 16 → 24 — scale back up within val_chunk=1 budget |
-| DD-BF sup | iter-2 hr=0 (λ_neg=5 over-damped) | iter-3: λ_neg 5 → 2 (middle ground; restore signal while keeping σ stable) |
-| RAM zero-shot | iter-2 SSIM 0.48 ↑ but hr=0 | iter-3: blend 0.2 → 0.0 — test whether ANY FBP-blending helps or RAM-only is the bound |
+| **DD-BF supervised L2** | iter-3 hr=0 (2 consecutive hr=0 iters) | Loss stuck at 0.00016 across both λ_neg=5 and λ_neg=2 — the 18-parameter BF stack is too low-capacity for Mayo's complexity. The variant that worked on breast-CT at hr=0.26 cannot transfer. |
+| **RAM zero-shot (pretrained)** | iter-3 hr=0 (3 consecutive hr=0 iters) | SSIM monotonically increased 0.40 → 0.48 → 0.48 across blend sweep, but PSNR ceiling 12.45 dB < baseline 12.59 dB. The pretrained `ram.pth.tar` (natural images) cannot bridge to Mayo's μ-intensity range; would need finetuning, not zero-shot. |
+
+**Autoresearch loop active — iter-4+ in flight as of 2026-06-03 ~11:30:**
+
+| Solver | iter-3 result | iter-N+1 hypothesis (short budget, 30-min wall) |
+|---|---|---|
+| LPD | iter-4 hr=**0** (hidden 48→64 regressed; loss explosion) | iter-5: revert hidden=48, try lpd_iters 4 → 6 (depth instead of width) |
+| DD-UNet sup | iter-3 hr=**0.1337** (c 16→24, +0.005) | iter-4: c 24 → 32 (continue scaling, breast-CT champion) |
+| USwin | iter-3 ❌ exit 1 (c 16→24, win 8→16 OOMed) | iter-4: c=20 (smaller step), keep win=8 |
+| **ITNet v3** | (just started) | iter-1: small (k=2, c=16) per LPD-iter-1 OOM lesson |
+| **Hammernik VN** | (just started) | iter-1: small (T=3, filters=16) per same lesson |
 
 ## Plan
 
