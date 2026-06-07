@@ -98,24 +98,27 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 | **ITNet v2** | iter-1 OOM in `filter_sino` (2.53 GiB FFT pad) | Two-bug combo: (a) `solver_itnet_v2.py` ignores the agentic JSON cfg and silently keeps its hardcoded `train_n=400`, `val_n=100`, `itnet_k=5` defaults → FBP scratch blows past 24 GB. Fix is structural in `solver_itnet_v2.py` (read cfg from `CFG_JSON` env like solver_itnet_v3 does) before any retry. |
 | **Hammernik 2017** | iter-1 hr=0 SSIM 0.27, PSNR 11.55 < baseline 12.59 (λ_t stuck within 0.8 % of init) | Same Hammernik family failure as VN: the per-step λ regulariser barely budges over 3 epochs and the final recon is biased darker than baseline. Sino-complexity ceiling, not a config knob away from working. |
 | **DD-UNet N2I** | iter-1 hr=0 SSIM 0.46, PSNR 12.52 < baseline 12.59 (loss 0.00001 from epoch 1) | Same N2I noise-floor over-smoothing as breast-CT: loss is already at the N2I supervision floor by ep-1, so the network has nowhere to climb. Supervised L2 (rank 3, hr=0.13) is the right DD-UNet variant for Mayo. |
+| **DD-BF N2I** | iter-1 hr=0.0047, iter-2 (ep 3→6) hr=0.0035 — Δhr = −0.0012 (plateau) | The 18 BF scalars kept moving (σ_y 1.973→1.953 from ep-3 to ep-6) but val SSIM stayed flat at 0.485 and hr actually slipped. iter-1 stays as rank 5; cap is structural (18 trainable params can't beat the FBP baseline by more than the noise floor). |
+| **R²-Gaussian** | iter-1 TIMEOUT at 30 min (per-scene fit takes longer than the autoresearch sbatch wall allows) | gs_n_iter=3000 + FBP² init at train_n=2, val_n=2 still didn't complete a single per-scene fit within the 30-min cluster_guide §4.6 budget. Same breast-CT structural verdict applies — R²-Gaussian's per-scene optimisation is too expensive for the autoresearch loop on Mayo's 2304-angle, 512² scenes. Would need a TPE-scale 4-h job to test seriously. |
 
 ### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 3 jobs in flight as of 2026-06-07 ~12:42:**
+**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~13:13:**
 
-| Solver | Latest result | Next hypothesis (short budget, 30-min wall) |
+| Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **NAF** | iter-2 hr=0 SSIM 0.5277 at val_n=3 (INCONCLUSIVE — I changed val_n 5→3 and the baseline jumped 12.59→13.98) | iter-3 (**762810**): revert val_n 3→5 (apples-to-apples with iter-1), keep `naf_n_iter=4000`. If hr ≥ 0.03 the extra iters helped; if hr ~0.02 plateaued and we file. |
-| **R²-Gaussian** | iter-1 still running (23 min in) | (await iter-1 result) |
-| **DD-BF N2I** | iter-1 hr=**0.0047** SSIM 0.487 (PSNR 12.63 vs baseline 12.59; just above plateau threshold) | iter-2 (**762811**): ep 3 → 6 (the 18 BF scalars only moved ~1 % over 3 epochs). If hr < 0.01 at ep=6, file plateau. |
+| **NAF** | iter-3 TIMEOUT at 30-min sbatch wall (naf_n_iter=4000 / val_n=5 ≈ 70 min projected) | iter-4 (**762813**, 60-min wall): `naf_n_iter` 4000 → 3000 at val_n=5. Splits the difference and fits in a 60-min wall; cleanly resolves the convergence-vs-plateau question. |
+| **TV-iterative** (non-trainable) | (just started) | iter-1 (**762814**): classical TV proximal gradient (`tv_n_iter=200`, λ=0.01) — one of the last untested solvers from `solver_plan.md`. Pure classical optimisation, no training. |
+| **Mayo DDPM v1** (training) | (just started) | Architecture mirrors breast v3 winner: `ch=128`, ep=60, batch=4, lr=1e-4. ~22 h wall. Unlocks `diff_recon_dcstep_mayo` variants once the checkpoint lands. Job **762812**. |
 
 The previous batch outcome:
-- 762802 NAF iter-2 → inconclusive (val_n change), retest as iter-3 above.
-- 762806 R²-G iter-1 → still running (per-scene, 23 min into 30-min wall).
-- 762807 DD-UNet N2I iter-1 → STOP (N2I noise-floor over-smoothing — verdict filed in the table above).
-- 762808 DD-BF N2I iter-1 → marginal hit hr=0.0047, retried as iter-2 above.
+- 762802 NAF iter-2 → inconclusive (val_n change).
+- 762806 R²-G iter-1 → **TIMEOUT** — too expensive for the autoresearch 30-min budget. Verdict filed in the table above.
+- 762807 DD-UNet N2I iter-1 → **STOP** (N2I noise-floor over-smoothing). Filed above.
+- 762808 DD-BF N2I iter-1 → marginal hit hr=0.0047; iter-2 (ep 3→6) regressed to hr=0.0035 → **PLATEAU**. iter-1 stays as rank 5.
+- 762810 NAF iter-3 → TIMEOUT (see iter-4 above).
 
 ## Plan
 
