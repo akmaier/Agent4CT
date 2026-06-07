@@ -112,25 +112,32 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~17:58:**
+**Autoresearch loop active — 4 jobs in flight as of 2026-06-07 ~18:29:**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **TV-iterative** (non-trainable) | iter-8 hr=**0.0557** (was 0.0498). Δhr=+0.006 — converging slowly toward plateau. | iter-9 (**762851**, 60-min wall): `tv_iterations` 12800 → 25600. Likely the last useful TV doubling. |
-| **diff_recon UNCON** | iter-7 (warmup 25→40) regressed to hr=0.1638 — UNCON wants warmup=25, opposite of CON. iter-6 (hr=0.2095) stays as rank 2. | iter-8 (**762852**): revert warmup=25, try `dcstep_relax` 1.0 → 0.95. Hyp: hr ~0.21; if Δhr<0.005 plateau. |
-| **diff_recon CON** | iter-7 (relax 1.0→0.95) hr=**0.0847** — IDENTICAL to iter-6; relax is inert for CON. | iter-8 (**762853**): try `dcstep_every` 3 → 4 (less frequent DC). Hyp: ~0.09. If Δhr<0.005, plateau confirmed across 2 consecutive iters (iter-7+iter-8) → file CON at hr=0.0847. |
+| **TV-iterative** | iter-8 hr=**0.0557** — TV final rank-6 entry. iter-9 (762851) at 25600 iters is on track to TIMEOUT (only 25% done at the 30-min mark). | TV-iter ends here; per-iter wall doubles each round while Δhr returns shrink. iter-8 stays. |
+| **diff_recon UNCON** | iter-8 (relax 1.0→0.95) hr=0.2045 ≈ iter-6's 0.2095 — relax inert for UNCON too. | iter-9 (**762857**): from iter-6 winner, change `dcstep_every` 3→4 (last untested cheap axis). |
+| **diff_recon CON** | iter-8 (every 3→4) hr=0.0751 — REGRESSED from iter-6's 0.0847. CON wants every=3. | iter-9 (**762858**): from iter-6 winner, try the last untested axis — `recon_init` "fbp"→"noise". Hyp: if noise init works, CON might cross 0.10. |
+| **Mayo DDPM v3** (training) | (just dispatched) | Bigger prior (ch=64 → ch=96 at batch=1) for both modes — does the v2 prior bottleneck diff_recon UNCON at 0.2095? Job **762856**, 8-h wall. |
 
-**Asymmetric optima between UNCON and CON:**
+**Diff_recon knob exploration summary (across 9 iters per variant):**
+
 | axis | UNCON winner | CON winner |
 |---|---|---|
 | `recon_eta` | 3 (floor) | 10 (moderate) |
+| `recon_sample_steps` | 200 | 200 |
+| `recon_dcstep_n_cg` | 10 | 10 |
 | `recon_dcstep_warmup` | 25 (early DC) | 40 (late DC) |
-| `recon_eta_clamp` | True | (untested) |
+| `recon_dcstep_relax` | 1.0 (inert at 0.95) | 1.0 (inert at 0.95) |
+| `recon_dcstep_every` | 3 (testing 4 now) | 3 |
+| `recon_eta_clamp` | True | (symmetric assumption) |
+| `recon_init` | fbp | (testing noise now) |
 
 The previous batch outcome:
-- 762845 TV iter-8 → hr=0.0557 (rank 6 up from 0.0498).
-- 762849 diff_recon UNCON iter-7 → hr=0.1638 (warmup-axis regression). iter-6 stays as rank 2.
-- 762850 diff_recon CON iter-7 → hr=0.0847 (relax inert). iter-6 stays as rank 5.
+- 762851 TV iter-9 → still running, will TIMEOUT (25 % done at 30 min mark). TV-iter ends at iter-8 rank 6.
+- 762852 UNCON iter-8 → hr=0.2045 (relax inert).
+- 762853 CON iter-8 → hr=0.0751 (every-axis regression).
 
 ## Plan
 
