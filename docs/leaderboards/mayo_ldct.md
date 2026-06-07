@@ -80,7 +80,7 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 | 2 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
 | 3 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
 | 4 | **NAF** (per-scene MLP) | n_freqs=6, hidden=192, layers=5, n_iter=2000 (iter-1) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
-| 5 | **TV-iterative** (non-trainable) | tv_n_iter=200, tv_lambda=0.01, tv_step=0.5 (iter-1) | 0 | 0.5127 | **0.0108** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0001/comparison.png) |
+| 5 | **TV-iterative** (non-trainable) | tv_iterations=400, tv_lambda=0.01, tv_step=0.5 (iter-3) | 0 | 0.5214 | **0.0197** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0003/comparison.png) |
 | 6 | **DD-BF N2I** | proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50 (iter-1) | 0.000018 | 0.4868 | **0.0047** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/iterations/iter-0001/comparison.png) |
 
 ### Structural deal-breakers + plateaued (filed 2026-06-03)
@@ -107,18 +107,23 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~14:13:**
+**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~14:43 (Step-2 finishing + diff-recon unlocked):**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **TV-iterative** (non-trainable) | iter-2 hr=0.0108 IDENTICAL to iter-1 — silent config-merge bug: solver reads `tv_iterations` (default 200), not `tv_n_iter` (the agentic-cfg key) | iter-3 (**762820**): set BOTH `tv_iterations=400` and `tv_n_iter=400` so the override actually lands. Hypothesis from iter-2 still valid: more iters lifts hr above 0.012, or TV is converged at 200 → plateau. |
-| **Mayo DDPM v2 constrained** (training) | v2 unconstrained ckpt landed (job 762815, 19:38 wall, ch=64 batch=2, params=3.823M, best val ε-loss=0.0049). | Constrained variant (**762819**) uses the smaller `ddpm_n_train_constrained=50` slab subset — typically the better prior for diff_recon as seen on breast. 4-h wall (small dataset). |
+| **TV-iterative** (non-trainable) | iter-3 hr=**0.0197** SSIM 0.5214 (with cfg-fix; 400 actual iters). Loss 4.86→4.15 from iter-200→400 — still falling. | iter-4 (**762821**): `tv_iterations` 400 → 800. Hyp: if loss keeps falling, hr pushes into 0.025–0.035. If Δhr < 0.005 vs iter-3, plateau and iter-3 stays. |
+| **diff_recon_dcstep_unconstrained_mayo_v2** | (just started) | iter-1 (**762822**) — DPS against the new uncon DDPM v2 ckpt. Smallest budget from breast_v3 TPE space (sample_steps=200, dcstep_n_cg=10, eta=30, fbp init). |
+| **diff_recon_dcstep_constrained_mayo_v2** | (just started) | iter-1 (**762823**) — same DPS budget, against the 50-sample constrained DDPM v2 ckpt (the variant that typically wins for diff-recon on breast). |
 
-**Mayo DDPM v2 unconstrained ckpt READY** at `/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_unconstrained_v2.pt` (15 MB, 3.823 M params, final val ε-loss=0.0081). Next once the constrained ckpt lands: dispatch `diff_recon_dcstep_mayo_v2_unconstrained` / `_constrained` iter-1 attempts (need to add agentic search-agent entries — see `scripts/learned_solver_search_agent.py`).
+**Both Mayo DDPM v2 ckpts READY:**
+- `/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_unconstrained_v2.pt` (3.823 M params, 200 train, best val ε-loss=0.0049)
+- `/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_constrained_v2.pt` (3.823 M params, 50 train, best val ε-loss=0.0087)
+
+The `scripts/claude_agentic_one_iter.py` SOLVER_MAP picked up two new keys: `diffusion_recon_dcstep_unconstrained_mayo_v2` and `diffusion_recon_dcstep_constrained_mayo_v2`. The ckpt path is passed inside the per-iter CFG_JSON as `recon_ckpt`, so no solver-side patching was needed.
 
 The previous batch outcome:
-- 762815 Mayo DDPM v1 → **COMPLETED** at ch=64 batch=2 in 19:38 (v1's ch=128 OOMed in 20 s — Mayo 512² is 4× breast's memory footprint). The "v2" naming is preserved on the ckpt file.
-- 762816 TV-iter iter-2 → silent no-op (cfg-merge bug). Retried as iter-3 above with the correct knob.
+- 762819 Mayo DDPM v2 constrained → **COMPLETED** in 4:11 (50-sample dataset → fast).
+- 762820 TV-iter iter-3 (cfg-fix landed) → hr=0.0197 ▲ vs iter-1's hr=0.0108. iter-4 dispatched above.
 
 ## Plan
 
