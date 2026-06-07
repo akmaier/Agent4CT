@@ -112,14 +112,18 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~19:25:**
+**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~19:53:**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **diff_recon UNCON v2** | iter-10 (init noise) hr=**0.2034** — within 0.006 of iter-6's 0.2095. **PLATEAU**: iter-6 stays rank 2 at hr=0.2095. | Closed for v2; v3 iter-1 below. |
-| **diff_recon CON v2** | iter-10 (clamp=True) hr=**0.0760** — regressed from iter-6's 0.0847. **PLATEAU**: iter-6 stays rank 5 at hr=0.0847. | Closed for v2; v3 iter-1 below. |
-| **diff_recon UNCON v3** (new) | (just dispatched) | iter-1 (**762861**): seed from v2 UNCON winner cfg (eta=3, warmup=25, clamp=True), only change ckpt v2→v3 (3.823M→8.594M params, ch=64→96). Hyp: bigger prior lifts hr above 0.22. |
-| **diff_recon CON v3** (new) | (just dispatched) | iter-1 (**762862**): seed from v2 CON winner cfg, ckpt v2→v3. Hyp: bigger prior lifts hr above 0.09. |
+| **diff_recon UNCON v3** | iter-1 (v2 winner cfg with v3 ckpt) hr=**0** SSIM 0.5235 PSNR 13.93 — **WORSE THAN BASELINE!** v3 dynamics differ from v2 — eta=3 collapses against the bigger prior. | iter-2 (**762863**): raise `recon_eta` 3 → 10 (the v2 CON winner). Hyp: v3 (more confident prior) wants bolder posterior updates. If hr ≥ 0.10 we're back in the game; if 0, try eta=30. |
+| **diff_recon CON v3** | iter-1 hr=**0.0686** < v2's 0.0847 — also regressed. | iter-2 (**762864**): raise `recon_eta` 10 → 30 (top of breast_v3 log space). Same higher-eta hypothesis. |
+
+**v3-prior surprise:** bigger DDPM (8.594 M vs 3.823 M params) makes diff_recon WORSE at the v2-optimal eta. The hyperparameters don't transfer. v3 likely wants a different eta regime — testing now.
+
+The previous batch outcome:
+- 762861 UNCON v3 iter-1 → hr=**0** (the v2 cfg with eta=3 collapsed against the v3 prior).
+- 762862 CON v3 iter-1 → hr=**0.0686** (regressed from v2's 0.0847).
 
 **Both Mayo DDPM v3 ckpts landed:**
 - `ddpm_mayo_unconstrained_v3.pt` (33 MB, 8.594 M params, best val ε-loss=0.0061)
