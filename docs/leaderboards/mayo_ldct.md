@@ -112,14 +112,14 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 4 jobs in flight as of 2026-06-07 ~18:29:**
+**Autoresearch loop active — 4 jobs in flight as of 2026-06-07 ~18:58:**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **TV-iterative** | iter-8 hr=**0.0557** — TV final rank-6 entry. iter-9 (762851) at 25600 iters is on track to TIMEOUT (only 25% done at the 30-min mark). | TV-iter ends here; per-iter wall doubles each round while Δhr returns shrink. iter-8 stays. |
-| **diff_recon UNCON** | iter-8 (relax 1.0→0.95) hr=0.2045 ≈ iter-6's 0.2095 — relax inert for UNCON too. | iter-9 (**762857**): from iter-6 winner, change `dcstep_every` 3→4 (last untested cheap axis). |
-| **diff_recon CON** | iter-8 (every 3→4) hr=0.0751 — REGRESSED from iter-6's 0.0847. CON wants every=3. | iter-9 (**762858**): from iter-6 winner, try the last untested axis — `recon_init` "fbp"→"noise". Hyp: if noise init works, CON might cross 0.10. |
-| **Mayo DDPM v3** (training) | (just dispatched) | Bigger prior (ch=64 → ch=96 at batch=1) for both modes — does the v2 prior bottleneck diff_recon UNCON at 0.2095? Job **762856**, 8-h wall. |
+| **TV-iterative** | TV TIMED OUT at iter-9 (~48 % done in 60 min wall). iter-8 hr=**0.0557** is the final rank-6 entry. | Closed. |
+| **diff_recon UNCON** | iter-9 (every 3→4) hr=0.1578 — regressed from iter-6's 0.2095. | iter-10 (**762859**): from iter-6 winner, try last untested axis: `recon_init` "fbp"→"noise". If Δhr<0.005, file plateau. |
+| **diff_recon CON** | iter-9 (init "fbp"→"noise") hr=0.0759 — marginal regression from iter-6's 0.0847. | iter-10 (**762860**): from iter-6 winner, try last untested axis: `recon_eta_clamp` False→True. If Δhr<0.005, file plateau. |
+| **Mayo DDPM v3** (training, **762856**) | RUNNING at ep 36/60, val ε-loss best=0.006 (vs v2's 0.005). 8.594 M params. | Land ckpt then dispatch diff_recon_mayo_v3 iter-1 against it; the bet is whether a bigger prior lifts UNCON beyond 0.2095. |
 
 **Diff_recon knob exploration summary (across 9 iters per variant):**
 
