@@ -80,11 +80,11 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | Rank | Solver | Variant | params (M) | SSIM | hr | Source | Comparison |
 |---:|---|---|---:|---:|---:|---|---|
 | 1 | **Learned Primal-Dual** | I=4, hidden=48, n_p=n_d=3, ep=3, lr=3.2e-4, train_n=100 (iter-3) | 0.193 | 0.4681 | **0.2445** | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png) |
-| 2 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
-| 3 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
-| 4 | **diff_recon DCstep unconstrained** (DDPM v2 prior) | DPS, sample_steps=200, **eta=10**, dcstep_n_cg=10, FBP init (iter-4) | 3.823 | 0.5482 | **0.1279** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/results.tsv) | [iter-4](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/iterations/iter-0004/comparison.png) |
+| 2 | **diff_recon DCstep unconstrained** (DDPM v2 prior) | DPS, sample_steps=200, **eta=3**, dcstep_n_cg=10, FBP init (iter-5) | 3.823 | 0.5715 | **0.2033** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/results.tsv) | [iter-5](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/iterations/iter-0005/comparison.png) |
+| 3 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
+| 4 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
 | 5 | **diff_recon DCstep constrained** (DDPM v2 prior) | DPS, sample_steps=200, **eta=10**, dcstep_n_cg=10, FBP init (iter-4) | 3.823 | 0.5077 | **0.0745** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/results.tsv) | [iter-4](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/iterations/iter-0004/comparison.png) |
-| 6 | **TV-iterative** (non-trainable) | tv_iterations=3200, tv_lambda=0.01, tv_step=0.5 (iter-6) | 0 | 0.5387 | **0.0433** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-6](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0006/comparison.png) |
+| 6 | **TV-iterative** (non-trainable) | tv_iterations=6400, tv_lambda=0.01, tv_step=0.5 (iter-7) | 0 | 0.5416 | **0.0498** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-7](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0007/comparison.png) |
 | 7 | **NAF** (per-scene MLP) | n_freqs=6, hidden=192, layers=5, n_iter=2000 (iter-1) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
 | 8 | **DD-BF N2I** | proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50 (iter-1) | 0.000018 | 0.4868 | **0.0047** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/iterations/iter-0001/comparison.png) |
 
@@ -112,20 +112,20 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~16:35 (diff_recon DOUBLED at eta=10!):**
+**Autoresearch loop active — 3 jobs queued as of 2026-06-07 ~17:03 (diff_recon UNCON hit rank 2 at hr=0.20!):**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **TV-iterative** (non-trainable) | iter-7 still running (5650/6400, loss=3.14, still falling). | (await iter-7) |
-| **diff_recon UNCON** | iter-4 hr=**0.1279** SSIM 0.5482 PSNR 15.16 — **DOUBLED** from iter-1's 0.0647 (just by `recon_eta` 30 → 10). | iter-5 (**762843**): push `recon_eta` 10 → 3 (floor of breast_v3 log space). Hyp: monotone gradient → hr in 0.18–0.22 range. If Δhr<0.005, plateau in eta∈[3,10]. |
-| **diff_recon CON** | iter-4 hr=**0.0745** — also lifted from iter-1's 0.0560 (same eta knob, smaller magnitude). | iter-5 (**762844**): same `recon_eta` 10 → 3 push as uncon. Hyp: hr ~0.10. |
+| **TV-iterative** (non-trainable) | iter-7 hr=**0.0498** (was 0.0433). Δhr=+0.0065 — just above plateau threshold. Loss 3.12 at iter-6400. | iter-8 (**762845**, 60-min wall): `tv_iterations` 6400 → 12800. Hyp: lifts hr to ~0.054; if Δhr<0.005, plateau lands. |
+| **diff_recon UNCON** | iter-5 hr=**0.2033** SSIM 0.5715 PSNR 15.95 — **TRIPLED** from iter-4 (eta 10→3). Now rank 2 below only LPD (0.2445). | iter-6 (**762846**): keep eta=3 (floor), try `recon_eta_clamp=True`. Hyp: clamping prevents posterior collapse near schedule-end, lifts hr above 0.22. If Δhr<0.005, file plateau. |
+| **diff_recon CON** | iter-5 hr=**0.0102** — MASSIVE regression from iter-4's 0.0745 (eta 10→3 collapsed it). CON optimum is at eta=10, not 3. | iter-6 (**762847**): revert to iter-4 config (eta=10), bump `dcstep_warmup` 25 → 40 (later DC start). Hyp: gives DDPM more denoise time before data-consistency reins; expect hr ~0.09. |
 
-**Major correction to previous "compute-saturated" diagnosis:** the iter-3 regressions (both sample_steps↑ and n_cg↑) made me file the iter-1 corner as the optimum. WRONG — the bottleneck was the DPS step size (`recon_eta`). Lowering eta 30→10 doubled the UNCON hr. The space is **eta-dominated**, not compute-dominated. Lesson: when two "more compute" knobs both hurt, try the orthogonal "different dynamics" axis before declaring plateau.
+**Asymmetric eta optima:** UNCON wants `eta=3` (very conservative DPS steps), CON wants `eta=10` (moderate). The CON variant collapses at eta=3 because the smaller 50-sample training set means the prior is less well-conditioned — overly conservative posterior updates push the recon toward noise/over-smoothing rather than the truth manifold.
 
 The previous batch outcome:
-- 762839 TV iter-7 → still running (will catch next cycle).
-- 762840 diff_recon UNCON iter-4 → **hr=0.1279** ▲▲ (rank 4 jumped, +0.063 from iter-1).
-- 762841 diff_recon CON iter-4 → **hr=0.0745** ▲ (rank 5 lifted, +0.019 from iter-1).
+- 762839 TV iter-7 → hr=0.0498 (rank 6 up from 0.0433). iter-8 dispatched.
+- 762843 diff_recon UNCON iter-5 → **hr=0.2033** ▲▲▲ (rank 2! tripled from iter-4).
+- 762844 diff_recon CON iter-5 → **hr=0.0102** ▼▼▼ (massive regression — eta=3 broke CON; iter-4 stays as the rank-5 entry).
 
 ## Plan
 
