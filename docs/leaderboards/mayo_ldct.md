@@ -112,18 +112,18 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~19:53:**
+**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~20:21:**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **diff_recon UNCON v3** | iter-1 (v2 winner cfg with v3 ckpt) hr=**0** SSIM 0.5235 PSNR 13.93 — **WORSE THAN BASELINE!** v3 dynamics differ from v2 — eta=3 collapses against the bigger prior. | iter-2 (**762863**): raise `recon_eta` 3 → 10 (the v2 CON winner). Hyp: v3 (more confident prior) wants bolder posterior updates. If hr ≥ 0.10 we're back in the game; if 0, try eta=30. |
-| **diff_recon CON v3** | iter-1 hr=**0.0686** < v2's 0.0847 — also regressed. | iter-2 (**762864**): raise `recon_eta` 10 → 30 (top of breast_v3 log space). Same higher-eta hypothesis. |
+| **diff_recon UNCON v3** | iter-2 (eta 3→10) hr=0.0521 — recovered from iter-1's 0, but ¼ of v2's 0.2095. v3 has its own eta gradient. | iter-3 (**762865**): push `eta` 10 → 30 (top). Hyp: if hr ≥ 0.10, v3 optimum is at high eta and search continues; if Δhr<0.005, file v3 plateau/structural-inferiority. |
+| **diff_recon CON v3** | iter-2 (eta 10→30) hr=0.0604 — regressed from iter-1's 0.0686. CON v3 wants eta=10, not 30. | iter-3 (**762866**): revert eta to 10 (iter-1 winner for v3), try `warmup` 40→25 (the UNCON v2 winner). Hyp: hr ~0.08. |
 
-**v3-prior surprise:** bigger DDPM (8.594 M vs 3.823 M params) makes diff_recon WORSE at the v2-optimal eta. The hyperparameters don't transfer. v3 likely wants a different eta regime — testing now.
+**v3 prior verdict (preliminary):** at every tested eta, v3 underperforms v2 — bigger ≠ better here. Possible cause: ch=96 at batch=1 ep=60 was under-trained (val ε-loss=0.006 vs v2's 0.005). If iter-3 also confirms v3 < v2, both v3 variants get filed as structurally inferior; the v2 ckpts (and v2 winner cfgs) stay as the recorded rank-2/rank-5 entries.
 
 The previous batch outcome:
-- 762861 UNCON v3 iter-1 → hr=**0** (the v2 cfg with eta=3 collapsed against the v3 prior).
-- 762862 CON v3 iter-1 → hr=**0.0686** (regressed from v2's 0.0847).
+- 762863 UNCON v3 iter-2 → hr=0.0521 (recovered from 0 but still ¼ of v2's 0.2095).
+- 762864 CON v3 iter-2 → hr=0.0604 (regression from iter-1's 0.0686 — eta=30 too high for CON v3).
 
 **Both Mayo DDPM v3 ckpts landed:**
 - `ddpm_mayo_unconstrained_v3.pt` (33 MB, 8.594 M params, best val ε-loss=0.0061)
