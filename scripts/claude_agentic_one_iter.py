@@ -83,6 +83,18 @@ SOLVER_MAP = {
         ("pentathlon/demo_dl_reference/solver_hammernik_vn.py", "HAMMERNIK_VN_CONFIG_PATH"),
     "hammernik":
         ("pentathlon/demo_dl_reference/solver_hammernik_2017.py", "HAMMERNIK_CONFIG_PATH"),
+    # Diffusion posterior sampling with a Mayo-trained DDPM prior
+    # (2026-06-07). Two variants share the same solver and env var; the
+    # ckpt path is passed inside the per-iter CFG_JSON as `recon_ckpt`.
+    # Architecture: SmallDDPM ch=64 / batch=2 at 512² (job 762815 unconstrained,
+    # 762819 constrained) — the breast v3 architecture (ch=128) OOMed on
+    # Mayo's 4× larger images.
+    "diffusion_recon_dcstep_unconstrained_mayo_v2": (
+        "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "DIFFUSION_RECON_CONFIG_PATH"),
+    "diffusion_recon_dcstep_constrained_mayo_v2": (
+        "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "DIFFUSION_RECON_CONFIG_PATH"),
 }
 
 
