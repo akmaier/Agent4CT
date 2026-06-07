@@ -107,21 +107,18 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~13:43:**
+**Autoresearch loop active — 2 jobs queued as of 2026-06-07 ~14:13:**
 
 | Solver | Latest result | Next hypothesis |
 |---|---|---|
-| **TV-iterative** (non-trainable) | iter-1 hr=**0.0108** SSIM 0.5127, PSNR 12.68 vs baseline 12.59 (new rank 5 positive!) | iter-2 (**762816**): `tv_n_iter` 200 → 400. Loss was still dropping at iter-200 (7 % drop from iter-150 to iter-200) → not converged. Hyp: more iters push hr into the 0.015–0.025 range; if hr <0.012 at n_iter=400, plateau. |
-| **Mayo DDPM v2** (training) | v1 OOMed in 20 s at ch=128 batch=4 (Mayo 512² needs 4× the breast 256² memory) | v2 (**762815**): ch 128 → 64 + batch 4 → 2 (8× total memory reduction). 22-h wall. Unlocks `diff_recon_dcstep_mayo` once the ckpt lands. |
+| **TV-iterative** (non-trainable) | iter-2 hr=0.0108 IDENTICAL to iter-1 — silent config-merge bug: solver reads `tv_iterations` (default 200), not `tv_n_iter` (the agentic-cfg key) | iter-3 (**762820**): set BOTH `tv_iterations=400` and `tv_n_iter=400` so the override actually lands. Hypothesis from iter-2 still valid: more iters lifts hr above 0.012, or TV is converged at 200 → plateau. |
+| **Mayo DDPM v2 constrained** (training) | v2 unconstrained ckpt landed (job 762815, 19:38 wall, ch=64 batch=2, params=3.823M, best val ε-loss=0.0049). | Constrained variant (**762819**) uses the smaller `ddpm_n_train_constrained=50` slab subset — typically the better prior for diff_recon as seen on breast. 4-h wall (small dataset). |
 
-Step-2 coverage of `solver_plan.md` is now essentially exhausted (TV-iterative was the last untested entry in the solver inventory). Open work:
-- Wait for Mayo DDPM v2 ckpt → dispatch `diff_recon_dcstep_mayo_v2` iter-1 variants.
-- Step 3 TPE refinement on the four plateaued positives (LPD rank 1, USwin rank 2, DD-UNet sup rank 3, NAF rank 4) — needs a Mayo TPE sbatch (not yet scaffolded).
+**Mayo DDPM v2 unconstrained ckpt READY** at `/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_unconstrained_v2.pt` (15 MB, 3.823 M params, final val ε-loss=0.0081). Next once the constrained ckpt lands: dispatch `diff_recon_dcstep_mayo_v2_unconstrained` / `_constrained` iter-1 attempts (need to add agentic search-agent entries — see `scripts/learned_solver_search_agent.py`).
 
 The previous batch outcome:
-- 762812 Mayo DDPM v1 → **FAILED (OOM)**. Retried as v2 above.
-- 762813 NAF iter-4 → hr=0.0010 SSIM 0.4843 (regressed from iter-1's hr=0.0202). NAF overshoots beyond 2000 iters — **iter-1 stays as rank 4**. Verdict filed in the table above.
-- 762814 TV-iter iter-1 → hr=0.0108 (rank 5). Iter-2 dispatched above.
+- 762815 Mayo DDPM v1 → **COMPLETED** at ch=64 batch=2 in 19:38 (v1's ch=128 OOMed in 20 s — Mayo 512² is 4× breast's memory footprint). The "v2" naming is preserved on the ckpt file.
+- 762816 TV-iter iter-2 → silent no-op (cfg-merge bug). Retried as iter-3 above with the correct knob.
 
 ## Plan
 
