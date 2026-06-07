@@ -79,6 +79,7 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 | 1 | **Learned Primal-Dual** | I=4, hidden=48, n_p=n_d=3, ep=3, lr=3.2e-4, train_n=100 (iter-3) | 0.193 | 0.4681 | **0.2445** | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png) |
 | 2 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
 | 3 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
+| 4 | **NAF** (per-scene MLP) | n_freqs=6, hidden=192, layers=5, n_iter=2000 (iter-1) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
 
 ### Structural deal-breakers + plateaued (filed 2026-06-03)
 
@@ -90,19 +91,26 @@ Step 2 — see `docs/runs/mayo-ldct-claude-agentic-*-search-20260603-01/`.
 | **DD-UNet supervised L2** | iter-3 winner hr=**0.1337**; iter-4/5 regressed (c=32 and ep=6 both worse) | Plateaued at c=24, ep=3. iter-3 stays — Step 3 TPE next. |
 | **USwin** | iter-2 winner hr=**0.1425**; iter-3/4 OOMed, iter-5 (ep=6) regressed to 0.107 | Plateaued at c=16, win=8, ep=3, train_n=50. iter-2 stays — Step 3 TPE next. |
 | **ITNet v3** | iter-1+2 both OOM (FBP inside the unrolled body at 5 GB even with train_n=50) | Structural OOM: each unrolled iter calls FBP, so memory scales with model.itnet_k. Needs chunked-FBP in solver_itnet_v3.py before Mayo retry. |
+| **Hammernik VN** | iter-2/3 hr=0, SSIM 0.27→0.29 (2 consecutive hr=0) | Loss decreasing but val PSNR ceiling 12.14 < baseline 12.59. T=3 and T=5 both undercooked vs the sino complexity; larger T would risk OOM. |
+| **TV-iterative supervised** | iter-1 hr=0 SSIM 0.30 (loss STUCK at 0.001, step/λ scalars stuck at init) | Same structural verdict as breast-CT: FBP init makes 1st GD step a no-op (data-fidelity gradient ≈ 0 at FBP), so step/λ scalars never get a useful gradient. |
+| **Wu 2015 trainable** | iter-1 hr=0 SSIM 0.34, iter-2 hr=0 SSIM 0.34 (ep 3→6, no improvement) | Loss converged at 0.00013 by ep-1; the 10 trainable scalars *do* move (blend 0.97→0.74) but final SSIM stays at 0.34. The 10-param image-domain BF-like solver hits the same low-capacity ceiling here as it did on breast-CT (which got hr=0.22 only because that dataset has a much narrower dynamic range). |
+| **ITNet v2** | iter-1 OOM in `filter_sino` (2.53 GiB FFT pad) | Two-bug combo: (a) `solver_itnet_v2.py` ignores the agentic JSON cfg and silently keeps its hardcoded `train_n=400`, `val_n=100`, `itnet_k=5` defaults → FBP scratch blows past 24 GB. Fix is structural in `solver_itnet_v2.py` (read cfg from `CFG_JSON` env like solver_itnet_v3 does) before any retry. |
+| **Hammernik 2017** | iter-1 hr=0 SSIM 0.27, PSNR 11.55 < baseline 12.59 (λ_t stuck within 0.8 % of init) | Same Hammernik family failure as VN: the per-step λ regulariser barely budges over 3 epochs and the final recon is biased darker than baseline. Sino-complexity ceiling, not a config knob away from working. |
 
 ### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop active — iter-N+1 in flight as of 2026-06-03 ~12:00:**
+**Autoresearch loop active — 4 jobs in flight as of 2026-06-07 ~12:20:**
 
 | Solver | Latest result | Next hypothesis (short budget, 30-min wall) |
 |---|---|---|
-| Hammernik VN | iter-2 hr=0 SSIM 0.27 (loss decreasing, undercooked) | iter-3: T 3 → 5 (double unrolled depth) |
-| **Wu 2015 trainable** | (just started) | iter-1: 10-param image-domain, seeded from breast-CT hr=0.22 |
-| **TV-iterative supervised** | (just started) | iter-1: K=10 unrolled GD, 20 trainable scalars — test if Mayo gives the iters something to fix |
-| **NAF** | (just started) | iter-1: per-scene MLP. Predicted hr=0 (wrong-bias on dense view, like breast); file structural after this iter if confirmed |
+| **NAF** | iter-1 hr=**0.0202** SSIM 0.5395 (surprise positive — cleared baseline) | iter-2 (**762802**, running): `naf_n_iter` 2000 → 4000 (more per-scene optimisation, expecting hr ~0.04) |
+| **R²-Gaussian** | (just dispatched) | iter-1 (**762806**): per-scene Gaussian splatting, `gs_n_iter=3000`, FBP² init, train_n=2, val_n=2. Parallel test to NAF — both were structurally filed on breast-CT but NAF surprised on Mayo. |
+| **DD-UNet N2I** | (just dispatched) | iter-1 (**762807**): self-supervised dual-domain (`c=16`, ep=3, train_n=50). Tests whether N2I noise-floor over-smoothing (seen on breast) shows up on Mayo too. |
+| **DD-BF N2I** | (just dispatched) | iter-1 (**762808**): low-cap BF + N2I (`proj_n_bf=3`, `img_n_bf=3`, ep=3, train_n=50). Same N2I check at the low-capacity end. |
+
+The previous batch (762801 Wu iter-2, 762803 ITNet v2 iter-1, 762804 Hammernik 2017 iter-1) all returned negative — verdicts filed in the table above. The new batch keeps the cluster's 4-slot QOS full while exhausting the remaining un-tested entries in `solver_plan.md` for Mayo.
 
 ## Plan
 
