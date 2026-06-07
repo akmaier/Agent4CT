@@ -113,7 +113,15 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Autoresearch loop — Mayo Step-2 converged as of 2026-06-07 ~20:30. No active jobs.**
+**Autoresearch loop — coverage audit reopened 2026-06-07 ~22:22; 2 jobs queued.**
+
+Per-user coverage audit found two solver_plan.md entries that had never been explicitly tested on Mayo:
+- **ITNet v1** (`solver_itnet.py`) — original ItNet, superseded by v2/v3 in design docs but never run on Mayo. iter-1 job **762874** (k=2, c=16, train_n=50 — same conservative seed as v2/v3 attempts).
+- **Wu 2015 non-trainable** (`solver_wu_2015.py`) — frozen filter-band modulation FBP (the trainable variant tested and STOPped at hr=0). iter-1 job **762875**.
+
+20-min polling cadence as requested. SOLVER_MAP keys added in commit `f0383216`.
+
+**Original Step-2 convergence summary (preserved below):**
 
 iter-3 closed the v3 exploration:
 - 762865 UNCON v3 iter-3 (eta=30, top of log space) → hr=0.0641 (v3 best, still ~⅓ of v2's 0.2095)
