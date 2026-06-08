@@ -1171,12 +1171,22 @@ def main():
             # Also clamp tpe_seed_trial so the seeded prior trial actually fits.
             if "tpe_seed_trial" in spec:
                 spec["tpe_seed_trial"] = dict(spec["tpe_seed_trial"])
-                for k, (vals, _) in MAYO_CLAMPS.items():
-                    if isinstance(vals, list) and vals:
+                for k, clamp_spec in MAYO_CLAMPS.items():
+                    # MAYO_CLAMPS values are either (list, "choice") 2-tuples
+                    # or (lo, hi, "int"/"log") 3-tuples. Only set a seed value
+                    # for `choice` clamps where we have a definite list.
+                    if len(clamp_spec) == 2 and isinstance(clamp_spec[0], list) and clamp_spec[0]:
                         # Always set the seed trial value if the key is in MAYO_CLAMPS,
                         # even if it wasn't in the seed (so it propagates from the space).
                         if k in spec["tpe_seed_trial"] or k in ALWAYS_INSERT:
-                            spec["tpe_seed_trial"][k] = vals[0]
+                            spec["tpe_seed_trial"][k] = clamp_spec[0][0]
+                    elif len(clamp_spec) == 3 and k in spec["tpe_seed_trial"]:
+                        # int/log range: if the existing seed value is outside the
+                        # clamp range, clip it to the midpoint.
+                        lo, hi, _kind = clamp_spec
+                        cur = spec["tpe_seed_trial"][k]
+                        if not (lo <= cur <= hi):
+                            spec["tpe_seed_trial"][k] = (lo + hi) // 2
 
     rng = random.Random(args.seed)
     slug, run_dir = create_run(
