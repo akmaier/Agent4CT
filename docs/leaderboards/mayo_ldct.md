@@ -117,8 +117,8 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | **Hammernik VN** | iter-2/3 hr=0, SSIM 0.27→0.29 (2 consecutive hr=0) | Loss decreasing but val PSNR ceiling 12.14 < baseline 12.59. T=3 and T=5 both undercooked vs the sino complexity; larger T would risk OOM. |
 | **TV-iterative supervised** | iter-1 hr=0 SSIM 0.30 (loss STUCK at 0.001, step/λ scalars stuck at init) | Same structural verdict as breast-CT: FBP init makes 1st GD step a no-op (data-fidelity gradient ≈ 0 at FBP), so step/λ scalars never get a useful gradient. |
 | **Wu 2015 trainable** | iter-1 hr=0 SSIM 0.34, iter-2 hr=0 SSIM 0.34 (ep 3→6, no improvement) | Loss converged at 0.00013 by ep-1; the 10 trainable scalars *do* move (blend 0.97→0.74) but final SSIM stays at 0.34. The 10-param image-domain BF-like solver hits the same low-capacity ceiling here as it did on breast-CT (which got hr=0.22 only because that dataset has a much narrower dynamic range). |
-| **ITNet v2** | iter-1 OOM in `filter_sino`; **resolved 2026-06-08** by cfg-patch (commit `eae661bc`). Retry iter-2 at small config (k=2, c=16, train_n=50) ran cleanly but landed at hr=0 SSIM 0.268 PSNR 10.21 < baseline — undercooked. iter-3 dispatched with epochs 3→6, pretrain 2→4. | Cfg-merge bug now fixed; whether the v2 architecture itself beats baseline on Mayo is being re-tested at higher compute. |
-| **ITNet v1** | iter-1 OOM (same root cause as v2; solver_itnet.py had NO env-read at all). **Resolved 2026-06-08** by cfg-patch (commit `eae661bc` — added env-read pattern mirroring v2/v3). Retry iter-2 ran cleanly at hr=0 SSIM 0.256 PSNR 10.88 < baseline. iter-3 dispatched. | Two unrelated ItNet variants had the same defect — both now patched. |
+| **ITNet v2** | iter-1 OOM in `filter_sino`; **resolved 2026-06-08** by cfg-patch (commit `eae661bc`). Retry iter-2 (k=2, c=16, train_n=50, ep=3) hr=0 SSIM 0.268 PSNR 10.21; iter-3 (ep 3→6, pretrain 2→4) hr=0 SSIM 0.264 — slightly worse. 2 consecutive hr=0 → **plateau filed**. | v2 architecture sits below baseline on Mayo regardless of training budget. Same low-capacity ceiling that affects v1. |
+| **ITNet v1** | iter-1 OOM (same root cause as v2; solver_itnet.py had NO env-read). **Resolved 2026-06-08** by cfg-patch. Retry iter-2 hr=0 SSIM 0.256; iter-3 (ep 3→6) hr=0 SSIM 0.249 — slightly worse. 2 consecutive hr=0 → **plateau filed**. | Same low-capacity ceiling as v2; the v3 architecture (deeper UNet + per-step α) is the only ItNet that lifts above baseline on Mayo. |
 | **Hammernik 2017** | iter-1 hr=0 SSIM 0.27, PSNR 11.55 < baseline 12.59 (λ_t stuck within 0.8 % of init) | Same Hammernik family failure as VN: the per-step λ regulariser barely budges over 3 epochs and the final recon is biased darker than baseline. Sino-complexity ceiling, not a config knob away from working. |
 | **DD-UNet N2I** | iter-1 hr=0 SSIM 0.46, PSNR 12.52 < baseline 12.59 (loss 0.00001 from epoch 1) | Same N2I noise-floor over-smoothing as breast-CT: loss is already at the N2I supervision floor by ep-1, so the network has nowhere to climb. Supervised L2 (rank 3, hr=0.13) is the right DD-UNet variant for Mayo. |
 | **DD-BF N2I** | iter-1 hr=0.0047, iter-2 (ep 3→6) hr=0.0035 — Δhr = −0.0012 (plateau) | The 18 BF scalars kept moving (σ_y 1.973→1.953 from ep-3 to ep-6) but val SSIM stayed flat at 0.485 and hr actually slipped. iter-1 stays as rank 5; cap is structural (18 trainable params can't beat the FBP baseline by more than the noise floor). |
@@ -131,6 +131,18 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 ### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
+
+**Step-3 TPE active 2026-06-08 ~12:33 — full Wagner-train pool, top-5 plateaued positives:**
+
+| Solver | Step-2 best hr | TPE job | Status |
+|---|---:|---:|---|
+| Learned Primal-Dual | 0.2445 | **762896** | dispatched (14h wall, 20 trials, full train_n=200/val_n=10) |
+| diff_recon DCstep UNCON (v2) | 0.2095 | — | next dispatch when QOS frees |
+| USwin | 0.1425 | — | queued |
+| DD-UNet supervised L2 | 0.1337 | — | queued |
+| ItNet v3 (post-patch) | 0.1036 | — | queued |
+
+Also in flight: DDPM Mayo v4 training (job **762888**, ep 84/120 at last check, best val ε-loss=0.0025 — already beats v3 and v2). When v4 ckpt lands, dispatch `diff_recon_mayo_v4` iter-1.
 
 **Autoresearch loop — coverage audit CLOSED 2026-06-07 ~22:23. All 15 solver_plan.md entries now run on Mayo.**
 
