@@ -143,7 +143,7 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | Solver | Step-2 best hr | Step-3 TPE | TPE best | Status |
 |---|---:|---:|---:|---|
 | TV-iter (non-trainable) | 0.0557 | 762924 | 0.0511 | TPE clamp tv_iterations too low — Step-2 agentic 12,800 iters wins. **No improvement.** |
-| NAF (per-scene MLP) | 0.0202 | 762923 | (running iter-11/20, best iter-6: 0.0131) | TPE keeps sampling too-deep configs: iter-7/8/10 hr=0, iter-9 hr=0.0027. Working corner (iter-6 n_freqs=8/hidden=192/layers=4) hasn't been revisited. ~4h remaining. |
+| NAF (per-scene MLP) | 0.0202 | 762923 | (running iter-12/20, best iter-6: 0.0131) | TPE through iter-11: only iter-9 had hr>0 (0.0027); iter-7/8/10/11 all near hr=0. TPE prior-conditioned phase is sampling 12 freqs / 5 layers (too deep for Mayo). Iter-6 working corner not revisited. **Best won't beat Step-2 0.0202.** |
 | Hammernik VN | 0 (Step-2 STOP) | 762926 | **0.0551 at iter-6, FINAL** (20/20 COMPLETE) | **ESCAPED BASELINE.** vn_T=5, vn_n_filters=16, vn_kernel=11, vn_λ_init=2.3e-3, ep=12, lr=2.6e-4. TPE clustered iters 13/17 in the same family (hr=0.0338/0.0290) but no config beat iter-6. Hammernik VN is now rank 10 on Mayo. |
 | DD-BF N2I | 0.0047 | 762925 | 0 (all-fail) | OOM at hardcoded `R_full.fbp(val_clean)` — solver-side chunking needed. **STOP** |
 
@@ -161,9 +161,9 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 
 | Solver | Step-2 best hr (val_n=3) | Step-3 TPE | TPE seed iter-1 hr (**val_n=5**) | Status |
 |---|---:|---:|---:|---|
-| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 RUNNING iter-5** | **0.2197** SSIM 0.5384 (iter-1 seed; iter-4 fbp/eta=1.5 hr=0.2084 close but under) | seed at val_n=5 already ≥ Step-2 val_n=3 |
-| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 RUNNING iter-5** | **0.2343** SSIM 0.5245 (iter-1 seed; iter-4 hr=0.1900) | seed at val_n=5 +35% over Step-2 val_n=3 |
-| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 RUNNING iter-5** | **0.1068** SSIM 0.4803 (iter-1 seed; iter-3 hr=0.0903, iter-4 hr=0.0796) | seed at val_n=5 +26% over Step-2 val_n=3 |
+| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 RUNNING iter-8** | **0.2197** SSIM 0.5384 (iter-1 seed; iter-7 fbp/eta=5.6 hr=0.1674 — best non-seed yet) | seed at val_n=5 already ≥ Step-2 val_n=3 |
+| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 RUNNING iter-6** | **0.2343** SSIM 0.5245 (iter-1 seed; iter-5 hr=0.0743) | seed at val_n=5 +35% over Step-2 val_n=3 |
+| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 RUNNING iter-8** | **0.1068** SSIM 0.4803 (iter-1 seed; iter-6 fbp/eta=20 hr=0.0857 closest non-seed) | seed at val_n=5 +26% over Step-2 val_n=3 |
 | diff_recon DCstep CON v4   | 0.0981 (iter-1) | 762936 PENDING (QOS=4 cap) | — | queued behind NAF |
 
 **TPE early signal (iters 2-5, Optuna startup random phase):** Sequence sampled across all 3 jobs (same `seed=20260516`):
