@@ -1,0 +1,33 @@
+{
+  "ts": "2026-06-07T20:23:03Z",
+  "run_id": "mayo-ldct-claude-agentic-wu-2015-search-20260603-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "wu_2015-claude-agentic: wu_n_bands=4, wu_n_outer=2, wu_motion_range=5, wu_motion_window=2, wu_soft_thresh=0.0015, val_n=5, train_n=0, rationale=Wu 2015 non-trainable iter-1 (first Mayo attempt; the closed-form variant the trainable solver wraps as nn.Parameter). No training. Hyp: closed-form filter-band modulation either matches the trainable variant's hr=0.34 SSIM (failed STOP) or stays at hr=0. If hr=0, file structural STOP \u2014 the 10 filter coefficients cannot reach the Mayo dynamic range without learning.",
+  "val_score": 0.35003232955932617,
+  "headroom": 0.0,
+  "val_ssim": 0.35003232955932617,
+  "val_psnr": 12.351130485534668,
+  "val_rmse": 0.012061838060617447,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "wu_2015-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "wu_2015-claude-agentic: wu_n_bands=4, wu_n_outer=2, wu_motion_range=5, wu_motion_window=2, wu_soft_thresh=0.0015, val_n=5, train_n=0, rationale=Wu 2015 non-trainable iter-1 (first Mayo attempt; the closed-form variant the trainable solver wraps as nn.Parameter). No training. Hyp: closed-form filter-band modulation either matches the trainable variant's hr=0.34 SSIM (failed STOP) or stays at hr=0. If hr=0, file structural STOP \u2014 the 10 filter coefficients cannot reach the Mayo dynamic range without learning.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-wu-2015-search-20260603-01/iterations/iter-0001/comparison.png",
+  "elapsed_s": 7.568650960922241,
+  "cfg_full": {
+    "wu_n_bands": 4,
+    "wu_n_outer": 2,
+    "wu_motion_range": 5,
+    "wu_motion_window": 2,
+    "wu_soft_thresh": 0.0015,
+    "val_n": 5,
+    "train_n": 0,
+    "rationale": "Wu 2015 non-trainable iter-1 (first Mayo attempt; the closed-form variant the trainable solver wraps as nn.Parameter). No training. Hyp: closed-form filter-band modulation either matches the trainable variant's hr=0.34 SSIM (failed STOP) or stays at hr=0. If hr=0, file structural STOP \u2014 the 10 filter coefficients cannot reach the Mayo dynamic range without learning."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-uswin-search-20260603-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-claude-agentic-uswin-search",
+  "started": "2026-06-04T11:01:46Z",
+  "agent": "uswin-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

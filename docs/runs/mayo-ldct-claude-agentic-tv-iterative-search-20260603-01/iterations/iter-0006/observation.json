@@ -1,0 +1,33 @@
+{
+  "ts": "2026-06-07T13:54:08Z",
+  "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260603-01",
+  "iter": 6,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv_iterative-claude-agentic: tv_iterations=3200, tv_n_iter=3200, tv_lambda=0.01, tv_step=0.5, tv_outer_wall_s=1500, val_n=5, train_n=0, rationale=TV-iter iter-6: iter-5 hr=0.0362 (was 0.0283 at iter-4, 0.0197 at iter-3). \u0394hr trajectory: +0.011, +0.009, +0.008 \u2014 diminishing but not plateaued. Loss 3.43 at iter-1600. Hyp: doubling to 3200 pushes hr into 0.04+. If \u0394hr < 0.005 vs iter-5, plateau.",
+  "val_score": 0.538697361946106,
+  "headroom": 0.04332891388842097,
+  "val_ssim": 0.538697361946106,
+  "val_psnr": 12.97187614440918,
+  "val_rmse": 0.011229909025132656,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "tv_iterative-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "tv_iterative-claude-agentic: tv_iterations=3200, tv_n_iter=3200, tv_lambda=0.01, tv_step=0.5, tv_outer_wall_s=1500, val_n=5, train_n=0, rationale=TV-iter iter-6: iter-5 hr=0.0362 (was 0.0283 at iter-4, 0.0197 at iter-3). \u0394hr trajectory: +0.011, +0.009, +0.008 \u2014 diminishing but not plateaued. Loss 3.43 at iter-1600. Hyp: doubling to 3200 pushes hr into 0.04+. If \u0394hr < 0.005 vs iter-5, plateau.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0006/comparison.png",
+  "elapsed_s": 897.568445444107,
+  "cfg_full": {
+    "tv_iterations": 3200,
+    "tv_n_iter": 3200,
+    "tv_lambda": 0.01,
+    "tv_step": 0.5,
+    "tv_outer_wall_s": 1500,
+    "val_n": 5,
+    "train_n": 0,
+    "rationale": "TV-iter iter-6: iter-5 hr=0.0362 (was 0.0283 at iter-4, 0.0197 at iter-3). \u0394hr trajectory: +0.011, +0.009, +0.008 \u2014 diminishing but not plateaued. Loss 3.43 at iter-1600. Hyp: doubling to 3200 pushes hr into 0.04+. If \u0394hr < 0.005 vs iter-5, plateau."
+  }
+}

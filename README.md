@@ -35,12 +35,24 @@ inline.
 |---|---|---:|---:|---|
 | **Breast-CT** (128-view sparse) | Learned Primal-Dual (I=8, hidden=96, 1.49 M) | 0.9996 | **0.9062** | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | ITNet v3 (3.7 M) | 0.9178 | 0.4676 | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
-| **Mayo-LDCT** (Wagner split, real helical) | — *autoresearch pending; geometry calibrated 2026-05-26 to SSIM 0.9676 / PSNR 42.92 dB on L014 (10 GT slices)* | — | — | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | Learned Primal-Dual (I=4, hidden=48, 0.193 M) | 0.4681 | **0.2445** | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+
+Mayo-LDCT Step-2 autoresearch run **closed 2026-06-08**: 15 / 15
+solvers exercised, 8 above the FBP baseline. The top Mayo entries
+beyond LPD: **diff_recon DCstep unconstrained** (DDPM v2 prior,
+0.2095), **USwin** (0.1425), **DD-UNet supervised L2** (0.1337),
+**diff_recon DCstep constrained** (0.0847), **TV-iterative
+non-trainable** (0.0557), **NAF** (0.0202), **DD-BF N2I** (0.0047).
+13 structural STOPs filed. See the leaderboard for the full
+ranking, the non-trainable solver report, and per-solver verdicts.
 
 [![Breast-CT champion (LPD)](docs/runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](docs/leaderboards/breast_ct.md)
+[![Mayo-LDCT champion (LPD)](docs/runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png)](docs/leaderboards/mayo_ldct.md)
 
-*Top row: current breast-CT champion (Learned Primal-Dual, TPE iter-11).
-Click for the full leaderboard.*
+*Top: current breast-CT champion (Learned Primal-Dual, TPE iter-11).
+Bottom: current Mayo-LDCT champion (Learned Primal-Dual, agentic
+iter-3 — hr 0.2445 vs the FBP baseline). Click either for the full
+leaderboard.*
 
 ---
 
