@@ -88,6 +88,21 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | 7 | **NAF** (per-scene MLP) | n_freqs=6, hidden=192, layers=5, n_iter=2000 (iter-1) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
 | 8 | **DD-BF N2I** | proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50 (iter-1) | 0.000018 | 0.4868 | **0.0047** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/iterations/iter-0001/comparison.png) |
 
+### Non-trainable solvers (full report)
+
+Non-trainable solvers reconstruct each val slab without any learnable parameters. They run for completeness, even when hr<baseline. The FBP baseline itself is included for reference.
+
+| Solver | Variant | params | SSIM | PSNR (dB) | hr | Source |
+|---|---|---:|---:|---:|---:|---|
+| **FBP baseline** | full_scan + hann + 2N pad (canonical) | 0 | 0.5161¹ | 13.98¹ / 12.59² | 0 (reference) | [`ddssl_ldct/pyronn_projector.py`](../../ddssl_ldct/pyronn_projector.py) |
+| **TV-iterative** (non-trainable, **rank 6 above**) | tv_iterations=12800, λ=0.01, step=0.5 (iter-8) | 0 | 0.5439 | 13.09² | **0.0557** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) |
+| **Wu 2015 non-trainable** | n_bands=4, n_outer=2, motion_range=5, soft_thresh=1.5e-3 (iter-1) | 0 | 0.350 | 12.35² | 0 | [results](../runs/mayo-ldct-claude-agentic-wu-2015-search-20260603-01/results.tsv) |
+
+¹ at val_n=3 (the diff_recon configs).  
+² at val_n=5 (the standard agentic-iter configs).  
+
+The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 when only the 3 sharpest L014 slabs are scored, and ≈12.59 with the broader val_n=5 set. All hr values reported throughout this leaderboard subtract the SAME-val_n baseline used for that solver's run.
+
 ### Structural deal-breakers + plateaued (filed 2026-06-03)
 
 | Solver | Final state | Why deprioritised |
