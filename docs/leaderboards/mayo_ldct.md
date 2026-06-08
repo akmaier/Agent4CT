@@ -137,7 +137,16 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Step-3 TPE active 2026-06-08 — infrastructure issues identified, partial retry in progress:**
+**Step-3 TPE phase 2 results (Mayo TPE for low-rank Step-2 positives):**
+
+| Solver | Step-2 best hr | Step-3 TPE | TPE best | Status |
+|---|---:|---:|---:|---|
+| TV-iter (non-trainable) | 0.0557 | 762924 | 0.0511 | TPE clamp tv_iterations too low — Step-2 agentic 12,800 iters wins. **No improvement.** |
+| NAF (per-scene MLP) | 0.0202 | 762923 | (running, iter-1: 0.0055) | TBD |
+| Hammernik VN | 0 (Step-2 STOP) | 762926 | (running, iter-2: 0.0006) | likely STOP confirmed |
+| DD-BF N2I | 0.0047 | 762925 | 0 (all-fail) | OOM at hardcoded `R_full.fbp(val_clean)` — solver-side chunking needed. **STOP** |
+
+**Step-3 TPE phase 1 (top-4 plateaued positives) — all complete:**
 
 | Solver | Step-2 best hr | First TPE | Status | Retry |
 |---|---:|---:|---|---:|
