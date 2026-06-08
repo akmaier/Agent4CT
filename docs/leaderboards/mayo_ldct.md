@@ -143,7 +143,7 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | Solver | Step-2 best hr | Step-3 TPE | TPE best | Status |
 |---|---:|---:|---:|---|
 | TV-iter (non-trainable) | 0.0557 | 762924 | 0.0511 | TPE clamp tv_iterations too low — Step-2 agentic 12,800 iters wins. **No improvement.** |
-| NAF (per-scene MLP) | 0.0202 | 762923 | (running iter-9/20, best iter-6: 0.0131) | TBD — iter-7 (n_freqs=8/layers=6 hr=0, 2451s), iter-8 (n_freqs=14 hr=0, 2290s) — 2 consecutive hr=0. TPE exploring deeper configs that don't fit Mayo; agentic-loop verdict would STOP, but TPE continues (~5h remaining). |
+| NAF (per-scene MLP) | 0.0202 | 762923 | (running iter-11/20, best iter-6: 0.0131) | TPE keeps sampling too-deep configs: iter-7/8/10 hr=0, iter-9 hr=0.0027. Working corner (iter-6 n_freqs=8/hidden=192/layers=4) hasn't been revisited. ~4h remaining. |
 | Hammernik VN | 0 (Step-2 STOP) | 762926 | **0.0551 at iter-6, FINAL** (20/20 COMPLETE) | **ESCAPED BASELINE.** vn_T=5, vn_n_filters=16, vn_kernel=11, vn_λ_init=2.3e-3, ep=12, lr=2.6e-4. TPE clustered iters 13/17 in the same family (hr=0.0338/0.0290) but no config beat iter-6. Hammernik VN is now rank 10 on Mayo. |
 | DD-BF N2I | 0.0047 | 762925 | 0 (all-fail) | OOM at hardcoded `R_full.fbp(val_clean)` — solver-side chunking needed. **STOP** |
 
@@ -161,12 +161,18 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 
 | Solver | Step-2 best hr (val_n=3) | Step-3 TPE | TPE seed iter-1 hr (**val_n=5**) | Status |
 |---|---:|---:|---:|---|
-| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 RUNNING iter-3** | **0.2197** SSIM 0.5384 (iter-1 seed; iter-2 hr=0.0995 noise+low-eta regressed) | seed at val_n=5 already ≥ Step-2 val_n=3 |
-| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 RUNNING iter-3** | **0.2343** SSIM 0.5245 (iter-1 seed; iter-2 hr=0.0882 same regression) | seed at val_n=5 +35% over Step-2 val_n=3 |
-| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 RUNNING iter-3** | **0.1068** SSIM 0.4803 (iter-1 seed; iter-2 hr=0.0447 same regression) | seed at val_n=5 +26% over Step-2 val_n=3 |
+| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 RUNNING iter-5** | **0.2197** SSIM 0.5384 (iter-1 seed; iter-4 fbp/eta=1.5 hr=0.2084 close but under) | seed at val_n=5 already ≥ Step-2 val_n=3 |
+| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 RUNNING iter-5** | **0.2343** SSIM 0.5245 (iter-1 seed; iter-4 hr=0.1900) | seed at val_n=5 +35% over Step-2 val_n=3 |
+| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 RUNNING iter-5** | **0.1068** SSIM 0.4803 (iter-1 seed; iter-3 hr=0.0903, iter-4 hr=0.0796) | seed at val_n=5 +26% over Step-2 val_n=3 |
 | diff_recon DCstep CON v4   | 0.0981 (iter-1) | 762936 PENDING (QOS=4 cap) | — | queued behind NAF |
 
-**TPE early signal:** Optuna's exploration phase sampled `init=noise + eta≈0.5 + warmup=10` on iter-2 across all 3 jobs — all regressed to hr<0.10. The agentic winners (fbp init + moderate eta + warmup=25-40) remain the optimum corner. TPE iters 3-5 are still in startup random sampling; the prior-conditioned phase should refocus near the seed corner from iter-6 onward.
+**TPE early signal (iters 2-5, Optuna startup random phase):** Sequence sampled across all 3 jobs (same `seed=20260516`):
+- iter-2: `noise + eta≈0.5 + warmup=10` — major regression to hr 0.04-0.10
+- iter-3: `noise + eta≈2.1 + n_cg=25 + warmup=40` — partial recovery to hr 0.09-0.14
+- iter-4: `fbp + eta≈1.5 + warmup=25 + relax=0.85` — closest match to seed, hr 0.08-0.21 (UNCON v2 nearly tied seed at 0.2084)
+- iter-5: `noise + eta≈7.8 + warmup=40 + relax=0.85` — running
+
+The seeded agentic winners are holding through startup random; TPE's prior-conditioned phase (iter-6+) should narrow on the iter-1 corner. Provisional: agentic winners are likely at or near the true optimum.
 
 **Caveat on the val_n=5 lift:** Step-2 diff_recon configs were validated against the 3 sharpest L014 slabs (val_n=3, baseline PSNR=13.98); MAYO_CLAMPS in the TPE flow forces val_n=5 (baseline PSNR=12.59). The lower baseline at val_n=5 means the *same recon* gives a higher hr. The TPE numbers are the "fair" cross-solver comparison; will rebuild rank table once all 4 TPEs finish.
 
