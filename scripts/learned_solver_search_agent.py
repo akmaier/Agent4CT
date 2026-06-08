@@ -1146,7 +1146,10 @@ def main():
                 "train_n":    ([50], "choice"),        # the proven agentic cap
                 "batch_size": ([1], "choice"),         # batch>1 OOMs Mayo's 2304-angle FBP
                 "lpd_hidden": ([32, 48], "choice"),    # cap at 48 (agentic Mayo winner)
-                "lpd_iters":  ([4, 6], "choice"),      # cap unrolled depth (was up to 10)
+                "lpd_iters":  ([2, 3], "choice"),      # tighter than v1 — LPD ep=20 + iters=4
+                                                       # timed out at 90 min/trial on Mayo
+                "epochs":     (5, 12, "int"),          # cap epochs so LPD/itnet trials fit
+                                                       # in the 90-min subprocess timeout
                 "unet_c":     ([16, 24], "choice"),    # Mayo winners used 16-24
                 "itnet_k":    ([2, 3], "choice"),      # patched-cfg Mayo winner was k=3
                 "uswin_c":    ([16], "choice"),        # USwin Mayo winner was c=16

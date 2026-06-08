@@ -35,7 +35,7 @@ inline.
 |---|---|---:|---:|---|
 | **Breast-CT** (128-view sparse) | Learned Primal-Dual (I=8, hidden=96, 1.49 M) | 0.9996 | **0.9062** | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | ITNet v3 (3.7 M) | 0.9178 | 0.4676 | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
-| **Mayo-LDCT** (Wagner split, real helical) | DD-UNet supervised L2 (c=16, ep=10, lr=5e-4, 0.466 M; Step-3 TPE seed trial) | 0.5967 | **0.3589** | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | DD-UNet supervised L2 (Step-3 TPE iter-9 winner; 0.466 M) | — | **0.3769** | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
 
 Mayo-LDCT Step-2 autoresearch run **closed 2026-06-08**: 15 / 15
 solvers exercised, 8 above the FBP baseline. The top Mayo entries
