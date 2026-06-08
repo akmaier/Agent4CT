@@ -1134,6 +1134,35 @@ def main():
         os.environ["AGENT4CT_DATASET"] = args.dataset
         model_label = (model_label or "random-search") + f"-{ds_prefix}"
 
+        # Mayo-LDCT-specific knob clamp (2026-06-08): the default search
+        # spaces were tuned for breast/demo-DL (256² images, 128-view sinos).
+        # Mayo's 512² images + 2304-angle sino blow out the FBP `filter_sino`
+        # FFT scratch (~5 GB at train_n=400/val_n=20) on Q6000. Force the
+        # space to Mayo-safe values everywhere the knob exists.
+        if args.dataset == "mayo_ldct_2d":
+            MAYO_CLAMPS = {
+                "val_n":      ([5], "choice"),         # was [20] / 100 default
+                "val_chunk":  ([1], "choice"),         # was [4]; chunk=1 = no FBP batching
+                "train_n":    ([50], "choice"),        # the proven agentic cap
+                "lpd_hidden": ([32, 48], "choice"),    # cap at 48 (agentic Mayo winner)
+                "unet_c":     ([16, 24], "choice"),    # Mayo winners used 16-24
+                "itnet_k":    ([2, 3], "choice"),      # patched-cfg Mayo winner was k=3
+            }
+            print(f"[agent] applying mayo_ldct_2d search-space clamp", flush=True)
+            spec["space"] = dict(spec["space"])
+            for k, v in MAYO_CLAMPS.items():
+                if k in spec["space"]:
+                    print(f"[agent]   clamp {k}: "
+                          f"{spec['space'][k]!r} -> {v!r}", flush=True)
+                    spec["space"][k] = v
+            # Also clamp tpe_seed_trial so the seeded prior trial actually fits.
+            if "tpe_seed_trial" in spec:
+                spec["tpe_seed_trial"] = dict(spec["tpe_seed_trial"])
+                for k, (vals, _) in MAYO_CLAMPS.items():
+                    if k in spec["tpe_seed_trial"]:
+                        if isinstance(vals, list) and vals:
+                            spec["tpe_seed_trial"][k] = vals[0]
+
     rng = random.Random(args.seed)
     slug, run_dir = create_run(
         spec["slug_prefix"], spec["agent_name"],
