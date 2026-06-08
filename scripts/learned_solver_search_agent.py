@@ -1144,9 +1144,12 @@ def main():
                 "val_n":      ([5], "choice"),         # was [20] / 100 default
                 "val_chunk":  ([1], "choice"),         # was [4]; chunk=1 = no FBP batching
                 "train_n":    ([50], "choice"),        # the proven agentic cap
+                "batch_size": ([1], "choice"),         # batch>1 OOMs Mayo's 2304-angle FBP
                 "lpd_hidden": ([32, 48], "choice"),    # cap at 48 (agentic Mayo winner)
+                "lpd_iters":  ([4, 6], "choice"),      # cap unrolled depth (was up to 10)
                 "unet_c":     ([16, 24], "choice"),    # Mayo winners used 16-24
                 "itnet_k":    ([2, 3], "choice"),      # patched-cfg Mayo winner was k=3
+                "uswin_c":    ([16], "choice"),        # USwin Mayo winner was c=16
             }
             print(f"[agent] applying mayo_ldct_2d search-space clamp", flush=True)
             spec["space"] = dict(spec["space"])
