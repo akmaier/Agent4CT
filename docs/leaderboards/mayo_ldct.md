@@ -96,7 +96,7 @@ Non-trainable solvers reconstruct each val slab without any learnable parameters
 |---|---|---:|---:|---:|---:|---|
 | **FBP baseline** | full_scan + hann + 2N pad (canonical) | 0 | 0.5161¹ | 13.98¹ / 12.59² | 0 (reference) | [`ddssl_ldct/pyronn_projector.py`](../../ddssl_ldct/pyronn_projector.py) |
 | **TV-iterative** (non-trainable, **rank 6 above**) | tv_iterations=12800, λ=0.01, step=0.5 (iter-8) | 0 | 0.5439 | 13.09² | **0.0557** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) |
-| **Wu 2015 non-trainable** | n_bands=4, n_outer=2, motion_range=5, soft_thresh=1.5e-3 (iter-1) | 0 | 0.350 | 12.35² | 0 | [results](../runs/mayo-ldct-claude-agentic-wu-2015-search-20260603-01/results.tsv) |
+| **Wu 2015 non-trainable** | n_bands=8, n_outer=2, motion_range=5, soft_thresh=1.5e-3 (iter-2; plateau) | 0 | 0.357 | 12.37² | 0 | [results](../runs/mayo-ldct-claude-agentic-wu-2015-search-20260603-01/results.tsv) |
 
 ¹ at val_n=3 (the diff_recon configs).  
 ² at val_n=5 (the standard agentic-iter configs).  
@@ -124,7 +124,7 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | **NAF** plateau verdict | iter-1 hr=**0.0202** (the rank-4 entry); iter-4 (naf_n_iter 2000 → 3000 at val_n=5) regressed to hr=0.0010, SSIM 0.5395 → 0.4843 | NAF **overshoots** beyond 2000 iters on Mayo: the implicit-field MLP starts hallucinating high-frequency detail that does not match the truth slab, pulling SSIM down by ~5.5 pts. iter-1's `naf_n_iter=2000` is the optimum. iter-1 stays as rank 4 — Step 3 TPE would need to bracket below 2000 iters, not above. |
 | **diff_recon v3 (ch=96 prior)** | UNCON best iter-3 hr=0.0641 (eta=30); CON best iter-1 hr=0.0686 (eta=10). All v3 results sit at ⅓ of the corresponding v2 ckpt. | Bigger ≠ better here: the v3 ckpt (8.594 M params, 60 ep at batch=1) is structurally weaker than v2 (3.823 M params, 60 ep at batch=2) for DPS posterior sampling. Root cause is likely insufficient gradient updates per parameter (half the batch size at 2.25× the params ⇒ ¼ the effective training). A v4 attempt should pair ch=96 with batch=2 (likely OOMs on Q6000) or train ch=96 for 120+ epochs. For now the v2 ckpts stay as the rank-2/rank-5 priors. |
 | **ItNet v1** | iter-1 OOM in `filter_sino` (2.53 GiB FFT pad) | Same cfg-merge bug as v2: `solver_itnet.py` ignores the agentic JSON cfg and uses hardcoded `train_n=400`, `val_n=100`, `itnet_k=5`. Two unrelated solvers (v1 and v2) have the same defect; the fix is structural (read `CFG_JSON` env like solver_itnet_v3.py does). Cannot retry on Mayo without a code patch. |
-| **Wu 2015 non-trainable** | iter-1 hr=0 SSIM 0.350 PSNR 12.35 < baseline 12.59 (closed-form, 7.6 s) | The closed-form filter-band modulation matches the trainable variant's SSIM ceiling at 0.35 — the 10 filter coefficients (frozen or trained) cannot reach the Mayo dynamic range. Same structural verdict as the trainable variant. |
+| **Wu 2015 non-trainable** | iter-1 (n_bands=4) hr=0 SSIM 0.350; iter-2 (n_bands=8) hr=0 SSIM 0.357 — 2 consecutive hr=0, **plateau confirmed** | Closed-form filter-band modulation matches the trainable variant's ceiling at SSIM≈0.35 / PSNR≈12.37; doubling `n_bands` only inched SSIM +0.007. The 10 filter coefficients (frozen or trained) cannot reach Mayo's dynamic range. Same structural verdict as the trainable variant. |
 
 ### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
