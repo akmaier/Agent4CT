@@ -83,7 +83,7 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | 2 | **diff_recon DCstep unconstrained** (DDPM v2 prior) | DPS, sample_steps=200, **eta=3, eta_clamp=True**, dcstep_n_cg=10, FBP init (iter-6) | 3.823 | 0.5703 | **0.2095** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/results.tsv) | [iter-6](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v2-search-20260603-01/iterations/iter-0006/comparison.png) |
 | 3 | **USwin** | c=16, win=8, heads=8, ep=3, train_n=50 (iter-2) | — | 0.3747 | **0.1425** | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/results.tsv) | [iter-2](../runs/mayo-ldct-claude-agentic-uswin-search-20260603-01/iterations/iter-0002/comparison.png) |
 | 4 | **DD-UNet supervised L2** | c=24, ep=3, lr=5e-4, train_n=100 (iter-3) | — | 0.4200 | **0.1337** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/results.tsv) | [iter-3](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260603-01/iterations/iter-0003/comparison.png) |
-| 5 | **ItNet v3** (after cfg-patch eae661bc) | k=2, c=16, ep=3, pretrain=2, lr=5e-4, train_n=50 (iter-3 retry) | — | 0.3197 | **0.1036** | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260603-01/results.tsv) | [iter-3 retry](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260603-01/iterations/iter-0003/comparison.png) |
+| 5 | **ItNet v3** (after cfg-patch eae661bc) | **k=3**, c=16, ep=3, pretrain=2, lr=5e-4, train_n=50 (iter-5) | — | 0.3146 | **0.1336** | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260603-01/results.tsv) | [iter-5](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260603-01/iterations/iter-0005/comparison.png) |
 | 6 | **diff_recon DCstep constrained** (DDPM v2 prior) | DPS, sample_steps=200, **eta=10, dcstep_warmup=40**, dcstep_n_cg=10, FBP init (iter-6) | 3.823 | 0.5108 | **0.0847** | [results](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/results.tsv) | [iter-6](../runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v2-search-20260603-01/iterations/iter-0006/comparison.png) |
 | 7 | **TV-iterative** (non-trainable) | tv_iterations=12800, tv_lambda=0.01, tv_step=0.5 (iter-8) | 0 | 0.5439 | **0.0557** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-8](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0008/comparison.png) |
 | 8 | **NAF** (per-scene MLP) | n_freqs=6, hidden=192, layers=5, n_iter=2000 (iter-1) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
@@ -132,15 +132,15 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Step-3 TPE active 2026-06-08 ~12:33 — full Wagner-train pool, top-5 plateaued positives:**
+**Step-3 TPE active 2026-06-08 ~12:35 — full Wagner-train pool, top-5 plateaued positives:**
 
 | Solver | Step-2 best hr | TPE job | Status |
 |---|---:|---:|---|
-| Learned Primal-Dual | 0.2445 | **762896** | dispatched (14h wall, 20 trials, full train_n=200/val_n=10) |
-| diff_recon DCstep UNCON (v2) | 0.2095 | — | next dispatch when QOS frees |
-| USwin | 0.1425 | — | queued |
-| DD-UNet supervised L2 | 0.1337 | — | queued |
-| ItNet v3 (post-patch) | 0.1036 | — | queued |
+| Learned Primal-Dual | 0.2445 | 762896 → **762898** | first attempt failed (wrong solver key `learned_primal_dual` — should be `lpd`); re-dispatched correctly |
+| USwin | 0.1425 | **762897** | RUNNING (14h wall, 20 trials, full train_n=200/val_n=10) |
+| DD-UNet supervised L2 | 0.1337 | **762899** | queued |
+| ItNet v3 (post-patch, iter-5 hr=0.1336) | 0.1336 | **762900** | queued |
+| diff_recon DCstep UNCON (v2) | 0.2095 | — | needs `diffusion_recon_dcstep_unconstrained_mayo_v2` entry in `learned_solver_search_agent.py` (not yet scaffolded — next turn) |
 
 Also in flight: DDPM Mayo v4 training (job **762888**, ep 84/120 at last check, best val ε-loss=0.0025 — already beats v3 and v2). When v4 ckpt lands, dispatch `diff_recon_mayo_v4` iter-1.
 
