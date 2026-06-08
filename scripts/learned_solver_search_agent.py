@@ -1153,17 +1153,26 @@ def main():
             }
             print(f"[agent] applying mayo_ldct_2d search-space clamp", flush=True)
             spec["space"] = dict(spec["space"])
+            # ALWAYS-INSERT keys (force these into the space even if absent).
+            # The solver's CONFIG default is otherwise used, which OOMs Mayo.
+            ALWAYS_INSERT = {"train_n", "val_n", "val_chunk", "batch_size"}
             for k, v in MAYO_CLAMPS.items():
                 if k in spec["space"]:
                     print(f"[agent]   clamp {k}: "
                           f"{spec['space'][k]!r} -> {v!r}", flush=True)
                     spec["space"][k] = v
+                elif k in ALWAYS_INSERT:
+                    print(f"[agent]   insert {k} = {v!r} "
+                          f"(was not in solver's space)", flush=True)
+                    spec["space"][k] = v
             # Also clamp tpe_seed_trial so the seeded prior trial actually fits.
             if "tpe_seed_trial" in spec:
                 spec["tpe_seed_trial"] = dict(spec["tpe_seed_trial"])
                 for k, (vals, _) in MAYO_CLAMPS.items():
-                    if k in spec["tpe_seed_trial"]:
-                        if isinstance(vals, list) and vals:
+                    if isinstance(vals, list) and vals:
+                        # Always set the seed trial value if the key is in MAYO_CLAMPS,
+                        # even if it wasn't in the seed (so it propagates from the space).
+                        if k in spec["tpe_seed_trial"] or k in ALWAYS_INSERT:
                             spec["tpe_seed_trial"][k] = vals[0]
 
     rng = random.Random(args.seed)
