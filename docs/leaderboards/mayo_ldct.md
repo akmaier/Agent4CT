@@ -147,8 +147,9 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 2. **Search-space `train_n` exceeds Mayo capacity**. The breast/demo TPE specs all use `train_n=400`/`200` which OOMs the Mayo 2304-angle `filter_sino` FFT pad at ~5 GB. Fix: when `--dataset=mayo_ldct_2d`, clamp `train_n` to ≤50 in the search space.
 
 **Productive parallel work in flight:**
-- 762888 DDPM v4 RUNNING (ep 84+/120, constrained variant; unconstrained ckpt at `/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_unconstrained_v4.pt` landed at 12:49)
-- **762901 diff_recon UNCON v4 iter-1** — first test against the v4 prior (8.6 M params, 4× v3's effective training)
+- 762888 DDPM v4 COMPLETED ~13:08 — both ckpts saved (unconstrained 12:49, constrained 13:07).
+- **diff_recon v4 UNCON iter-1 (762901)** → hr=**0.1466** SSIM 0.5421 PSNR 15.35 (between v3's 0.0641 and v2's 0.2095). **Surprise:** v4 has the best DDPM training (val ε-loss 0.0025 vs v2's 0.0049), but v2 still wins diff_recon. **DDPM training quality is NOT predictive of DPS performance.**
+- 762903 diff_recon v4 CON iter-1, 762904 diff_recon v4 UNCON iter-2 (eta 3→1, testing if v4 wants even more conservative DPS) in flight.
 
 Also in flight: DDPM Mayo v4 training (job **762888**, ep 84/120 at last check, best val ε-loss=0.0025 — already beats v3 and v2). When v4 ckpt lands, dispatch `diff_recon_mayo_v4` iter-1.
 
