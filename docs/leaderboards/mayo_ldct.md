@@ -132,15 +132,23 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 
 `PyronnFanBeamProjector.fbp` on Mayo's 2304-angle sino allocates 2.5–5 GB of FFT scratch with `train_n=100`; combined with model+gradient memory this exceeds Q6000. **USwin iter-3/4, ITNet v3 iter-1, Hammernik VN iter-1 all OOMed at this exact line.** All Mayo iter-N+1 configs now use `train_n=50` (was the silent default in iter-2 USwin which fit). If a solver needs more data, the fix is chunked FBP in `solver_*.py`, not just bumping the GPU class.
 
-**Step-3 TPE active 2026-06-08 ~12:35 — full Wagner-train pool, top-5 plateaued positives:**
+**Step-3 TPE active 2026-06-08 — infrastructure issues identified, partial retry in progress:**
 
-| Solver | Step-2 best hr | TPE job | Status |
-|---|---:|---:|---|
-| Learned Primal-Dual | 0.2445 | 762896 → **762898** | first attempt failed (wrong solver key `learned_primal_dual` — should be `lpd`); re-dispatched correctly |
-| USwin | 0.1425 | **762897** | RUNNING (14h wall, 20 trials, full train_n=200/val_n=10) |
-| DD-UNet supervised L2 | 0.1337 | **762899** | queued |
-| ItNet v3 (post-patch, iter-5 hr=0.1336) | 0.1336 | **762900** | queued |
-| diff_recon DCstep UNCON (v2) | 0.2095 | — | needs `diffusion_recon_dcstep_unconstrained_mayo_v2` entry in `learned_solver_search_agent.py` (not yet scaffolded — next turn) |
+| Solver | Step-2 best hr | First TPE | Status | Retry |
+|---|---:|---:|---|---:|
+| Learned Primal-Dual | 0.2445 | 762896, 762898 | both FAILED (wrong key + SQLite lock) | **762902** (serial dispatch) |
+| USwin | 0.1425 | 762897 | COMPLETED but ALL trials hr=0 (OOM in `filter_sino` 5 GiB at `train_n=200` from default search space — Mayo's 2304-angle sino can't fit train_n>50 on Q6000) | needs Mayo-specific search-space clamp |
+| DD-UNet supervised L2 | 0.1337 | 762899 | FAILED (SQLite lock when launched in parallel with 762898/900) | queued |
+| ItNet v3 (post-patch, iter-5 hr=0.1336) | 0.1336 | 762900 | FAILED (SQLite lock) | queued |
+| diff_recon DCstep UNCON (v2) | 0.2095 | — | needs Mayo entries in `learned_solver_search_agent.py` (only breast_v2/v3 exist) | scaffolding next turn |
+
+**Two TPE infrastructure issues to fix:**
+1. **SQLite lock** when launching multiple Mayo TPEs in parallel. Fix: serialize dispatches (one solver's TPE at a time, or per-solver storage path).
+2. **Search-space `train_n` exceeds Mayo capacity**. The breast/demo TPE specs all use `train_n=400`/`200` which OOMs the Mayo 2304-angle `filter_sino` FFT pad at ~5 GB. Fix: when `--dataset=mayo_ldct_2d`, clamp `train_n` to ≤50 in the search space.
+
+**Productive parallel work in flight:**
+- 762888 DDPM v4 RUNNING (ep 84+/120, constrained variant; unconstrained ckpt at `/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_unconstrained_v4.pt` landed at 12:49)
+- **762901 diff_recon UNCON v4 iter-1** — first test against the v4 prior (8.6 M params, 4× v3's effective training)
 
 Also in flight: DDPM Mayo v4 training (job **762888**, ep 84/120 at last check, best val ε-loss=0.0025 — already beats v3 and v2). When v4 ckpt lands, dispatch `diff_recon_mayo_v4` iter-1.
 
