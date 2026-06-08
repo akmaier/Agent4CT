@@ -117,6 +117,15 @@ SOLVER_MAP = {
     "diffusion_recon_dcstep_constrained_mayo_v3": (
         "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
         "DIFFUSION_RECON_CONFIG_PATH"),
+    # diff_recon against the v4 Mayo DDPM ckpts (ch=96, batch=2, ep=120 —
+    # 4× v3's effective training because v3 was under-trained at batch=1).
+    # Trained 2026-06-08, unconstrained ckpt landed at 12:49.
+    "diffusion_recon_dcstep_unconstrained_mayo_v4": (
+        "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "DIFFUSION_RECON_CONFIG_PATH"),
+    "diffusion_recon_dcstep_constrained_mayo_v4": (
+        "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+        "DIFFUSION_RECON_CONFIG_PATH"),
 }
 
 
