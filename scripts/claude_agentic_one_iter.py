@@ -75,10 +75,14 @@ SOLVER_MAP = {
     # searches but were not yet wired into the agentic dispatcher).
     "uswin":
         ("pentathlon/demo_dl_reference/solver_uswin.py", "USWIN_CONFIG_PATH"),
+    # All three ItNet solvers read ITNET_CONFIG_PATH (2026-06-08 audit found
+    # the v3/v2 env-var names in this map didn't match what the solvers
+    # actually os.environ.get() — silently dropping the agentic cfg and
+    # falling back to the hardcoded defaults that OOMed on Mayo).
     "itnet_v3":
-        ("pentathlon/demo_dl_reference/solver_itnet_v3.py", "ITNET_V3_CONFIG_PATH"),
+        ("pentathlon/demo_dl_reference/solver_itnet_v3.py", "ITNET_CONFIG_PATH"),
     "itnet_v2":
-        ("pentathlon/demo_dl_reference/solver_itnet_v2.py", "ITNET_V2_CONFIG_PATH"),
+        ("pentathlon/demo_dl_reference/solver_itnet_v2.py", "ITNET_CONFIG_PATH"),
     "hammernik_vn":
         ("pentathlon/demo_dl_reference/solver_hammernik_vn.py", "HAMMERNIK_VN_CONFIG_PATH"),
     "hammernik":
@@ -88,7 +92,7 @@ SOLVER_MAP = {
     # variants superseded) and Wu 2015 non-trainable (frozen filter-band
     # modulation FBP, no params — the baseline that the trainable variant
     # extends).
-    "itnet":
+    "itnet":  # solver_itnet.py also reads ITNET_CONFIG_PATH after the 2026-06-08 patch
         ("pentathlon/demo_dl_reference/solver_itnet.py", "ITNET_CONFIG_PATH"),
     "wu_2015":
         ("pentathlon/demo_dl_reference/solver_wu_2015.py", "WU_CONFIG_PATH"),

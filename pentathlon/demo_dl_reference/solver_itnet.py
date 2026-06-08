@@ -136,7 +136,20 @@ def finetune_itnet(itnet, train_sinos, train_fbps, epochs, lr, device):
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
-    cfg = {**CONFIG, **(cfg or {})}
+    # Check for environment-based config override (2026-06-08 patch — was
+    # silently ignoring the agentic CFG_JSON before, so Mayo runs OOMed at
+    # the hardcoded train_n=400/val_n=100/itnet_k=5 defaults).
+    import os
+    env_config_path = os.environ.get("ITNET_CONFIG_PATH")
+    if env_config_path and Path(env_config_path).exists():
+        with open(env_config_path) as f:
+            env_cfg = json.load(f)
+        cfg = {**CONFIG, **env_cfg}
+        print(f"[solver] Loaded config from {env_config_path}")
+    elif cfg is not None:
+        cfg = {**CONFIG, **cfg}
+    else:
+        cfg = CONFIG.copy()
     # Dataset dispatch (Track B/C of workplan). When dataset_kind != "phantoms"
     # we override the geometry to match the staged data.
     from ddssl_ldct.staged_dataset import get_dataset_kind, geometry_overrides
