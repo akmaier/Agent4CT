@@ -143,7 +143,7 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | Solver | Step-2 best hr | Step-3 TPE | TPE best | Status |
 |---|---:|---:|---:|---|
 | TV-iter (non-trainable) | 0.0557 | 762924 | 0.0511 | TPE clamp tv_iterations too low — Step-2 agentic 12,800 iters wins. **No improvement.** |
-| NAF (per-scene MLP) | 0.0202 | 762923 | (running iter-7/20, best iter-6: 0.0131) | TBD — still below Step-2 best, ~13 iters remaining |
+| NAF (per-scene MLP) | 0.0202 | 762923 | (running iter-8/20, best iter-6: 0.0131) | TBD — iter-7 regressed to hr=0 (n_freqs=8/layers=6 too deep, 2451s); 12 iters / ~5h remaining |
 | Hammernik VN | 0 (Step-2 STOP) | 762926 | **0.0551 at iter-6, FINAL** (20/20 COMPLETE) | **ESCAPED BASELINE.** vn_T=5, vn_n_filters=16, vn_kernel=11, vn_λ_init=2.3e-3, ep=12, lr=2.6e-4. TPE clustered iters 13/17 in the same family (hr=0.0338/0.0290) but no config beat iter-6. Hammernik VN is now rank 10 on Mayo. |
 | DD-BF N2I | 0.0047 | 762925 | 0 (all-fail) | OOM at hardcoded `R_full.fbp(val_clean)` — solver-side chunking needed. **STOP** |
 
@@ -159,12 +159,14 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 
 **Step-3 TPE phase 3 — diff_recon Mayo (dispatched 2026-06-08 commit `6fa14e1b`, scp synced to cluster after 3 jobs died at startup with old SOLVERS dict):**
 
-| Solver | Step-2 best hr (agentic winner) | Step-3 TPE | TPE seed | Status |
+| Solver | Step-2 best hr (val_n=3) | Step-3 TPE | TPE seed iter-1 hr (**val_n=5**) | Status |
 |---|---:|---:|---:|---|
-| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | 762934 (re-dispatched) | eta=3, warmup=25, clamp=True | PENDING |
-| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | 762935 (re-dispatched) | eta=1, warmup=25, clamp=True | PENDING |
-| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933** (clean start) | eta=10, warmup=40, clamp=False | **RUNNING** (iter-1, seed trial) |
-| diff_recon DCstep CON v4   | 0.0981 (iter-1) | 762936 (re-dispatched) | eta=10, warmup=40, clamp=False | PENDING |
+| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 RUNNING iter-2** | **0.2197** SSIM 0.5384 | seed at val_n=5 already ≥ Step-2 val_n=3 |
+| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 RUNNING iter-2** | **0.2343** SSIM 0.5245 | seed at val_n=5 +35% over Step-2 val_n=3 |
+| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 RUNNING iter-2** | **0.1068** SSIM 0.4803 | seed at val_n=5 +26% over Step-2 val_n=3 |
+| diff_recon DCstep CON v4   | 0.0981 (iter-1) | 762936 PENDING (QOS=4 cap) | — | queued behind NAF |
+
+**Caveat on the val_n=5 lift:** Step-2 diff_recon configs were validated against the 3 sharpest L014 slabs (val_n=3, baseline PSNR=13.98); MAYO_CLAMPS in the TPE flow forces val_n=5 (baseline PSNR=12.59). The lower baseline at val_n=5 means the *same recon* gives a higher hr. The TPE numbers are the "fair" cross-solver comparison; will rebuild rank table once all 4 TPEs finish.
 
 Search space mirrors breast_v3 with two changes: `recon_ckpt` paths point to Mayo ckpts; `recon_eta` narrowed to (0.3, 30) log (Mayo agentic winners converged at eta=1-10 vs breast's eta=30). Auto-injected by MAYO_CLAMPS: val_n=5, val_chunk=1, train_n=50 (unused — DPS doesn't train), batch_size=1.
 
