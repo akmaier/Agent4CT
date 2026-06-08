@@ -155,7 +155,20 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | USwin | 0.1425 | 762897 | COMPLETED but ALL trials hr=0 (OOM in `filter_sino` 5 GiB at `train_n=200` from default search space — Mayo's 2304-angle sino can't fit train_n>50 on Q6000) | needs Mayo-specific search-space clamp |
 | DD-UNet supervised L2 | 0.1337 | 762899 | FAILED (SQLite lock when launched in parallel with 762898/900) | queued |
 | ItNet v3 (post-patch, iter-5 hr=0.1336) | 0.1336 | 762900 | FAILED (SQLite lock) | queued |
-| diff_recon DCstep UNCON (v2) | 0.2095 | — | needs Mayo entries in `learned_solver_search_agent.py` (only breast_v2/v3 exist) | scaffolding next turn |
+| diff_recon DCstep UNCON (v2) | 0.2095 | — | needs Mayo entries in `learned_solver_search_agent.py` (only breast_v2/v3 exist) | **dispatched in Step-3 TPE phase 3** (see below) |
+
+**Step-3 TPE phase 3 — diff_recon Mayo (dispatched 2026-06-08 commit `6fa14e1b`, scp synced to cluster after 3 jobs died at startup with old SOLVERS dict):**
+
+| Solver | Step-2 best hr (agentic winner) | Step-3 TPE | TPE seed | Status |
+|---|---:|---:|---:|---|
+| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | 762934 (re-dispatched) | eta=3, warmup=25, clamp=True | PENDING |
+| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | 762935 (re-dispatched) | eta=1, warmup=25, clamp=True | PENDING |
+| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933** (clean start) | eta=10, warmup=40, clamp=False | **RUNNING** (iter-1, seed trial) |
+| diff_recon DCstep CON v4   | 0.0981 (iter-1) | 762936 (re-dispatched) | eta=10, warmup=40, clamp=False | PENDING |
+
+Search space mirrors breast_v3 with two changes: `recon_ckpt` paths point to Mayo ckpts; `recon_eta` narrowed to (0.3, 30) log (Mayo agentic winners converged at eta=1-10 vs breast's eta=30). Auto-injected by MAYO_CLAMPS: val_n=5, val_chunk=1, train_n=50 (unused — DPS doesn't train), batch_size=1.
+
+**Lesson from 762930-932 startup failures:** the cluster `/cluster/maier/Agent4CT/` is NOT a git checkout — git pull fails. New code reaches the cluster only via direct `scp -o ProxyJump=lme-bastion`. The first 3 sbatches in the dispatch went out before the scp landed, so their copy of `learned_solver_search_agent.py` lacked the new SOLVERS keys and they died at argparse. Re-dispatched as 762934/935/936 after verifying the file synced.
 
 **Two TPE infrastructure issues to fix:**
 1. **SQLite lock** when launching multiple Mayo TPEs in parallel. Fix: serialize dispatches (one solver's TPE at a time, or per-solver storage path).
