@@ -37,18 +37,19 @@ inline.
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | ITNet v3 (3.7 M) | 0.9178 | 0.4676 | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
 | **Mayo-LDCT** (Wagner split, real helical) | DD-UNet supervised L2 (Step-3 TPE iter-12; 0.466 M) | — | **0.3890** | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
 
-Mayo-LDCT Step-3 TPE refinement **in flight 2026-06-08**: 15 / 15
-solvers exercised, 9 above the FBP baseline. Top entries beyond
-DD-UNet sup TPE (0.3890): **Learned Primal-Dual TPE** (0.3063),
-**USwin TPE** (0.2492), **ItNet v3 TPE** (0.2181), **diff_recon
-DCstep unconstrained** (DDPM v2 prior, 0.2095), **diff_recon DCstep
-unconstrained** (DDPM v4 prior, 0.1736), **diff_recon DCstep
-constrained** (DDPM v4 prior, 0.0981), **diff_recon DCstep
-constrained** (DDPM v2 prior, 0.0847), **TV-iterative non-trainable**
-(0.0557), **Hammernik VN** (Step-3 TPE iter-6, 0.0551 — overturns
-Step-2 STOP), **NAF** (0.0202), **DD-BF N2I** (0.0047). 12 structural
-STOPs filed. See the leaderboard for the full ranking, the
-non-trainable solver report, and per-solver verdicts.
+Mayo-LDCT Step-3 TPE refinement **2026-06-08/09**: 15 / 15 solvers
+exercised, 12 above the FBP baseline. Top entries beyond DD-UNet sup
+TPE (0.3890): **Learned Primal-Dual TPE** (0.3063), **USwin TPE**
+(0.2492), **diff_recon DCstep unconstrained** DDPM v4 prior TPE
+(0.2377 — eta=0.30 corner discovered by TPE), **diff_recon DCstep
+unconstrained** DDPM v2 prior TPE (0.2352 — eta=0.31 noise init),
+**ItNet v3 TPE** (0.2181), **diff_recon DCstep constrained** DDPM v4
+prior TPE (0.1417 *running*), **diff_recon DCstep constrained** DDPM
+v2 prior TPE (0.1071), **TV-iterative non-trainable** (0.0557),
+**Hammernik VN** Step-3 TPE (0.0551 — overturns Step-2 STOP),
+**NAF** (0.0202), **DD-BF N2I** (0.0047). 11 structural STOPs filed.
+See the leaderboard for the full ranking, the non-trainable solver
+report, and per-solver verdicts.
 
 [![Breast-CT champion (LPD)](docs/runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](docs/leaderboards/breast_ct.md)
 [![Mayo-LDCT champion (LPD)](docs/runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png)](docs/leaderboards/mayo_ldct.md)
