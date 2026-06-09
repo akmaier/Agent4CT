@@ -45,12 +45,13 @@ pretrained checkpoint loaded without finetuning.
 | 7 | ITNet v2 | pre_ep=3, pre_lr=2.6e-4, k=4, α=2.6e-3, residual=T, train_n=400 | 0.233 | 0.9918 | 0.5386 | [results](../runs/breast-ct-calibrated-tpe-itnet-v2-search-20260521-01/results.tsv) | [iter-13](../runs/breast-ct-calibrated-tpe-itnet-v2-search-20260521-01/iterations/iter-0013/comparison.png) |
 | 8 | Hammernik VN | ep=18, lr=3.0e-4, T=3, filters=32, kernel=7, init=fbp, train_n=200 | 0.008 | 0.9875 | 0.4883 | [results](../runs/breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01/results.tsv) | [iter-12](../runs/breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01/iterations/iter-0012/comparison.png) |
 | 9 | Hammernik 2017 | ep=30, lr=9.6e-4, T=3, filters=16, kernel=9, λ=9.7e-3, train_n=200 | 0.005 | 0.9834 | 0.4549 | [results](../runs/breast-ct-calibrated-tpe-hammernik-search-20260521-01/results.tsv) | [iter-15](../runs/breast-ct-calibrated-tpe-hammernik-search-20260521-01/iterations/iter-0015/comparison.png) |
-| 10 | **RAM zero-shot** (pretrained) | σ=8.1e-3, factor=0.40, blend=0.50, multiscale=F, train_n=0 (frozen) | 35.619 *(frozen)* | 0.9879 | 0.3077 | [results](../runs/breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01/results.tsv) | [iter-7](../runs/breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01/iterations/iter-0007/comparison.png) |
-| 11 | DD-BF supervised L2 | proj_n=1, img_n=7, proj_k=5, img_k=7, ep=10, lr=5.9e-3, train_n=400 | 0.000 | 0.9898 | 0.2634 | [results](../runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/results.tsv) | [iter-12](../runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/iterations/iter-0012/comparison.png) |
-| 12 | DD-BF supervised L2 (agentic seed) | proj_n=3, img_n=3, proj_k=3, img_k=9, ep=10, lr=5e-3 | 0.000 | 0.9894 | 0.2476 | [results](../runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/results.tsv) | [iter-3](../runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/iterations/iter-0003/comparison.png) |
-| 13 | Wu 2015 trainable | n_bands=4, n_outer=2, range=5, ep=10, lr=1e-3, train_n=400 | 0.000 | 0.9691 | 0.2189 | [results](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/results.tsv) | [iter-2](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/iterations/iter-0002/comparison.png) |
-| 14 | **ItNet v1** *(Step-3 TPE — COMPLETE 20/20, 2026-06-09)* | pretrain_ep=5, pretrain_lr=1e-3, k=8, α=0.015, finetune_ep=11, finetune_lr=5e-4, c=8, train_n=400 | — | — | **0.1703** | [results](../runs/breast-ct-calibrated-tpe-itnet-v1-search-20260609-01/results.tsv) | [iter-20](../runs/breast-ct-calibrated-tpe-itnet-v1-search-20260609-01/iterations/iter-0020/comparison.png) |
-| 15 | Wu 2015 (non-trainable) | n_bands=4, n_outer=1, range=8, thresh=1.1e-3, train_n=0 | 0.000 | 0.9699 | 0.0425 | [results](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-16](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/iterations/iter-0016/comparison.png) |
+| 10 | **Wu 2015 trainable** *(Step-3 TPE — RUNNING iter-15+/20, 2026-06-09)* | ep=13, lr=1.1e-4, n_bands=6, n_outer=2, range=8, window=2, soft_thresh=9.2e-4, λ_neg=0.83, train_n=400 | 0.000010 | 0.9739 | **0.3138** *(running)* | [results](../runs/breast-ct-calibrated-tpe-wu-2015-trainable-search-20260609-01/results.tsv) | [iter-8](../runs/breast-ct-calibrated-tpe-wu-2015-trainable-search-20260609-01/iterations/iter-0008/comparison.png) |
+| 11 | **RAM zero-shot** (pretrained) | σ=8.1e-3, factor=0.40, blend=0.50, multiscale=F, train_n=0 (frozen) | 35.619 *(frozen)* | 0.9879 | 0.3077 | [results](../runs/breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01/results.tsv) | [iter-7](../runs/breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01/iterations/iter-0007/comparison.png) |
+| 12 | DD-BF supervised L2 | proj_n=1, img_n=7, proj_k=5, img_k=7, ep=10, lr=5.9e-3, train_n=400 | 0.000 | 0.9898 | 0.2634 | [results](../runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/results.tsv) | [iter-12](../runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/iterations/iter-0012/comparison.png) |
+| 13 | DD-BF supervised L2 (agentic seed) | proj_n=3, img_n=3, proj_k=3, img_k=9, ep=10, lr=5e-3 | 0.000 | 0.9894 | 0.2476 | [results](../runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/results.tsv) | [iter-3](../runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/iterations/iter-0003/comparison.png) |
+| 14 | Wu 2015 trainable (agentic seed) | n_bands=4, n_outer=2, range=5, ep=10, lr=1e-3, train_n=400 | 0.000 | 0.9691 | 0.2189 | [results](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/results.tsv) | [iter-2](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/iterations/iter-0002/comparison.png) |
+| 15 | **ItNet v1** *(Step-3 TPE — COMPLETE 20/20, 2026-06-09)* | pretrain_ep=5, pretrain_lr=1e-3, k=8, α=0.015, finetune_ep=11, finetune_lr=5e-4, c=8, train_n=400 | — | — | **0.1703** | [results](../runs/breast-ct-calibrated-tpe-itnet-v1-search-20260609-01/results.tsv) | [iter-20](../runs/breast-ct-calibrated-tpe-itnet-v1-search-20260609-01/iterations/iter-0020/comparison.png) |
+| 16 | Wu 2015 (non-trainable) | n_bands=4, n_outer=1, range=8, thresh=1.1e-3, train_n=0 | 0.000 | 0.9699 | 0.0425 | [results](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-16](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/iterations/iter-0016/comparison.png) |
 
 ## Below-baseline inventory (`hr = 0`, structural STOPs)
 
@@ -107,20 +108,20 @@ threshold", they are structurally bounded.
   (score-SDE / EDM / U-ViT) — not in scope for current solver code.
   Full diagnosis in findings.md 2026-06-03 entry.
 
-## Inventory-gap closure log (2026-06-09)
+## Inventory-gap + Wu-TPE closure log (2026-06-09)
 
-ItNet v1 was dispatched on breast-CT on 2026-06-09 to close the
-coverage gap from the canonical [`solver_plan.md`](../../solver_plan.md)
-19-solver list:
+ItNet v1 was dispatched + Wu 2015 trainable got a full TPE pass on
+breast-CT on 2026-06-09:
 
 | Solver | TPE job | Result | Status |
 |---|---|---:|---|
-| **ItNet v1** (`solver_itnet.py`) | 762956 | **hr=0.1703** at iter-20 winner (k=8, c=8, pretrain_ep=5, lr=1e-3, α=0.015) | ✅ **ABOVE BASELINE** — slots in at rank 14 between Wu trainable (0.2189) and Wu non-trainable (0.0425). Surprises the Mayo verdict (hr=0): on breast-CT's broader synthetic-anatomy substrate, v1's deeper finetune-pass lets it clear baseline. Confirms ItNet family transfer pattern: v1 < v2 < v3 on breast-CT (0.1703 → 0.5386 → 0.7342). |
+| **ItNet v1** (`solver_itnet.py`) | 762956 | **hr=0.1703** at iter-20 winner (k=8, c=8, pretrain_ep=5, lr=1e-3, α=0.015) | ✅ **ABOVE BASELINE** — slots in at rank 15. Surprises the Mayo verdict (hr=0): on breast-CT's broader synthetic-anatomy substrate, v1's deeper finetune-pass lets it clear baseline. Confirms ItNet family transfer pattern: v1 < v2 < v3 on breast-CT (0.1703 → 0.5386 → 0.7342). |
+| **Wu 2015 trainable** (`solver_wu_2015_trainable.py`) | 762955 | RUNNING iter-15+/20; best so far iter-8 **hr=0.3138** (n_bands=6, n_outer=2, range=8, window=2, ep=13, lr=1.1e-4, λ_neg=0.83) | 🎯 **+43% over agentic 0.2189**! TPE found a higher-`n_bands` + lower-lr corner the agentic search missed. New rank 10 (provisional, may climb). Agentic-seed row stays at rank 14. |
 
 **Cross-dataset coverage compare (after 2026-06-09 gap-closure dispatches):**
 
-- **Demo-DL** (Sidky synthetic): 19 above + 0 below = **19/19 inventory variants** (ItNet v1 just closed at rank 4; TV-iter supervised still in flight)
-- **Breast-CT** (Sidky synthetic with anatomy): 15 above + 13 below = **28 entries, full 19-inventory coverage** (ItNet v1 closed)
+- **Demo-DL** (Sidky synthetic): 19 above + 0 below = **19/19 inventory variants** (ItNet v1 just closed at rank 4; TV-iter supervised running iter-7, all hr=0 — confirming structural verdict)
+- **Breast-CT** (Sidky synthetic with anatomy): 15 above + 13 below = **28 entries, full 19-inventory coverage** (ItNet v1 closed; Wu trainable TPE lifted +43%)
 - **Mayo-LDCT** (real helical, 2304-view): 12 above + 10 below + 1 deprioritised = **23 entries, full 19-inventory coverage**
 
 ## Methodology
