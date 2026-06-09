@@ -51,6 +51,36 @@ SOLVERS = {
             "residual_learning":   ([True, False], "choice"),
         },
     },
+    # ItNet v1 (added 2026-06-09 to close inventory gap on demo-DL +
+    # breast-CT). v1 was previously skipped because v2/v3 supersede it;
+    # the Mayo v1 retry (post-cfg-patch eae661bc) sat at hr=0 SSIM 0.249.
+    # Including for completeness — search space mirrors v2 since the
+    # CONFIG schema is similar (no `residual_learning` toggle in v1).
+    "itnet": {
+        "solver": "pentathlon/demo_dl_reference/solver_itnet.py",
+        "env_var": "ITNET_CONFIG_PATH",
+        "slug_prefix": "demo-fair-itnet-v1-search",
+        "agent_name": "itnet-v1-search",
+        "space": {
+            "pretrain_epochs":     (3, 8, "int"),
+            "pretrain_lr":         (1e-4, 5e-3, "log"),
+            "itnet_k":             (3, 8, "int"),
+            "itnet_alpha":         (1e-3, 5e-2, "log"),
+            "finetune_epochs":     (5, 15, "int"),
+            "finetune_lr":         (1e-5, 1e-3, "log"),
+            "unet_c":              ([8, 16, 24], "choice"),
+        },
+        "tpe_seed_trial": {
+            # Seed from the closest known config — Mayo v1 iter-3 (hr=0):
+            "pretrain_epochs":     6,
+            "pretrain_lr":         5e-4,
+            "itnet_k":             2,
+            "itnet_alpha":         5e-3,
+            "finetune_epochs":     10,
+            "finetune_lr":         1e-4,
+            "unet_c":              16,
+        },
+    },
     "itnet_v3": {
         "solver": "pentathlon/demo_dl_reference/solver_itnet_v3.py",
         "env_var": "ITNET_CONFIG_PATH",
@@ -132,6 +162,40 @@ SOLVERS = {
             "tv_lr":         (5e-3, 5e-2, "log"),
             "tv_clip_max":   (0.05, 0.10, "linear"),
             "tv_decay":      (1e-3, 3e-2, "log"),
+        },
+    },
+    # TV-iterative supervised (added 2026-06-09 to close inventory gap on
+    # demo-DL). The trainable variant has learnable step/λ scalars per GD
+    # iter. Both breast-CT and Mayo verdicts confirm hr=0 due to FBP-init
+    # making the 1st GD step ≈ no-op. Including for completeness — the
+    # search may surface a config that breaks the FBP-init lock (no-init,
+    # smaller-K, etc.).
+    "tv_iterative_supervised": {
+        "solver": "pentathlon/demo_dl_reference/solver_tv_iterative_supervised.py",
+        "env_var": "TV_CONFIG_PATH",
+        "slug_prefix": "demo-fair-tv-iterative-supervised-search",
+        "agent_name": "tv-iterative-supervised-search",
+        "space": {
+            "tv_step_init":    (1e-4, 1e-1, "log"),
+            "tv_lambda_init":  (1e-5, 1e-2, "log"),
+            "tv_share_steps":  ([True, False], "choice"),
+            "tv_clip_max":     (0.03, 0.10, "linear"),
+            "epochs":          (5, 20, "int"),
+            "lr":              (5e-4, 5e-2, "log"),
+            "lambda_neg":      (0.5, 2.0, "linear"),
+            "loss_base":       (["mse", "l1"], "choice"),
+            "grad_clip":       (0.5, 2.0, "linear"),
+        },
+        "tpe_seed_trial": {
+            "tv_step_init":    1e-2,
+            "tv_lambda_init":  1e-3,
+            "tv_share_steps":  False,
+            "tv_clip_max":     0.05,
+            "epochs":          10,
+            "lr":              5e-3,
+            "lambda_neg":      1.0,
+            "loss_base":       "mse",
+            "grad_clip":       1.0,
         },
     },
     "dual_domain_v2": {
