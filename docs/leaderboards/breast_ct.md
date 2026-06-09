@@ -106,6 +106,22 @@ threshold", they are structurally bounded.
   (score-SDE / EDM / U-ViT) — not in scope for current solver code.
   Full diagnosis in findings.md 2026-06-03 entry.
 
+## Solvers from solver_plan.md inventory NOT tested on breast-CT
+
+For full inventory parity with the canonical 19-solver list in
+[`solver_plan.md`](../../solver_plan.md), one solver was never
+dispatched on breast-CT:
+
+| Solver | File | Why skipped on breast-CT |
+|---|---|---|
+| **ItNet v1** | `solver_itnet.py` | Superseded by v2/v3 in the autoresearch loop. v3 (rank 5, hr=0.7342) is the canonical ItNet on breast-CT; v2 (rank 7, hr=0.5386) was kept for cross-dataset transfer. v1 was never benchmarked here — Mayo retry (post-cfg-patch 2026-06-08) sat at hr=0 with SSIM 0.249, so v1 would likely also rank near the bottom of breast-CT. |
+
+**Cross-dataset coverage compare:**
+
+- **Demo-DL** (Sidky synthetic): 18 above + 0 below = **18/19 inventory variants** (missing ItNet v1, TV-iter supervised)
+- **Breast-CT** (Sidky synthetic with anatomy): 14 above + 13 below = **27 entries (TPE-tuned, multiple variants per family)** — missing ItNet v1
+- **Mayo-LDCT** (real helical, 2304-view): 12 above + 10 below + 1 deprioritised = **23 entries, full 19-inventory coverage**
+
 ## Methodology
 
 See [`solver_plan.md`](../../solver_plan.md). One row per solver family;

@@ -62,13 +62,27 @@ trainable parameters in millions; `0` = non-trainable hand-tuned solver;
 
 ## Below-baseline inventory (`hr = 0`, structural STOPs)
 
-**None.** All 18 tested solver variants reach above the calibrated FBP
-baseline on demo-DL — the synthetic Sidky-style 128-view ellipse
-substrate is broad enough that every learned and non-learned solver
-finds *some* working corner. Compare with:
+**None of the 18 variants tested on demo-DL fell below baseline.** The
+synthetic Sidky-style 128-view ellipse substrate is broad enough that
+every learned and non-learned solver finds *some* working corner.
 
-- **Breast-CT** (128-view, more complex anatomy): 14 above + 13 below baseline
-- **Mayo-LDCT** (real helical, 2304-view): 12 above + 10 below baseline
+## Solvers from solver_plan.md inventory NOT tested on demo-DL
+
+For full inventory parity with the canonical 19-solver list in
+[`solver_plan.md`](../../solver_plan.md), the following two solvers
+were never dispatched on demo-DL (the leaderboard was frozen
+2026-05-22 before these gaps were noticed):
+
+| Solver | File | Why skipped on demo-DL |
+|---|---|---|
+| **ItNet v1** | `solver_itnet.py` | Superseded by v2/v3 in the autoresearch loop. v3 (rank 3, hr=0.4676) is the canonical ItNet on demo-DL; v2 (rank 6, hr=0.4567) was kept for cross-dataset transfer. v1 was never benchmarked here — Mayo retry (post-cfg-patch) sat at hr=0, suggesting v1 would also rank near the bottom of demo-DL. |
+| **TV-iterative supervised** | `solver_tv_iterative_supervised.py` | Both breast-CT (hr=0) and Mayo (hr=0) confirmed the structural verdict: FBP-init + smooth-TV gradient + supervised L2 makes the 1st GD step ≈ no-op, so step/λ scalars never get a useful gradient. Demo-DL would be expected to share the verdict; not retested. |
+
+**Cross-dataset coverage compare:**
+
+- **Demo-DL** (Sidky synthetic): 18 above + 0 below = **18/19 inventory variants** (missing ItNet v1, TV-iter supervised)
+- **Breast-CT** (Sidky synthetic with anatomy): 14 above + 13 below = **27 entries (incl. multiple variants per family)** — also missing ItNet v1
+- **Mayo-LDCT** (real helical, 2304-view): 12 above + 10 below + 1 deprioritised = **23 entries, full 19-inventory coverage**
 
 The demo-DL "every solver works" pattern is a useful sanity check for
 the substrate but a poor predictor of behaviour on the two

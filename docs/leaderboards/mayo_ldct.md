@@ -123,7 +123,14 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | 11 | **NAF** (per-scene MLP) *(Step-3 TPE 20/20 done; TPE found 0.0131 < Step-2 0.0202)* | Step-2 iter-1 winner: n_freqs=6, hidden=192, layers=5, n_iter=2000 (TPE went deeper, hurt by overshoot) | 0.143 | 0.5395 | **0.0202** | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-naf-search-20260603-01/iterations/iter-0001/comparison.png) |
 | 12 | **DD-BF N2I** | proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50 (iter-1) | 0.000018 | 0.4868 | **0.0047** | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/results.tsv) | [iter-1](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01/iterations/iter-0001/comparison.png) |
 
-**12 ranks above baseline / 15 inventory = full coverage.** 4 diff_recon TPE winners (ranks 4, 5, 7, 8) all converged at val_n=5 — directly comparable to learned-solver TPEs. TPE phase 3 lifted UNCON v4 by **+37%** vs Step-2 val_n=3 (0.1736 → 0.2377) by discovering a previously-unexplored **eta ≈ 0.3** low-eta corner.
+**12 ranks above baseline / 22 entries tested (10 below baseline + 12 above) — full canonical-19 inventory coverage.** 4 diff_recon TPE winners (ranks 4, 5, 7, 8) all converged at val_n=5 — directly comparable to learned-solver TPEs. TPE phase 3 lifted UNCON v4 by **+37%** vs Step-2 val_n=3 (0.1736 → 0.2377) by discovering a previously-unexplored **eta ≈ 0.3** low-eta corner.
+
+**Cross-dataset inventory compare:**
+- **Demo-DL** (Sidky synthetic): 18 above + 0 below = **18/19 inventory variants** (missing ItNet v1, TV-iter supervised)
+- **Breast-CT** (Sidky synthetic with anatomy): 14 above + 13 below = **27 entries** (missing ItNet v1)
+- **Mayo-LDCT** (real helical, 2304-view): 12 above + 10 below + 1 deprioritised = **23 entries, full 19-inventory coverage**
+
+Mayo is the only dataset where every canonical solver from solver_plan.md has been exercised — including ItNet v1/v2 (both retried post-cfg-patch 2026-06-08) and TV-iterative supervised. The demo-DL and breast-CT leaderboards predate the cfg-patch retries and were never extended.
 
 ### Non-trainable solvers (full report)
 
