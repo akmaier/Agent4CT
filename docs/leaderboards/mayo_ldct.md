@@ -237,24 +237,16 @@ Search space mirrors breast_v3 with two changes: `recon_ckpt` paths point to May
 
 **Lesson from 762930-932 startup failures:** the cluster `/cluster/maier/Agent4CT/` is NOT a git checkout — git pull fails. New code reaches the cluster only via direct `scp -o ProxyJump=lme-bastion`. The first 3 sbatches in the dispatch went out before the scp landed, so their copy of `learned_solver_search_agent.py` lacked the new SOLVERS keys and they died at argparse. Re-dispatched as 762934/935/936 after verifying the file synced.
 
-**Two TPE infrastructure issues to fix:**
-1. **SQLite lock** when launching multiple Mayo TPEs in parallel. Fix: serialize dispatches (one solver's TPE at a time, or per-solver storage path).
-2. **Search-space `train_n` exceeds Mayo capacity**. The breast/demo TPE specs all use `train_n=400`/`200` which OOMs the Mayo 2304-angle `filter_sino` FFT pad at ~5 GB. Fix: when `--dataset=mayo_ldct_2d`, clamp `train_n` to ≤50 in the search space.
+**TPE infrastructure fixes (locked in 2026-06-08):**
+1. **SQLite NFS lock** — Resolved via `--tpe-storage=/tmp/optuna-$SLURM_JOB_ID` in `cluster/slurm/mayo_ldct_solver_tpe_v2.sbatch` (per-job local storage, copied to `optuna-local-backups/` post-run).
+2. **Search-space `train_n` exceeds Mayo capacity** — Resolved via `MAYO_CLAMPS` in `scripts/learned_solver_search_agent.py` (auto-injects `val_n=5, val_chunk=1, train_n=50, batch_size=1` when `--dataset=mayo_ldct_2d`).
+3. **Cluster sync gotcha (2026-06-08)** — `/cluster/maier/Agent4CT` is NOT a git checkout. New code reaches the cluster via `scp -o ProxyJump=lme-bastion`, NOT via `git pull`. Three Mayo TPEs (762930-932) died at startup before this was discovered.
 
-**Productive parallel work in flight:**
-- 762888 DDPM v4 COMPLETED ~13:08 — both ckpts saved (unconstrained 12:49, constrained 13:07).
-- **diff_recon v4 UNCON iter-1 (762901)** → hr=**0.1466** SSIM 0.5421 PSNR 15.35 (between v3's 0.0641 and v2's 0.2095). **Surprise:** v4 has the best DDPM training (val ε-loss 0.0025 vs v2's 0.0049), but v2 still wins diff_recon. **DDPM training quality is NOT predictive of DPS performance.**
-- 762903 diff_recon v4 CON iter-1, 762904 diff_recon v4 UNCON iter-2 (eta 3→1, testing if v4 wants even more conservative DPS) in flight.
+**Step-2 → Step-3 trajectory (historical preservation):**
 
-Also in flight: DDPM Mayo v4 training (job **762888**, ep 84/120 at last check, best val ε-loss=0.0025 — already beats v3 and v2). When v4 ckpt lands, dispatch `diff_recon_mayo_v4` iter-1.
+The autoresearch loop **Step 2** (agentic random-walk, 2026-06-03 to 2026-06-08) reached **8 ranks above baseline / 15 inventory entries**, with the top entries being LPD (0.2445), diff_recon UNCON v2 (0.2095), USwin (0.1425), DD-UNet sup (0.1337), ItNet v3 (0.1336), diff_recon CON v2 (0.0847), TV-iter (0.0557), NAF (0.0202), DD-BF N2I (0.0047). 12 structural STOPs filed.
 
-**Autoresearch loop — coverage audit CLOSED 2026-06-07 ~22:23. All 15 solver_plan.md entries now run on Mayo.**
-
-Last-2 results:
-- **ITNet v1** (job 762874) → **OOM in `filter_sino`** (2.53 GiB FFT pad). Same cfg-merge bug as v2 — `solver_itnet.py` ignores the JSON cfg. STOP filed in the deal-breakers table.
-- **Wu 2015 non-trainable** (job 762875) → hr=**0** SSIM 0.350 PSNR 12.35 < baseline. Closed-form 10-coefficient filter cannot reach the Mayo dynamic range, same as the trainable variant. STOP filed.
-
-**Final Mayo Step-2 status:** 8 ranks above baseline, 12 structural STOPs filed across the full inventory. Loop closed for Step 2.
+**Step 3** (TPE refinement, 2026-06-08 to 2026-06-09) lifted the count to **12 ranks above baseline** by (a) refining the top-4 plateaued positives with TPE on the agentic neighbourhood (LPD 0.2445→0.3063, DD-UNet sup 0.1337→0.3890, USwin 0.1425→0.2492, ItNet v3 0.1336→0.2181); (b) discovering the very-low-eta corner for diff_recon UNCON v2/v4 + CON v4 (Step-2 val_n=3 numbers replaced by val_n=5 TPE numbers); (c) **overturning the Hammernik VN Step-2 STOP** at hr=0.0551 (vn_T=5, n_filters=16, kernel=11). NAF TPE found a worse config than Step-2, so Step-2 stays as the rank-11 entry. See the rank table + below-baseline inventory above for the consolidated state.
 
 **Original Step-2 convergence summary (preserved below):**
 
@@ -311,26 +303,33 @@ The previous batch outcome:
 - 762852 UNCON iter-8 → hr=0.2045 (relax inert).
 - 762853 CON iter-8 → hr=0.0751 (every-axis regression).
 
-## Plan
+## Plan (DONE — preserved as historical record)
 
-Once the rebin is fully blessed (job 762369 verification + bulk
-re-rebin):
+The original 4-point plan from after geometry calibration. All four
+points have been executed; see the rank table + below-baseline
+inventory above for the consolidated state.
 
-1. **Re-rebin the remaining 9 patients** (low-dose + 9 missing
-   full-dose) with the fitted geometry + FFS-z correction.
-2. **Per-solver autoresearch + TPE refinement** on the Wagner
-   train/val split. Solvers in order of expected promise (from
-   breast-CT leaderboard):
-   - Learned Primal-Dual (current breast-CT champion at `hr` = 0.91)
-   - DD-UNet supervised L2 (`hr` = 0.84)
-   - ITNet v3, USwin
-   - RAM zero-shot (pretrained — distribution match on Mayo TBD)
-   - Hammernik VN
-   - DD-BF supervised L2
-3. **DDPM training**: two variants per
-   [`solver_plan.md`](../../solver_plan.md) Step 4. Constrained uses
-   `Train: L145/186/209/219` labels; unconstrained uses all 10 patients.
-4. **Diff-recon TPE** on both DDPM variants.
+1. ✅ **Re-rebin the remaining 9 patients** — bulk re-rebin of all 10
+   Wagner patients with the fitted SSR geometry + FFS-z correction
+   landed 2026-06-02 (job batches 762100, 762140-200, etc.).
+2. ✅ **Per-solver autoresearch + TPE refinement** — Step 2 agentic
+   (2026-06-03 → 2026-06-08) followed by Step 3 TPE refinement
+   (2026-06-08 → 2026-06-09). Final ranking: DD-UNet sup TPE
+   (`hr` = 0.3890), LPD TPE (0.3063), USwin TPE (0.2492), ItNet v3
+   TPE (0.2181). RAM zero-shot CONFIRMED STOP (PSNR 12.45 < baseline
+   12.59 — μ-range mismatch with natural-image prior). Hammernik VN
+   `hr` = 0.0551 (overturned by Step-3 TPE). DD-BF supervised L2
+   STOP at `hr` = 0 (18 BF params can't bridge to Mayo).
+3. ✅ **DDPM training** — 4 ckpts trained: v2 (ch=64 batch=2 60ep),
+   v3 (ch=96 batch=1 60ep — superseded), v4 (ch=96 batch=2 120ep).
+   Both constrained (`L145/186/209/219` train) and unconstrained
+   (all 10 patients) variants for v2/v3/v4.
+4. ✅ **Diff-recon TPE** — Step-3 phase 3 ran TPE on UNCON/CON × v2/v4
+   = 4 jobs. UNCON v4 TPE 0.2377 (rank 4), UNCON v2 TPE 0.2352
+   (rank 5), CON v4 TPE 0.1632 (rank 7), CON v2 TPE 0.1071 (rank 8).
+   TPE discovered the previously-unexplored very-low-eta (~0.3) corner
+   for UNCON modes — agentic loop's eta≥1 clamp (inherited from
+   breast-CT) had missed it.
 
 ## Methodology
 

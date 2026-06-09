@@ -52,12 +52,12 @@ See the leaderboard for the full ranking, the non-trainable solver
 report, and per-solver verdicts.
 
 [![Breast-CT champion (LPD)](docs/runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](docs/leaderboards/breast_ct.md)
-[![Mayo-LDCT champion (LPD)](docs/runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260603-01/iterations/iter-0003/comparison.png)](docs/leaderboards/mayo_ldct.md)
+[![Mayo-LDCT champion (DD-UNet sup TPE)](docs/runs/mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02/iterations/iter-0012/comparison.png)](docs/leaderboards/mayo_ldct.md)
 
-*Top: current breast-CT champion (Learned Primal-Dual, TPE iter-11).
-Bottom: current Mayo-LDCT champion (Learned Primal-Dual, agentic
-iter-3 — hr 0.2445 vs the FBP baseline). Click either for the full
-leaderboard.*
+*Top: current breast-CT champion (Learned Primal-Dual, TPE iter-11
+— hr 0.9062). Bottom: current Mayo-LDCT champion (DD-UNet supervised
+L2, Step-3 TPE iter-12 — hr 0.3890 vs the FBP baseline). Click either
+for the full leaderboard.*
 
 ---
 
