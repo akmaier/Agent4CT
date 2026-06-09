@@ -143,7 +143,7 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | Solver | Step-2 best hr | Step-3 TPE | TPE best | Status |
 |---|---:|---:|---:|---|
 | TV-iter (non-trainable) | 0.0557 | 762924 | 0.0511 | TPE clamp tv_iterations too low — Step-2 agentic 12,800 iters wins. **No improvement.** |
-| NAF (per-scene MLP) | 0.0202 | 762923 | (running iter-16/20, best iter-6: 0.0131) | TPE iter-15 (14/256/4) hr=0.0096 — same neighborhood as iter-6 but Optuna's broader exploration not finding it. 4 iters / ~2h to go. **Best won't beat Step-2 0.0202.** |
+| NAF (per-scene MLP) | 0.0202 | 762923 | (running iter-18/20, best iter-6: 0.0131) | TPE iter-15-17 (14/256/4-6) hr=0.0096/0.0104/0.0125 — converged on a near-tie with iter-6 but never beat. 2 iters / ~1h to go. **Best won't beat Step-2 0.0202.** |
 | Hammernik VN | 0 (Step-2 STOP) | 762926 | **0.0551 at iter-6, FINAL** (20/20 COMPLETE) | **ESCAPED BASELINE.** vn_T=5, vn_n_filters=16, vn_kernel=11, vn_λ_init=2.3e-3, ep=12, lr=2.6e-4. TPE clustered iters 13/17 in the same family (hr=0.0338/0.0290) but no config beat iter-6. Hammernik VN is now rank 10 on Mayo. |
 | DD-BF N2I | 0.0047 | 762925 | 0 (all-fail) | OOM at hardcoded `R_full.fbp(val_clean)` — solver-side chunking needed. **STOP** |
 
@@ -161,9 +161,9 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 
 | Solver | Step-2 best hr (val_n=3) | Step-3 TPE | TPE seed iter-1 hr (**val_n=5**) | Status |
 |---|---:|---:|---:|---|
-| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 RUNNING iter-13** | **0.2352** SSIM 0.5487 (iter-12 — eta=0.31, **noise**, clamp=False, sample_steps=500, every=5, warmup=10, relax=0.95) | TPE beats seed +7%; UNCON v2 likes noise init |
-| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 RUNNING iter-14** | **0.2377** SSIM 0.5169 (iter-13 — eta=0.30, fbp, clamp=True, sample_steps=200, every=3, warmup=25) | TPE beats seed +1.5%; UNCON v4 likes fbp init |
-| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 RUNNING iter-16** | **0.1071** SSIM 0.4847 (iter-9 — eta=7.21, fbp, clamp=True, warmup=40; iter-13 eta=11 hr=0.1052; iter-14 eta=4 hr=0.0878; iter-15 eta=1.28 hr=0.0270 confirms low-eta fails for CON) | CON v2 optimum at mid-eta=7-11; TPE confirms |
+| diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 RUNNING iter-15** | **0.2352** SSIM 0.5487 (iter-12 — eta=0.31, **noise**, clamp=False, sample_steps=500, every=5, warmup=10, relax=0.95; iter-13/14 eta=0.85/0.82 hr=0.2297/0.2305 confirm eta=0.31 corner) | TPE beats seed +7%; UNCON v2 likes noise init |
+| diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 RUNNING iter-16** | **0.2377** SSIM 0.5169 (iter-13 — eta=0.30, fbp, clamp=True, sample_steps=200, every=3, warmup=25; iter-14 eta=0.39 hr=0.2373, iter-15 eta=0.32 hr=0.2376 — VERY tight optimum) | TPE beats seed +1.5%; very stable optimum at eta=0.30-0.39 |
+| diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 RUNNING iter-19** | **0.1071** SSIM 0.4847 (iter-9 — eta=7.21, fbp, clamp=True, warmup=40; iter-16-18 hr=0.088-0.091 all below iter-9; iter-15 eta=1.28 hr=0.0270 confirms low-eta fails) | CON v2 optimum at mid-eta=7-11; TPE confirms |
 | diff_recon DCstep CON v4   | 0.0981 (iter-1) | 762936 PENDING (QOS=4 cap) | — | queued behind NAF |
 
 **TPE convergence (iters 2-13):** Startup random (iters 2-5) regressed to hr 0.04-0.20. **Prior-conditioned phase (iter-6+) found a new optimum corner BELOW the agentic search range:** `eta ≈ 0.30-0.40` (vs agentic explore range 1-30) for both UNCON priors. Iter-12/13 refined the optimum further:
