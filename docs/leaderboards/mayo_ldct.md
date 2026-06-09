@@ -165,7 +165,7 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 COMPLETE 20/20** | **0.2352 FINAL** SSIM 0.5487 (iter-12/16 tied — eta=0.31, **noise**, clamp=False, sample_steps=500, every=5, warmup=10, relax=0.95; iter-20 eta=4.1 noise hr=0.1191) | **FINAL.** TPE beats seed +7%; eta=0.31 corner reproducible across iter-12 and iter-16 |
 | diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 COMPLETE 20/20** | **0.2377 FINAL** SSIM 0.5169 (iter-13 — eta=0.30, fbp, clamp=True; iter-20 eta=0.63 hr=0.1557) | **FINAL.** TPE beats seed +1.5%; very stable optimum at eta=0.30-0.39 |
 | diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 COMPLETE 20/20** | **0.1071 FINAL** SSIM 0.4847 (iter-9 — eta=7.21, fbp, clamp=True, warmup=40; iter-20 eta=20.7 hr=0.0556 high-eta fails) | **FINAL.** CON v2 optimum at mid-eta=7-11 with fbp init |
-| diff_recon DCstep CON v4   | 0.0981 (iter-1) | **762936 RUNNING iter-8** | **0.1632** SSIM 0.5134 (iter-4 — eta=1.52, fbp, clamp=True, sample_steps=200, every=3, n_cg=20, warmup=25, relax=0.85; iter-6 eta=1.10 hr=0.1613 confirms corner; iter-5/7 high-eta hr=0.0555/0.0524 fail) | TPE +66% over seed; **CON v4 mirrors UNCON v4 path** (low-eta=1-2 + fbp + clamp=True). iter-8 (eta=0.34, UNCON v4 corner) about to fire — possible new best. |
+| diff_recon DCstep CON v4   | 0.0981 (iter-1) | **762936 RUNNING iter-11** | **0.1632** SSIM 0.5134 (iter-4 — eta=1.52, fbp, clamp=True, sample_steps=200, every=3, n_cg=20, warmup=25, relax=0.85; iter-6 eta=1.10 hr=0.1613, iter-10 eta=1.03 hr=0.1606 — **eta≈1 corner reproducible**; iter-8 eta=0.34 hr=0.1550 surprise — too low!) | **CON v4 optimum at eta=1.0-1.5** (NOT the low-eta UNCON v4 corner). Mid-eta still beats low-eta for CON mode on the v4 prior, similar to CON v2 (eta=7-11) but at a lower setting. |
 | diff_recon DCstep CON v4   | 0.0981 (iter-1) | 762936 PENDING (QOS=4 cap) | — | queued behind NAF |
 
 **TPE convergence (iters 2-13):** Startup random (iters 2-5) regressed to hr 0.04-0.20. **Prior-conditioned phase (iter-6+) found a new optimum corner BELOW the agentic search range:** `eta ≈ 0.30-0.40` (vs agentic explore range 1-30) for both UNCON priors. Iter-12/13 refined the optimum further:
@@ -174,6 +174,16 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 - CON v2: seed 0.1068 → iter-9 0.1071 (eta=7.21, mid-eta corner; low-eta confirmed bad for CON in iter-15)
 
 **Init/clamp split between DDPM priors:** UNCON v2 prefers `noise + clamp=False`, UNCON v4 prefers `fbp + clamp=True`. Likely because v4 (ch=96, batch=2, 120 ep) has higher capacity but slower mixing → wants a deterministic anchor; v2 (ch=64, batch=2, 60 ep) has more "noise tolerance" and benefits from a randomised init at this low eta regime.
+
+**Mode (UNCON vs CON) × prior (v2 vs v4) sweep summary:**
+| Mode × prior | Optimum eta | Init | Clamp | hr | Note |
+|---|---:|---|---|---:|---|
+| UNCON v2 | **0.31** | noise | False | 0.2352 | very-low-eta corner |
+| UNCON v4 | **0.30** | fbp | True | 0.2377 | very-low-eta corner |
+| CON v2 | **7.21** | fbp | True | 0.1071 | mid-eta corner |
+| CON v4 | **1.5** *(running)* | fbp | True | 0.1632 | low-mid-eta corner (NOT 0.3!) |
+
+Both UNCON modes converge at very-low-eta (≈0.3). CON modes prefer higher eta — CON v2 at mid-eta=7-11, CON v4 at low-mid-eta=1-1.5. Constrained training drives the DPS toward sharper noise schedules than unconstrained.
 
 **Mechanism:** at eta<0.5, the DPS noise injection becomes essentially deterministic (or near-clamped) — DPS reduces to mostly CG-based data consistency with mild diffusion prior. This regime had been unexplored by the agentic loop (which clamped eta≥1 based on breast-CT priors).
 
