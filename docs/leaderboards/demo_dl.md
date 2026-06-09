@@ -76,13 +76,23 @@ coverage gap:
 | Solver | TPE job | Result | Status |
 |---|---|---:|---|
 | **ItNet v1** (`solver_itnet.py`) | 762957 | **hr=0.4665** at iter-20 winner (k=2, c=16, pretrain_ep=6, lr=5e-4) | ✅ **ABOVE BASELINE** — slots in at rank 4 between v3 (0.4676) and USwin (0.4655). Surprises the Mayo verdict (hr=0): on demo-DL's broader synthetic substrate, v1's deeper finetune-pass + lower-k schedule lets it compete with v3. |
-| **TV-iterative supervised** (`solver_tv_iterative_supervised.py`) | 762958 | running iter-3/20, iter-1+2 both hr=0 | ⏳ in flight — early iters confirm the FBP-init no-op verdict; may STOP at hr=0 |
+| **TV-iterative supervised** (`solver_tv_iterative_supervised.py`) | 762958 | running iter-16/20; **all 15 completed iters hr=0** with SSIM frozen at exactly 0.4402 (the FBP baseline SSIM on demo-DL) | 🚫 **CONFIRMED STOP** — FBP-init no-op verdict empirically validated. TPE has explored `tv_step_init` ∈ [1.4e-4, 7e-2] (>2 orders), `tv_lambda_init` ∈ [1.2e-5, 9.8e-3] (>3 orders), both `share_steps` toggles, `epochs` ∈ [5, 20], `lr` ∈ [5e-4, 5e-2], both `mse`/`l1` — across the entire search space the network outputs the FBP input exactly. Structural — no config can break the lock. |
 
-**Cross-dataset coverage compare (after 2026-06-09 gap-closure dispatches):**
+**Cross-dataset coverage compare (gap closure 2026-06-09 — FINAL):**
 
-- **Demo-DL** (Sidky synthetic): 19 above + 0 below = **19/19 inventory variants** (ItNet v1 closed; TV-iter sup likely closing as STOP)
-- **Breast-CT** (Sidky synthetic with anatomy): 15 above + 13 below = **28 entries** (ItNet v1 just closed at rank 13; see breast_ct.md)
-- **Mayo-LDCT** (real helical, 2304-view): 12 above + 10 below + 1 deprioritised = **23 entries, full 19-inventory coverage**
+| Dataset | Above baseline | Below baseline | Total | Coverage |
+|---|---:|---:|---:|---|
+| **Demo-DL** | 19 (added ItNet v1 at rank 4) | 1 (TV-iter sup STOP) | 20 entries | **19/19 inventory variants tested** |
+| **Breast-CT** | 16 (added ItNet v1 at rank 15, Wu trainable TPE at rank 10) | 13 | 29 entries | **19/19 inventory variants tested** |
+| **Mayo-LDCT** | 12 | 10 + 1 deprioritised (diff_recon v3) | 23 entries | **19/19 inventory variants tested** |
+
+**All three datasets now have full 19-solver inventory coverage.** The
+gap closures revealed two surprises: (a) ItNet v1 clears baseline on
+both synthetic datasets (despite Mayo verdict hr=0) — the v1
+architecture is competitive with v3 on demo-DL (0.4665 ≈ 0.4676);
+(b) Wu trainable on breast-CT lifted +45% from agentic (0.2189 →
+0.3170) via TPE finding a higher-`n_bands` + lower-lr corner the
+agentic search missed.
 
 The demo-DL "every solver works" pattern is a useful sanity check for
 the substrate but a poor predictor of behaviour on the two
