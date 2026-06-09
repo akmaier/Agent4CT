@@ -51,11 +51,13 @@ pretrained checkpoint loaded without finetuning.
 | 13 | Wu 2015 trainable | n_bands=4, n_outer=2, range=5, ep=10, lr=1e-3, train_n=400 | 0.000 | 0.9691 | 0.2189 | [results](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/results.tsv) | [iter-2](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/iterations/iter-0002/comparison.png) |
 | 14 | Wu 2015 (non-trainable) | n_bands=4, n_outer=1, range=8, thresh=1.1e-3, train_n=0 | 0.000 | 0.9699 | 0.0425 | [results](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-16](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/iterations/iter-0016/comparison.png) |
 
-## Structural deal-breakers (`hr = 0`)
+## Below-baseline inventory (`hr = 0`, structural STOPs)
 
-These solvers were **TPE-tuned but never reach above the FBP baseline**
-under the calibrated metric. Listed for transparency — they are not
-"just under the threshold", they are structurally bounded.
+13 solver variants tested on breast-CT remain at `hr = 0` under the
+calibrated metric — listed below for completeness alongside the
+14-rank above-baseline table. These solvers were **TPE-tuned but never
+reach above the FBP baseline** — they are not "just under the
+threshold", they are structurally bounded.
 
 | Solver | Variant | params (M) | SSIM | hr | Source | Comparison |
 |---|---|---:|---:|---:|---|---|

@@ -60,6 +60,21 @@ trainable parameters in millions; `0` = non-trainable hand-tuned solver;
 | 17 | Wu 2015 (non-trainable) | n_bands=8, n_outer=1, range=3, thresh=1.2e-3, train_n=0 | 0.000 | 0.5495 | 0.2295 | [results](../runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-18](../runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/iterations/iter-0018/comparison.png) |
 | 18 | **Wu 2015 trainable** | ep=17, lr=1.9e-3, n_bands=6, n_outer=1, l1 loss, train_n=400 | 0.000 | 0.5713 | 0.2288 | [results](../runs/demo-intensity-calibrated-tpe-wu-2015-trainable-search-20260601-01/results.tsv) | [iter-16](../runs/demo-intensity-calibrated-tpe-wu-2015-trainable-search-20260601-01/iterations/iter-0016/comparison.png) |
 
+## Below-baseline inventory (`hr = 0`, structural STOPs)
+
+**None.** All 18 tested solver variants reach above the calibrated FBP
+baseline on demo-DL — the synthetic Sidky-style 128-view ellipse
+substrate is broad enough that every learned and non-learned solver
+finds *some* working corner. Compare with:
+
+- **Breast-CT** (128-view, more complex anatomy): 14 above + 13 below baseline
+- **Mayo-LDCT** (real helical, 2304-view): 12 above + 10 below baseline
+
+The demo-DL "every solver works" pattern is a useful sanity check for
+the substrate but a poor predictor of behaviour on the two
+realistic-data benchmarks — see [`solver_plan.md`](../../solver_plan.md)
+Step 1 for the cross-dataset transfer record.
+
 ## Constrained vs. unconstrained DDPM (Step 4 of solver_plan.md)
 
 The Demo-DL DDPM was trained two ways:

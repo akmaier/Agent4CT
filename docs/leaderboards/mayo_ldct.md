@@ -140,29 +140,44 @@ Non-trainable solvers reconstruct each val slab without any learnable parameters
 
 The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 when only the 3 sharpest L014 slabs are scored, and ≈12.59 with the broader val_n=5 set. All hr values reported throughout this leaderboard subtract the SAME-val_n baseline used for that solver's run.
 
-### Structural deal-breakers + plateaued (filed 2026-06-03)
+### Below-baseline inventory (`hr = 0`, structural STOPs)
 
-| Solver | Final state | Why deprioritised |
+These 10 solver variants were tested on Mayo and remained at `hr = 0`
+under the calibrated metric — they are below the FBP baseline regardless
+of further tuning. Listed for completeness alongside the 12-rank
+above-baseline table:
+
+| Solver | Variant | params (M) | SSIM | hr | Why it fails on Mayo |
+|---|---|---:|---:|---:|---|
+| **DD-BF supervised L2** | proj/img_n_bf=3, ep=3 (iter-3 winner) | 0.000018 | 0.485 | **0** | 18-param BF too low-capacity; breast-CT hr=0.26 variant doesn't transfer to Mayo's wider μ-range. |
+| **DD-UNet N2I** | c=16, ep=3 (iter-1) | 0.466 | 0.46 | **0** | N2I supervision floor reached by ep-1; PSNR 12.52 < baseline 12.59. Supervised L2 variant (rank 1) is the right DD-UNet for Mayo. |
+| **ItNet v1** *(post-patch retry)* | k=2, c=16, ep=6 (iter-3) | — | 0.249 | **0** | Low-capacity ceiling. Only v3 (deeper UNet + per-step α) clears baseline on Mayo. |
+| **ItNet v2** *(post-patch retry)* | k=2, c=16, ep=6 (iter-3) | — | 0.264 | **0** | Same low-capacity ceiling as v1; v2 architecture sits below baseline on Mayo regardless of training budget. |
+| **Hammernik 2017** | T=3, λ-clamp, ep=3 (iter-1) | 0.004 | 0.27 | **0** | Per-step λ stuck within 0.8% of init; recon biased darker than baseline (PSNR 11.55 < 12.59). |
+| **TV-iterative supervised** | K=10–30, step=1e-4, λ=1e-5 (iter-1) | 0.0001 | 0.30 | **0** | FBP-init + smooth-TV makes the 1st GD step ≈ no-op; step/λ scalars never get a useful gradient. |
+| **Wu 2015 trainable** | n_bands=4, ep=6, range=5 (iter-2) | 0.000010 | 0.34 | **0** | 10 trainable scalars hit low-capacity ceiling at SSIM≈0.34 (PSNR 12.37); blend moves 0.97→0.74 but image quality stays flat. |
+| **Wu 2015 non-trainable** | n_bands=8, range=5, soft_thresh=1.5e-3 (iter-2) | 0 | 0.357 | **0** | Same 10-filter-coeff ceiling as the trainable variant; closed-form ⇏ better than tuned. |
+| **RAM zero-shot** | pretrained ram.pth.tar, σ=0.075, blend=0.42 (iter-3) | 35.6 *(frozen)* | 0.48 | **0** | PSNR 12.45 < baseline 12.59; natural-image prior can't bridge to Mayo μ-range. |
+| **R²-Gaussian** | gs_n_iter=3000, FBP-init, train_n=2 (iter-1 timeout) | 0.003 | — | **0** | Per-scene fit at Mayo's 2304-angle × 512² scenes exceeds 30-min sbatch wall; structurally too expensive for the agentic loop budget. |
+
+**Plus 1 deprioritised checkpoint variant:**
+- **diff_recon v3** (ch=96, batch=1, 60 ep) — UNCON best 0.0641, CON best 0.0686. Both ⅓ of the corresponding v2/v4 ckpts. The v3 ckpt's `batch=1, 60 ep` schedule yielded ¼ the effective training of v2's `batch=2, 60 ep` (half the batch at 2.25× params). v4 (ch=96, batch=2, 120 ep — the fix proposed in v3's verdict) lands at ranks 4 and 7.
+
+**Above-baseline plateau notes (these solvers ARE in the rank table; included here as TPE/Step-2 verdicts):**
+
+| Solver | State | Note |
 |---|---|---|
-| **DD-BF supervised L2** | iter-3 hr=0 (2 consecutive hr=0) | Loss stuck — 18-parameter BF too low-capacity for Mayo. The breast-CT hr=0.26 variant cannot transfer. |
-| **RAM zero-shot (pretrained)** | iter-3 hr=0 (3 consecutive hr=0) | SSIM crept 0.40→0.48 but PSNR ceiling 12.45 < baseline 12.59. `ram.pth.tar` (natural images) cannot bridge to Mayo μ-range. |
-| **Learned Primal-Dual** | iter-3 winner hr=**0.2445**; iter-4/5 regressed (loss explosion at hidden=64 + lpd_iters=6) | Capacity scaling exhausted. Both width-up and depth-up broke the loss landscape at train_n=100. iter-3 stays — Step 3 TPE next. |
-| **DD-UNet supervised L2** | iter-3 winner hr=**0.1337**; iter-4/5 regressed (c=32 and ep=6 both worse) | Plateaued at c=24, ep=3. iter-3 stays — Step 3 TPE next. |
-| **USwin** | iter-2 winner hr=**0.1425**; iter-3/4 OOMed, iter-5 (ep=6) regressed to 0.107 | Plateaued at c=16, win=8, ep=3, train_n=50. iter-2 stays — Step 3 TPE next. |
-| **ITNet v3** | iter-1+2 both OOM (FBP inside the unrolled body at 5 GB even with train_n=50). **Resolved 2026-06-08** by cfg-patch (commit `eae661bc`) — the OOM was because solver_itnet_v3.py was silently dropping the agentic JSON cfg and using hardcoded `itnet_k=5` defaults; with `itnet_k=2` actually honored, the retry landed at hr=**0.1036** (rank 5). | Cfg-merge bug filed + patched; v3 is now a working rank entry. |
-| **Hammernik VN** *(Step-2 STOP, **OVERTURNED 2026-06-08 by Step-3 TPE 762926** at iter-6 hr=0.0551 — now a positive Mayo solver, see rank table)* | iter-2/3 hr=0 in Step-2 agentic loop, SSIM 0.27→0.29; **Step-3 TPE found a working corner at vn_T=5, vn_n_filters=16, vn_kernel=11, vn_λ_init=2.3e-3, ep=12, lr=2.6e-4 (hr=0.0551 — beats TV-iter on Step-2 ranking)** | Step-2 Mayo-specific clamp's `vn_n_filters` and `vn_lambda_init` were never explored in the agentic search; TPE finds them. **Lesson:** when an agentic loop files 2-consecutive-hr=0 plateau on a low-complexity learned solver (here 12k params), TPE on a wider search space still has a chance — the agentic loop's neighbourhood random walk can miss isolated working corners. |
-| **TV-iterative supervised** | iter-1 hr=0 SSIM 0.30 (loss STUCK at 0.001, step/λ scalars stuck at init) | Same structural verdict as breast-CT: FBP init makes 1st GD step a no-op (data-fidelity gradient ≈ 0 at FBP), so step/λ scalars never get a useful gradient. |
-| **Wu 2015 trainable** | iter-1 hr=0 SSIM 0.34, iter-2 hr=0 SSIM 0.34 (ep 3→6, no improvement) | Loss converged at 0.00013 by ep-1; the 10 trainable scalars *do* move (blend 0.97→0.74) but final SSIM stays at 0.34. The 10-param image-domain BF-like solver hits the same low-capacity ceiling here as it did on breast-CT (which got hr=0.22 only because that dataset has a much narrower dynamic range). |
-| **ITNet v2** | iter-1 OOM in `filter_sino`; **resolved 2026-06-08** by cfg-patch (commit `eae661bc`). Retry iter-2 (k=2, c=16, train_n=50, ep=3) hr=0 SSIM 0.268 PSNR 10.21; iter-3 (ep 3→6, pretrain 2→4) hr=0 SSIM 0.264 — slightly worse. 2 consecutive hr=0 → **plateau filed**. | v2 architecture sits below baseline on Mayo regardless of training budget. Same low-capacity ceiling that affects v1. |
-| **ITNet v1** | iter-1 OOM (same root cause as v2; solver_itnet.py had NO env-read). **Resolved 2026-06-08** by cfg-patch. Retry iter-2 hr=0 SSIM 0.256; iter-3 (ep 3→6) hr=0 SSIM 0.249 — slightly worse. 2 consecutive hr=0 → **plateau filed**. | Same low-capacity ceiling as v2; the v3 architecture (deeper UNet + per-step α) is the only ItNet that lifts above baseline on Mayo. |
-| **Hammernik 2017** | iter-1 hr=0 SSIM 0.27, PSNR 11.55 < baseline 12.59 (λ_t stuck within 0.8 % of init) | Same Hammernik family failure as VN: the per-step λ regulariser barely budges over 3 epochs and the final recon is biased darker than baseline. Sino-complexity ceiling, not a config knob away from working. |
-| **DD-UNet N2I** | iter-1 hr=0 SSIM 0.46, PSNR 12.52 < baseline 12.59 (loss 0.00001 from epoch 1) | Same N2I noise-floor over-smoothing as breast-CT: loss is already at the N2I supervision floor by ep-1, so the network has nowhere to climb. Supervised L2 (rank 3, hr=0.13) is the right DD-UNet variant for Mayo. |
-| **DD-BF N2I** | iter-1 hr=0.0047, iter-2 (ep 3→6) hr=0.0035 — Δhr = −0.0012 (plateau) | The 18 BF scalars kept moving (σ_y 1.973→1.953 from ep-3 to ep-6) but val SSIM stayed flat at 0.485 and hr actually slipped. iter-1 stays as rank 5; cap is structural (18 trainable params can't beat the FBP baseline by more than the noise floor). |
-| **R²-Gaussian** | iter-1 TIMEOUT at 30 min (per-scene fit takes longer than the autoresearch sbatch wall allows) | gs_n_iter=3000 + FBP² init at train_n=2, val_n=2 still didn't complete a single per-scene fit within the 30-min cluster_guide §4.6 budget. Same breast-CT structural verdict applies — R²-Gaussian's per-scene optimisation is too expensive for the autoresearch loop on Mayo's 2304-angle, 512² scenes. Would need a TPE-scale 4-h job to test seriously. |
-| **NAF** plateau verdict | iter-1 hr=**0.0202** (the rank-4 entry); iter-4 (naf_n_iter 2000 → 3000 at val_n=5) regressed to hr=0.0010, SSIM 0.5395 → 0.4843 | NAF **overshoots** beyond 2000 iters on Mayo: the implicit-field MLP starts hallucinating high-frequency detail that does not match the truth slab, pulling SSIM down by ~5.5 pts. iter-1's `naf_n_iter=2000` is the optimum. iter-1 stays as rank 4 — Step 3 TPE would need to bracket below 2000 iters, not above. |
-| **diff_recon v3 (ch=96 prior)** | UNCON best iter-3 hr=0.0641 (eta=30); CON best iter-1 hr=0.0686 (eta=10). All v3 results sit at ⅓ of the corresponding v2 ckpt. | Bigger ≠ better here: the v3 ckpt (8.594 M params, 60 ep at batch=1) is structurally weaker than v2 (3.823 M params, 60 ep at batch=2) for DPS posterior sampling. Root cause is likely insufficient gradient updates per parameter (half the batch size at 2.25× the params ⇒ ¼ the effective training). A v4 attempt should pair ch=96 with batch=2 (likely OOMs on Q6000) or train ch=96 for 120+ epochs. For now the v2 ckpts stay as the rank-2/rank-5 priors. |
-| **ItNet v1** | iter-1 OOM in `filter_sino` (2.53 GiB FFT pad) | Same cfg-merge bug as v2: `solver_itnet.py` ignores the agentic JSON cfg and uses hardcoded `train_n=400`, `val_n=100`, `itnet_k=5`. Two unrelated solvers (v1 and v2) have the same defect; the fix is structural (read `CFG_JSON` env like solver_itnet_v3.py does). Cannot retry on Mayo without a code patch. |
-| **Wu 2015 non-trainable** | iter-1 (n_bands=4) hr=0 SSIM 0.350; iter-2 (n_bands=8) hr=0 SSIM 0.357 — 2 consecutive hr=0, **plateau confirmed** | Closed-form filter-band modulation matches the trainable variant's ceiling at SSIM≈0.35 / PSNR≈12.37; doubling `n_bands` only inched SSIM +0.007. The 10 filter coefficients (frozen or trained) cannot reach Mayo's dynamic range. Same structural verdict as the trainable variant. |
+| **DD-BF N2I** *(rank 12)* | Step-2 iter-1 hr=0.0047, iter-2 (ep 3→6) hr=0.0035 plateau | 18 BF scalars can't beat baseline by more than the noise floor. Phase-2 TPE 762925 STOP'd on hardcoded `R_full.fbp(val_clean)` OOM (solver-side patch needed for chunked FBP). |
+| **NAF** *(rank 11)* | Step-2 iter-1 hr=**0.0202**; Step-3 TPE 762923 found hr=0.0131 (worse — overshoot at n_freqs≥12). | Step-2 stays as the rank entry; TPE iter-7 (n_freqs=8/hidden=192/layers=4) was the working corner but TPE never revisited it. |
+| **diff_recon v3 (Mayo, ch=96 batch=1)** | Plateau at hr=0.064–0.069 across 6 v3 iters. | Superseded by v4 (ch=96 batch=2 ep=120) at ranks 4/7. |
+
+**Step-3 TPE plateau-resolution log (per-solver verdicts kept for the cross-dataset transfer record):**
+- **LPD**: Step-2 iter-3 hr=0.2445 plateaued; **Step-3 TPE 0.3063** (lpd_iters=2, hidden=48, ep=12).
+- **DD-UNet supervised L2**: Step-2 iter-3 hr=0.1337 plateaued; **Step-3 TPE 0.3890** (TPE iter-12 winner).
+- **USwin**: Step-2 iter-2 hr=0.1425 plateaued; **Step-3 TPE 0.2492** (TPE iter-11 winner, search-space-clamped).
+- **ItNet v3**: Step-2 iter-5 hr=0.1336 plateaued; **Step-3 TPE 0.2181** (iter-9, k=3, c=16 with the cfg-patch eae661bc that fixed the silent-drop bug in solver_itnet*.py).
+- **Hammernik VN**: Step-2 2-consecutive-hr=0 STOP **OVERTURNED** by Step-3 TPE 762926 — final hr=**0.0551** at vn_T=5, vn_n_filters=16, vn_kernel=11, vn_λ_init=2.3e-3, ep=12, lr=2.6e-4. **Lesson: TPE on a wider search space can rescue agentic-loop hr=0 plateaus on low-complexity learned solvers.**
+- **diff_recon UNCON v2/v4 + CON v2/v4**: Step-3 TPE phase 3 lifted all 4 by +12–66% vs Step-2 val_n=3 baselines via discovering eta=0.30 (UNCON) and eta=1.5–7 (CON) corners — see mode×prior summary above.
 
 ### Known infrastructure cap: Mayo FBP requires train_n ≤ 50 (Q6000, 24 GB)
 
