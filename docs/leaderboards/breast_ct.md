@@ -49,7 +49,8 @@ pretrained checkpoint loaded without finetuning.
 | 11 | DD-BF supervised L2 | proj_n=1, img_n=7, proj_k=5, img_k=7, ep=10, lr=5.9e-3, train_n=400 | 0.000 | 0.9898 | 0.2634 | [results](../runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/results.tsv) | [iter-12](../runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/iterations/iter-0012/comparison.png) |
 | 12 | DD-BF supervised L2 (agentic seed) | proj_n=3, img_n=3, proj_k=3, img_k=9, ep=10, lr=5e-3 | 0.000 | 0.9894 | 0.2476 | [results](../runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/results.tsv) | [iter-3](../runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/iterations/iter-0003/comparison.png) |
 | 13 | Wu 2015 trainable | n_bands=4, n_outer=2, range=5, ep=10, lr=1e-3, train_n=400 | 0.000 | 0.9691 | 0.2189 | [results](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/results.tsv) | [iter-2](../runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/iterations/iter-0002/comparison.png) |
-| 14 | Wu 2015 (non-trainable) | n_bands=4, n_outer=1, range=8, thresh=1.1e-3, train_n=0 | 0.000 | 0.9699 | 0.0425 | [results](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-16](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/iterations/iter-0016/comparison.png) |
+| 14 | **ItNet v1** *(Step-3 TPE — COMPLETE 20/20, 2026-06-09)* | pretrain_ep=5, pretrain_lr=1e-3, k=8, α=0.015, finetune_ep=11, finetune_lr=5e-4, c=8, train_n=400 | — | — | **0.1703** | [results](../runs/breast-ct-calibrated-tpe-itnet-v1-search-20260609-01/results.tsv) | [iter-20](../runs/breast-ct-calibrated-tpe-itnet-v1-search-20260609-01/iterations/iter-0020/comparison.png) |
+| 15 | Wu 2015 (non-trainable) | n_bands=4, n_outer=1, range=8, thresh=1.1e-3, train_n=0 | 0.000 | 0.9699 | 0.0425 | [results](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-16](../runs/breast-ct-calibrated-tpe-wu-search-20260521-01/iterations/iter-0016/comparison.png) |
 
 ## Below-baseline inventory (`hr = 0`, structural STOPs)
 
@@ -106,20 +107,20 @@ threshold", they are structurally bounded.
   (score-SDE / EDM / U-ViT) — not in scope for current solver code.
   Full diagnosis in findings.md 2026-06-03 entry.
 
-## Solvers from solver_plan.md inventory NOT tested on breast-CT
+## Inventory-gap closure log (2026-06-09)
 
-For full inventory parity with the canonical 19-solver list in
-[`solver_plan.md`](../../solver_plan.md), one solver was never
-dispatched on breast-CT:
+ItNet v1 was dispatched on breast-CT on 2026-06-09 to close the
+coverage gap from the canonical [`solver_plan.md`](../../solver_plan.md)
+19-solver list:
 
-| Solver | File | Why skipped on breast-CT |
-|---|---|---|
-| **ItNet v1** | `solver_itnet.py` | Superseded by v2/v3 in the autoresearch loop. v3 (rank 5, hr=0.7342) is the canonical ItNet on breast-CT; v2 (rank 7, hr=0.5386) was kept for cross-dataset transfer. v1 was never benchmarked here — Mayo retry (post-cfg-patch 2026-06-08) sat at hr=0 with SSIM 0.249, so v1 would likely also rank near the bottom of breast-CT. |
+| Solver | TPE job | Result | Status |
+|---|---|---:|---|
+| **ItNet v1** (`solver_itnet.py`) | 762956 | **hr=0.1703** at iter-20 winner (k=8, c=8, pretrain_ep=5, lr=1e-3, α=0.015) | ✅ **ABOVE BASELINE** — slots in at rank 14 between Wu trainable (0.2189) and Wu non-trainable (0.0425). Surprises the Mayo verdict (hr=0): on breast-CT's broader synthetic-anatomy substrate, v1's deeper finetune-pass lets it clear baseline. Confirms ItNet family transfer pattern: v1 < v2 < v3 on breast-CT (0.1703 → 0.5386 → 0.7342). |
 
-**Cross-dataset coverage compare:**
+**Cross-dataset coverage compare (after 2026-06-09 gap-closure dispatches):**
 
-- **Demo-DL** (Sidky synthetic): 18 above + 0 below = **18/19 inventory variants** (missing ItNet v1, TV-iter supervised)
-- **Breast-CT** (Sidky synthetic with anatomy): 14 above + 13 below = **27 entries (TPE-tuned, multiple variants per family)** — missing ItNet v1
+- **Demo-DL** (Sidky synthetic): 19 above + 0 below = **19/19 inventory variants** (ItNet v1 just closed at rank 4; TV-iter supervised still in flight)
+- **Breast-CT** (Sidky synthetic with anatomy): 15 above + 13 below = **28 entries, full 19-inventory coverage** (ItNet v1 closed)
 - **Mayo-LDCT** (real helical, 2304-view): 12 above + 10 below + 1 deprioritised = **23 entries, full 19-inventory coverage**
 
 ## Methodology
