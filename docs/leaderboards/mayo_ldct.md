@@ -17,7 +17,36 @@ Test:  L014, L056, L058, L075, L123 (5 patients)
 
 ## Status
 
-**Geometry calibration complete (2026-05-26); solver autoresearch pending.**
+**Step-3 TPE refinement CLOSED 2026-06-09** — all 5 phase-3 TPEs completed (1 day, ~70 GPU-h). Top of Mayo leaderboard:
+
+```
+Rank 1  DD-UNet sup TPE       hr=0.3890   (Step-3 phase 1)
+Rank 2  Learned Primal-Dual TPE     0.3063   (Step-3 phase 1)
+Rank 3  USwin TPE                   0.2492   (Step-3 phase 1)
+Rank 4  diff_recon UNCON v4 TPE     0.2377   (Step-3 phase 3, eta=0.30 fbp)
+Rank 5  diff_recon UNCON v2 TPE     0.2352   (Step-3 phase 3, eta=0.31 noise)
+Rank 6  ItNet v3 TPE                0.2181   (Step-3 phase 1)
+Rank 7  diff_recon CON v4 TPE       0.1632   (Step-3 phase 3, eta=1.5 fbp)
+Rank 8  diff_recon CON v2 TPE       0.1071   (Step-3 phase 3, eta=7.2 fbp)
+Rank 9  TV-iterative (non-trainable) 0.0557  (Step-2 agentic)
+Rank 10 Hammernik VN TPE            0.0551   (Step-3 phase 2 — OVERTURNED Step-2 STOP)
+Rank 11 NAF                         0.0202   (Step-2; TPE found 0.0131 worse)
+Rank 12 DD-BF N2I                   0.0047   (Step-2)
+```
+
+**12 ranks above baseline / 15 inventory.** 3 structural STOPs remain (DD-BF L2, RAM zero-shot, R²-Gaussian — all blocked by solver-side issues, not config knobs).
+
+**Mode × prior eta-corner discovery from phase 3 TPE:**
+| Mode × DDPM | Optimum cfg | hr (val_n=5) | Notes |
+|---|---|---:|---|
+| UNCON v2 | eta=0.31, **noise**, clamp=False, steps=500 | 0.2352 | very-low-eta corner; agentic missed this regime |
+| UNCON v4 | eta=0.30, **fbp**, clamp=True, steps=200 | 0.2377 | same low-eta but anchored init |
+| CON v2 | eta=7.21, fbp, clamp=True, warmup=40 | 0.1071 | mid-eta corner |
+| CON v4 | eta=1.5, fbp, clamp=True, warmup=25 | 0.1632 | between v2's mid-eta and UNCON's low-eta |
+
+**UNCON converges at very-low eta (~0.3); CON prefers mid-eta (1.5-7).** v4 (ch=96, 120 ep) prefers fbp init in both modes; v2 (ch=64, 60 ep) accepts noise init in UNCON but needs fbp+clamp in CON. The eta<0.5 regime had been clamped out by the agentic loop (which used breast-CT eta≥1 priors); TPE found it by extending the search range to (0.3, 30) log on Mayo.
+
+**Geometry calibration complete (2026-05-26); solver autoresearch CLOSED.**
 
 The helical-to-fan rebin pipeline has been calibrated end-to-end against
 the L014 B30f reference recon. Best L014 multi-GT joint fit (10 central
@@ -87,7 +116,7 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 | 4 | **diff_recon DCstep unconstrained** (DDPM **v4** prior) *(Step-3 TPE COMPLETE 20/20)* | TPE iter-13: **eta=0.30, fbp init, clamp=True**, sample_steps=200, every=3, warmup=25 — discovered low-eta corner BELOW agentic explore range | 8.594 | 0.5169 | **0.2377** | [results](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-unconstrained-mayo-v4-search-20260608-01/results.tsv) | [iter-13](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-unconstrained-mayo-v4-search-20260608-01/iterations/iter-0013/comparison.png) |
 | 5 | **diff_recon DCstep unconstrained** (DDPM v2 prior) *(Step-3 TPE COMPLETE 20/20)* | TPE iter-12: **eta=0.31, noise init, clamp=False**, sample_steps=500, every=5, warmup=10, relax=0.95 | 3.823 | 0.5487 | **0.2352** | [results](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-unconstrained-mayo-v2-search-20260608-01/results.tsv) | [iter-12](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-unconstrained-mayo-v2-search-20260608-01/iterations/iter-0012/comparison.png) |
 | 6 | **ItNet v3** *(Step-3 TPE)* | TPE iter-9, search-space-clamped (20/20 done) | — | — | **0.2181** | [results](../runs/mayo-ldct-2d-calibrated-tpe-itnet-v3-search-20260608-04/results.tsv) | [iter-9](../runs/mayo-ldct-2d-calibrated-tpe-itnet-v3-search-20260608-04/iterations/iter-0009/comparison.png) |
-| 7 | **diff_recon DCstep constrained** (DDPM **v4** prior) *(Step-3 TPE RUNNING iter-5)* | TPE iter-4: eta=1.52, fbp init, clamp=True, sample_steps=200, every=3, n_cg=20, warmup=25, relax=0.85 (provisional — climbing) | 8.594 | 0.5134 | **0.1632** *(running)* | [results](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v4-search-20260608-01/results.tsv) | [iter-4](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v4-search-20260608-01/iterations/iter-0004/comparison.png) |
+| 7 | **diff_recon DCstep constrained** (DDPM **v4** prior) *(Step-3 TPE COMPLETE 20/20)* | TPE iter-4: eta=1.52, fbp init, clamp=True, sample_steps=200, every=3, n_cg=20, warmup=25, relax=0.85 | 8.594 | 0.5134 | **0.1632** | [results](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v4-search-20260608-01/results.tsv) | [iter-4](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v4-search-20260608-01/iterations/iter-0004/comparison.png) |
 | 8 | **diff_recon DCstep constrained** (DDPM v2 prior) *(Step-3 TPE COMPLETE 20/20)* | TPE iter-9: eta=7.21, fbp init, clamp=True, warmup=40 (CON v2 prefers mid-eta unlike UNCON) | 3.823 | 0.4847 | **0.1071** | [results](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v2-search-20260608-01/results.tsv) | [iter-9](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v2-search-20260608-01/iterations/iter-0009/comparison.png) |
 | 9 | **TV-iterative** (non-trainable) | tv_iterations=12800, tv_lambda=0.01, tv_step=0.5 (iter-8) | 0 | 0.5439 | **0.0557** | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/results.tsv) | [iter-8](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0008/comparison.png) |
 | 10 | **Hammernik VN** *(Step-3 TPE — COMPLETE 20/20, overturns Step-2 STOP)* | TPE iter-6 cfg: vn_T=5, vn_n_filters=16, vn_kernel=11, vn_λ_init=2.3e-3, ep=12, lr=2.6e-4 | 0.012 | 0.4087 | **0.0551** | [results](../runs/mayo-ldct-2d-calibrated-tpe-hammernik-vn-search-20260608-01/results.tsv) | [iter-6](../runs/mayo-ldct-2d-calibrated-tpe-hammernik-vn-search-20260608-01/iterations/iter-0006/comparison.png) |
@@ -165,7 +194,7 @@ The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 w
 | diff_recon DCstep UNCON v2 | 0.2095 (iter-6) | **762934 COMPLETE 20/20** | **0.2352 FINAL** SSIM 0.5487 (iter-12/16 tied — eta=0.31, **noise**, clamp=False, sample_steps=500, every=5, warmup=10, relax=0.95; iter-20 eta=4.1 noise hr=0.1191) | **FINAL.** TPE beats seed +7%; eta=0.31 corner reproducible across iter-12 and iter-16 |
 | diff_recon DCstep UNCON v4 | 0.1736 (iter-2)  | **762935 COMPLETE 20/20** | **0.2377 FINAL** SSIM 0.5169 (iter-13 — eta=0.30, fbp, clamp=True; iter-20 eta=0.63 hr=0.1557) | **FINAL.** TPE beats seed +1.5%; very stable optimum at eta=0.30-0.39 |
 | diff_recon DCstep CON v2   | 0.0847 (iter-6) | **762933 COMPLETE 20/20** | **0.1071 FINAL** SSIM 0.4847 (iter-9 — eta=7.21, fbp, clamp=True, warmup=40; iter-20 eta=20.7 hr=0.0556 high-eta fails) | **FINAL.** CON v2 optimum at mid-eta=7-11 with fbp init |
-| diff_recon DCstep CON v4   | 0.0981 (iter-1) | **762936 RUNNING iter-20 (LAST)** | **0.1632** SSIM 0.5134 (iter-4 — eta=1.52, fbp, clamp=True, sample_steps=200, every=3, n_cg=20, warmup=25, relax=0.85; iter-18 eta=1.75 hr=0.1563, iter-19 eta=15.8 noise hr=0.0545 high-eta+noise fails) | **CON v4 optimum broadly stable across eta=0.55-2.0** with fbp+clamp=True. Final completing now. |
+| diff_recon DCstep CON v4   | 0.0981 (iter-1) | **762936 COMPLETE 20/20** | **0.1632 FINAL** SSIM 0.5134 (iter-4 — eta=1.52, fbp, clamp=True, sample_steps=200, every=3, n_cg=20, warmup=25, relax=0.85; iter-20 eta=4.11 hr=0.0969 confirms high-eta fails) | **FINAL.** CON v4 optimum at eta=0.55-2.0 with fbp+clamp=True. TPE +66% over Step-2 val_n=3 baseline. |
 | diff_recon DCstep CON v4   | 0.0981 (iter-1) | 762936 PENDING (QOS=4 cap) | — | queued behind NAF |
 
 **TPE convergence (iters 2-13):** Startup random (iters 2-5) regressed to hr 0.04-0.20. **Prior-conditioned phase (iter-6+) found a new optimum corner BELOW the agentic search range:** `eta ≈ 0.30-0.40` (vs agentic explore range 1-30) for both UNCON priors. Iter-12/13 refined the optimum further:
