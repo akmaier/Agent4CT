@@ -201,9 +201,33 @@ for proposing every iter after iter 1 based on what was observed.
        hypothesis ("if I do X, I expect Y because Z").
    6.  Goto 1.
 
-   STOP condition: two consecutive iters with Δhr < 0.005, OR
-                   iter-15 reached, OR a clear architectural ceiling
-                   has been demonstrated (then file as deprioritised).
+   STOP condition (REVISED 2026-06-10 after Mayo Hammernik VN / Wu
+   trainable / ItNet v1 false-STOP retroactives):
+     - HARD STOP at iter-20 (was 15).
+     - Soft "consider STOPping" if ALL of the below hold:
+        * ≥ 10 iters completed
+        * NO iter above-baseline yet (hr=0 throughout)
+        * ≥ 3 architecturally-distinct config families tried (e.g.,
+          for ItNet: lo-k+hi-c, hi-k+lo-c, with-residual vs without;
+          for VN-class: lo-T+hi-filters, hi-T+lo-filters, lo-λ_init
+          vs hi-λ_init)
+        * The explored hyperparam range covers the edges of the
+          published-paper recommendations (NOT just centroid sweeps)
+        * The agent has explicitly logged "what hypothesis would
+          still be untested" and concluded there is none.
+     - The OLD "2 consecutive hr=0 = STOP" rule is RETIRED. It
+       falsely terminated Hammernik VN on Mayo (Step-3 TPE later
+       found hr=0.0551 at vn_T=5, n_filters=16, kernel=11, λ_init=
+       2.3e-3 — corner missed by the random walk), Wu trainable on
+       breast-CT (Step-3 TPE later found hr=0.3170 at 10× lower lr
+       than agentic centroid), and ItNet v1 on demo-DL/breast-CT
+       (cleared baseline at the TPE seed trial — Mayo verdict was
+       hr=0 but synthetic datasets cleared trivially).
+     - **TPE is the recommended way to close any STOP verdict.**
+       Even structurally-bounded solvers should be retested with a
+       full 20-trial TPE (random+prior-conditioned) on the dataset
+       before filing the STOP. Configuration-space sparsity is the
+       common cause of false STOPs, not architectural ceilings.
 ```
 
 **Crucial**: control does NOT return to the user between iters. Claude
