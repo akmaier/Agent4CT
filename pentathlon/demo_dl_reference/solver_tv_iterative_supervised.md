@@ -151,3 +151,57 @@ For reference, the same supervised-L2 recipe applied to a U-Net prior
 (`solver_dual_ddomain_supervised.py`, c=32) gets hr=0.826 / PSNR 54.94
 on the same data — proving the loss is fine; the failure mode is the
 hand-crafted ∇TV prior, not the supervised-L2 training scheme.
+
+## 2026-06-09 — Cross-dataset STOP verdict (Mayo + demo-DL) confirms FBP-init no-op
+
+The breast-CT iter-3 verdict above is now confirmed structural across
+all 3 datasets. Two more dispatches in 2026-06:
+
+### Mayo (2026-06-07, agentic loop)
+
+`mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260603-01`
+iter-1: hr=0 SSIM 0.30 (loss STUCK at 0.001, step/λ scalars frozen at
+init). Same verdict as breast-CT.
+
+### Demo-DL (2026-06-09, full Optuna TPE — job 762958)
+
+Slug `demo-intensity-calibrated-tpe-tv-iterative-supervised-search-20260609-01`.
+Ran 20-trial TPE seeded from CONFIG defaults; **all 20 trials at
+hr=0 with SSIM frozen at exactly 0.4402** (the FBP baseline SSIM on
+demo-DL). TPE explored the full search space spanning multiple orders
+of magnitude on each knob:
+
+| Knob | TPE range explored |
+|---|---|
+| `tv_step_init` | 1.4e-4 to 7e-2 (>2 orders) |
+| `tv_lambda_init` | 1.2e-5 to 9.8e-3 (>3 orders) |
+| `tv_share_steps` | both True and False |
+| `epochs` | 5 to 20 |
+| `lr` | 5e-4 to 5e-2 |
+| `lambda_neg` | 0.5 to 2.0 |
+| `loss_base` | both `mse` and `l1` |
+| `grad_clip` | 0.5 to 2.0 |
+
+Across the entire space, the network outputs the FBP input exactly
+— SSIM constant at 0.4402 = the demo-DL FBP baseline. **The
+supervised L2 loss provides no gradient signal at FBP init because
+the 1st GD step on a smooth-TV gradient is ≈ no-op (∇TV at FBP-of-noisy
+is essentially the noise gradient, which the data term has already
+cancelled).** Step/λ scalars never get a useful gradient to move
+off their init.
+
+### Cross-dataset verdict (final)
+
+| Dataset | TPE/agentic best hr | Verdict |
+|---|---:|---|
+| `breast_ct` | 0 (agentic iter-1) | **STOP — structural** |
+| `demo_dl` | 0 (TPE 20/20 confirmed) | **STOP — structural, exhaustive** |
+| `mayo_ldct` | 0 (agentic iter-1) | **STOP — structural** |
+
+**Closes the inventory gap on demo-DL.** TV-iter supervised is the
+**only canonical-19 solver that lands at hr=0 on ALL 3 datasets** —
+structurally bounded by the FBP-init no-op mechanism regardless of
+hyperparams. To rescue this architecture, the init would have to be
+something OTHER than FBP-of-noisy (e.g., zero init + sparse-view
+sinogram drives the data term to do real work). That's a structural
+solver change, not a hyperparam knob.

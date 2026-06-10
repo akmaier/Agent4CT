@@ -198,3 +198,51 @@ Non-trainable `solver_wu_2015.py` (TPE-searched): hr 0.042 (best of
 So end-to-end-trainable Wu is a 5× hr improvement over hand-/
 TPE-tuned Wu, validating the machinery — but the ceiling is set by
 the algorithm's expressivity, not by the optimiser.
+
+## 2026-06-09 — breast-CT TPE +45% lift over agentic
+
+Job 762955 (slug `breast-ct-calibrated-tpe-wu-2015-trainable-search-20260609-01`)
+ran a full 20-trial Optuna TPE seeded from the agentic iter-2 winner.
+**Final best hr=0.3170** — a **+45% lift over the agentic 0.2189**.
+
+Winner cluster (TPE rediscovered the optimum 5+ times across
+iter-8/12/13/15/16, all in the hr=0.31-0.32 band):
+
+| Knob | Agentic best | TPE best | Δ |
+|---|---|---|---|
+| `wu_n_bands` | 4 | **6** | +2 (bigger filter bank) |
+| `wu_n_outer` | 2 | 2 | unchanged |
+| `wu_motion_range` | 5 | **8** | +3 (wider motion search) |
+| `wu_motion_window` | 1 | **2** | +1 |
+| `epochs` | 10 | 12-13 | +2-3 |
+| `lr` | 1e-3 | **1.1e-4** | **10× smaller** |
+| `soft_thresh` | 1e-3 | ~1e-3 | unchanged |
+| `lambda_neg` | 1.0 (default) | **0.7** | -0.3 |
+| `loss_base` | mse | mse | unchanged |
+
+**Key TPE finding**: the agentic search clamped `lr` to log(1e-4, 5e-3)
+based on early demo-DL/breast results; the working corner is at the
+BOTTOM of that range. The agentic-loop neighbourhood walk visited
+`lr=1e-3` and never re-explored toward 1e-4. **TPE's exhaustive
+exploration of the lr axis found a 10× lower-lr regime that lifts hr
+by +45%.**
+
+The structural knobs (`wu_n_bands=6`, `wu_motion_range=8`,
+`wu_motion_window=2`) also moved by +50% in TPE — bigger filter bank
++ wider motion estimation. Suggests the algorithm has more capacity
+to absorb than the agentic seed gave it.
+
+### Cross-dataset Wu 2015 trainable record (updated 2026-06-09)
+
+| Dataset | hr (best) | Source | Notes |
+|---|---:|---|---|
+| `breast_ct` | **0.3170** | TPE 762955 (2026-06-09) | **+45% over agentic.** New rank 10 on breast-CT (was rank 13). Robust cluster across 5 TPE iters. |
+| `demo_dl` | 0.2288 | TPE `demo-intensity-calibrated-tpe-wu-2015-trainable-search-20260601-01` | rank 19 on demo-DL. Wu trainable is mid-pack on the easier synthetic dataset. |
+| `mayo_ldct` | **0** | Mayo Step-2 iter-1/2 (n_bands=4, ep 3→6 plateau) | **STOP**. 10 trainable scalars hit low-capacity ceiling at SSIM≈0.34 (PSNR 12.37). Mayo's wider dynamic range can't be matched by 10 scalars. |
+
+**Lesson for the autoresearch loop**: when agentic finds an
+above-baseline plateau, ALWAYS run a TPE refinement. Even on
+"already-done" solvers, TPE consistently finds corners the agentic
+random walk missed — Wu trainable's +45% lift is now the third
+biggest TPE-vs-agentic gain logged (after DD-UNet sup Mayo +191% and
+USwin Mayo +75%).

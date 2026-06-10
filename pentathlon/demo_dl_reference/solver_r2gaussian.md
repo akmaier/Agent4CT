@@ -102,9 +102,9 @@ Per-scene optimisation: nothing transfers between scans.
 
 | Dataset | Best hr | Config | Notes |
 |---|---:|---|---|
-| `demo_dl` | 0.2999 | n_gauss=1024, n_iter=600 (TPE iter-14) | Bottom-pack on demo_dl — still beats baseline FBP modestly. |
+| `demo_dl` | **0.3455** | n_gauss=1024, n_iter=11434, lr_pos=1.7e-2 (TPE v2 iter-6) | rank 17 on demo-DL. v2 (extended iter budget 10k-40k) +15% over v1's 0.2999. |
 | `breast_ct` | **0.000** | n_gauss=1024, n_iter=600, gs_outer_wall_s=3600 | Structural mismatch — 13 dB below baseline FBP. |
-| `mayo_ldct` | — | not yet run | Likely same outcome (dense-view, real anatomy). |
+| `mayo_ldct` | **0.000** | gs_n_iter=3000, FBP² init at train_n=2, val_n=2 (iter-1 TIMEOUT) | **STOP** — per-scene fit at Mayo's 2304-angle × 512² scenes exceeds 30-min sbatch wall. Structurally too expensive for the agentic loop budget. |
 
 **Pattern**: same as NAF — Gaussian primitives can compete on `demo_dl`
 (simple ellipse phantoms) but lose on `breast_ct` and any other
@@ -125,3 +125,29 @@ family for dense-view tomography.
 All variants are **13+ dB below baseline FBP**. Confirmed structural
 mismatch; expect to stay at hr=0 at any configuration on dense-view
 breast-CT.
+
+## 2026-06-03/08 — Mayo: TIMEOUT STOP at infrastructure level
+
+Job (`mayo-ldct-claude-agentic-r2gaussian-search-20260603-01`) iter-1:
+**TIMEOUT at 30 min sbatch wall**. The per-scene Gaussian fit at
+gs_n_iter=3000 + FBP² init + train_n=2 / val_n=2 didn't complete a
+single scene within the cluster_guide §4.6 30-min budget.
+
+**Root cause**: Mayo scenes are **18× larger** than breast-CT
+(2304-angle × 512² vs 128-angle × 256²). R²-Gaussian's per-scene
+optimisation is O(n_scenes × gs_n_iter × n_views × img_area) — Mayo
+multiplies all those factors.
+
+Same breast-CT structural verdict applies: per-scene Gaussian
+primitives can't compete with a tuned FBP+denoising chain on
+dense-view data. Even if a TPE-scale 4-h job were dispatched, the
+expected hr would stay at 0 (per breast-CT's TPE verdict on 12 trials,
+all hr=0).
+
+### Cross-dataset R²-Gaussian record (final)
+
+| Dataset | hr | n_iter | wall per scene | Verdict |
+|---|---:|---:|---|---|
+| `demo_dl`   | **0.3455** | 11434 | ~15 min × 5 = 75 min | **rank 17** — extended n_iter budget clears baseline on synthetic 128-angle. |
+| `breast_ct` | 0.000 | 600-3000 | 30-60 min × 5 | **STOP** — TPE-tuned 12 trials all hr=0. |
+| `mayo_ldct` | 0.000 | DNF | exceeded 30-min wall | **STOP — infrastructure** (per-scene wall). Would need 4+ h TPE job per trial to even attempt. |

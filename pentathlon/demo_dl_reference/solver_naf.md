@@ -108,7 +108,7 @@ set, plus a per-scene wall derived from `outer / val_n`.
 |---|---:|---|---|
 | `demo_dl` | 0.4160 | naf_n_iter=2000, lr=5e-3, 5-layer 256-hidden MLP | TPE iter-19; performs ~average for the dataset (mid-pack). |
 | `breast_ct` | **0.000** | lr=1e-3, n_iter=12000 | Structural mismatch — 22 dB below baseline FBP. NAF's coordinate-MLP cannot beat a properly-tuned FBP+denoising chain on dense-view data. |
-| `mayo_ldct` | — | not yet run | Likely same outcome as breast_ct (also dense-view 2304-angle helical) |
+| `mayo_ldct` | **0.0202** | Step-2 iter-1: n_freqs=6, hidden=192, layers=5, n_iter=2000, train_n=50 | **Surprise — NAF clears Mayo baseline!** Per-scene MLP finds enough signal at 2304 angles. Step-3 TPE found a worse config (0.0131); Step-2 iter-1 stays as the rank-11 entry. |
 
 **Pattern**: NAF is competitive on `demo_dl` (simpler phantoms,
 sparse-view-like in the sense that the dataset is small) but fails on
@@ -130,3 +130,58 @@ on `demo_dl`), NAF closes the gap.
 All variants are **22+ dB below baseline FBP**. The architecture is
 the wrong fit for this data; expect this to remain true at any
 configuration.
+
+## 2026-06-08/09 — Mayo: NAF clears baseline (surprise positive)
+
+NAF surprised the breast-CT "wrong inductive bias for dense view"
+verdict on Mayo-LDCT: **iter-1 of the Mayo Step-2 agentic loop
+landed hr=0.0202** (slug `mayo-ldct-claude-agentic-naf-search-20260603-01`,
+n_freqs=6, hidden=192, layers=5, n_iter=2000, train_n=50, val_n=5,
+0.143 M params, SSIM 0.5395, PSNR 13.98 dB vs baseline 12.59 dB).
+
+The 2304-angle Mayo sino has enough redundant view coverage that the
+per-scene MLP can fit the noisy projections coherently, even though
+breast-CT's 128 dense views were too few. The dataset characteristic
+to predict NAF success refines from breast-CT verdict: it's not
+just "how good is baseline FBP" — it's **"how many independent view
+constraints per voxel"**. Mayo's 18× more angles than breast-CT means
+NAF has 18× more constraints per scene to fit, and clears baseline
+despite a low absolute SSIM.
+
+### NAF plateau verdict (Step-2)
+
+Mayo iter-2/3/4 explored deeper configs:
+- iter-2 (n_iter 2000 → 3000): hr=0.0010, SSIM dropped 0.5395 → 0.4843.
+- iter-3+: similar regressions.
+
+NAF **overshoots** beyond 2000 iters on Mayo — the implicit-field MLP
+starts hallucinating high-frequency detail that doesn't match the
+truth slab. iter-1's `naf_n_iter=2000` is the local optimum.
+
+### Mayo Step-3 TPE — found WORSE config than Step-2 iter-1
+
+Job 762923 (`mayo-ldct-2d-calibrated-tpe-naf-search-20260608-01`) ran
+20-trial TPE with Mayo clamps. **Final best hr=0.0131** (TPE iter-6,
+n_freqs=8, hidden=192, layers=4, n_iter=3909, lr=0.009) — **WORSE
+than Step-2's 0.0202**.
+
+TPE explored 12 configs deeper than iter-6 (layers=5-6, n_freqs=12-14)
+expecting them to improve; all regressed. Then explored the
+(8/192/4) corner (matching the iter-6 config family) but only hit
+hr=0.0073/0.0059/0.0027 — TPE's random-search startup never landed
+the exact Step-2 winner config.
+
+**Verdict on Mayo**: Step-2 iter-1 stays as the rank-11 entry at
+hr=0.0202. NAF on Mayo has a **narrow working corner** that TPE's
+broader exploration didn't reproduce. Lesson: when an agentic
+iter-1 lands a positive result and subsequent iters all regress,
+the winner config may be on a knife-edge — TPE's exhaustive
+exploration may not find it back.
+
+### Cross-dataset NAF record (final)
+
+| Dataset | hr | n_iter (best) | params (M) | Verdict |
+|---|---:|---:|---:|---|
+| `demo_dl`   | 0.4160 | 2216 | 0.270 | rank 11. Strong on simpler synthetic substrate. |
+| `breast_ct` | 0.000 | 12000 | — | **STOP** — 22+ dB below baseline FBP on dense-view 128-angle. |
+| `mayo_ldct` | **0.0202** | 2000 | 0.143 | **rank 11** (surprise positive). 2304-angle redundancy carries NAF over baseline by a thin margin. |

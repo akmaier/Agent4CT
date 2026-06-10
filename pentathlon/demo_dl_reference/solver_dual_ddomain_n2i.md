@@ -111,7 +111,7 @@ is the symmetric average of the two half-set pipelines.
 |---|---:|---|
 | `demo_dl` | 0.3811 | TPE iter-17. N2I works OK on simple sparse-view phantoms — the half-set FBP target has real signal there. |
 | `breast_ct` | **0.000** | Loss-bottleneck — N2I rewards over-smoothing on dense scans. Switching to the supervised-L2 twin gets hr=0.83. |
-| `mayo_ldct` | — | Not yet run. Mayo is dense-view (~2304 angles) — N2I unlikely to help here either. |
+| `mayo_ldct` | **0.000** | Step-2 iter-1 (c=16, ep=3, train_n=50): hr=0, SSIM 0.46, PSNR 12.52 < baseline 12.59. **STOP** — same N2I noise-floor over-smoothing as breast-CT. Loss 0.00001 from epoch 1 so the network has nowhere to climb. **The right DD-UNet variant for Mayo is the supervised-L2 twin at rank 1, hr=0.3890.** |
 
 **Pattern**: use N2I when (a) no clean target is available AND (b)
 views are sparse enough that half-view FBP carries genuine signal.

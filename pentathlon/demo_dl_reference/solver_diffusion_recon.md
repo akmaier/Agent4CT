@@ -153,3 +153,79 @@ DDPM training hyperparams (n_train, ch, n_steps, epochs, batch, lr,
 weight_decay). Dispatch with `--solver ddpm --calibrated --dataset
 breast_ct`. Once a usable checkpoint exists, re-run the
 `diffusion_recon_dcstep_*_breast` TPEs with the new path.
+
+## 2026-06-09 — Mayo Step-3 TPE phase 3 results (4 jobs COMPLETE)
+
+Four Mayo TPE jobs (762933 CON v2, 762934 UNCON v2, 762935 UNCON v4,
+762936 CON v4) closed 2026-06-09 with substantial above-Step-2 lifts.
+All four converged on a **previously-unexplored very-low-eta corner**
+that the agentic loop had clamped out (agentic eta range 1-30
+inherited from breast-CT; Mayo TPE space extended to 0.3-30 log).
+
+### Mode × prior eta-corner matrix (Mayo, val_n=5)
+
+| Mode × DDPM | Optimum cfg | Step-2 (val_n=3) | TPE (val_n=5) | Lift |
+|---|---|---:|---:|---:|
+| UNCON v2 | eta=**0.31**, **noise** init, clamp=False, sample_steps=500, every=5, warmup=10, relax=0.95 | 0.2095 | **0.2352** | +12% |
+| UNCON v4 | eta=**0.30**, **fbp** init, clamp=True, sample_steps=200, every=3, warmup=25, relax=1.0 | 0.1736 | **0.2377** | +37% |
+| CON v2   | eta=**7.21**, fbp init, clamp=True, warmup=40, sample_steps=200, every=3, n_cg=10 | 0.0847 | **0.1071** | +26% |
+| CON v4   | eta=**1.52**, fbp init, clamp=True, sample_steps=200, every=3, n_cg=20, warmup=25, relax=0.85 | 0.0981 | **0.1632** | +66% |
+
+### Key cross-cutting findings
+
+1. **UNCON modes converge at very-low eta (~0.3)**, CON modes prefer
+   mid-eta (1.5-7). At eta<0.5 with `eta_clamp=True`, the DPS noise
+   injection becomes essentially deterministic — DPS reduces to mostly
+   CG-based data consistency with mild diffusion prior. The agentic
+   loop's eta≥1 clamp (inherited from breast-CT priors) missed this
+   regime entirely.
+
+2. **Init/clamp split between DDPM priors:** v4 (ch=96, batch=2, 120 ep,
+   8.594 M params) prefers `fbp init + clamp=True` in both modes; v2
+   (ch=64, batch=2, 60 ep, 3.823 M params) prefers `noise init +
+   clamp=False` in UNCON but `fbp + clamp=True` in CON. Higher-capacity
+   prior wants a deterministic anchor; lower-capacity has more noise
+   tolerance in UNCON.
+
+3. **DDPM training quality is NOT predictive of DPS performance.** Mayo
+   v4 had the best DDPM training (val ε-loss 0.0025 vs v2's 0.0049),
+   but the initial diff_recon iter-1 ranked v4 LOWER than v2 (0.1466
+   vs 0.2095). TPE then found the eta=0.3 corner where v4's higher
+   capacity pays off (final v4 0.2377 > v2 0.2352).
+
+4. **TPE reproducibility check**: UNCON v2 hit hr=0.2352 at iter-12
+   AND iter-16 (same eta=0.31 corner) — TPE rediscovered the global
+   optimum on independent prior-conditioned trials, strong signal that
+   it's the true val_n=5 optimum.
+
+5. **CON v4 had the broadest robust corner**: eta=0.55-2.0 with
+   fbp+clamp=True all produce hr=0.1597-0.1632 (±0.002). UNCON v4's
+   eta=0.30-0.39 corner was tighter (hr=0.2373-0.2377 across 3 iters).
+
+### Mayo DDPM checkpoint history
+
+Three Mayo DDPM training rounds:
+- **v2** (ch=64, batch=2, 60 ep): val ε-loss 0.0049. DPS-best at val_n=5
+  for both UNCON (0.2352) and CON (0.1071).
+- **v3** (ch=96, batch=1, 60 ep): val ε-loss 0.0061. **Deprioritised** —
+  UNCON best 0.0641, CON best 0.0686, ~⅓ of v2. Root cause: ¼ effective
+  training (half batch size at 2.25× params).
+- **v4** (ch=96, batch=2, 120 ep): val ε-loss 0.0025. Final DPS-best
+  UNCON 0.2377 (rank 4), CON 0.1632 (rank 7). The v4 fix (pair ch=96
+  with batch=2 AND double epochs to 120) proposed in the v3 verdict
+  worked.
+
+Search-space scaffolding added to `scripts/learned_solver_search_agent.py`
+(commit 6fa14e1b): `diffusion_recon_dcstep_{,un}constrained_mayo_v{2,4}`
+SOLVERS entries with `recon_eta ∈ (0.3, 30) log` (narrowed from breast's
+3-60) and `tpe_seed_trial` matching the Step-2 agentic winner per
+mode×prior. Mayo-specific `MAYO_CLAMPS` auto-injects val_n=5,
+val_chunk=1, train_n=50 (unused — DPS doesn't train), batch_size=1.
+
+### Mayo leaderboard impact
+
+Diff_recon DCstep entries now occupy 4 Mayo ranks (out of top 12):
+rank 4 UNCON v4 0.2377, rank 5 UNCON v2 0.2352, rank 7 CON v4 0.1632,
+rank 8 CON v2 0.1071. Together with LPD TPE (rank 2, 0.3063) and
+DD-UNet sup TPE (rank 1, 0.3890), the diff-recon family is the
+**largest single-architecture cluster** in the Mayo top 12.

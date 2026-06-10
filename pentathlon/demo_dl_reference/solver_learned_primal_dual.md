@@ -129,17 +129,23 @@ The trial-1 result reproduces iter-3 within val-set noise (∼0.01 hr)
 | Dataset | Best hr | Config | Notes |
 |---|---:|---|---|
 | `breast_ct` | **0.9062** | I=8, hidden=96, ep=23, lr=3.2e-4, grad_clip=0.3, 1.49 M params | **#1 on the leaderboard.** TPE refined the agentic seed (I=10, hidden=64, 0.88M) — fewer unrolls + wider hidden won. |
-| `demo_dl`   | — | not yet TPE'd under calibrated scoring | older uncalibrated demo-dl runs are not directly comparable; needs a calibrated TPE pass |
-| `mayo_ldct` | — | autoresearch not yet started | geometry validated 2026-05-24; expected to lead here too given the physics-aware backbone |
+| `demo_dl`   | **0.4947** | I=8, hidden=96, n_p=5, n_d=5, ep=18, lr=2.6e-4, cosine, clip=0.5, train_n=400 | **#2 on demo-DL** (rank 2 behind DD-UNet sup 0.4950). TPE-tuned 2026-05-27. Same I=8, hidden=96 topology as breast-CT winner — LPD's physics-aware backbone transfers cleanly across the synthetic substrates. |
+| `mayo_ldct` | **0.3063** | TPE iter-6 winner: lpd_iters=2, hidden=48, ep=12, train_n=50 | **#2 on Mayo.** Step-2 agentic stopped at 0.2445 (iter-3); Step-3 TPE +25% via different capacity profile — **lpd_iters=2 (vs breast-CT's 8)** and **hidden=48** (vs 96). Mayo's 2304-angle sino + Q6000 24-GB cap pushed LPD toward fewer-unrolls + narrower-hidden than the synthetic-data optimum. |
 
 **Pattern across datasets**: LPD's "physics-aware backbone + small
 per-iter CNN proximal" is the most parameter-efficient way to top
 synthetic-phantom benchmarks at 128 views. Beats DD-UNet L2 by +0.014
-hr at half the parameters on `breast_ct`.
+hr at half the parameters on `breast_ct`. On Mayo, LPD lost the top
+spot to DD-UNet sup (0.3890 vs 0.3063) — physics-aware backbone is
+still strong but the supervised-L2 UNet wins when sino dimensionality
+× memory cap forces LPD to a small capacity profile.
 
-**Untested datasets where it should win**: any dense-view supervised
-challenge with a clean target — Wagner's helix-rebinned Mayo
-fulldose-vs-lowdose, Truth-CT, DL-Spectral CT.
+**Mayo-specific finding (Step-3 TPE)**: lpd_iters=2 + hidden=48 is the
+right capacity profile on Mayo's 2304-angle sino at train_n=50 (Q6000
+24-GB cap). lpd_iters=4 + ep=20 timed out the 90-min subprocess
+budget. The Mayo TPE search-space clamp (`scripts/learned_solver_search_agent.py`
+MAYO_CLAMPS) caps `lpd_iters ∈ [2, 3]` and `epochs ∈ [5, 12]` for
+this reason.
 
 ## Known failure mode: subprocess timeout on Q5000
 

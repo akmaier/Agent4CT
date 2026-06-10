@@ -134,3 +134,35 @@ loss = ½ MSE(y_hat_a, R_half.fbp(x_b)) + ½ MSE(y_hat_b, R_half.fbp(x_a))
 Same architecture with supervised L2 (see
 `solver_dual_ddomain_bilateral_supervised.py`): hr=0.248 (n=3×3
 chain, 18 params).
+
+## 2026-06-08 — Mayo: surprise positive at rank 12 (hr=0.0047)
+
+DD-BF N2I cleared the Mayo baseline narrowly: Step-2 iter-1
+(`mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260603-01`)
+landed hr=**0.0047** (proj/img_n_bf=3, ep=3, lr=5e-4, train_n=50,
+val_n=5, 18 trainable params, SSIM 0.4868, PSNR 12.62 dB vs baseline
+12.59 dB). The narrow margin (+0.03 dB PSNR) over baseline lets it
+sit at **rank 12 on Mayo** — the bottom of the above-baseline list.
+
+iter-2 (ep 3→6) dropped to hr=0.0035; the 18 BF scalars do move
+across more epochs (`σ_y` slid 1.973→1.953 from ep-3 to ep-6) but
+val SSIM stayed at 0.485 and hr slightly regressed. **iter-1 stays;
+cap is structural** (18 trainable params can't beat the FBP baseline
+by more than the noise floor on Mayo's wider dynamic range).
+
+### Mayo TPE attempt → solver-side OOM STOP
+
+Mayo Step-3 phase 2 attempted a TPE refinement (job 762925) but
+**STOPPed at hardcoded `R_full.fbp(val_clean)` OOM**. The solver
+loads ALL val slabs in a single FBP call at val time, which exceeds
+the 24 GB Q6000 cap on Mayo's 2304-angle × 5-slab val_n. **Fix
+requires a solver-side patch** for chunked FBP — not just a config
+knob.
+
+Cross-dataset DD-BF N2I record:
+
+| Dataset | Best hr | Notes |
+|---|---:|---|
+| `demo_dl` | 0.3611 | TPE rank 16 — N2I works OK on simple sparse-view phantoms. |
+| `breast_ct` | 0 | TPE 20 trials all hr=0 — N2I bottleneck on dense view. |
+| `mayo_ldct` | **0.0047** | rank 12 (surprise positive at thin margin). TPE attempt OOM-STOPped. |

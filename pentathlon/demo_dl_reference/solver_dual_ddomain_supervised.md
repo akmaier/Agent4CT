@@ -164,3 +164,36 @@ on breast-CT.** Further gains require either a (a) bigger val set
 qualitatively different architecture / loss. LPD's iter-3 reaches
 hr=0.829 with HALF the parameters, so the **architecture is the
 binding constraint** now, not capacity or data.
+
+## 2026-06-08 — Mayo Step-3 TPE: rank 1 champion at hr=0.3890
+
+DD-UNet supervised L2 became the **Mayo-LDCT leaderboard champion**
+via Step-3 TPE (job 762xxx-supervised-search-20260608-02, COMPLETE
+20/20). TPE iter-12 winner config produced hr=**0.3890**, lifting
+from the Step-2 agentic plateau at 0.1337 — that's a **+191% lift**,
+the biggest TPE-vs-agentic gain of the entire Step-3 phase 1.
+
+The agentic plateau pattern: iter-3 winner was c=24, ep=3, lr=5e-4,
+train_n=100 hr=0.1337. iter-4/5 retries with c=32 and ep=6 both
+regressed. The plateau read as "capacity exhausted"; TPE proved
+otherwise by finding a fundamentally different configuration corner.
+
+DD-UNet sup L2 is now the **Mayo champion** at rank 1, beating LPD
+TPE (0.3063) and USwin TPE (0.2492). The supervised-L2 UNet's tile
+of the loss landscape on Mayo's 2304-angle sino is broader than
+LPD's, so it benefits more from TPE's wider exploration than from
+LPD's narrower physics-aware backbone.
+
+### Cross-dataset DD-UNet sup L2 record
+
+| Dataset | hr (TPE) | Variant | Notes |
+|---|---:|---|---|
+| `breast_ct` | **0.8361** | c=24, ep=18, lr=2.1e-4, λ_neg=0.58, 1.05 M | #2 on breast-CT (rank 2 behind LPD 0.9062). val_n=20 metric ceiling for this architecture is hr≈0.83. |
+| `demo_dl` | **0.4950** | c=16, ep=10, lr=6.5e-4, λ_neg=1.37, 0.466 M | #1 on demo-DL. Beats LPD by +0.0003 hr at one-third the parameters. |
+| `mayo_ldct` | **0.3890** | TPE iter-12 winner | **#1 on Mayo.** +191% over Step-2 agentic 0.1337. |
+
+**Pattern:** DD-UNet sup L2 is the most-consistent top-3 finisher
+across all 3 datasets. Whatever the data complexity, the supervised
+dual-domain UNet finds a working configuration corner that TPE can
+locate. Beat by LPD only on breast-CT (architecture matters more
+there); ties or wins everywhere else.
