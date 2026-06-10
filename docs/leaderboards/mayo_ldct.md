@@ -147,7 +147,36 @@ Non-trainable solvers reconstruct each val slab without any learnable parameters
 
 The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 when only the 3 sharpest L014 slabs are scored, and ≈12.59 with the broader val_n=5 set. All hr values reported throughout this leaderboard subtract the SAME-val_n baseline used for that solver's run.
 
-### Below-baseline inventory (`hr = 0`, structural STOPs)
+### Step-3 TPE phase 4 — retesting all 10 STOP'd solvers (dispatched 2026-06-10)
+
+Following the 3 retroactive false-STOP cases (Hammernik VN, Wu
+trainable BC, ItNet v1 demo/BC) and the relaxed STOP criterion
+update in `solver_plan.md`, **all 10 currently-STOP'd Mayo solvers
+have been redispatched as full 20-trial Optuna TPE runs**. Configuration-
+space sparsity is now the assumed cause of any hr=0 result until a
+20-trial TPE rules it out.
+
+| Job | Solver | Previous Mayo verdict | Phase-4 TPE seed |
+|---|---|---:|---|
+| 763039 | DD-BF supervised L2 (`dual_domain_bilateral_supervised`) | STOP at hr=0 (Step-2 iter-3) | TPE default seed |
+| 763040 | DD-UNet N2I (`dual_domain`) | STOP at hr=0 (N2I floor) | TPE default seed |
+| 763041 | ItNet v1 (`itnet`) | STOP at hr=0 (post-cfg-patch retry) | Mayo-iter-3 cfg (TPE seed via `tpe_seed_trial`) |
+| 763042 | ItNet v2 (`itnet_v2`) | STOP at hr=0 (post-cfg-patch retry) | TPE default seed |
+| 763043 | Hammernik 2017 (`hammernik`) | STOP at hr=0 (λ stuck) | TPE default seed |
+| 763044 | TV-iterative supervised (`tv_iterative_supervised`) | STOP at hr=0 (FBP-init no-op verdict) | TPE default seed (`tv_iterative_supervised` has tpe_seed_trial) |
+| 763045 | Wu 2015 trainable (`wu_2015_trainable`) | STOP at hr=0 (10-scalar ceiling on Mayo) | TPE default seed (cross-dataset breast-CT TPE found +45% lift; maybe Mayo too) |
+| 763046 | Wu 2015 non-trainable (`wu_2015`) | STOP at hr=0 (10-coeff filter ceiling) | TPE default seed |
+| 763047 | RAM zero-shot (`ram_zeroshot`) | STOP at hr=0 (μ-range mismatch) | TPE default seed (frozen prior) |
+| 763048 | R²-Gaussian (`r2gaussian`) | STOP via 30-min sbatch wall timeout | TPE default seed (may still timeout — sbatch wall is per-trial, not per-job) |
+
+**Expected outcomes:**
+- **High confidence overturn**: Wu 2015 trainable (breast-CT TPE found +45%), Hammernik 2017 (Hammernik family precedent — VN was overturned), TV-iter supervised (the trainable variant has more flexibility than the non-trainable that already lands rank 9 on Mayo).
+- **Moderate confidence**: ItNet v1/v2 (Mayo capacity ceiling may not be the binding constraint at the right c/k combo), DD-BF L2 (18 BF scalars same family as DD-BF N2I rank 12).
+- **Low confidence overturn** (genuine structural ceiling): R²-Gaussian (per-scene wall), RAM (μ-range), DD-UNet N2I (N2I floor mechanism), Wu 2015 non-trainable (closed-form 10-coeff).
+
+Results land 10-14h after dispatch (4 concurrent on QOS=4, queue 6 behind).
+
+### Below-baseline inventory (`hr = 0`, structural STOPs — under retest by phase-4 TPE 2026-06-10)
 
 These 10 solver variants were tested on Mayo and remained at `hr = 0`
 under the calibrated metric — they are below the FBP baseline regardless
