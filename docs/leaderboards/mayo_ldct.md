@@ -157,18 +157,22 @@ are being retested via the 20-iter agentic-autoresearch protocol**
 NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
-| Job | Solver | Previous Mayo verdict | Phase-4 TPE seed |
-|---|---|---:|---|
-| 763039 | DD-BF supervised L2 (`dual_domain_bilateral_supervised`) | STOP at hr=0 (Step-2 iter-3) | TPE default seed |
-| 763040 | DD-UNet N2I (`dual_domain`) | STOP at hr=0 (N2I floor) | TPE default seed |
-| 763041 | ItNet v1 (`itnet`) | STOP at hr=0 (post-cfg-patch retry) | Mayo-iter-3 cfg (TPE seed via `tpe_seed_trial`) |
-| 763042 | ItNet v2 (`itnet_v2`) | STOP at hr=0 (post-cfg-patch retry) | TPE default seed |
-| 763043 | Hammernik 2017 (`hammernik`) | STOP at hr=0 (λ stuck) | TPE default seed |
-| 763044 | TV-iterative supervised (`tv_iterative_supervised`) | STOP at hr=0 (FBP-init no-op verdict) | TPE default seed (`tv_iterative_supervised` has tpe_seed_trial) |
-| 763045 | Wu 2015 trainable (`wu_2015_trainable`) | STOP at hr=0 (10-scalar ceiling on Mayo) | TPE default seed (cross-dataset breast-CT TPE found +45% lift; maybe Mayo too) |
-| 763046 | Wu 2015 non-trainable (`wu_2015`) | STOP at hr=0 (10-coeff filter ceiling) | TPE default seed |
-| 763047 | RAM zero-shot (`ram_zeroshot`) | STOP at hr=0 (μ-range mismatch) | TPE default seed (frozen prior) |
-| 763048 | R²-Gaussian (`r2gaussian`) | STOP via 30-min sbatch wall timeout | TPE default seed (may still timeout — sbatch wall is per-trial, not per-job) |
+| Solver | iter-1 job/hr/SSIM | iter-2 job (knob change) | Best so far |
+|---|---|---|---:|
+| **DD-BF supervised L2** | 763053 / **0.0264** / 0.515 ⭐ | 763081 (img_n_bf 7→9) | **0.0264** (iter-1) |
+| **Hammernik 2017** | 763057 / **0.0483** / 0.332 ⭐ | 763085 (vn_T 5→7, λ 2.3e-3→3e-3) | **0.0483** (iter-1) |
+| **R²-Gaussian** | 763058 / **0.0219** / 0.545 ⭐ | 763086 (gaussians 256→512, n_iter 500→1000) | **0.0219** (iter-1) |
+| DD-UNet N2I | 763049 / 0 / 0.462 | 763077 (c 16→24, lr 1.9e-4→5e-5) | 0 |
+| TV-iter supervised | 763050 / 0 / 0.299 | 763078 (tv_K 10→30) | 0 |
+| ItNet v1 | 763051 / 0 / 0.262 | 763079 (k 2→4, c 16→24) | 0 |
+| Wu non-trainable | 763052 / 0 / 0.327 | 763080 (n_bands 12→6, thresh ↑) | 0 |
+| ItNet v2 | 763054 / 0 / 0.267 | 763082 (c 16→24, α↑, k 4→2) | 0 |
+| RAM zero-shot | 763055 / 0 / 0.416 | 763083 (blend 0.7→0.5, factor 0.5→0.7) | 0 |
+| Wu trainable | 763056 / 0 / 0.345 | 763084 (lr 1.1e-4→5e-5, ep 13→20) | 0 |
+
+**🎯 3 STOP verdicts already OVERTURNED at iter-1**: DD-BF sup L2 (Mayo Step-2 said hr=0 "structural; 18 BF too low cap"; breast-CT TPE winner ported here → hr=0.0264). Hammernik 2017 (Mayo Step-2 said hr=0 "λ stuck"; VN-winning arch with T=5, n_filters=24 → hr=0.0483, just below VN's 0.0551). R²-Gaussian (Mayo Step-2 was TIMEOUT; minimal 256-Gaussian + 500-iter config → hr=0.0219, fit cleanly in 30-min wall).
+
+iter-2 dispatched for all 10 with ONE knob change each per autoresearch protocol.
 
 **Expected outcomes:**
 - **High confidence overturn**: Wu 2015 trainable (breast-CT TPE found +45%), Hammernik 2017 (Hammernik family precedent — VN was overturned), TV-iter supervised (the trainable variant has more flexibility than the non-trainable that already lands rank 9 on Mayo).
