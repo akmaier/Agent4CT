@@ -147,14 +147,15 @@ Non-trainable solvers reconstruct each val slab without any learnable parameters
 
 The val_n discrepancy means the FBP baseline shifts between rows: PSNR≈13.98 when only the 3 sharpest L014 slabs are scored, and ≈12.59 with the broader val_n=5 set. All hr values reported throughout this leaderboard subtract the SAME-val_n baseline used for that solver's run.
 
-### Step-3 TPE phase 4 — retesting all 10 STOP'd solvers (dispatched 2026-06-10)
+### Mayo phase-4 — agentic-loop retests of all 10 STOP'd solvers (dispatched 2026-06-10)
 
 Following the 3 retroactive false-STOP cases (Hammernik VN, Wu
 trainable BC, ItNet v1 demo/BC) and the relaxed STOP criterion
 update in `solver_plan.md`, **all 10 currently-STOP'd Mayo solvers
-have been redispatched as full 20-trial Optuna TPE runs**. Configuration-
-space sparsity is now the assumed cause of any hr=0 result until a
-20-trial TPE rules it out.
+are being retested via the 20-iter agentic-autoresearch protocol**
+(Claude-driven iter-by-iter with explicit hypothesis-per-iter,
+NOT TPE). Configuration-space sparsity is now the assumed cause of
+any hr=0 result until 20 hypothesis-driven iters rule it out.
 
 | Job | Solver | Previous Mayo verdict | Phase-4 TPE seed |
 |---|---|---:|---|
