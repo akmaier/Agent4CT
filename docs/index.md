@@ -51,11 +51,39 @@ See [Pentathlon](pentathlon.html) for the headroom-recovered scoring and per-cha
 
 Each iteration is one 5-minute Slurm job. The agent edits `pentathlon/<challenge>/solver.py`, the harness runs the job, computes the validation metric, and decides keep / discard via `git`. Every 30 iterations a 1-hour **stage** job runs on a 3× larger subset to catch overfitting. Test sets are touched exactly once, at the end. See [Agents](agents.html).
 
+## 🏆 Leaderboards
+
+Best-of-best per solver per dataset under the canonical
+calibrated-SSIM-headroom scoring convention. Full 19-solver inventory
+exercised on each dataset as of 2026-06-09.
+
+| Dataset | Top solver | hr | Leaderboard |
+|---|---|---:|---|
+| **Mayo-LDCT** (real helical, Wagner split) | DD-UNet supervised L2 *(Step-3 TPE iter-12)* | **0.3890** | [mayo_ldct](leaderboards/mayo_ldct.html) |
+| **Breast-CT** (Sidky synthetic + anatomy, 128 views) | Learned Primal-Dual *(TPE iter-11)* | **0.9062** | [breast_ct](leaderboards/breast_ct.html) |
+| **Demo-DL** (Sidky synthetic ellipses, 128 views) | DD-UNet supervised L2 *(TPE iter-15)* | **0.4950** | [demo_dl](leaderboards/demo_dl.html) |
+
+[![Mayo champion](runs/mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02/iterations/iter-0012/comparison.png)](leaderboards/mayo_ldct.html)
+[![Breast-CT champion](runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](leaderboards/breast_ct.html)
+[![Demo-DL champion](runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png)](leaderboards/demo_dl.html)
+
+*Top: Mayo-LDCT champion (DD-UNet supervised L2, Step-3 TPE iter-12 — hr 0.3890).
+Middle: Breast-CT champion (Learned Primal-Dual, TPE iter-11 — hr 0.9062).
+Bottom: Demo-DL champion (DD-UNet supervised L2, TPE iter-15 — hr 0.4950).
+Click any leaderboard link for the full per-solver ranking with comparison images.*
+
+See [Leaderboards](leaderboards/) for the cross-dataset summary, full
+19-solver inventory coverage matrix, and the 2026-06-08/09 Step-3 TPE
+findings (DD-UNet sup +191% on Mayo, Hammernik VN STOP overturned via
+TPE, ItNet v1 inventory-gap closure on synthetic datasets, etc.).
+
 ## Quick links
 
+- 🏆 [Leaderboards](leaderboards/) — calibrated headroom rankings per dataset
 - 📊 [Live dashboard](dashboard.html) — every run, every iteration, scratch pad with images
 - 🧪 [Setup](setup.html) — env, cluster, data
 - 🥇 [Pentathlon](pentathlon.html) — challenges + scoring
 - 🧠 [Agents](agents.html) — the autoresearch loop
 - ⚡ [Performance](performance.html) — PYRO-NN + NFS tips
+- 📓 [Findings](findings.html) — cross-cutting insights from the autoresearch loop
 - 📦 [GitHub](https://github.com/akmaier/Agent4CT)

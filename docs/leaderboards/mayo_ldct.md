@@ -1,6 +1,6 @@
 ---
 title: Mayo-LDCT leaderboard
-description: Real-helical-data leaderboard. Geometry validation complete; solver autoresearch pending. See solver_plan.md for methodology.
+description: Real-helical-data leaderboard (Wagner split). Step-3 TPE refinement closed 2026-06-09 — 12 of 19 solvers above the FBP baseline. See solver_plan.md for methodology.
 ---
 
 # Mayo-LDCT leaderboard (Wagner split)
@@ -112,7 +112,7 @@ Loop continuing per `solver_plan.md` Step 2 — see `docs/runs/mayo-ldct-claude-
 |---:|---|---|---:|---:|---:|---|---|
 | 1 | **DD-UNet supervised L2** *(Step-3 TPE — COMPLETE 20/20)* | TPE iter-12 winner | 0.466 | — | **0.3890** | [results](../runs/mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02/results.tsv) | [iter-12](../runs/mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02/iterations/iter-0012/comparison.png) |
 | 2 | **Learned Primal-Dual** *(Step-3 TPE — COMPLETE 20/20)* | TPE iter-6 winner: lpd_iters=2, hidden=48, ep=12 | 0.104 | 0.6009 | **0.3063** | [results](../runs/mayo-ldct-2d-calibrated-tpe-lpd-search-20260608-06/results.tsv) | [iter-6](../runs/mayo-ldct-2d-calibrated-tpe-lpd-search-20260608-06/iterations/iter-0006/comparison.png) |
-| 3 | **USwin** *(Step-3 TPE)* | TPE iter-11 winner (search-space-clamped) | — | — | **0.2492** | [results](../runs/mayo-ldct-2d-calibrated-tpe-uswin-search-20260608-03/results.tsv) | [iter-11](../runs/mayo-ldct-2d-calibrated-tpe-uswin-search-20260608-03/iterations/iter-0011/comparison.png) |
+| 3 | **USwin** *(Step-3 TPE)* | TPE iter-11 winner (search-space-clamped) | — | — | **0.2492** | [results](../runs/mayo-ldct-2d-calibrated-tpe-uswin-search-20260608-04/results.tsv) | [iter-11](../runs/mayo-ldct-2d-calibrated-tpe-uswin-search-20260608-04/iterations/iter-0011/comparison.png) |
 | 4 | **diff_recon DCstep unconstrained** (DDPM **v4** prior) *(Step-3 TPE COMPLETE 20/20)* | TPE iter-13: **eta=0.30, fbp init, clamp=True**, sample_steps=200, every=3, warmup=25 — discovered low-eta corner BELOW agentic explore range | 8.594 | 0.5169 | **0.2377** | [results](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-unconstrained-mayo-v4-search-20260608-01/results.tsv) | [iter-13](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-unconstrained-mayo-v4-search-20260608-01/iterations/iter-0013/comparison.png) |
 | 5 | **diff_recon DCstep unconstrained** (DDPM v2 prior) *(Step-3 TPE COMPLETE 20/20)* | TPE iter-12: **eta=0.31, noise init, clamp=False**, sample_steps=500, every=5, warmup=10, relax=0.95 | 3.823 | 0.5487 | **0.2352** | [results](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-unconstrained-mayo-v2-search-20260608-01/results.tsv) | [iter-12](../runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-unconstrained-mayo-v2-search-20260608-01/iterations/iter-0012/comparison.png) |
 | 6 | **ItNet v3** *(Step-3 TPE)* | TPE iter-9, search-space-clamped (20/20 done) | — | — | **0.2181** | [results](../runs/mayo-ldct-2d-calibrated-tpe-itnet-v3-search-20260608-04/results.tsv) | [iter-9](../runs/mayo-ldct-2d-calibrated-tpe-itnet-v3-search-20260608-04/iterations/iter-0009/comparison.png) |
