@@ -162,7 +162,7 @@ any hr=0 result until 20 hypothesis-driven iters rule it out.
 
 | Solver | iters tried | Best hr | Best config | Latest trajectory + next knob |
 |---|---:|---:|---|---|
-| 🏆🏆 **ItNet v1** | 15 | **0.1732** (iter-14) | k=1, c=32, α=0.05, ep=40, finetune ep=8/lr=1.5e-3 | iter-15 (ep=50) regressed to 0.1549 — ep=40 sweet; iter-16 763222 tries finetune_ep 8→12 |
+| 🏆🏆 **ItNet v1** | 16 | **0.1732** (iter-14) | k=1, c=32, α=0.05, ep=40, finetune ep=8/lr=1.5e-3 | iter-16 (finetune_ep=12) regressed to 0.1315 — fe=8 also sweet; iter-17 763228 tries c=40 (untested mid) |
 | 🚀 **ItNet v2** | 15 | **0.0855** (iter-6) | k=1, c=32, α_init=0.05, ep=12, residual=F, train_n=50 | iter-15 (train_n=100) CRASHED OOM; iter-16 763218 tries train_n=75 (intermediate) |
 | 🎉 **Hammernik 2017** | 9+1Q | **0.0621** (iter-5) | T=5, filters=24, kernel=11, λ=5e-3, ep=12, lr=5e-4 | iter-9 (T=6) collapsed SSIM 0.228 — T=5 firmly sweet; iter-10 763215 queued (filters 24→16) |
 | 🏆🏆 **DD-BF sup L2** | 11 | **0.0590** (iter-11) | img_n_bf=27, proj_n_bf=1, k=5/7, ep=10, lr=5.9e-3 | **11 monotonic climbs** (img_n_bf 7→27, +124%!); iter-12 763223 tries img_n_bf 27→29 |
