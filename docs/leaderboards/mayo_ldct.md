@@ -157,18 +157,27 @@ are being retested via the 20-iter agentic-autoresearch protocol**
 NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
-| Solver | iter-1 job/hr/SSIM | iter-2 job (knob change) | Best so far |
-|---|---|---|---:|
-| **DD-BF supervised L2** | 763053 / **0.0264** / 0.515 ⭐ | 763081 (img_n_bf 7→9) | **0.0264** (iter-1) |
-| **Hammernik 2017** | 763057 / **0.0483** / 0.332 ⭐ | 763085 (vn_T 5→7, λ 2.3e-3→3e-3) | **0.0483** (iter-1) |
-| **R²-Gaussian** | 763058 / **0.0219** / 0.545 ⭐ | 763086 (gaussians 256→512, n_iter 500→1000) | **0.0219** (iter-1) |
-| DD-UNet N2I | 763049 / 0 / 0.462 | 763077 (c 16→24, lr 1.9e-4→5e-5) | 0 |
-| TV-iter supervised | 763050 / 0 / 0.299 | 763078 (tv_K 10→30) | 0 |
-| ItNet v1 | 763051 / 0 / 0.262 | 763079 (k 2→4, c 16→24) | 0 |
-| Wu non-trainable | 763052 / 0 / 0.327 | 763080 (n_bands 12→6, thresh ↑) | 0 |
-| ItNet v2 | 763054 / 0 / 0.267 | 763082 (c 16→24, α↑, k 4→2) | 0 |
-| RAM zero-shot | 763055 / 0 / 0.416 | 763083 (blend 0.7→0.5, factor 0.5→0.7) | 0 |
-| Wu trainable | 763056 / 0 / 0.345 | 763084 (lr 1.1e-4→5e-5, ep 13→20) | 0 |
+| Solver | iter-1 hr | iter-2 hr | iter-3 job (knob change) | Best so far |
+|---|---:|---:|---|---:|
+| **DD-BF supervised L2** | 0.0264 ⭐ | **0.0313** ⬆ | 763108 (img_n_bf 9→11 — continue climbing) | **0.0313** (iter-2) |
+| **Hammernik 2017** | 0.0483 ⭐ | 0 ⬇ | 763112 (revert T=5, filters 24→32) | **0.0483** (iter-1) |
+| **R²-Gaussian** | 0.0219 ⭐ | ~0 ⬇ | 763113 (gaussians 384, n_iter 800, +gs_lr_pos=3e-3) | **0.0219** (iter-1) |
+| DD-UNet N2I | 0 / SSIM=0.462 | 0 / 0.459 | 763104 (c 24→8 + ep 15 + lr 5e-4 — dramatic shift) | 0 |
+| TV-iter supervised | 0 / 0.299 | 0 / 0.299 (identical!) | 763105 (tv_step_init 1e-2→5e-2, λ↑10×) | 0 |
+| ItNet v1 | 0 / 0.262 | 0 / 0.261 | 763106 (pretrain_lr 5e-4→5e-3, α 0.005→0.02) | 0 |
+| Wu non-trainable | 0 / 0.327 | 0 / 0.358 (slight up) | 763107 (n_bands 6→8, n_outer 2→3) | 0 |
+| ItNet v2 | 0 / 0.267 | 0 / 0.214 (regressed) | 763109 (residual_learning False, pretrain_lr↑4×) | 0 |
+| RAM zero-shot | 0 / PSNR 12.30 | 0 / PSNR 12.22 | 763110 (blend 0.5→0.3, σ ↓4×) | 0 |
+| Wu trainable | 0 / 0.345 | 0 / 0.327 (regressed) | 763111 (revert lr=1.1e-4, push λ_neg 0.7→1.5) | 0 |
+
+**iter-2 trajectory:**
+- DD-BF sup L2: climbed +18% (0.0264 → 0.0313) — img_n_bf 7→9 worked
+- Hammernik 2017: REGRESSED (T=7 too deep — revert to T=5 + widen filters instead)
+- R²-Gaussian: regressed to ~0 (512 g/1000 iter too many — try intermediate 384)
+- TV-iter sup: IDENTICAL SSIM (0.299) at K=10 vs K=30 — FBP-init basin confirmed real (need step shock at iter-3)
+- N2I family (DD-UNet N2I, RAM): hr=0 with marginal SSIM changes
+- ItNet family: low SSIM (~0.21-0.26) — capacity not absorbing, try higher lr instead
+- Wu family: trainable regressed, non-trainable inched up at n_bands=6 (sweet spot)
 
 **🎯 3 STOP verdicts already OVERTURNED at iter-1**: DD-BF sup L2 (Mayo Step-2 said hr=0 "structural; 18 BF too low cap"; breast-CT TPE winner ported here → hr=0.0264). Hammernik 2017 (Mayo Step-2 said hr=0 "λ stuck"; VN-winning arch with T=5, n_filters=24 → hr=0.0483, just below VN's 0.0551). R²-Gaussian (Mayo Step-2 was TIMEOUT; minimal 256-Gaussian + 500-iter config → hr=0.0219, fit cleanly in 30-min wall).
 
