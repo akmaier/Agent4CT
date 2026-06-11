@@ -158,20 +158,20 @@ NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
 **Phase-4 overturn count: 6 of 10 above baseline ⬆ · 1 STOPped · 3 still under retest**
-🏆 ItNet v1 (**0.1614** iter-12!) · ItNet v2 (0.0855) · Hammernik 2017 (0.0621) · DD-BF L2 (0.0517) · R²-Gaussian (0.0335) · RAM zero-shot (0.0213) | 🛑 Wu non-trainable | ⏳ DD-UNet N2I, TV-iter sup, Wu trainable
+🏆 ItNet v1 (**0.1711** iter-13!) · ItNet v2 (0.0855) · Hammernik 2017 (0.0621) · DD-BF L2 (**0.0543** iter-9, 9 climbs) · R²-Gaussian (**0.0438** iter-8 NEW BEST) · RAM zero-shot (**0.0286** iter-12, climbing) | 🛑 Wu non-trainable | ⏳ DD-UNet N2I (SSIM 0.471=FBP), TV-iter sup, Wu trainable
 
 | Solver | iters tried | Best hr | Best config | Latest trajectory + next knob |
 |---|---:|---:|---|---|
-| 🏆🏆 **ItNet v1** | 12 | **0.1614** (iter-12) | k=1, c=32, α=0.05, ep=24, finetune ep=8/lr=1.5e-3 | iter-12 (ep=24+fl=1.5e-3) hr=0.1614 SHATTERED prediction of 0.132 (+24% iter-11→12!); iter-13 763189 pushes ep 24→32 |
-| 🚀 **ItNet v2** | 12 | **0.0855** (iter-6) | k=1, c=32, α_init=0.05, ep=12, residual=F | iter-12 (pretrain_lr=3e-3) regressed to 0.0604; iter-13 763190 tries untested c=40 at sweet spot |
-| 🎉 **Hammernik 2017** | 7 | **0.0621** (iter-5) | T=5, filters=24, kernel=11, λ=5e-3, ep=12 | iter-7 (ep=18) regressed to 0.0495; iter-8 763186 reverts ep=12+λ=5e-3, lr 5e-4→1e-3 |
-| 🏆 **DD-BF sup L2** | 8 | **0.0517** (iter-8) | img_n_bf=21, proj_n_bf=1, k=5/7, ep=10, lr=5.9e-3 | 8 monotonic climbs (img_n_bf 7→21, +96%!); iter-9 763182 tries img_n_bf 21→23 |
-| 🚀 **R²-Gaussian** | 7 | **0.0335** (iter-6) | 256g, 500i, lr_pos=1e-3 | iter-7 (800i) regressed to 0.0275; iter-8 763187 reverts 500i, lr 1e-3→5e-4 |
-| 🎯 **RAM zero-shot** | 11 | **0.0213** (iter-11) | input_norm=global_max, blend=0.5, factor=0.5, σ=5e-3 | iter-11 (b=0.5) hr=0.0213 (+60% over iter-10); iter-12 763191 tries b 0.5→0.4 |
-| DD-UNet N2I | 8+1R | 0 (SSIM 0.469 iter-8) | c=24, ep=50, lr=1e-4 (long-train regime) | iter-9 (ep=80, lr=5e-5) running; SSIM 0.469 best yet (close to FBP ~0.47) |
-| TV-iter sup 🟡 MOVING | 7 | 0 (SSIM 0.381 iter-6 best) | share_steps=T, lr=1e-1, grad_clip=20, ep=30 | iter-7 (lr=2e-1, ep=40) TIMEOUT at ep=33/40; iter-8 763188 keeps lr=2e-1 but ep=20 to fit walltime |
+| 🏆🏆 **ItNet v1** | 13 | **0.1711** (iter-13) | k=1, c=32, α=0.05, ep=32, finetune ep=8/lr=1.5e-3 | iter-13 (ep=32) +6% over iter-12; iter-14 763192 pushes ep 32→40 |
+| 🚀 **ItNet v2** | 13 | **0.0855** (iter-6) | k=1, c=32, α_init=0.05, ep=12, residual=F | iter-13 (c=40) collapsed SSIM 0.251; iter-14 763193 tries pretrain_lr 1e-3→5e-4 (last untested direction) |
+| 🎉 **Hammernik 2017** | 8 | **0.0621** (iter-5) | T=5, filters=24, kernel=11, λ=5e-3, ep=12, lr=5e-4 | iter-8 (lr=1e-3) regressed to 0.0333; iter-9 763199 tries vn_T 5→6 (untested mid) |
+| 🏆 **DD-BF sup L2** | 9 | **0.0543** (iter-9) | img_n_bf=23, proj_n_bf=1, k=5/7, ep=10, lr=5.9e-3 | 9 monotonic climbs (img_n_bf 7→23, +106%!); iter-10 763194 tries img_n_bf 23→25 |
+| 🚀 **R²-Gaussian** | 8 | **0.0438** (iter-8) | 256g, 500i, lr_pos=5e-4 | iter-8 (lr=5e-4) hr=0.0438 NEW BEST (+31% over iter-6); iter-9 763200 tries lr_pos 5e-4→2e-4 |
+| 🎯 **RAM zero-shot** | 12 | **0.0286** (iter-12) | input_norm=global_max, blend=0.4, factor=0.5, σ=5e-3 | iter-12 (b=0.4) hr=0.0286 (+34% over iter-11); iter-13 763197 tries b 0.4→0.3 |
+| DD-UNet N2I 🔵 INCHING UP | 9 | 0 (SSIM **0.471** iter-9 = FBP!) | c=24, ep=80, lr=5e-5 (long-train regime) | iter-9 SSIM 0.471 MATCHED FBP baseline! Still hr=0; iter-10 763195 pushes ep=120 at lr=5e-5 |
+| TV-iter sup 🟡 MOVING | 8 | 0 (SSIM 0.381 iter-6 best) | share_steps=T, lr=1e-1, grad_clip=20, ep=30 | iter-8 (ep=20) regressed to 0.333; iter-9 763196 reverts ep=30+lr=1e-1, grad_clip 20→100 |
 | 🛑 Wu non-trainable **SOFT STOP** | 10 | 0 (SSIM 0.358 iter-2 best) | n_bands=6, soft=1.5e-3, range=5, window=2 | iter-10 (n_outer=5) SSIM 0.343 — no untested hypothesis; 3 families covered (noise/capacity/motion); paper-edge coverage achieved. Wu-2015 closed-form **structurally bounded** on Mayo LDCT (SSIM ceiling 0.358 < FBP-baseline ~0.46). |
-| Wu trainable | 7 | 0 (SSIM 0.351 iter-6) | n_bands=6, lr=1.1e-4, ep=13, λ_neg=0.7 | iter-7 (λ_neg=2.0) regressed to 0.331; iter-8 763185 reverts iter-1 + ep 13→40 |
+| Wu trainable | 8 | 0 (SSIM 0.351 iter-6 best) | n_bands=6, lr=1.1e-4, ep=13, λ_neg=0.7 | iter-8 (ep=40) SSIM 0.345 unchanged; iter-9 763198 tries λ_neg=0 (untested zero penalty) |
 
 (iter values are hr; SSIM/PSNR shown after `/` for solvers stuck at hr=0)
 
