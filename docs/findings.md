@@ -14,6 +14,93 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-11 — z-scaling missing from the rebin parameter set; v2 fit + s_z sweep diagnose, v3 folds it into Adam
+
+This entry summarises a Mayo L014 calibration re-attempt that supersedes the multi-GT fit summarised in the 2026-05-27 entry below. **Read this first if you're touching Mayo-LDCT geometry.** Files referenced are all in the repo.
+
+### Background — why we re-fit
+
+The 2026-05-27 multi-GT fit (SLURM 762369) trained 10 GT slices SHARED across the parameter set but those 10 slices lived in a **single 100-mm window** centred at the diaphragm. A user-driven re-attempt on 2026-06-11 expanded the supervision to **10 GT slices sampled uniformly across the full 154-slice patient z-range** (indices [7, 23, 39, 55, 71, 87, 103, 119, 135, 151] → patient-z ≈ [−462, −30] mm).
+
+### v2 fit (`scripts/fit_rebin_end2end_L014_v2.py`, SLURM 763364)
+
+- Cache: `scripts/cache_proj_flat_L014_full.py` (SLURM 763363) produces `data/mayo_ldct/staged_helix2fan/L014_proj_flat_full.pt` (37 982 readouts × 64 × 736 ≈ 7 GB).
+- Held fixed (per documented couplings in the entry below): FBP `sod=595.362, sdd=1086.803, pixel_spacing=0.700857, det_spacing=1.285044, det_offset=-0.0397 mm`; `du=1.28584, dv=1.09472` (hardware); `α_dz=+1, α_drho=0, α_dphi=0`.
+- Fit jointly (Adam, 1500 iters, lr=2e-3): SSR `sod, sdd`, `Δz`, `w_slab` (7 logits), `H(ρ)` (64 bins), post-FBP `a, bg, hi`.
+- Loss: **mean over 10 GTs of per-slice L2** on the full 512² (NO FoV mask). Different from v1's FoV-masked sum-over-stack.
+
+Result: SSIM mean 0.9563 / PSNR mean 40.53 dB / RMSE mean 4.8e-4 over the 10 slices. Per-slice numbers in `results/breast_debug/L014_rebin_end2end_fit_v2.json`, diagnostic figure at `results/mayo_debug/L014_rebin_end2end_fit_v2.png`. v2 found a different SSR sweet spot than v1 (sod 593.46 → 592.74; sdd 1086.83 → 1087.34) when forced to explain the full patient z-range — geometry pulled to compromise across slices.
+
+### Why those metrics drop at the patient z-extremes
+
+Per-GT SSIM at v2 optimum:
+
+| pZ (mm) | −461.5 | −413.5 | −365.5 | −317.5 | −269.5 | −221.5 | −173.5 | −125.5 | −77.5 | −29.5 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| SSIM | 0.9496 | 0.9569 | 0.9618 | 0.9609 | 0.9600 | 0.9575 | 0.9501 | 0.9451 | 0.9622 | 0.9585 |
+| PSNR | 39.35 | 40.12 | 41.64 | 41.27 | 41.64 | 42.30 | 41.92 | 39.82 | 38.77 | 38.47 |
+
+Worse at both z-ends, best near the middle. Hypothesis: an un-modelled global z-scaling — every readout's `z_src` is off by a small constant factor — produces an error proportional to `|z|` away from the helical sweep centre. Two physical mechanisms produce a z-scaling, both observationally identical at leading order:
+
+- **A. Wrong `pitch_mm`.** `z_positions[k] = z_start + (k · pitch_mm / rotview)`. DICOM derives this from `TableSpeed × RotationTime`. If Siemens's effective table advance differs from the DICOM tag by ~0.1–0.3 % (the same magnitude as the sod / pixel_spacing offsets already known), every readout's `z_src` is wrong by the same factor.
+- **B. Wrong `dv` (detector pixel height).** The Noo-1999 SSR maps `mm → row` via `v_idx = v_precise / dv + v_centre`. A wrong `dv` reads the wrong row for a given `z_target`; that row carries data from a different `dZ_true`. `dv` enters twice in the upstream pipeline: as the flat-detector pitch (from `cache_proj_flat_L014.py` → `rebin_curved_to_flat`) and as the SSR sampling step. A wrong effective `sdd` during curved-to-flat silently rescales the v-axis the same way.
+
+Both reduce to the same single observable, absorbed by a scalar `s_z` multiplier on per-readout source-z.
+
+### 1-parameter sweep (`scripts/sweep_sz_L014.py`, SLURM 763373 timed-out, re-dispatched as 763375)
+
+For 21 values `s_z ∈ [0.995, 1.005]` step 0.0005, with all other params frozen at v2 optimum:
+
+- Recompute helix-index picks against `z_pos_eff = s_z · z_pos + α_dz · ffs_dz` (integer nearest, ~1 sec).
+- Run the v2 forward pipeline; score per-GT SSIM / PSNR / RMSE / L2.
+
+Partial trajectory (11 of 21 points before the slow-GPU TIMEOUT on lme222):
+
+| s_z | L2_mean | SSIM_mean | PSNR_mean |
+|---:|---:|---:|---:|
+| 0.99500 | 6.25e-7 | 0.9435 | 36.89 |
+| 0.99550 | 5.59e-7 | 0.9456 | 37.28 |
+| 0.99600 | 4.99e-7 | 0.9475 | 37.67 |
+| 0.99650 | 4.44e-7 | 0.9492 | 38.08 |
+| 0.99700 | 3.95e-7 | 0.9508 | 38.49 |
+| 0.99750 | 3.52e-7 | 0.9523 | 38.90 |
+| 0.99800 | 3.15e-7 | 0.9535 | 39.31 |
+| 0.99850 | 2.84e-7 | 0.9545 | 39.69 |
+| 0.99900 | 2.60e-7 | 0.9553 | 40.04 |
+| 0.99950 | 2.43e-7 | 0.9559 | 40.33 |
+| 1.00000 | 2.32e-7 | 0.9563 | 40.53 |
+
+s_z=1.0 reproduces the v2 optimum exactly (PSNR 40.53 dB) — sanity check ✓. The L2_mean curve is monotonically decreasing all the way through 1.0 — **optimum is at s_z > 1.0**, i.e. z-scaling > 1, i.e. the SSR is under-stepping in z. Direction confirmed: pitch under-estimated, or dv under-estimated, or effective sdd over-estimated in the curved-to-flat. Precise minimum awaits the re-dispatched sweep covering 1.000 → 1.005. Re-dispatch uses `--time=01:30:00` and excludes `lme222` (Quadro RTX 5000; one full sweep iter took >2 min on that GPU).
+
+Outputs (after re-dispatch completes): `results/breast_debug/L014_sz_sweep.json`, `results/mayo_debug/L014_sz_sweep.png`.
+
+### v3 plan: fold `s_z` into Adam (`scripts/fit_rebin_end2end_L014_v3.py`)
+
+Adds **`s_z` as a learnable scalar** (init 1.0) to the v2 Adam optimizer. Forward uses `z_pos_eff = s_z · z_pos_sub + α_dz · ffs_dz`. Picks are non-differentiable integer-nearest indices but the SSR sampling on those picks IS differentiable in `s_z` through the `v_precise = dZ · (u² + sdd²) / (sod·sdd)` formula. Picks are re-precomputed every 100 Adam iters so they don't drift more than a couple of rows from the current `s_z`. Everything else mirrors v2 (same 10-slice sampling, same per-slice L2 mean, same FBP-fixed / SSR-fit split).
+
+Sbatch: `cluster/slurm/fit_rebin_end2end_L014_v3.sbatch`. Output: `results/breast_debug/L014_rebin_end2end_fit_v3.json` + `results/mayo_debug/L014_rebin_end2end_fit_v3.png`. v2 outputs remain untouched.
+
+### Quick reference — files added 2026-06-11
+
+| File | Purpose |
+|---|---|
+| `scripts/cache_proj_flat_L014_full.py` | Cache the FULL helical sweep (vs the 100-mm peak slab). |
+| `cluster/slurm/cache_proj_flat_L014_full.sbatch` | SLURM wrapper for the above. |
+| `scripts/fit_rebin_end2end_L014_v2.py` | 10-across-154 + per-slice L2 mean version of the multi-GT fit. |
+| `cluster/slurm/fit_rebin_end2end_L014_v2.sbatch` | SLURM wrapper. |
+| `scripts/sweep_sz_L014.py` | 1-parameter z-scaling sweep at v2 optimum. |
+| `cluster/slurm/sweep_sz_L014.sbatch` | SLURM wrapper. |
+| `scripts/fit_rebin_end2end_L014_v3.py` | v2 + learnable `s_z`. |
+| `cluster/slurm/fit_rebin_end2end_L014_v3.sbatch` | SLURM wrapper. |
+| `results/breast_debug/L014_rebin_end2end_fit_v2.json` | v2 fitted params + per-GT metrics. |
+| `results/breast_debug/L014_sz_sweep.json` | Sweep grid + best. |
+| `results/breast_debug/L014_rebin_end2end_fit_v3.json` | v3 fitted params + per-GT metrics. |
+| `results/mayo_debug/L014_rebin_end2end_fit_v2.png` | Diagnostic figure. |
+| `results/mayo_debug/L014_sz_sweep.png` | Sweep curves + per-GT trajectories. |
+| `results/mayo_debug/L014_rebin_end2end_fit_v3.png` | Diagnostic figure. |
+
+The 2026-05-27 entry below is the prior canonical write-up. The numbers there describe the 10-central-slice fit; this v2/v3 work spreads the supervision across the full patient.
+
 ## 2026-05-27 — Summary: how we got from DICOM-nominal SSIM 0.87 to fitted SSIM 0.96 on L014 — and why the dominant cause is **1 mm of DICOM-header rounding**
 
 This entry consolidates what we now know about reconstructing Mayo's
