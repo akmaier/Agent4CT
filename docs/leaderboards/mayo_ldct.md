@@ -158,7 +158,7 @@ NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
 **Phase-4 overturn count: 6 of 10 above baseline ⬆ · 2 STOPped · 2 still under retest**
-🏆 ItNet v1 (**0.1732** iter-14, sweet) · ItNet v2 (0.0855) · Hammernik 2017 (0.0621) · DD-BF L2 (**0.0590** iter-11, **11 climbs**!) · R²-Gaussian (0.0438) · RAM zero-shot (0.0402 iter-14, near peak) | 🛑 Wu non-trainable, Wu trainable | ⏳ DD-UNet N2I (SSIM 0.471), TV-iter sup (SSIM 0.381)
+🏆 ItNet v1 (**0.1739** iter-17) · 🚀 **ItNet v2 (0.1512 iter-16 BREAKTHROUGH!)** · Hammernik 2017 (0.0621) · DD-BF L2 (**0.0611** iter-12, **12 climbs**!) · R²-Gaussian (0.0438) · RAM zero-shot (**0.0440** iter-15) | 🛑 Wu non-trainable, Wu trainable | ⏳ DD-UNet N2I (SSIM 0.471), TV-iter sup (SSIM 0.381)
 
 | Solver | iters tried | Best hr | Best config | Latest trajectory + next knob |
 |---|---:|---:|---|---|
