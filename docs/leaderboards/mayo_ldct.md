@@ -157,18 +157,20 @@ are being retested via the 20-iter agentic-autoresearch protocol**
 NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
-| Solver | iter-1 hr | iter-2 hr | iter-3 hr | iter-4 job (knob change) | Best so far |
-|---|---:|---:|---:|---|---:|
-| **DD-BF supervised L2** | 0.0264 ⭐ | 0.0313 ⬆ | **0.0356** ⬆⬆ | 763118 (img_n_bf 11→13 — keep climbing) | **0.0356** (iter-3) |
-| **Hammernik 2017** | 0.0483 ⭐ | 0 ⬇ | 0 (crash, 5.7s) | 763122 (revert T=5/filters=24, vn_kernel 11→7) | **0.0483** (iter-1) |
-| **R²-Gaussian** | 0.0219 ⭐ | ~0 ⬇ | 0.0110 ↑ | 763123 (revert 256g, n_iter 500→1500 — 3× more iters at sweet density) | **0.0219** (iter-1) |
-| DD-UNet N2I | 0 / SSIM=0.462 | 0 / 0.459 | 0 / 0.472 | 763114 (c 8→32 + ep 15→25 + lr 5e-4 — max capacity test) | 0 |
-| TV-iter supervised | 0 / 0.299 | 0 / 0.299 | 0 / 0.299 | 763115 (tv_share_steps F→T + clip_max 0.05→0.1 — single shared GD step) | 0 |
-| ItNet v1 | 0 / 0.262 | 0 / 0.261 | 0 / 0.268 | 763116 (itnet_k 3→1 + unet_c 16→32 + α 0.02→0.05) | 0 |
-| Wu non-trainable | 0 / 0.327 | 0 / 0.358 | 0 / 0.345 | 763117 (revert n_bands=6, soft_thresh 1e-3→3e-3) | 0 |
-| ItNet v2 | 0 / 0.267 | 0 / 0.214 | 0 / 0.265 | 763119 (itnet_k 4→1 + unet_c 16→32 + residual F→T) | 0 |
-| RAM zero-shot | 0 / PSNR 12.30 | 0 / PSNR 12.22 | 0 / PSNR 12.30 | 763120 (blend 0.3→0.8 + factor 0.5→0.3 — mostly-FBP test) | 0 |
-| Wu trainable | 0 / 0.345 | 0 / 0.327 | 0 / 0.345 | 763121 (motion_window 2→1 — less averaging) | 0 |
+| Solver | iter-1 hr | iter-2 hr | iter-3 hr | iter-4 hr | iter-5 job | Best so far |
+|---|---:|---:|---:|---:|---|---:|
+| **DD-BF supervised L2** | 0.0264 ⭐ | 0.0313 ⬆ | **0.0356** ⬆⬆ | _763118 R_ | _pending_ | **0.0356** (iter-3) |
+| **ItNet v1** 🎉 NEW | 0 | 0 | 0 | **0.0284** ⬆⬆ | 763124 (pretrain_ep 8→12, finetune_lr 2e-4→5e-4) | **0.0284** (iter-4) |
+| **Hammernik 2017** | 0.0483 ⭐ | 0 ⬇ | 0 (crash) | _763122 Q_ | _pending_ | **0.0483** (iter-1) |
+| **R²-Gaussian** | 0.0219 ⭐ | ~0 ⬇ | 0.0110 ↑ | _763123 Q_ | _pending_ | **0.0219** (iter-1) |
+| DD-UNet N2I | 0 / SSIM=0.462 | 0 / 0.459 | 0 / 0.472 | _763114 R_ | _pending_ | 0 |
+| TV-iter supervised | 0 / 0.299 | 0 / 0.299 | 0 / 0.299 | _763115 R_ | _pending_ | 0 |
+| Wu non-trainable | 0 / 0.327 | 0 / 0.358 | 0 / 0.345 | 0 / 0.349 | 763125 (motion_range 5→3, revert soft=1.5e-3) | 0 |
+| ItNet v2 | 0 / 0.267 | 0 / 0.214 | 0 / 0.265 | 0 / 0.270 | 763126 (residual T→F, α_init 0.02→0.05 — match v1 winner) | 0 |
+| RAM zero-shot | 0 / PSNR 12.30 | 0 / PSNR 12.22 | 0 / PSNR 12.30 | 0 / PSNR 12.35 | 763127 (blend 0.8→0.95 + σ 1e-2→5e-3 — near-pure FBP) | 0 |
+| Wu trainable | 0 / 0.345 | 0 / 0.327 | 0 / 0.345 | _763121 R_ | _pending_ | 0 |
+
+(R = running, Q = queued behind QOS=4)
 
 **iter-3 trajectory:**
 - 🏆 **DD-BF sup L2**: 3rd monotonic climb (0.0264→0.0313→0.0356, +35% over iter-1) — img_n_bf=11 keeps gaining. iter-4 pushes to 13.
