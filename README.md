@@ -22,6 +22,24 @@ substrate facts.
 > stumbled on this; the table of historical anti-patterns is preserved
 > in Step 2 so the next agent can avoid them.
 
+> 🛑 **Vision-module caveat (added 2026-06-11).** The agent's built-in
+> image-understanding module is **NOT trained on CT / sinogram / medical
+> imagery** and produces unreliable "visual" judgments on this domain
+> (e.g., reading noise levels off FBPs, judging artifact severity,
+> claiming two near-identical reconstructions "look different"). Multiple
+> wrong conclusions have been drawn this way during user-guided debug
+> sessions. **Rules**:
+> - During autonomous agentic autoresearch loops the vision module is
+>   acceptable as a quick coarse sanity check (the loop reports a number
+>   anyway and the agent can be redirected).
+> - When the **user is personally guiding** a debug session, the agent
+>   MUST NOT lean on visual inspection to draw conclusions. Report
+>   quantitative statistics (means, stds, RMSE, SSIM, profiles) and let
+>   the user inspect the images. Do not editorialise from the pixels.
+> - All visual judgments are off until a CT-specific
+>   calibration/validation has been done — and that work has not
+>   happened.
+
 ## 🏆 Current leaderboards
 
 Best-of-best per solver per dataset, all metrics through the
