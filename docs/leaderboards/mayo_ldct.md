@@ -157,8 +157,8 @@ are being retested via the 20-iter agentic-autoresearch protocol**
 NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
-**Phase-4 final scoreboard: 6 of 10 above baseline ⬆ · 3 SOFT STOPped · 1 still under retest**
-🥇 **ItNet v2 FINAL: 0.2222** · 🥈 **ItNet v1 FINAL: 0.2100** · **R²-Gaussian 0.0710** (iter-16, 96g!) · **DD-BF L2 FINAL: 0.0706** (iter-20) · Hammernik 2017 (**0.0665** iter-14) · **RAM FINAL: 0.0461** | 🛑 Wu non/trainable, DD-UNet N2I | ⏳ TV-iter sup (SSIM 0.423)
+**Phase-4 final scoreboard: 6 of 10 above baseline ⬆ · 4 SOFT STOPped**
+🥇 **ItNet v2 FINAL: 0.2222** · 🥈 **ItNet v1 FINAL: 0.2100** · **R²-Gaussian 0.0799** (iter-17, 64g) · **DD-BF L2 FINAL: 0.0706** · Hammernik 2017 (**0.0665** iter-14) · **RAM FINAL: 0.0461** | 🛑 Wu non/trainable, DD-UNet N2I, TV-iter sup (all structurally bounded)
 
 **Key insight discovered**: `train_n` is a UNIVERSAL binding constraint across ItNet v1/v2, DD-BF L2, AND Hammernik 2017. R²-Gaussian additionally shows monotonic gain from sparser Gaussian density (256g → 96g).
 
