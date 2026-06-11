@@ -162,15 +162,15 @@ any hr=0 result until 20 hypothesis-driven iters rule it out.
 
 | Solver | iters tried | Best hr | Best config | Latest trajectory + next knob |
 |---|---:|---:|---|---|
-| 🏆 **ItNet v1** | 9 | **0.1205** (iter-9) | k=1, c=32, α=0.05, ep=24, finetune ep=8/lr=5e-4 | iter-9 (ep=24) +1.5% over iter-8 (ep=20) PLATEAU; iter-10 763160 tries k=1→2 |
-| 🚀 **ItNet v2** | 9 | **0.0855** (iter-6) | k=1, c=32, α_init=0.05, ep=12, residual=F | iter-9 (c=24) regressed; iter-10 763163 tries k=1→2 at proven c=32 |
+| 🏆 **ItNet v1** | 10 | **0.1205** (iter-9) | k=1, c=32, α=0.05, ep=24, finetune ep=8/lr=5e-4 | iter-10 (k=2) COLLAPSED SSIM 0.221; iter-11 763168 reverts k=1+ep=20, finetune_lr 5e-4→1.5e-3 |
+| 🚀 **ItNet v2** | 10 | **0.0855** (iter-6) | k=1, c=32, α_init=0.05, ep=12, residual=F | iter-10 (k=2) COLLAPSED SSIM 0.216; iter-11 763169 reverts k=1, tries residual=False→True at sweet spot |
 | 🎉 **Hammernik 2017** | 6 | **0.0621** (iter-5) | T=5, filters=24, kernel=11, λ=5e-3, ep=12 | iter-6 (λ=1e-2) regressed; iter-7 763166 reverts λ=5e-3 + ep 12→18 |
 | 🏆 **DD-BF sup L2** | 7 | **0.0490** (iter-7) | img_n_bf=19, proj_n_bf=1, k=5/7, ep=10, lr=5.9e-3 | 7 monotonic climbs (img_n_bf 7→19); iter-8 763162 tries img_n_bf 19→21 |
 | 🚀 **R²-Gaussian** | 6 | **0.0335** (iter-6) | 256g, 500i, lr_pos=1e-3 | iter-6 (revert + lower lr) hit new best; iter-7 763167 pushes n_iter 500→800 |
 | 🎯 **RAM zero-shot** OVERTURNED | 9 | **0.0045** (iter-9) | input_norm=global_max, blend=0.7, factor=0.5, σ=5e-3 | iter-9 crossed baseline (PSNR 12.63 > 12.59); iter-10 763164 tries blend 0.7→0.6 |
 | DD-UNet N2I | 7 | 0 (SSIM 0.458 max) | c=24, ep=30, lr=5e-3 (lr regime exhausted) | iter-7 (extreme lr=5e-3) still stuck; iter-8 763158 tries OPPOSITE (ep=50, lr=1e-4) |
 | TV-iter sup 🟡 MOVING | 6 | 0 (SSIM 0.381) | share_steps=T, lr=1e-1, grad_clip=20, ep=30 | SSIM climbed 0.299→0.381 across iter-5/6; iter-7 763159 pushes lr 1e-1→2e-1 |
-| Wu non-trainable | 9 | 0 (SSIM 0.358 iter-2) | n_bands=6, soft=1.5e-3, range=5, window=2 | All single-family knobs explored; iter-10 763161 tries n_outer 2→5 (extreme) before STOP eligibility |
+| 🛑 Wu non-trainable **SOFT STOP** | 10 | 0 (SSIM 0.358 iter-2 best) | n_bands=6, soft=1.5e-3, range=5, window=2 | iter-10 (n_outer=5) SSIM 0.343 — no untested hypothesis; 3 families covered (noise/capacity/motion); paper-edge coverage achieved. Wu-2015 closed-form **structurally bounded** on Mayo LDCT (SSIM ceiling 0.358 < FBP-baseline ~0.46). |
 | Wu trainable | 6 | 0 (SSIM 0.351) | n_bands=6, lr=1e-3, ep=20 | iter-6 lr 9× boost SSIM +0.003; iter-7 763165 tries λ_neg 0.7→2.0 + soft 5×
 
 (iter values are hr; SSIM/PSNR shown after `/` for solvers stuck at hr=0)
