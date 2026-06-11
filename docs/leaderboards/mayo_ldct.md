@@ -157,18 +157,18 @@ are being retested via the 20-iter agentic-autoresearch protocol**
 NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
-| Solver | iter-1 | iter-2 | iter-3 | iter-4 | iter-5 | iter-6 | next job | Best so far |
-|---|---:|---:|---:|---:|---:|---:|---|---:|
-| 🏆 **DD-BF sup L2** | 0.0264 | 0.0313 ⬆ | 0.0356 ⬆ | 0.0394 ⬆ | **0.0428** ⬆⬆⬆⬆⬆ | _763140 P_ | iter-6 763140 (img_n_bf 15→17) | **0.0428** (iter-5) |
-| 🚀 **ItNet v2** LEADER | 0 / 0.267 | 0 / 0.214 | 0 / 0.265 | 0 / 0.270 | 0.0324 🎉 | **0.0855** ⬆⬆⬆⬆ | iter-7 763141 (pretrain_ep 12→16) | **0.0855** (iter-6) |
-| 🏆 **ItNet v1** | 0 | 0 | 0 | 0.0284 | **0.0608** | 0.0471 ⬇ | iter-7 763138 (revert c=32, pretrain_ep 12→16) | **0.0608** (iter-5) |
-| **Hammernik 2017** | 0.0483 ⭐ | 0 | 0 (crash) | 0 / 0.310 | _763136 R_ | _pending_ | iter-5 763136 (revert iter-1 arch, λ_init 2.3e-3→5e-3) | **0.0483** (iter-1) |
-| **R²-Gaussian** | 0.0219 ⭐ | ~0 | 0.0110 ↑ | 0.0134 ↑ | _763137 Q_ | _pending_ | iter-5 763137 (256g, n_iter 1500→2500) | **0.0219** (iter-1) |
-| DD-UNet N2I | 0 / 0.462 | 0 / 0.459 | 0 / 0.472 | 0 / 0.466 | _763128 R_ | _pending_ | iter-5 763128 (lr 5e-4→1e-3, ep 25→30) | 0 |
-| TV-iter sup | 0 / 0.299 | 0 / 0.299 | 0 / 0.299 | 0 / 0.298537 | _763129 R_ | _pending_ | iter-5 763129 (lr↑5×, grad_clip 1→10) | 0 |
-| Wu non-trainable | 0 / 0.327 | 0 / 0.358 | 0 / 0.345 | 0 / 0.349 | 0 / 0.355 | 0 / 0.349 | iter-7 763139 (revert n_outer=2, soft 1.5e-3→7e-4) | 0 |
-| RAM zero-shot | 0 / 12.30 | 0 / 12.22 | 0 / 12.30 | 0 / 12.35 ⬆ | 0 / 12.26 | 0 / 12.31 | iter-7 763142 (ram_finetune F→T — NEW CONFIG FAMILY) | 0 |
-| Wu trainable | 0 / 0.345 | 0 / 0.327 | 0 / 0.345 | 0 / 0.348 | _763135 R_ | _pending_ | iter-5 763135 (n_outer 2→3) | 0 |
+| Solver | iter-1 | iter-2 | iter-3 | iter-4 | iter-5 | iter-6 | iter-7 | next job | Best so far |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---:|
+| 🏆 **DD-BF sup L2** | 0.0264 | 0.0313 ⬆ | 0.0356 ⬆ | 0.0394 ⬆ | 0.0428 ⬆ | **0.0460** ⬆⬆⬆⬆⬆⬆ | _763147 P_ | iter-7 763147 (img_n_bf 17→19) | **0.0460** (iter-6) |
+| 🚀 **ItNet v2** LEADER | 0 / 0.267 | 0 / 0.214 | 0 / 0.265 | 0 / 0.270 | 0.0324 🎉 | **0.0855** ⬆⬆⬆⬆ | 0.0656 ⬇ | iter-8 763148 (revert ep=12, α_init 0.05→0.1) | **0.0855** (iter-6) |
+| 🏆 **ItNet v1** | 0 | 0 | 0 | 0.0284 | 0.0608 | 0.0471 ⬇ | **0.0740** ⬆⬆ | iter-8 763145 (pretrain_ep 16→20) | **0.0740** (iter-7) |
+| 🎉 **Hammernik 2017** CLIMBING | 0.0483 ⭐ | 0 | 0 (crash) | 0 / 0.310 | **0.0621** ⬆⬆ | _763151 P_ | — | iter-6 763151 (λ_init 5e-3→1e-2) | **0.0621** (iter-5) |
+| **R²-Gaussian** | 0.0219 ⭐ | ~0 | 0.0110 | 0.0134 | 0.0071 ⬇ | _763152 P_ | — | iter-6 763152 (revert iter-1 winner, gs_lr_pos 3e-3→1e-3) | **0.0219** (iter-1) |
+| DD-UNet N2I | 0 / 0.462 | 0 / 0.459 | 0 / 0.472 | 0 / 0.466 | 0 / 0.467 | _763143 P_ | — | iter-6 763143 (batch 1→4, lr 1e-3→2e-3) | 0 |
+| TV-iter sup 🟡 MOVING | 0 / 0.299 | 0 / 0.299 | 0 / 0.299 | 0 / 0.298537 | **0 / 0.378** 🎉 | _763144 P_ | — | iter-6 763144 (lr 5e-2→1e-1, ep 20→30, grad_clip 10→20) | 0 (SSIM jumped) |
+| Wu non-trainable | 0 / 0.327 | 0 / 0.358 | 0 / 0.345 | 0 / 0.349 | 0 / 0.355 | 0 / 0.349 | 0 / 0.345 | iter-8 763146 (motion_window 2→3, soft=7e-4) | 0 |
+| RAM zero-shot | 0 / 12.30 | 0 / 12.22 | 0 / 12.30 | 0 / 12.35 ⬆ | 0 / 12.26 | 0 / 12.31 | 0 / 12.32 (FT) | iter-8 763149 (input_norm adjoint→global — FAMILY #3) | 0 |
+| Wu trainable | 0 / 0.345 | 0 / 0.327 | 0 / 0.345 | 0 / 0.348 | 0 / 0.328 ⬇ | _763150 P_ | — | iter-6 763150 (lr 1.1e-4→1e-3 — 9× boost) | 0 |
 
 (iter values are hr; SSIM/PSNR shown after `/` for solvers stuck at hr=0)
 
