@@ -157,27 +157,29 @@ are being retested via the 20-iter agentic-autoresearch protocol**
 NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
-| Solver | iter-1 hr | iter-2 hr | iter-3 job (knob change) | Best so far |
-|---|---:|---:|---|---:|
-| **DD-BF supervised L2** | 0.0264 ⭐ | **0.0313** ⬆ | 763108 (img_n_bf 9→11 — continue climbing) | **0.0313** (iter-2) |
-| **Hammernik 2017** | 0.0483 ⭐ | 0 ⬇ | 763112 (revert T=5, filters 24→32) | **0.0483** (iter-1) |
-| **R²-Gaussian** | 0.0219 ⭐ | ~0 ⬇ | 763113 (gaussians 384, n_iter 800, +gs_lr_pos=3e-3) | **0.0219** (iter-1) |
-| DD-UNet N2I | 0 / SSIM=0.462 | 0 / 0.459 | 763104 (c 24→8 + ep 15 + lr 5e-4 — dramatic shift) | 0 |
-| TV-iter supervised | 0 / 0.299 | 0 / 0.299 (identical!) | 763105 (tv_step_init 1e-2→5e-2, λ↑10×) | 0 |
-| ItNet v1 | 0 / 0.262 | 0 / 0.261 | 763106 (pretrain_lr 5e-4→5e-3, α 0.005→0.02) | 0 |
-| Wu non-trainable | 0 / 0.327 | 0 / 0.358 (slight up) | 763107 (n_bands 6→8, n_outer 2→3) | 0 |
-| ItNet v2 | 0 / 0.267 | 0 / 0.214 (regressed) | 763109 (residual_learning False, pretrain_lr↑4×) | 0 |
-| RAM zero-shot | 0 / PSNR 12.30 | 0 / PSNR 12.22 | 763110 (blend 0.5→0.3, σ ↓4×) | 0 |
-| Wu trainable | 0 / 0.345 | 0 / 0.327 (regressed) | 763111 (revert lr=1.1e-4, push λ_neg 0.7→1.5) | 0 |
+| Solver | iter-1 hr | iter-2 hr | iter-3 hr | iter-4 job (knob change) | Best so far |
+|---|---:|---:|---:|---|---:|
+| **DD-BF supervised L2** | 0.0264 ⭐ | 0.0313 ⬆ | **0.0356** ⬆⬆ | 763118 (img_n_bf 11→13 — keep climbing) | **0.0356** (iter-3) |
+| **Hammernik 2017** | 0.0483 ⭐ | 0 ⬇ | 0 (crash, 5.7s) | 763122 (revert T=5/filters=24, vn_kernel 11→7) | **0.0483** (iter-1) |
+| **R²-Gaussian** | 0.0219 ⭐ | ~0 ⬇ | 0.0110 ↑ | 763123 (revert 256g, n_iter 500→1500 — 3× more iters at sweet density) | **0.0219** (iter-1) |
+| DD-UNet N2I | 0 / SSIM=0.462 | 0 / 0.459 | 0 / 0.472 | 763114 (c 8→32 + ep 15→25 + lr 5e-4 — max capacity test) | 0 |
+| TV-iter supervised | 0 / 0.299 | 0 / 0.299 | 0 / 0.299 | 763115 (tv_share_steps F→T + clip_max 0.05→0.1 — single shared GD step) | 0 |
+| ItNet v1 | 0 / 0.262 | 0 / 0.261 | 0 / 0.268 | 763116 (itnet_k 3→1 + unet_c 16→32 + α 0.02→0.05) | 0 |
+| Wu non-trainable | 0 / 0.327 | 0 / 0.358 | 0 / 0.345 | 763117 (revert n_bands=6, soft_thresh 1e-3→3e-3) | 0 |
+| ItNet v2 | 0 / 0.267 | 0 / 0.214 | 0 / 0.265 | 763119 (itnet_k 4→1 + unet_c 16→32 + residual F→T) | 0 |
+| RAM zero-shot | 0 / PSNR 12.30 | 0 / PSNR 12.22 | 0 / PSNR 12.30 | 763120 (blend 0.3→0.8 + factor 0.5→0.3 — mostly-FBP test) | 0 |
+| Wu trainable | 0 / 0.345 | 0 / 0.327 | 0 / 0.345 | 763121 (motion_window 2→1 — less averaging) | 0 |
 
-**iter-2 trajectory:**
-- DD-BF sup L2: climbed +18% (0.0264 → 0.0313) — img_n_bf 7→9 worked
-- Hammernik 2017: REGRESSED (T=7 too deep — revert to T=5 + widen filters instead)
-- R²-Gaussian: regressed to ~0 (512 g/1000 iter too many — try intermediate 384)
-- TV-iter sup: IDENTICAL SSIM (0.299) at K=10 vs K=30 — FBP-init basin confirmed real (need step shock at iter-3)
-- N2I family (DD-UNet N2I, RAM): hr=0 with marginal SSIM changes
-- ItNet family: low SSIM (~0.21-0.26) — capacity not absorbing, try higher lr instead
-- Wu family: trainable regressed, non-trainable inched up at n_bands=6 (sweet spot)
+**iter-3 trajectory:**
+- 🏆 **DD-BF sup L2**: 3rd monotonic climb (0.0264→0.0313→0.0356, +35% over iter-1) — img_n_bf=11 keeps gaining. iter-4 pushes to 13.
+- 🟡 R²-Gaussian: partial recovery (~0→0.0110) at intermediate density (384g/800i). Confirms 256g is sweet spot — iter-4 tests 256g with 3× more iters.
+- 🔴 Hammernik 2017: filters=32 crashed in 5.7s (likely OOM). iter-4 reverts ALL hyperparams to iter-1 winner except shrinks vn_kernel 11→7.
+- 🔴 TV-iter sup: SSIM exactly 0.299 across K + step×10 shock — FBP-init basin unbreakable by step-tuning. iter-4 switches to tv_share_steps=True (architectural change).
+- 🟡 Wu non-trainable: 0.358 (iter-2 n_bands=6) > 0.345 (iter-3 n_bands=8) — sweet spot confirmed n_bands=6. iter-4 pushes soft_thresh 3× at the proven n_bands.
+- 🔴 ItNet v1/v2: high-lr shock didn't move 0.26-0.27 ceiling. iter-4 tries opposite direction (k=1, c=32) — collapse unrolling.
+- 🔴 RAM: 0.29 dB below baseline across blend ∈ {0.3, 0.5, 0.7}. iter-4 final attempt at blend=0.8 (mostly FBP) before declaring structural.
+- 🟡 DD-UNet N2I: SSIM moved 0.46→0.47 with c=8. iter-4 tests opposite extreme (c=32 + ep=25).
+- 🔴 Wu trainable: lr/ep/λ_neg sweep all stuck at 0.345 ceiling. iter-4 tries motion_window 2→1.
 
 **🎯 3 STOP verdicts already OVERTURNED at iter-1**: DD-BF sup L2 (Mayo Step-2 said hr=0 "structural; 18 BF too low cap"; breast-CT TPE winner ported here → hr=0.0264). Hammernik 2017 (Mayo Step-2 said hr=0 "λ stuck"; VN-winning arch with T=5, n_filters=24 → hr=0.0483, just below VN's 0.0551). R²-Gaussian (Mayo Step-2 was TIMEOUT; minimal 256-Gaussian + 500-iter config → hr=0.0219, fit cleanly in 30-min wall).
 
