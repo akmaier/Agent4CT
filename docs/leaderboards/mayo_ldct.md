@@ -157,8 +157,10 @@ are being retested via the 20-iter agentic-autoresearch protocol**
 NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
-**Phase-4 overturn count: 6 of 10 above baseline ⬆ · 2 STOPped · 2 still under retest**
-🥇 **ItNet v2 FINAL: 0.2222** HARD STOP · 🥈 **ItNet v1 FINAL: 0.2100** HARD STOP · Hammernik 2017 (0.0621) · DD-BF L2 (**0.0691** iter-17 NEW BEST via train_n=75!) · R²-Gaussian (0.0438) · RAM (0.0461) | 🛑 Wu non/trainable | ⏳ DD-UNet N2I, TV-iter sup
+**Phase-4 final scoreboard: 6 of 10 above baseline ⬆ · 3 SOFT STOPped · 1 still under retest**
+🥇 **ItNet v2 FINAL: 0.2222** · 🥈 **ItNet v1 FINAL: 0.2100** · **Hammernik 2017 0.0665** (iter-14 NEW BEST via train_n=90) · DD-BF L2 (**0.0696** iter-18) · **R²-Gaussian 0.0585** (iter-14 NEW BEST via 192g!) · **RAM FINAL: 0.0461** | 🛑 Wu non/trainable, DD-UNet N2I (proposed STOP — see notes) | ⏳ TV-iter sup (SSIM 0.423 slowly climbing)
+
+**Key insight discovered**: `train_n` is a UNIVERSAL binding constraint across ItNet v1, ItNet v2, DD-BF L2, AND Hammernik 2017. Lifting to 75-90 broke ceilings in all four solvers.
 
 | Solver | iters tried | Best hr | Best config | Latest trajectory + next knob |
 |---|---:|---:|---|---|
