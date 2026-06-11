@@ -157,20 +157,30 @@ are being retested via the 20-iter agentic-autoresearch protocol**
 NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
-| Solver | iter-1 hr | iter-2 hr | iter-3 hr | iter-4 hr | iter-5 job | Best so far |
-|---|---:|---:|---:|---:|---|---:|
-| **DD-BF supervised L2** | 0.0264 ⭐ | 0.0313 ⬆ | **0.0356** ⬆⬆ | _763118 R_ | _pending_ | **0.0356** (iter-3) |
-| **ItNet v1** 🎉 NEW | 0 | 0 | 0 | **0.0284** ⬆⬆ | 763124 (pretrain_ep 8→12, finetune_lr 2e-4→5e-4) | **0.0284** (iter-4) |
-| **Hammernik 2017** | 0.0483 ⭐ | 0 ⬇ | 0 (crash) | _763122 Q_ | _pending_ | **0.0483** (iter-1) |
-| **R²-Gaussian** | 0.0219 ⭐ | ~0 ⬇ | 0.0110 ↑ | _763123 Q_ | _pending_ | **0.0219** (iter-1) |
-| DD-UNet N2I | 0 / SSIM=0.462 | 0 / 0.459 | 0 / 0.472 | _763114 R_ | _pending_ | 0 |
-| TV-iter supervised | 0 / 0.299 | 0 / 0.299 | 0 / 0.299 | _763115 R_ | _pending_ | 0 |
-| Wu non-trainable | 0 / 0.327 | 0 / 0.358 | 0 / 0.345 | 0 / 0.349 | 763125 (motion_range 5→3, revert soft=1.5e-3) | 0 |
-| ItNet v2 | 0 / 0.267 | 0 / 0.214 | 0 / 0.265 | 0 / 0.270 | 763126 (residual T→F, α_init 0.02→0.05 — match v1 winner) | 0 |
-| RAM zero-shot | 0 / PSNR 12.30 | 0 / PSNR 12.22 | 0 / PSNR 12.30 | 0 / PSNR 12.35 | 763127 (blend 0.8→0.95 + σ 1e-2→5e-3 — near-pure FBP) | 0 |
-| Wu trainable | 0 / 0.345 | 0 / 0.327 | 0 / 0.345 | _763121 R_ | _pending_ | 0 |
+| Solver | iter-1 | iter-2 | iter-3 | iter-4 | iter-5 | next job | Best so far |
+|---|---:|---:|---:|---:|---:|---|---:|
+| 🏆 **DD-BF sup L2** | 0.0264 | 0.0313 ⬆ | 0.0356 ⬆ | **0.0394** ⬆⬆⬆ | _763132_ | iter-5 763132 (img_n_bf 13→15) | **0.0394** (iter-4) |
+| 🏆 **ItNet v1** | 0 | 0 | 0 | 0.0284 🎉 | **0.0608** ⬆⬆⬆ | iter-6 763130 (unet_c 32→48) | **0.0608** (iter-5) |
+| 🎉 **ItNet v2** NEW | 0 / 0.267 | 0 / 0.214 | 0 / 0.265 | 0 / 0.270 | **0.0324** 🎉 | iter-6 763133 (pretrain_ep 8→12 — match v1) | **0.0324** (iter-5) |
+| **Hammernik 2017** | 0.0483 ⭐ | 0 | 0 (crash) | 0 / 0.310 | _763136_ | iter-5 763136 (revert iter-1 arch, λ_init 2.3e-3→5e-3) | **0.0483** (iter-1) |
+| **R²-Gaussian** | 0.0219 ⭐ | ~0 | 0.0110 ↑ | 0.0134 ↑ | _763137_ | iter-5 763137 (256g, n_iter 1500→2500) | **0.0219** (iter-1) |
+| DD-UNet N2I | 0 / 0.462 | 0 / 0.459 | 0 / 0.472 | 0 / 0.466 | _pending_ | iter-5 763128 (lr 5e-4→1e-3, ep 25→30) | 0 |
+| TV-iter sup | 0 / 0.299 | 0 / 0.299 | 0 / 0.299 | 0 / 0.298537 (4× identical!) | _pending_ | iter-5 763129 (lr↑5×, grad_clip 1→10) | 0 |
+| Wu non-trainable | 0 / 0.327 | 0 / 0.358 | 0 / 0.345 | 0 / 0.349 | 0 / 0.355 | iter-6 763131 (motion_range=5, n_outer 2→3) | 0 |
+| RAM zero-shot | 0 / 12.30 | 0 / 12.22 | 0 / 12.30 | 0 / 12.35 ⬆ | 0 / 12.26 | iter-6 763134 (blend 0.95→0.9 — refine peak between 0.8 and 0.95) | 0 |
+| Wu trainable | 0 / 0.345 | 0 / 0.327 | 0 / 0.345 | 0 / 0.348 | _763135_ | iter-5 763135 (n_outer 2→3 — parallel test) | 0 |
 
-(R = running, Q = queued behind QOS=4)
+(iter values are hr; SSIM/PSNR shown after `/` for solvers stuck at hr=0)
+
+**iter-4 + iter-5 highlights:**
+- 🏆 **DD-BF L2**: 4 monotonic climbs in a row (0.0264 → 0.0313 → 0.0356 → **0.0394**, +49% total). img_n_bf 7→9→11→13 each added gain. iter-5 tests img_n_bf=15.
+- 🏆 **ItNet v1 EXPLOSIVE**: k=1+c=32+α=0.05 (iter-4) → hr=0.0284 broke 0.26 SSIM ceiling. iter-5 added ep+lr → hr=0.0608 (+114% in one iter!). iter-6 (c=48) targets continued climb.
+- 🎉 **ItNet v2 OVERTURNED**: cross-solver hypothesis ported v1's winning recipe → hr=0.0324 (was 0 across iter-1/2/3/4). iter-6 mimics v1's iter-5 ep/lr/c=32 to match v1's hr=0.0608.
+- 🟡 **R²-Gaussian recovering**: 0.0134 (iter-4 at 1500i) — closer to iter-1's 0.0219 but not there yet. iter-5 pushes 2500 iters.
+- 🔴 **TV-iter sup confirmed structurally locked**: SSIM=0.298537 to 6 digits across iter-1/2/3/4 despite K, step, λ, share_steps changes. iter-5 final attempt: lr↑5×, grad_clip↑10× — if no movement, the FBP-init basin is a true fixed point.
+- 🔴 **DD-UNet N2I structural floor**: SSIM 0.46-0.47 across c ∈ {8, 16, 24, 32}. iter-5 tests lr↑+ep↑ at max c=32 — last lever.
+- 🔴 **RAM bounded**: best PSNR 12.35 at b=0.8, regress at b=0.95. iter-6 refines b=0.9 to confirm peak — RAM structurally < baseline 12.59.
+- 🟡 **Wu trainable + non-trainable parallel test**: both get n_outer 2→3 to test if the per-iter denoise-rerun loop is undertrained.
 
 **iter-3 trajectory:**
 - 🏆 **DD-BF sup L2**: 3rd monotonic climb (0.0264→0.0313→0.0356, +35% over iter-1) — img_n_bf=11 keeps gaining. iter-4 pushes to 13.
