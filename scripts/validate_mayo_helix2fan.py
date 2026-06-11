@@ -96,8 +96,12 @@ def main() -> int:
     root = Path(args.data_root or os.environ.get("AGENT4CT_DATA",
                                                  "/cluster/maier/Agent4CT/data"))
     challenge = root / "mayo_ldct"
-    sino_dir = challenge / "staged_helix2fan"
+    # Honor STAGED_HELIX2FAN_SUBDIR (matches data/fetch_mayo_ldct.py + data/stage_mayo_sinos.py
+    # convention) so this validator can also run against the multi-GT SSR-fitted bulk rebin.
+    sino_subdir = os.environ.get("STAGED_HELIX2FAN_SUBDIR", "staged_helix2fan")
+    sino_dir = challenge / sino_subdir
     truth_dir = challenge / "staged"
+    print(f"[validate] sino_dir = {sino_dir}")
 
     suffix = args.sino_suffix or ""
     sino_h5 = sino_dir / f"{args.patient}_sino_{args.dose}{suffix}.h5"
@@ -351,6 +355,24 @@ def main() -> int:
     fig.tight_layout()
     fig.savefig(out_png, dpi=120)
     print(f"[validate] wrote {out_png}")
+
+    # Companion .npz so downstream composers can re-window / re-arrange
+    # without re-running the validator. Stores the arrays in the same μ
+    # units the PNG uses (display range [0, 0.05]).
+    out_npz = out_png.with_suffix(".npz")
+    np.savez(
+        out_npz,
+        truth=truth_slice.astype(np.float32),
+        fbp_raw=fbp_np.astype(np.float32),
+        fbp_cal=pred_cal_np.astype(np.float32),
+        ssim_raw=np.float32(ssim_raw),
+        psnr_raw=np.float32(psnr_raw),
+        ssim_cal=np.float32(ssim_cal),
+        psnr_cal=np.float32(psnr_cal),
+        rmse_cal=np.float32(rmse_cal),
+        display_max=np.float32(dr),
+    )
+    print(f"[validate] wrote {out_npz}")
 
     return 0
 
