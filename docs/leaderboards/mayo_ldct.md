@@ -158,7 +158,11 @@ NOT TPE). Configuration-space sparsity is now the assumed cause of
 any hr=0 result until 20 hypothesis-driven iters rule it out.
 
 **Phase-4 final scoreboard: 6 of 10 above baseline ⬆ · 4 SOFT STOPped**
-🥇 **ItNet v2 FINAL: 0.2222** · 🥈 **ItNet v1 FINAL: 0.2100** · **R²-Gaussian 0.0844** (iter-18, 48g, still climbing!) · **DD-BF L2 FINAL: 0.0706** · **Hammernik 2017 FINAL: 0.0665** · **RAM FINAL: 0.0461** | 🛑 Wu non/trainable, DD-UNet N2I, TV-iter sup (all structurally bounded)
+🥇 **ItNet v2 FINAL: 0.2222** · 🥈 **ItNet v1 FINAL: 0.2100** · **R²-Gaussian FINAL: 0.0844** (iter-18, 48g; iter-19 32g regressed to 0.0834) · **DD-BF L2 FINAL: 0.0706** · **Hammernik 2017 FINAL: 0.0665** · **RAM FINAL: 0.0461** | 🛑 Wu non/trainable, DD-UNet N2I, TV-iter sup
+
+**📊 TPE phase started 2026-06-11** — 6 phase-4 TPE jobs dispatched (763302-763307) around the agentic sweet spots:
+- itnet_v2_mayo_phase4 · itnet_mayo_phase4 · hammernik_mayo_phase4
+- dual_domain_bilateral_supervised_mayo_phase4 · r2gaussian_mayo_phase4 · ram_zeroshot_mayo_phase4
 
 **Key insight discovered**: `train_n` is a UNIVERSAL binding constraint across ItNet v1/v2, DD-BF L2, AND Hammernik 2017. R²-Gaussian additionally shows monotonic gain from sparser Gaussian density (256g → 96g).
 
