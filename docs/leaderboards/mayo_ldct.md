@@ -163,13 +163,13 @@ any hr=0 result until 20 hypothesis-driven iters rule it out.
 | Solver | iters tried | Best hr | Best config | Latest trajectory + next knob |
 |---|---:|---:|---|---|
 | 🏆🏆 **ItNet v1** | 14 | **0.1732** (iter-14) | k=1, c=32, α=0.05, ep=40, finetune ep=8/lr=1.5e-3 | iter-14 (ep=40) +1.3% — climb tapering; iter-15 763210 pushes ep 40→50 (last push) |
-| 🚀 **ItNet v2** | 14 | **0.0855** (iter-6) | k=1, c=32, α_init=0.05, ep=12, residual=F | iter-14 (pretrain_lr=5e-4) regressed to 0.0531; iter-15 763212 tries train_n 50→100 (last untested) |
+| 🚀 **ItNet v2** | 15 | **0.0855** (iter-6) | k=1, c=32, α_init=0.05, ep=12, residual=F, train_n=50 | iter-15 (train_n=100) CRASHED OOM in 3.9s; iter-16 763218 tries train_n=75 (intermediate) |
 | 🎉 **Hammernik 2017** | 9 | **0.0621** (iter-5) | T=5, filters=24, kernel=11, λ=5e-3, ep=12, lr=5e-4 | iter-9 (T=6) collapsed SSIM 0.228 — T=5 firmly sweet; iter-10 763215 tries filters 24→16 (untested smaller) |
 | 🏆 **DD-BF sup L2** | 10 | **0.0567** (iter-10) | img_n_bf=25, proj_n_bf=1, k=5/7, ep=10, lr=5.9e-3 | **10 monotonic climbs** (img_n_bf 7→25, +115%!); iter-11 763211 tries img_n_bf 25→27 |
 | 🚀 **R²-Gaussian** | 9 | **0.0438** (iter-8) | 256g, 500i, lr_pos=5e-4 | iter-9 (lr=2e-4) regressed to 0.0401 — lr=5e-4 confirmed sweet; iter-10 763216 tries gaussians 256→320 (untested mid) |
-| 🎯 **RAM zero-shot** | 13 | **0.0349** (iter-13) | input_norm=global_max, blend=0.3, factor=0.5, σ=5e-3 | iter-13 (b=0.3) hr=0.0349 (+22% over iter-12); iter-14 763213 tries b 0.3→0.2 |
-| DD-UNet N2I 🔵 INCHING UP | 9+1R | 0 (SSIM **0.471** iter-9 = FBP!) | c=24, ep=80, lr=5e-5 (long-train regime) | iter-10 (ep=120) running (28+ min); SSIM trajectory inching past FBP |
-| TV-iter sup 🟡 MOVING | 8+1R | 0 (SSIM 0.381 iter-6 best) | share_steps=T, lr=1e-1, grad_clip=20, ep=30 | iter-9 (grad_clip=100, gc 5×) running (28+ min) |
+| 🎯 **RAM zero-shot** | 14 | **0.0402** (iter-14) | input_norm=global_max, blend=0.2, factor=0.5, σ=5e-3 | iter-14 (b=0.2) hr=0.0402 (+15% over iter-13, slowing); iter-15 763219 tries b 0.2→0.1 |
+| DD-UNet N2I 🔵 INCHING UP | 9+1R | 0 (SSIM **0.471** iter-9 = FBP!) | c=24, ep=80, lr=5e-5 (long-train regime) | iter-10 (ep=120) running (30+ min); SSIM trajectory inching past FBP |
+| TV-iter sup 🟡 MOVING | 9 | 0 (SSIM 0.381 iter-6/9 best) | share_steps=T, lr=1e-1, grad_clip=20-100, ep=30 | iter-9 (gc=100) SSIM 0.381 = iter-6 — gc not binding; iter-10 763217 tries tv_K 10→30 (untested at new regime) |
 | 🛑 Wu non-trainable **SOFT STOP** | 10 | 0 (SSIM 0.358 iter-2 best) | n_bands=6, soft=1.5e-3, range=5, window=2 | iter-10 (n_outer=5) SSIM 0.343 — no untested hypothesis; 3 families covered (noise/capacity/motion); paper-edge coverage achieved. Wu-2015 closed-form **structurally bounded** on Mayo LDCT (SSIM ceiling 0.358 < FBP-baseline ~0.46). |
 | Wu trainable | 9 | 0 (SSIM 0.351 iter-6 best) | n_bands=6, lr=1.1e-4, ep=13, λ_neg=0.7 | iter-9 (λ_neg=0) SSIM 0.345 unchanged; iter-10 763214 tries n_outer 2→4 — at STOP threshold next iter |
 
