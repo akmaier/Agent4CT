@@ -1040,6 +1040,209 @@ SOLVERS = {
             "ram_use_deepinv_tomo":  False,
         },
     },
+    # ============================================================
+    # Mayo phase-4 TPE entries (added 2026-06-11).
+    # Each centered on the agentic-loop discovered sweet spot from
+    # the 20-iter phase-4 retest. KEY DISCOVERY: train_n is a UNIVERSAL
+    # binding constraint at 75-90 (50 was the old MAYO_CLAMPS forced cap).
+    # These keys bypass MAYO_CLAMPS via the `mayo_phase4` suffix.
+    # ============================================================
+    # ItNet v2 — phase-4 agentic final 0.2222 at iter-17:
+    #   k=1, c=32, alpha=0.05, ep=12, residual=False, train_n=90
+    "itnet_v2_mayo_phase4": {
+        "solver": "pentathlon/demo_dl_reference/solver_itnet_v2.py",
+        "env_var": "ITNET_CONFIG_PATH",
+        "slug_prefix": "mayo-ldct-phase4-itnet-v2-tpe",
+        "agent_name": "mayo-phase4-itnet-v2-tpe",
+        "space": {
+            "pretrain_epochs":   (8, 18, "int"),
+            "pretrain_lr":       (3e-4, 3e-3, "log"),
+            "itnet_k":           ([1, 2], "choice"),
+            "itnet_alpha_init":  (1e-2, 1e-1, "log"),
+            "residual_learning": ([False], "choice"),
+            "unet_c":            ([24, 32, 40], "choice"),
+            "train_n":           ([60, 75, 85, 90], "choice"),
+            "val_n":             ([5], "choice"),
+            "batch_size":        ([1], "choice"),
+        },
+        "tpe_seed_trial": {
+            "pretrain_epochs":   12,
+            "pretrain_lr":       1e-3,
+            "itnet_k":           1,
+            "itnet_alpha_init":  0.05,
+            "residual_learning": False,
+            "unet_c":            32,
+            "train_n":           90,
+            "val_n":             5,
+            "batch_size":        1,
+        },
+    },
+    # ItNet v1 — phase-4 agentic final 0.2100 at iter-18:
+    #   k=1, c=40, alpha=0.05, ep=40 + finetune_ep=8/lr=1.5e-3, train_n=75
+    "itnet_mayo_phase4": {
+        "solver": "pentathlon/demo_dl_reference/solver_itnet.py",
+        "env_var": "ITNET_CONFIG_PATH",
+        "slug_prefix": "mayo-ldct-phase4-itnet-v1-tpe",
+        "agent_name": "mayo-phase4-itnet-v1-tpe",
+        "space": {
+            "pretrain_epochs":  (20, 50, "int"),
+            "pretrain_lr":      (5e-4, 2e-3, "log"),
+            "itnet_k":          ([1, 2], "choice"),
+            "itnet_alpha":      (1e-2, 1e-1, "log"),
+            "finetune_epochs":  (5, 12, "int"),
+            "finetune_lr":      (5e-4, 3e-3, "log"),
+            "unet_c":           ([24, 32, 40], "choice"),
+            "train_n":          ([50, 75, 85], "choice"),
+            "val_n":            ([5], "choice"),
+            "batch_size":       ([1], "choice"),
+        },
+        "tpe_seed_trial": {
+            "pretrain_epochs":  40,
+            "pretrain_lr":      1e-3,
+            "itnet_k":          1,
+            "itnet_alpha":      0.05,
+            "finetune_epochs":  8,
+            "finetune_lr":      1.5e-3,
+            "unet_c":           40,
+            "train_n":          75,
+            "val_n":            5,
+            "batch_size":       1,
+        },
+    },
+    # Hammernik 2017 — phase-4 agentic final 0.0665 at iter-14:
+    #   T=5, filters=24, kernel=11, lambda=5e-3, ep=12, lr=5e-4, train_n=90
+    "hammernik_mayo_phase4": {
+        "solver": "pentathlon/demo_dl_reference/solver_hammernik_2017.py",
+        "env_var": "HAMMERNIK_CONFIG_PATH",
+        "slug_prefix": "mayo-ldct-phase4-hammernik-2017-tpe",
+        "agent_name": "mayo-phase4-hammernik-tpe",
+        "space": {
+            "epochs":         (10, 18, "int"),
+            "lr":             (3e-4, 8e-4, "log"),
+            "vn_T":           ([4, 5, 6], "choice"),
+            "vn_n_filters":   ([20, 24, 28], "choice"),
+            "vn_kernel":      ([9, 11, 13], "choice"),
+            "vn_lambda_init": (2e-3, 1e-2, "log"),
+            "train_n":        ([60, 75, 90], "choice"),
+            "val_n":          ([5], "choice"),
+            "batch_size":     ([1], "choice"),
+        },
+        "tpe_seed_trial": {
+            "epochs":         12,
+            "lr":             5e-4,
+            "vn_T":           5,
+            "vn_n_filters":   24,
+            "vn_kernel":      11,
+            "vn_lambda_init": 5e-3,
+            "train_n":        90,
+            "val_n":          5,
+            "batch_size":     1,
+        },
+    },
+    # DD-BF supervised L2 — phase-4 agentic final 0.0706 at iter-20:
+    #   proj_n_bf=1, img_n_bf=35, k_proj=5, k_img=7, ep=15, lr=5.9e-3, train_n=100
+    "dual_domain_bilateral_supervised_mayo_phase4": {
+        "solver": "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_supervised.py",
+        "env_var": "DD_CONFIG_PATH",
+        "slug_prefix": "mayo-ldct-phase4-ddbf-l2-tpe",
+        "agent_name": "mayo-phase4-ddbf-l2-tpe",
+        "space": {
+            "proj_n_bf":   ([1], "choice"),
+            "img_n_bf":    ([29, 33, 35, 37], "choice"),
+            "proj_kernel": ([3, 5], "choice"),
+            "img_kernel":  ([5, 7, 9], "choice"),
+            "proj_sx":    (0.005, 0.02, "log"),
+            "proj_sy":    (0.2, 0.5, "linear"),
+            "proj_sr":    (3e-4, 1e-3, "log"),
+            "img_sx":     (0.4, 0.7, "linear"),
+            "img_sr":     (0.01, 0.03, "log"),
+            "epochs":     (10, 20, "int"),
+            "lr":         (3e-3, 1e-2, "log"),
+            "train_n":    ([75, 90, 100], "choice"),
+            "val_n":      ([5], "choice"),
+            "batch_size": ([1], "choice"),
+        },
+        "tpe_seed_trial": {
+            "proj_n_bf":   1,
+            "img_n_bf":    35,
+            "proj_kernel": 5,
+            "img_kernel":  7,
+            "proj_sx":     0.01,
+            "proj_sy":     0.3,
+            "proj_sr":     5e-4,
+            "img_sx":      0.5,
+            "img_sr":      0.02,
+            "epochs":      15,
+            "lr":          5.9e-3,
+            "train_n":     100,
+            "val_n":       5,
+            "batch_size":  1,
+        },
+    },
+    # R²-Gaussian — phase-4 agentic final 0.0844 at iter-18:
+    #   48 gaussians, 500 iters, lr_pos=5e-4 (monotonic climb 256g→48g)
+    "r2gaussian_mayo_phase4": {
+        "solver": "pentathlon/demo_dl_reference/solver_r2gaussian.py",
+        "env_var": "R2G_CONFIG_PATH",
+        "slug_prefix": "mayo-ldct-phase4-r2gaussian-tpe",
+        "agent_name": "mayo-phase4-r2gaussian-tpe",
+        "space": {
+            "gs_n_gaussians": ([24, 32, 48, 64, 96], "choice"),
+            "gs_n_iter":      (400, 800, "int"),
+            "gs_lr_pos":      (2e-4, 1e-3, "log"),
+            "gs_outer_wall_s": ([1500], "choice"),
+            "train_n":        ([2], "choice"),
+            "val_n":          ([2], "choice"),
+        },
+        "tpe_seed_trial": {
+            "gs_n_gaussians":  48,
+            "gs_n_iter":       500,
+            "gs_lr_pos":       5e-4,
+            "gs_outer_wall_s": 1500,
+            "train_n":         2,
+            "val_n":           2,
+        },
+    },
+    # RAM zero-shot — phase-4 agentic final 0.0461 at iter-16:
+    #   input_norm=global_max, blend=0.0 (pure RAM), factor=0.5, sigma=5e-3
+    "ram_zeroshot_mayo_phase4": {
+        "solver": "pentathlon/demo_dl_reference/solver_ram.py",
+        "env_var": "RAM_CONFIG_PATH",
+        "slug_prefix": "mayo-ldct-phase4-ram-zeroshot-tpe",
+        "agent_name": "mayo-phase4-ram-zeroshot-tpe",
+        "space": {
+            "ram_ckpt_path":          (["/cluster/maier/Agent4CT/checkpoints/ram.pth.tar"], "choice"),
+            "ram_input_norm":         (["global_max", "adjoint_max"], "choice"),
+            "ram_clamp_output":       ([True, False], "choice"),
+            "ram_finetune":           ([False], "choice"),
+            "ram_finetune_epochs":    ([0], "choice"),
+            "ram_finetune_lr":        ([1e-4], "choice"),
+            "ram_disable_multiscale": ([False], "choice"),
+            "ram_disable_cudnn":      ([False], "choice"),
+            "ram_use_deepinv_tomo":   ([False], "choice"),
+            "ram_sigma":              (3e-3, 1e-2, "log"),
+            "ram_factor":             (0.35, 0.65, "linear"),
+            "ram_post_fbp_blend":     (0.0, 0.30, "linear"),
+            "train_n":                ([50], "choice"),
+            "val_n":                  ([5], "choice"),
+        },
+        "tpe_seed_trial": {
+            "ram_ckpt_path":          "/cluster/maier/Agent4CT/checkpoints/ram.pth.tar",
+            "ram_input_norm":         "global_max",
+            "ram_clamp_output":       True,
+            "ram_finetune":           False,
+            "ram_finetune_epochs":    0,
+            "ram_finetune_lr":        1e-4,
+            "ram_disable_multiscale": False,
+            "ram_disable_cudnn":      False,
+            "ram_use_deepinv_tomo":   False,
+            "ram_sigma":              5e-3,
+            "ram_factor":             0.5,
+            "ram_post_fbp_blend":     0.0,
+            "train_n":                50,
+            "val_n":                  5,
+        },
+    },
 }
 
 
@@ -1334,7 +1537,7 @@ def main():
         # Mayo's 512² images + 2304-angle sino blow out the FBP `filter_sino`
         # FFT scratch (~5 GB at train_n=400/val_n=20) on Q6000. Force the
         # space to Mayo-safe values everywhere the knob exists.
-        if args.dataset == "mayo_ldct_2d":
+        if args.dataset == "mayo_ldct_2d" and not args.solver.endswith("_mayo_phase4"):
             MAYO_CLAMPS = {
                 "val_n":      ([5], "choice"),         # was [20] / 100 default
                 "val_chunk":  ([1], "choice"),         # was [4]; chunk=1 = no FBP batching
