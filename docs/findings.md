@@ -52,6 +52,36 @@ v3 is production (entry below) and stays production until v4 proves itself. This
 
 Outputs: `results/breast_debug/L014_forward_geom_fit_v4.json`, `results/mayo_debug/L014_forward_geom_fit_v4.png`.
 
+### v4 run log
+
+- **Run 1 (SLURM 763576) — structural failure, diagnosed.** The model rotated the source around patient-frame (0,0) while the volume sat at its patient-coords centre — but the scanner iso is at `DataCollectionCenterPatient` = (0, −136.5) mm for L014 (and the truth image centre is exactly iso, IPP −316.15 + 179.65 = −136.5). With 136.5 mm of baked-in y-misalignment no convention combo could separate and the optimizer collapsed (sod→670, dv→0.65, dy→+94). Lesson recorded: **work in the iso-centred frame; the DICOM patient origin is NOT the rotation axis.**
+- **Run 2 / v4b (SLURM 763582) — SUCCESS, 7:24 runtime.** Iso-centred frame + staged release (rigid+s_z first; dv/u0/v0/s_xy second) + channel-gradient loss. Convention grid separated (winner s_phi=−1, s_g=−1, s_v=−1, φ0=0 at 0.0165 vs runner-up 0.0219); final **rel|err| = 4.3%** on raw measured projections — the truth volume forward-projects onto the measured DICOM-CT-PD data to within the B30f-kernel/beam-hardening floor.
+
+**v4b fitted single physical geometry (L014):**
+
+| param | v4b | nominal tag | Powell FBP | v3 SSR |
+|---|---:|---:|---:|---:|
+| sod (mm) | 591.851 | 595.0 | 595.362 | 592.829 |
+| sdd (mm) | 1080.558 | 1085.6 | 1086.803 | 1087.268 |
+| mag (sdd/sod) | 1.82573 | 1.82454 | 1.82545 | 1.83403 |
+| s_z | 1.001098 | 1.0 | — | 1.001665 |
+| dv at detector (mm) | 1.084862 | 1.094723 | — | (fixed at tag) |
+| dv/mag = iso row pitch (mm) | **0.59421** | 0.6 | — | — |
+| s_xy (truth-grid scale) | 0.994830 → ps_eff 0.69949 | 1.0 (ps 0.703125) | ps 0.700857 | — |
+| u0 offset (channels) | −3.378 | 0 | — | — |
+| pitch_eff (mm/rev) | 30.6952 | 30.6567 | — | 30.7078 |
+
+**Gate verdicts:**
+1. Convention grid — separated ✓ (was flat in run 1).
+2. dv self-consistency — REFUTED in its strong form: dv_fit / (0.6×mag_fit) = 0.9904. The data wants iso row pitch ≈ **0.594 mm, not 0.600** (−0.97%). Direction matches v3 (which raised the SSR mag +0.52% at fixed dv ≡ lowering effective dv); magnitude is the cleaner projection-domain number.
+3. Design-pitch story — partially: pitch_eff 30.695 sits between tag (30.657) and design (30.72). z-stretch is real (+0.11%), "exactly design pitch" not confirmed.
+4. s_xy = 0.9948: the truth grid (or the θ_p/in-plane-scale family it trades against) is −0.5%; Powell's 0.700857 (−0.32%) is inside this family. Soft direction — (mag, dv, s_xy, u0) are correlated; what transfers is the consistent SET, not individual values.
+5. Affine intensity a ≈ 0.955 (measured ≈ 0.955 × truth-forward-projection) — beam-hardening/water-correction scale, absorbed.
+
+**Caveats:** absolute sod/sdd are weakly identified (fan-curvature only); S1 vs S2 mag shift (1.845 → 1.826) shows the (mag, dv, s_xy, u0) coupling. The fitted u0 offset (−3.4 channels) may partially encode a channel pre-flip bookkeeping mismatch in `read_dicom_ctpd` vs the tag u0 — needs a dedicated check before any production use.
+
+**Next (v5, transfer test = decision gate 4):** rebuild the L014 proj_flat cache and SSR with the entire v4b set locked (curved→flat with du_eff = θ_p×sdd_v4, dv_v4, u0/v0 offsets; SSR with v4 sod/sdd/s_z/z0), fit ONLY nuisances (w_slab, H(ρ), post-FBP) v3-style, and compare to v3's SSIM 0.9571 / PSNR 40.79 on the same 10-slice protocol. Adopt v4 only if ≥. Until then **v3 stays production**.
+
 ## 2026-06-12 — v3 geometry promoted to production for all Mayo experiments + 10-patient Wagner bulk re-rebin
 
 The v3 fit completed (SLURM 763384 — see the 2026-06-11 entry below for the fit setup, sweep cross-check, and per-GT metrics). v3 numbers: SSIM 0.9571, PSNR 40.79 dB averaged over 10 slices spanning the full L014 patient z-range (+0.26 dB vs v2, +0.5 dB at the patient z-extremes). On 2026-06-12 we promoted these values to the canonical production constants so every Mayo solver, validator, and rebin job picks them up automatically.
