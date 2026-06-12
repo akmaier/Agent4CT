@@ -14,6 +14,44 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-12 — v4 (in progress): why the geometry hunt was so painful, and the single-physical-geometry plan
+
+v3 is production (entry below) and stays production until v4 proves itself. This entry documents the **root-cause diagnosis** of why three weeks of geometry fitting produced an effective-parameter stack instead of one clean geometry, plus the v4 identification plan.
+
+### Three unphysical compensations in v3
+
+1. **Split sod/sdd.** SSR uses (592.829, 1087.268), FBP uses (595.362, 1086.803). One scanner has one geometry — the split means both are *effective* parameters absorbing an upstream inconsistency. Note the SSR optimum mostly moved the **ratio** sdd/sod (1.8245 → 1.8340, +0.52%) which is the z-magnification in the Noo SSR formula `v = dZ·(u²+sdd²)/(sod·sdd)` — i.e. the "different SSR geometry" is mostly a *z-axis* correction in disguise.
+2. **s_z = 1.001665** — a 0.17% z-stretch with (until today) no confirmed physical source.
+3. **Powell pixel_spacing = 0.700857** vs DICOM 0.703125 (−0.32%) — fitted on the FBP output grid, so it conflates truth-grid scale with recon-chain magnification errors.
+
+### Tag forensics (probe, 2026-06-12, L014 fulldose projections)
+
+| Check | Result | Implication |
+|---|---|---|
+| dv tag vs 0.6 mm × nominal mag | 1.0947227478 vs 1.0947226645 — **identical to 7 digits** | The detector row pitch tag is **derived from nominal sod/sdd**, not measured. Holding dv fixed while floating SSR sod/sdd (v1–v3 all did this) is self-inconsistent by construction. |
+| Per-readout z-tag uniformity | residual rms 0.017–0.027 mm vs perfect ramp (after parity split for FFS) | z positions are **synthesized from a constant speed**, not encoder readings — so a rounding error in that constant propagates to every readout. |
+| Tag pitch | 30.6567 mm/rev | |
+| Tag pitch × v3 s_z | **30.7078 mm/rev** | |
+| AS+ design pitch (0.8 × 38.4 mm) | **30.72 mm/rev** | v3's s_z recovers ~80% of the tag→design gap. s_z is a real table-feed correction, not a hack. |
+| du at iso | 0.70475 mm | (For reference; du numerology inconclusive.) |
+
+### v4 plan — identify the geometry ONCE, in projection domain
+
+`scripts/fit_geometry_forward_L014_v4.py` (SLURM 763576): forward-project the 154-slice truth volume through a **differentiable curved-detector helical projector** (grid_sample ray casting, native curved detector, no rebin) and match the raw measured DICOM-CT-PD projections. Geometry enters exactly once — there is no room for an SSR/FBP split, no filter, no kernel, no post-FBP scaling (intensity = closed-form affine per batch).
+
+- Free (12): sod, sdd, s_z, z0, dv_det, u0_off, v0_off, φ0, dx, dy, s_xy + affine (a,b).
+- Hardware-fixed: detector angular pitch θ_p = du/sdd.
+- FFS: per-readout tag offsets (z + radial), detector anchored to the *nominal* focal trajectory (FFS moves the spot, not the detector).
+- Convention safety: 32-combo pre-stage grid over (φ-sign, γ-sign, v-sign, φ0 ∈ {0, π/2, π, 3π/2}) before the full 2500-iter Adam fit.
+
+**Decision gates after the fit:**
+1. Does dv_fit ≈ 0.6 × (sdd_fit/sod_fit)? (validates the derived-tag story)
+2. Does s_z_fit × 30.6567 land at ≈30.72? (validates the design-pitch story)
+3. Does s_xy land at 1.0 (truth grid fine, Powell ps was compensation) or ≈0.9968 (DICOM ReconstructionDiameter rounding is real)?
+4. Re-run the v3-style recon fit with sod/sdd **locked** to the v4 physical values (one geometry for SSR and FBP, dv derived self-consistently) and only nuisances (slab, H(ρ), post-FBP) free. v4 wins if SSIM ≥ v3's 0.9571 with the split/s_z eliminated or physically explained.
+
+Outputs: `results/breast_debug/L014_forward_geom_fit_v4.json`, `results/mayo_debug/L014_forward_geom_fit_v4.png`.
+
 ## 2026-06-12 — v3 geometry promoted to production for all Mayo experiments + 10-patient Wagner bulk re-rebin
 
 The v3 fit completed (SLURM 763384 — see the 2026-06-11 entry below for the fit setup, sweep cross-check, and per-GT metrics). v3 numbers: SSIM 0.9571, PSNR 40.79 dB averaged over 10 slices spanning the full L014 patient z-range (+0.26 dB vs v2, +0.5 dB at the patient z-extremes). On 2026-06-12 we promoted these values to the canonical production constants so every Mayo solver, validator, and rebin job picks them up automatically.
