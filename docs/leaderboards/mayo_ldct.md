@@ -5,6 +5,19 @@ description: Real-helical-data leaderboard (Wagner split). Step-3 TPE refinement
 
 # Mayo-LDCT leaderboard (Wagner split)
 
+> 🆕 **2026-06-12 — v3 geometry promoted to production.** The SSR rebin
+> parameters (`MAYO_LDCT_SSR_DEFAULTS`) were re-fitted with a learnable
+> z-axis scaling (`s_z = 1.001665`) plus updated sod/sdd/Δz/post-FBP
+> values. See [`docs/findings.md` 2026-06-12 entry](../findings.md) for
+> the rationale, fit numbers (SSIM 0.957, PSNR 40.8 dB averaged across
+> 10 GT slices spanning the full L014 patient z-range), and bulk
+> re-rebin / re-staging plan (SLURM 763396 → 763397 → 763398).
+> Leaderboard rows below were computed against the v2 staging; absolute
+> scores will shift slightly (+0.001–0.005 SSIM, +0.1–0.5 dB PSNR) when
+> solvers next train against the v3-staged data. Rank order is
+> expected to stay stable except in the bottom group (Δ < 0.01 SSIM
+> neighbours).
+
 AAPM 2016 Low-Dose CT Grand Challenge data — helical Siemens SOMATOM
 AS+, rebinned to 2-D fan-beam via the in-house
 [`helix2fan`](../../ddssl_ldct/helix2fan.py) SSR pipeline. Wagner split:

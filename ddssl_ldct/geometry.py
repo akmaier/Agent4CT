@@ -177,29 +177,56 @@ MAYO_LDCT_DET_OFFSET = -0.0397
 # These two pairs were assumed to be one and the same prior to 2026-05-26.
 # The multi-GT joint Adam fit (SLURM 762369) showed that the LOSS GRADIENT
 # pushes them in different directions when the model also has Δz / slab /
-# post-FBP-scale knobs — the SSR sod is pulled to 593.461 mm while the FBP
-# sod stays at the Powell value 595.362 mm. Ablation confirms this is the
-# correct way to interpret the result (SLURM 762403 / 762404).
+# post-FBP-scale knobs — the SSR sod is pulled to a different value while
+# the FBP sod stays at the Powell value 595.362 mm. Ablation confirms this
+# is the correct way to interpret the result (SLURM 762403 / 762404).
+#
+# **v3 fit (SLURM 763384, 2026-06-12)** — the current production values
+# below — added a `s_z` (z-axis scaling) parameter that the previous
+# multi-GT fit lacked. The 1-parameter sweep (SLURM 763383, 21 points
+# in s_z ∈ [0.995, 1.005] holding everything else at the v2 optimum)
+# confirmed a clear interior minimum at s_z ≈ 1.0005 (PSNR +0.08 dB);
+# the joint Adam fit relaxed the coupled sod / sdd / Δz and converged
+# at s_z = 1.001665 (PSNR +0.26 dB vs v2, +0.5 dB at the patient z
+# extremes — see docs/findings.md 2026-06-12 entry).
+#
+# `s_z` multiplies the per-readout source-z BEFORE the α_dz FFS shift:
+#     z_eff = s_z * z_positions + α_dz * ffs_dz
+# Physically it corresponds to a ~0.17 % under-estimate of the helical
+# pitch_mm (mechanism A) or, equivalently, the effective dv / sdd in
+# the curved-to-flat step (mechanism B). The two are observationally
+# identical at leading order; we absorb them into one scalar.
 #
 # These are the SSR-step defaults that go into the cached
-# `L014_proj_flat_peak.pt` blob via `scripts/cache_proj_flat_L014.py` and
-# into the fit/ablation scripts as the initial / locked values:
+# `L0XX_proj_flat_*.pt` blobs via `scripts/cache_proj_flat_L014.py` /
+# `cache_proj_flat_L014_full.py`, and into the bulk-rebin pipeline
+# via `data/fetch_mayo_ldct.py` (env var HELIX2FAN_SSR_FITTED=1):
 MAYO_LDCT_SSR_DEFAULTS = {
-    # SSR rebin geometry (multi-GT joint Adam fit, SLURM 762369)
-    "sod": 593.461,    # mm — DICOM nominal 595.000 (Δ = -0.26 %)
-    "sdd": 1086.831,   # mm — DICOM nominal 1085.600 (Δ = +0.11 %)
+    # SSR rebin geometry (v3 joint Adam fit + s_z, SLURM 763384)
+    "sod": 592.829,    # mm — DICOM nominal 595.000 (Δ = -0.37 %)
+    "sdd": 1087.268,   # mm — DICOM nominal 1085.600 (Δ = +0.15 %)
     # Detector pitch — held FIXED at DICOM-CT-PD private tags during the
-    # multi-GT fit (detector pitch is hardware).
+    # multi-GT and v3 fits (detector pitch is hardware).
     "du":  1.285839,   # mm — DICOM tag (0x7029, 0x1002)
     "dv":  1.094723,   # mm — DICOM tag (0x7029, 0x1006)
-    # Slab / z-shift / post-FBP (also from SLURM 762369)
-    "delta_z_mm": -0.578,
+    # NEW in v3: per-readout z-axis scaling. Equivalent to (pitch_mm * s_z)
+    # or to a scaled effective dv. See docs/findings.md 2026-06-12.
+    "s_z": 1.001665,   # multiplicative correction on z_positions
+    # Slab / z-shift / post-FBP (also from SLURM 763384)
+    "delta_z_mm": -0.159,
     "alpha_dz":   +1.0,     # FFS-z sign (ablation winner 762363)
     "slab_offsets_mm": (-3, -2, -1, 0, 1, 2, 3),
-    "w_slab":     (0.02, 0.25, 0.14, 0.18, 0.15, 0.22, 0.03),
-    "post_fbp_a":  0.807,
-    "post_fbp_bg": -0.0003,
-    "post_fbp_hi": 0.0435,
+    "w_slab":     (0.049, 0.205, 0.141, 0.195, 0.148, 0.204, 0.058),
+    "post_fbp_a":  0.809,
+    "post_fbp_bg": -0.000304,
+    "post_fbp_hi": 0.0519,
+    # 64-bin radial filter H(ρ) at unity ρ-step dr=0.05 (also v3).
+    # Loaded as numpy array — too long to embed here; lives at
+    # data/mayo_ldct_geom/L014_h_radial_v3.npy. Helper:
+    #     from ddssl_ldct.geometry import load_mayo_ssr_h_radial
+    "h_radial_path": "ddssl_ldct/mayo_geom/L014_h_radial_v3.npy",
+    "h_radial_n_bins": 64,
+    "h_radial_dr": 0.05,
 }
 
 
@@ -226,13 +253,40 @@ MAYO_LDCT_SSR_NOMINAL = {
 }
 
 
+def load_mayo_ssr_h_radial(repo_root=None) -> "np.ndarray":
+    """Load the 64-bin radial filter H(ρ) co-fitted with the v3 SSR
+    defaults (SLURM 763384, 2026-06-12).
+
+    Returns a (64,) float32 numpy array of multiplicative gains applied
+    in Fourier-radial space at dr=0.05 (ρ range [0, 64·0.05) ).
+    Production usage is
+
+        from ddssl_ldct.geometry import load_mayo_ssr_h_radial
+        h = load_mayo_ssr_h_radial()
+        # build a 2D radial gain map on the FBP image grid, then
+        # multiply the FFT2 of the FBP image by it.
+
+    Path is read from MAYO_LDCT_SSR_DEFAULTS["h_radial_path"]. If
+    ``repo_root`` is None we anchor to the geometry.py file's repo
+    root so callers from any cwd resolve correctly.
+    """
+    import numpy as _np
+    from pathlib import Path as _Path
+    if repo_root is None:
+        repo_root = _Path(__file__).resolve().parents[1]
+    p = _Path(repo_root) / MAYO_LDCT_SSR_DEFAULTS["h_radial_path"]
+    return _np.load(p).astype(_np.float32)
+
+
 def mayo_ldct_ssr_config(name: str = "fitted") -> dict:
-    """One-line switch between the multi-GT-fitted SSR defaults and the
+    """One-line switch between the v3-fitted SSR defaults and the
     DICOM-nominal fallback.
 
-    Pass ``name="fitted"`` (default, recommended — SSIM 0.962 / PSNR
-    42.3 dB on L014 central GT) or ``name="nominal"`` (SSIM 0.874 /
-    PSNR 33.0 dB — what you'd get from trusting DICOM tags alone).
+    Pass ``name="fitted"`` (default, recommended — SSIM 0.957 / PSNR
+    40.8 dB mean across 10 GTs spanning the full L014 patient range at
+    s_z=1.001665, sod=592.829, sdd=1087.268; +0.5 dB at the patient z
+    extremes vs the multi-GT-only fit) or ``name="nominal"`` (SSIM 0.874
+    / PSNR 33.0 dB — what you'd get from trusting DICOM tags alone).
     """
     if name == "fitted":
         return dict(MAYO_LDCT_SSR_DEFAULTS)

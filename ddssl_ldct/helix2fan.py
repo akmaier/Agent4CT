@@ -593,7 +593,12 @@ def rebin_helical_to_fan(proj_flat: np.ndarray,
     ffs_dz   = np.asarray(geom.get("ffs_dz",   np.zeros(n_proj)), dtype=np.float64)
     ffs_dphi = np.asarray(geom.get("ffs_dphi", np.zeros(n_proj)), dtype=np.float64)
     ffs_drho = np.asarray(geom.get("ffs_drho", np.zeros(n_proj)), dtype=np.float64)
-    z_eff = z_positions + ffs_dz
+    # v3 (SLURM 763384, 2026-06-12): per-readout z-axis scaling. Multiplies
+    # z_positions BEFORE the α_dz FFS shift; equivalent at leading order to
+    # a ~0.17 % under-estimate of helical pitch. See findings.md 2026-06-12.
+    # Default 1.0 preserves the pre-v3 behaviour for legacy callers.
+    s_z = float(geom.get("s_z", 1.0))
+    z_eff = s_z * z_positions + ffs_dz
 
     # Per-readout effective sod/sdd for the radial FFS correction.
     # Only built when `ffs_correct_drho` is True; otherwise the inner

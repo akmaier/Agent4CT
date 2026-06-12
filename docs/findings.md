@@ -14,6 +14,59 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-12 — v3 geometry promoted to production for all Mayo experiments + 10-patient Wagner bulk re-rebin
+
+The v3 fit completed (SLURM 763384 — see the 2026-06-11 entry below for the fit setup, sweep cross-check, and per-GT metrics). v3 numbers: SSIM 0.9571, PSNR 40.79 dB averaged over 10 slices spanning the full L014 patient z-range (+0.26 dB vs v2, +0.5 dB at the patient z-extremes). On 2026-06-12 we promoted these values to the canonical production constants so every Mayo solver, validator, and rebin job picks them up automatically.
+
+**Production values** (now in `MAYO_LDCT_SSR_DEFAULTS`):
+
+| key | v2 (multi-GT 762369) | **v3 (763384)** | Δ |
+|---|---:|---:|---:|
+| sod (mm) | 593.461 | **592.829** | −0.632 |
+| sdd (mm) | 1086.831 | **1087.268** | +0.437 |
+| s_z | (implicit 1.0) | **1.001665** | +0.001665 (z-axis stretch) |
+| Δz (mm) | −0.578 | **−0.159** | +0.419 |
+| post_fbp_a | 0.807 | 0.809 | +0.002 |
+| post_fbp_bg | −0.0003 | −0.000304 | ~ |
+| post_fbp_hi | 0.0435 | 0.0519 | +0.0084 |
+| w_slab | (0.02, 0.25, 0.14, 0.18, 0.15, 0.22, 0.03) | (0.049, 0.205, 0.141, 0.195, 0.148, 0.204, 0.058) | smoothed wings |
+| H(ρ) 64-bin filter | (old) | new — `ddssl_ldct/mayo_geom/L014_h_radial_v3.npy` | learned co-jointly |
+
+FBP-side (`mayo_ldct_fitted()`: sod=595.362, sdd=1086.803, pixel_spacing=0.700857, det_spacing=1.285044, det_offset=−0.0397) UNCHANGED — held fixed during the v3 fit per the documented FBP↔SSR coupling.
+
+### What changed in the codebase (commit landing 2026-06-12)
+
+| File | Change |
+|---|---|
+| `ddssl_ldct/geometry.py` | `MAYO_LDCT_SSR_DEFAULTS` now has v3 values + `s_z=1.001665` + `h_radial_path` / `n_bins` / `dr`. New `load_mayo_ssr_h_radial()` helper. |
+| `ddssl_ldct/helix2fan.py` | `rebin_helical_to_fan` now reads `geom["s_z"]` (default 1.0) and uses `z_eff = s_z · z_positions + α_dz · ffs_dz`. Backwards compatible. |
+| `data/fetch_mayo_ldct.py` | When `HELIX2FAN_SSR_FITTED=1` the override now also writes `geom["s_z"]` from defaults (in addition to sod / sdd). |
+| `ddssl_ldct/mayo_geom/L014_h_radial_v3.npy` | 64-bin H(ρ) filter array. |
+| `scripts/compare_gt_hd_ld_fbp_wagner.py` | Bulk GT-vs-HD-vs-LD comparison on all 10 Wagner patients. |
+| `cluster/slurm/rebin_mayo_helix2fan_v3.sbatch` | Bulk re-rebin → `staged_helix2fan_v3/`. |
+| `cluster/slurm/stage_mayo_sinos_v3.sbatch` | Aggregate v3 per-patient h5s into per-split solver-facing h5s at `data/mayo_ldct/staged/`. **Overwrites** the v2-aggregated staged/ — every solver picks up v3 on the next epoch. |
+| `cluster/slurm/compare_gt_hd_ld_wagner_v3.sbatch` | Runs the bulk comparison from staged_helix2fan_v3/. |
+
+### Dispatched 2026-06-12 (dependency chain)
+
+| SLURM | Job | Wall budget | Depends on | Output |
+|---|---|---|---|---|
+| 763396 | rebin-mayo-v3 | 24 h | — | `data/mayo_ldct/staged_helix2fan_v3/` |
+| 763397 | stage-mayo-v3 | 4 h | 763396 | `data/mayo_ldct/staged/{train,val,test}_sino_{fulldose,lowdose}.h5` |
+| 763398 | cmp-wagner-v3 | 1 h | 763397 | `results/mayo_debug/wagner_gt_hd_ld_fbp_v3.png` + `_v3.json` + `_v3_arrays/*.npz` |
+
+### Effect on prior leaderboard scores
+
+All Mayo-LDCT autoresearch + TPE runs prior to 2026-06-12 used the v2 staged sinograms. After the v3 rebin lands and stage overwrites the solver-facing h5s, **the next epoch of any Mayo solver consumes v3 data**. Final leaderboard scores will be recomputed once a solver has retrained / re-evaluated on v3. Until then, leaderboard rows are tagged with the staging-geometry version they consumed (entry on `docs/leaderboards/mayo_ldct.md` follows).
+
+### The v3 vs v2 question — should I rerun a solver?
+
+Yes, in two cases:
+- Any solver whose leaderboard SSIM is within 0.01 of a neighbour (the v3 update reshuffles the bottom group)
+- Any solver actively in TPE refinement on Mayo (TPE is fitting to v2 noise that no longer exists)
+
+For solvers comfortably above their neighbours and not in active refinement, the v3 update is unlikely to change rank order — but the absolute SSIM / PSNR will shift up slightly (+0.001–0.005 SSIM, +0.1–0.5 dB PSNR per the L014 fit).
+
 ## 2026-06-11 — z-scaling missing from the rebin parameter set; v2 fit + s_z sweep diagnose, v3 folds it into Adam
 
 This entry summarises a Mayo L014 calibration re-attempt that supersedes the multi-GT fit summarised in the 2026-05-27 entry below. **Read this first if you're touching Mayo-LDCT geometry.** Files referenced are all in the repo.

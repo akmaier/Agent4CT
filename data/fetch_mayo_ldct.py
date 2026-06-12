@@ -395,22 +395,28 @@ def _rebin_patient_series(series_dir: Path, out_h5: Path, out_zgrid: Path,
           f"dv={geom['dv']:.4f} total_rot={geom['total_rotations']:.3f}",
           flush=True)
 
-    # Optional override: replace the DICOM-nominal SSR sod/sdd with the
-    # multi-GT-fitted optimum (SLURM 762369 → MAYO_LDCT_SSR_DEFAULTS in
-    # ddssl_ldct/geometry.py). Gated by env var so the legacy DICOM-nominal
-    # path stays the default for backwards compatibility. See findings.md
-    # 2026-05-27 entry "SSR-vs-FBP geometry split" for rationale.
+    # Optional override: replace the DICOM-nominal SSR sod/sdd (and the
+    # newly-added z-scaling s_z) with the v3 multi-GT fitted optimum
+    # (SLURM 763384 → MAYO_LDCT_SSR_DEFAULTS in ddssl_ldct/geometry.py).
+    # Gated by env var so the legacy DICOM-nominal path stays the default
+    # for backwards compatibility. See findings.md 2026-06-12 entry for
+    # the v3 / s_z rationale.
     if os.environ.get("HELIX2FAN_SSR_FITTED", "0") in ("1", "true", "True"):
         from ddssl_ldct.geometry import MAYO_LDCT_SSR_DEFAULTS
         sod_old, sdd_old = float(geom["sod"]), float(geom["sdd"])
         sod_new = float(MAYO_LDCT_SSR_DEFAULTS["sod"])
         sdd_new = float(MAYO_LDCT_SSR_DEFAULTS["sdd"])
+        s_z_new = float(MAYO_LDCT_SSR_DEFAULTS.get("s_z", 1.0))
         print(f"[rebin]   SSR sod {sod_old:.3f} → {sod_new:.3f} "
-              f"(Δ = {sod_new - sod_old:+.3f} mm; multi-GT)", flush=True)
+              f"(Δ = {sod_new - sod_old:+.3f} mm; v3)", flush=True)
         print(f"[rebin]   SSR sdd {sdd_old:.3f} → {sdd_new:.3f} "
-              f"(Δ = {sdd_new - sdd_old:+.3f} mm; multi-GT)", flush=True)
+              f"(Δ = {sdd_new - sdd_old:+.3f} mm; v3)", flush=True)
+        print(f"[rebin]   SSR s_z 1.0 → {s_z_new:.6f} "
+              f"(Δ = {(s_z_new - 1.0) * 100:+.4f} % z-scaling; v3)",
+              flush=True)
         geom["sod"] = sod_new
         geom["sdd"] = sdd_new
+        geom["s_z"] = s_z_new
 
     print(f"[rebin]   curved -> flat (n_jobs={n_jobs}) ...", flush=True)
     proj_flat = rebin_curved_to_flat(proj_curved, geom, n_jobs=n_jobs)
