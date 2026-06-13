@@ -158,6 +158,47 @@ Yes, in two cases:
 
 For solvers comfortably above their neighbours and not in active refinement, the v3 update is unlikely to change rank order — but the absolute SSIM / PSNR will shift up slightly (+0.001–0.005 SSIM, +0.1–0.5 dB PSNR per the L014 fit).
 
+### 10-patient GT/HD/LD comparison (2026-06-13) — and the per-patient display-FOV requirement
+
+Bulk GT-vs-HD-FBP-vs-LD-FBP across all 10 Wagner patients on v3-rebinned data (`scripts/compare_gt_hd_ld_fbp_wagner.py`, central slice, raw FBP + intensity-calibration only — no learned H(ρ)/post-FBP, so absolute SSIM sits below the L014 nuisance-fit 0.957).
+
+**Per-patient display FOV is NOT constant across Mayo.** The first run rendered every FBP at the L014-calibrated `pixel_spacing = 0.700857` mm and came out bimodal — only L014/L056 (truth ps 0.7031) scored ~0.94, the other 8 collapsed to ~0.6. The 8 are valid reconstructions at the wrong zoom (user-confirmed by eye, not corrupted). Cause: Mayo reconstructs each patient at a different display FOV:
+
+| FOV | truth PixelSpacing | patients |
+|---|---:|---|
+| 340 mm | 0.6641 | L219, L075, L123 |
+| 360 mm | 0.7031 | L014, L056 |
+| 380 mm | 0.7422 | L209, L277, L058 |
+| 400 mm | 0.7812 | L145, L186 |
+
+**In-plane shift is zero for all 10** — `scripts/probe_truth_geometry_wagner.py` (→ `results/breast_debug/wagner_truth_geometry.json`) reads `DataCollectionCenterPatient` (0018,9313, isocentre) and `ReconstructionTargetCenterPatient` (0018,9318, image centre); their difference is (0,0) for every patient. The *apparent* shift seen in the first comparison was a side-effect of the zoom mismatch about the shared isocentre, not an independent offset — correcting the zoom alone removed it.
+
+Fix (commit 2e48b0c7): render each FBP at `ps_eff = 0.700857 × (truth_ps / 0.703125)` — preserves the L014 sub-pixel calibration while matching each patient's FOV; det_spacing / sod / sdd / det_offset are FOV-independent and unchanged. **Lesson: a per-patient bulk recon must read each patient's truth PixelSpacing; a single fitted pixel_spacing only matches same-FOV patients.** (The single-slice validator already did this; the bulk script had to be taught it.)
+
+Final aligned metrics (calibrated, central slice, n=10):
+
+| | SSIM_cal mean | PSNR_cal mean |
+|---|---:|---:|
+| HD-FBP | 0.9152 | 36.22 dB |
+| LD-FBP | 0.8639 | 34.93 dB |
+
+Per-patient HD / LD (ΔPSNR = LD−HD is the dose gap):
+
+| pat | split | ps | HD ssim | HD psnr | LD ssim | LD psnr | ΔPSNR |
+|---|---|---:|---:|---:|---:|---:|---:|
+| L145 | train | 0.7812 | 0.919 | 34.06 | 0.850 | 32.98 | −1.07 |
+| L186 | train | 0.7812 | 0.870 | 32.27 | 0.791 | 31.37 | −0.90 |
+| L209 | train | 0.7422 | 0.899 | 35.93 | 0.838 | 34.29 | −1.64 |
+| L219 | train | 0.6641 | 0.935 | 37.17 | 0.905 | 36.15 | −1.02 |
+| L277 | val | 0.7422 | 0.855 | 35.89 | 0.790 | 34.11 | −1.79 |
+| L014 | test | 0.7031 | 0.939 | 38.11 | 0.909 | 36.96 | −1.15 |
+| L056 | test | 0.7031 | 0.948 | 37.58 | 0.898 | 35.99 | −1.59 |
+| L058 | test | 0.7422 | 0.896 | 36.13 | 0.822 | 34.24 | −1.89 |
+| L075 | test | 0.6641 | 0.945 | 37.09 | 0.916 | 36.20 | −0.89 |
+| L123 | test | 0.6641 | 0.945 | 37.93 | 0.920 | 36.99 | −0.94 |
+
+LD trails HD by ~0.9–1.9 dB calibrated PSNR across all patients — consistent dose-noise penalty, no outliers. Artifacts: combined panel `results/mayo_debug/wagner_gt_hd_ld_fbp_v3.png`; per-patient images `results/mayo_debug/wagner_per_patient_v3fixed/<pat>.png`; metrics `results/mayo_debug/wagner_gt_hd_ld_fbp_v3.json`.
+
 ## 2026-06-11 — z-scaling missing from the rebin parameter set; v2 fit + s_z sweep diagnose, v3 folds it into Adam
 
 This entry summarises a Mayo L014 calibration re-attempt that supersedes the multi-GT fit summarised in the 2026-05-27 entry below. **Read this first if you're touching Mayo-LDCT geometry.** Files referenced are all in the repo.
