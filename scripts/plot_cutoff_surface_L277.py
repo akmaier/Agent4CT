@@ -23,6 +23,7 @@ Output:
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -42,6 +43,17 @@ from ddssl_ldct.metrics import ssim as ssim_metric
 
 
 def main() -> int:
+    p = argparse.ArgumentParser(description=__doc__)
+    # Default = FINE zoom around the maximum (eff_lower=0 corner).
+    p.add_argument("--pre-min", type=float, default=-0.002)
+    p.add_argument("--pre-max", type=float, default=0.004)
+    p.add_argument("--post-min", type=float, default=-0.003)
+    p.add_argument("--post-max", type=float, default=0.003)
+    p.add_argument("--n-pre", type=int, default=49)
+    p.add_argument("--n-post", type=int, default=49)
+    p.add_argument("--tag", default="zoom")
+    args = p.parse_args()
+
     out_dir = REPO / "results" / "mayo_debug"
     npz = np.load(out_dir / "cutoff_L277_v2_arrays.npz")
     cal = torch.from_numpy(npz["cal"]).float()
@@ -54,8 +66,10 @@ def main() -> int:
           f"{float(cal.max()):.4f}]  dev={dev}", flush=True)
 
     # grids: pre in RAW-FBP units, post in CALIBRATED units (both lower floors)
-    pre_grid = np.round(np.linspace(-0.003, 0.008, 23), 5)
-    post_grid = np.round(np.linspace(-0.005, 0.008, 27), 5)
+    pre_grid = np.round(np.linspace(args.pre_min, args.pre_max, args.n_pre), 6)
+    post_grid = np.round(np.linspace(args.post_min, args.post_max, args.n_post), 6)
+    print(f"[surf] pre {args.pre_min}..{args.pre_max} x{args.n_pre}  "
+          f"post {args.post_min}..{args.post_max} x{args.n_post}", flush=True)
     S = np.zeros((len(post_grid), len(pre_grid)), dtype=np.float32)
     for i, post in enumerate(post_grid):
         for j, pre in enumerate(pre_grid):
@@ -104,10 +118,11 @@ def main() -> int:
     fig.suptitle(f"L277 two-threshold SSIM surface, calibration fixed "
                  f"(a={a:.3f}, bg={bg:+.4f})", fontsize=12)
     fig.tight_layout(rect=[0, 0, 1, 0.97])
-    fig.savefig(out_dir / "cutoff_L277_surface.png", dpi=120, bbox_inches="tight")
+    sfx = f"_{args.tag}" if args.tag else ""
+    fig.savefig(out_dir / f"cutoff_L277_surface{sfx}.png", dpi=130, bbox_inches="tight")
     plt.close(fig)
 
-    (out_dir / "cutoff_L277_surface.json").write_text(json.dumps({
+    (out_dir / f"cutoff_L277_surface{sfx}.json").write_text(json.dumps({
         "a": a, "bg": bg, "dr": dr,
         "pre_grid": pre_grid.tolist(), "post_grid": post_grid.tolist(),
         "ssim": S.tolist(),
@@ -117,7 +132,7 @@ def main() -> int:
         "note": "output lower bound = max(a*(pre-bg), post); surface depends "
                 "only on that combined effective floor.",
     }, indent=2))
-    print(f"[surf] wrote cutoff_L277_surface.png + .json", flush=True)
+    print(f"[surf] wrote cutoff_L277_surface{sfx}.png + .json", flush=True)
     return 0
 
 
