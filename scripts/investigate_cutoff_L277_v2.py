@@ -107,8 +107,16 @@ def main() -> int:
     fig.savefig(out_dir / "cutoff_L277_v2_curve.png", dpi=120, bbox_inches="tight")
     plt.close(fig)
 
+    # Dump the calibrated array (+ truth) so any further threshold re-render
+    # is instant locally — no re-reconstruction needed.
+    np.savez(out_dir / "cutoff_L277_v2_arrays.npz",
+             cal=cal.cpu().numpy().astype(np.float32),
+             truth=truth_np.astype(np.float32),
+             a=float(a), bg=float(bg_pred), dr=DR)
+
     # ---- images at representative T (recon + diff) ----
-    show_T = [-0.010, 0.0, 0.005, 0.010]
+    # Finer sampling across [0, +0.006] (user: T=+0.005 looked promising).
+    show_T = [0.0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006]
     fig, ax = plt.subplots(2, len(show_T) + 1, figsize=(5 * (len(show_T) + 1), 9.5))
     ax[0, 0].imshow(truth_np, cmap="gray", vmin=0, vmax=DR)
     ax[0, 0].set_title("L277 GT (truth)", fontsize=11)
