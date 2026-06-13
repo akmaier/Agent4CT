@@ -214,7 +214,17 @@ Result — **every patient improved, monotonically with display FOV (body size),
 
 Aggregate HD SSIM_cal 0.9152 → **0.9430** (+0.0278), PSNR 36.22 → **37.44 dB**. LD 0.8639 → 0.8868. The gain tracks truncation severity exactly (biggest where the body is largest; near-no-op at 340 mm), confirming the correction is physically targeted. Artifacts: `results/mayo_debug/wagner_gt_hd_ld_fbp_v3trunc.png` (GT|HD_tc|diff), `results/mayo_debug/wagner_per_patient_v3trunc/<pat>.png` (GT|HD_raw|HD_tc|diff|LD_tc|diff), `wagner_gt_hd_ld_fbp_v3trunc.json` (raw+tc metrics).
 
-**Status: validated, NOT yet in production.** The correction lives only in the comparison script. Folding it into the production FBP path (`PyronnFanBeamProjector.fbp` / the solver-facing rebin) would lift every Mayo recon, most for large patients — pending user sign-off, since it changes the data all solvers consume.
+**Status (2026-06-13): productionised.** Folded into `PyronnFanBeamProjector` behind two opt-in kwargs (`det_offset_mm`, `truncation`; both default off → no change for breast_ct / demo_dl / existing callers). `truncation=MAYO_LDCT_TRUNCATION` composes a widened-detector sibling on the same image grid; `fbp()` water-cylinder-extrapolates the input sino (`ddssl_ldct/truncation.py`) and routes through it. The validator enables it by default for the `fitted` geometry (`--no-truncation` to opt out). Per-solver wiring is follow-up (solvers opt in via `truncation=MAYO_LDCT_TRUNCATION`); the leaderboard-reference validator already uses it.
+
+#### Lower intensity-cutoff SSIM sweep — 2026-06-13, SLURM 763624 (NEGATIVE result)
+
+User observed a faint blue (recon<GT) posterior shadow on L277's diff and hypothesised the lower-end intensity cutoff was set too high. `scripts/investigate_lower_cutoff_wagner.py` swept both lower clips in the calibrated-eval path (pre-cal `fbp.clamp(min=C)`, post-cal `pred_cal.clamp_min(C)`), C ∈ [−0.020, +0.0025], over the production truncation-corrected HD FBP of all 10 patients.
+
+**Verdict: the cutoff is NOT the cause; floor 0.0 is essentially optimal.**
+- Post-cal output floor: 0.0 is strongly optimal — mean SSIM 0.9434 at 0.0, collapses to 0.757 at any negative floor (allowing negative μ in air wrecks SSIM) and 0.621 at +0.0025.
+- Pre-cal FBP floor: lowering 0.0 → −0.02 gains a uniform but negligible **+0.0004** mean SSIM (every patient +0.0001…+0.0007), far below the 0.003 materiality bar. +0.0025 crashes to 0.853.
+- Why so flat: the raw FBP barely goes negative (raw_min ∈ [−0.0051, −0.0006] μ), so clamping at 0 removes almost nothing.
+- L277: baseline 0.8943 → best 0.8948 (+0.0004). L277 is simply the **lowest-SSIM patient overall** (0.894 vs 0.93–0.96), i.e. its recon-truth discrepancy is the largest — but it is NOT a clipping artifact. The shadow is a genuine low-amplitude, spatially-varying recon<truth difference that the global two-point `intensity_calibrate` (bg_mean→0, fg_mean→truth_fg) cannot remove (candidates to probe next, not yet tested: residual scatter/beam-hardening cupping, table/bed attenuation, AP-direction residual truncation). Production floor unchanged. Artifacts: `results/mayo_debug/lower_cutoff_sweep.{json,png}`, `lower_cutoff_L277_diffs.png`.
 
 ## 2026-06-11 — z-scaling missing from the rebin parameter set; v2 fit + s_z sweep diagnose, v3 folds it into Adam
 
