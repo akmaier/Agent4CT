@@ -199,6 +199,23 @@ Per-patient HD / LD (ΔPSNR = LD−HD is the dose gap):
 
 LD trails HD by ~0.9–1.9 dB calibrated PSNR across all patients — consistent dose-noise penalty, no outliers. Artifacts: combined panel `results/mayo_debug/wagner_gt_hd_ld_fbp_v3.png`; per-patient images `results/mayo_debug/wagner_per_patient_v3fixed/<pat>.png`; metrics `results/mayo_debug/wagner_gt_hd_ld_fbp_v3.json`.
 
+#### Truncation correction (water-cylinder extrapolation) — 2026-06-13, SLURM 763608
+
+The 400 mm-FOV patients (L145, L186 — the largest bodies) showed classic FBP truncation artifacts (bright rim + cupping): the body extends past the scan field-of-measurement, the rebinned fan projections cut off at the detector edges, and the ramp filter amplifies the discontinuity. `scripts/compare_gt_hd_ld_fbp_wagner_trunc.py` adds a **Hsieh-2004-style water-cylinder extrapolation** — each rebinned fan view is extended on both u-edges by a water-cylinder profile `f(t)=2·μ_w·√(R²−(t−t_c)²)` matched in value + outward slope to the truncation boundary, decaying to 0 over a 384-channel pad; FBP then runs on a widened virtual detector (736→1504 ch) at the same image grid. It is self-gating (a near-zero edge → tiny R → ~0 pad).
+
+Result — **every patient improved, monotonically with display FOV (body size), none hurt:**
+
+| FOV | patients | HD ΔSSIM (tc−raw) |
+|---|---|---|
+| 400 mm | L186, L145 | +0.072, +0.039 |
+| 380 mm | L277, L058, L209 | +0.039, +0.036, +0.034 |
+| 360 mm | L014, L056 | +0.015, +0.012 |
+| 340 mm | L219, L075, L123 | +0.011, +0.011, +0.009 |
+
+Aggregate HD SSIM_cal 0.9152 → **0.9430** (+0.0278), PSNR 36.22 → **37.44 dB**. LD 0.8639 → 0.8868. The gain tracks truncation severity exactly (biggest where the body is largest; near-no-op at 340 mm), confirming the correction is physically targeted. Artifacts: `results/mayo_debug/wagner_gt_hd_ld_fbp_v3trunc.png` (GT|HD_tc|diff), `results/mayo_debug/wagner_per_patient_v3trunc/<pat>.png` (GT|HD_raw|HD_tc|diff|LD_tc|diff), `wagner_gt_hd_ld_fbp_v3trunc.json` (raw+tc metrics).
+
+**Status: validated, NOT yet in production.** The correction lives only in the comparison script. Folding it into the production FBP path (`PyronnFanBeamProjector.fbp` / the solver-facing rebin) would lift every Mayo recon, most for large patients — pending user sign-off, since it changes the data all solvers consume.
+
 ## 2026-06-11 — z-scaling missing from the rebin parameter set; v2 fit + s_z sweep diagnose, v3 folds it into Adam
 
 This entry summarises a Mayo L014 calibration re-attempt that supersedes the multi-GT fit summarised in the 2026-05-27 entry below. **Read this first if you're touching Mayo-LDCT geometry.** Files referenced are all in the repo.
