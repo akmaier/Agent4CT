@@ -293,6 +293,7 @@ def main() -> int:
         baseline=fbp_clipped,        # FBP IS our reference recon here
         display_min=0.0, display_max=dr,
         fov=False,
+        bg_target="truth",   # Mayo: truth background ~+0.0005 mu, not 0 (findings 2026-06-13)
     )
     pred_cal = metrics["pred_cal"]
     ssim_cal = float(metrics["val_ssim"])

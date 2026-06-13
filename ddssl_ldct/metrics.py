@@ -83,21 +83,33 @@ def fov_mask(size: int, *, radius_pix: float | None = None,
 
 def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
                         fg_threshold: float | None = None,
-                        display_max: float | None = None) -> torch.Tensor:
+                        display_max: float | None = None,
+                        bg_target: "float | str | None" = None) -> torch.Tensor:
     """Linear two-point calibration of `pred` against `truth`.
 
     Pixels where `truth > fg_threshold` define the foreground mask; the
     complement is background. We then:
       1. compute `bg_pred = pred[bg].mean()`
       2. compute `fg_pred = pred[fg].mean()`, `fg_truth = truth[fg].mean()`
-      3. solve for the affine `pred_cal = a · (pred - bg_pred)` that maps
-         the fg_pred mean to fg_truth, i.e. `a = fg_truth / (fg_pred - bg_pred)`
+      3. solve for the affine that maps `fg_pred → fg_truth` and
+         `bg_pred → bg_dst` (see `bg_target`).
       4. clip below 0; if `display_max` is given, also clip above it.
 
-    If either mask is empty the input is returned unchanged (we cannot
-    calibrate without two reference levels). Operates pixel-wise; works on
-    `(H,W)`, `(1,H,W)`, `(B,1,H,W)`, etc. — `pred` and `truth` just have to
-    broadcast.
+    `bg_target` — where the background level is mapped:
+      * ``None`` (default): map `bg_pred → 0`, i.e. `a = fg_truth/(fg_pred-bg_pred)`,
+        `pred_cal = a·(pred - bg_pred)`. This is the historical one-point-anchored
+        form and **assumes truth's background is 0**. Unchanged for all existing
+        callers (breast_ct / demo_dl, whose background μ is different/unknown).
+      * ``"truth"``: map `bg_pred → bg_truth = truth[bg].mean()` — the proper
+        two-point affine `pred_cal = bg_truth + a·(pred - bg_pred)` with
+        `a = (fg_truth - bg_truth)/(fg_pred - bg_pred)`. Use for Mayo, where the
+        truth background sits at ~+0.0005 μ (air/low tissue ≠ 0); the ``None``
+        form leaves the recon ~0.0005 μ too dark and costs up to +0.042 SSIM
+        (verified across all 10 Wagner patients, 2026-06-13). See findings.md.
+      * a float: map `bg_pred → that explicit value`.
+
+    If either mask is empty the input is returned unchanged. Operates
+    pixel-wise; works on `(H,W)`, `(1,H,W)`, `(B,1,H,W)`, etc.
     """
     if fg_threshold is None:
         tmin = float(truth.min())
@@ -116,8 +128,21 @@ def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
     fg_truth = truth[fg_mask].mean()
     span = (fg_pred - bg_pred).clamp_min(torch.tensor(1e-9, device=pred.device,
                                                        dtype=pred.dtype))
-    a = fg_truth / span
-    pred_cal = a * (pred - bg_pred)
+    if bg_target is None:
+        # legacy: bg_pred -> 0 (assumes truth background == 0)
+        a = fg_truth / span
+        pred_cal = a * (pred - bg_pred)
+    else:
+        if isinstance(bg_target, str):
+            if bg_target != "truth":
+                raise ValueError(f"bg_target str must be 'truth', got {bg_target!r}")
+            bg_dst = truth[bg_mask].mean()
+        else:
+            bg_dst = torch.as_tensor(float(bg_target), device=pred.device,
+                                      dtype=pred.dtype)
+        # proper two-point affine: bg_pred -> bg_dst, fg_pred -> fg_truth
+        a = (fg_truth - bg_dst) / span
+        pred_cal = bg_dst + a * (pred - bg_pred)
     pred_cal = pred_cal.clamp_min(0.0)
     if display_max is not None:
         pred_cal = pred_cal.clamp(0.0, float(display_max))
@@ -128,7 +153,8 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
                          baseline: torch.Tensor | None = None,
                          *, display_min: float, display_max: float,
                          fg_threshold: float | None = None,
-                         fov: torch.Tensor | bool = True) -> dict:
+                         fov: torch.Tensor | bool = True,
+                         bg_target: "float | str | None" = None) -> dict:
     """Full standard evaluation: calibrate `pred` (and optionally `baseline`)
     against `truth`, apply a circular FOV mask, then compute
     PSNR/SSIM/RMSE/headroom over the masked region.
@@ -152,7 +178,8 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
 
     pred_cal = intensity_calibrate(pred, truth,
                                     fg_threshold=fg_threshold,
-                                    display_max=display_max)
+                                    display_max=display_max,
+                                    bg_target=bg_target)
 
     # FOV mask handling
     if isinstance(fov, bool):
@@ -181,7 +208,8 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
     if baseline is not None:
         baseline_cal = intensity_calibrate(baseline, truth,
                                             fg_threshold=fg_threshold,
-                                            display_max=display_max)
+                                            display_max=display_max,
+                                            bg_target=bg_target)
         if mask_2d is not None:
             baseline_cal = baseline_cal * mask_2d
         bl_rmse = float(((baseline_cal - truth) ** 2).mean().sqrt().cpu())

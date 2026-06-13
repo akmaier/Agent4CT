@@ -214,7 +214,7 @@ def _run_patient(patient: str, sino_dir: Path, truth_root: Path,
             fbp_clipped, truth_t,
             baseline=fbp_clipped,
             display_min=0.0, display_max=dr,
-            fov=False,
+            fov=False, bg_target="truth",   # Mayo: truth background != 0
         )
         metrics_per[label] = {
             "ssim_raw": ssim_raw, "psnr_raw": psnr_raw,

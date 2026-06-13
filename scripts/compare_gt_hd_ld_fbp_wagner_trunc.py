@@ -183,7 +183,8 @@ def _fbp_slab(slab, geom_json, pixel_spacing, device, pad, mu_water, edge_k=7):
 def _cal(fbp_np, truth_t, dr, device):
     fbp_t = torch.from_numpy(fbp_np).to(device).float()[None, None].clamp(min=0.0)
     cal = evaluate_calibrated(fbp_t, truth_t, baseline=fbp_t,
-                               display_min=0.0, display_max=dr, fov=False)
+                               display_min=0.0, display_max=dr, fov=False,
+                               bg_target="truth")   # Mayo: truth bg != 0
     return (cal["pred_cal"][0, 0].cpu().numpy().astype(np.float32),
             float(cal["val_ssim"]), float(cal["val_psnr"]), float(cal["val_rmse"]))
 
