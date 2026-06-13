@@ -82,6 +82,29 @@ Outputs: `results/breast_debug/L014_forward_geom_fit_v4.json`, `results/mayo_deb
 
 **Next (v5, transfer test = decision gate 4):** rebuild the L014 proj_flat cache and SSR with the entire v4b set locked (curved→flat with du_eff = θ_p×sdd_v4, dv_v4, u0/v0 offsets; SSR with v4 sod/sdd/s_z/z0), fit ONLY nuisances (w_slab, H(ρ), post-FBP) v3-style, and compare to v3's SSIM 0.9571 / PSNR 40.79 on the same 10-slice protocol. Adopt v4 only if ≥. Until then **v3 stays production**.
 
+### v5 transfer-test result (SLURM 763594, 2026-06-13) — **KEEP v3**
+
+The u0-flip caveat closed first: fitted u0_off = −3.378 ch decomposes into −3.25 ch of channel-flip bookkeeping (`nu − 2·u0_tag`, u0_tag = 369.625 confirmed by probe — `read_dicom_ctpd` flips the channel axis at load and downstream centres against `nu − u0`) plus a genuine −0.128 ch (−0.164 mm) residual. The v4b geometry is self-consistent with the known flip.
+
+Transfer test (full v4b geometry locked through curved→flat + SSR + FBP, only slab/H(ρ)/post-FBP nuisances fit, same 10-slice protocol):
+
+| Arm | FBP geometry | SSIM | PSNR | vs v3 (0.9571 / 40.79) |
+|---|---|---:|---:|---|
+| A− | v4-consistent (sod 591.9, sdd 1080.6, ps 0.69949, ds 1.27987), det_off −0.164 | 0.9395 | 35.14 | **−5.7 dB — fails** |
+| A+ | same, det_off +0.164 | 0.9385 | 35.14 | same (offset sign irrelevant) |
+| **B** | v4 rebin + **Powell legacy FBP** | **0.9533** | **40.41** | −0.0038 / −0.38 dB — close, below |
+
+Verdicts:
+1. **The v4 absolute sod/sdd/ps do NOT transfer to the FBP step** (−5.7 dB). As flagged in the caveats, the projection-domain fit identifies consistent *combinations* well, but the absolute split across (sod, sdd, s_xy, dv) is soft — and PYRO-NN's FBP is sensitive to a different combination than the forward model constrains. The det-offset sign bracket changed nothing, so it isn't a sub-pixel issue.
+2. **The v4 rebin is nearly as good as v3's** (arm B: −0.38 dB) despite completely different parameter values (dv 1.0849 vs 1.0947, du_eff 1.2799 vs 1.2858, sod/sdd 591.9/1080.6 vs 592.8/1087.3, s_z 1.0011 vs 1.00166) and despite v3's SSR being tuned in-situ on this very metric. Confirms the documented degeneracy: the SSR cares mostly about the sdd/sod ratio and the z-axis, and v3's edge comes from joint FBP↔SSR co-adaptation (plus arm B's nuisances were still slowly improving at 1200 iters — dz hadn't converged).
+
+**Production decision: v3 stays.** What the v4/v5 exercise leaves behind:
+- Physical explanations for v3's "weird" values: s_z is a real table-feed correction (tag z-ramp synthesized from a constant that under-states feed); the FBP↔SSR sod/sdd split absorbs the derived-dv inconsistency (dv tag = 0.6 × nominal mag, fake precision); Powell's pixel_spacing sits inside the soft (mag, dv, s_xy) family.
+- A working differentiable projection-domain identification tool (`scripts/fit_geometry_forward_L014_v4.py`, 7-min runtime) + the iso-frame / flip / tag-forensics knowledge needed to use it on other patients or scanners.
+- Negative result worth remembering: projection-domain-optimal absolute geometry ≠ recon-metric-optimal effective geometry when the recon stack has its own convention baggage. Calibrate end-to-end against the metric you ship.
+
+Artifacts: `results/breast_debug/L014_locked_v5.json`, `results/mayo_debug/L014_locked_v5.png`.
+
 ## 2026-06-12 — v3 geometry promoted to production for all Mayo experiments + 10-patient Wagner bulk re-rebin
 
 The v3 fit completed (SLURM 763384 — see the 2026-06-11 entry below for the fit setup, sweep cross-check, and per-GT metrics). v3 numbers: SSIM 0.9571, PSNR 40.79 dB averaged over 10 slices spanning the full L014 patient z-range (+0.26 dB vs v2, +0.5 dB at the patient z-extremes). On 2026-06-12 we promoted these values to the canonical production constants so every Mayo solver, validator, and rebin job picks them up automatically.
