@@ -32,7 +32,10 @@ export STAGED_HELIX2FAN_SUBDIR=staged_helix2fan_v3
 echo "[stage-v3] host=$(hostname) job=$SLURM_JOB_ID"
 echo "[stage-v3] STAGED_HELIX2FAN_SUBDIR=$STAGED_HELIX2FAN_SUBDIR"
 
-python data/stage_mayo_sinos.py
+# --force: the staged/{train,val,test}_sino_*.h5 already exist from the v2
+# aggregation (Jun 3). Without --force stage_mayo_sinos.py skips them and
+# the solver-facing splits stay v2. We WANT to overwrite them with v3.
+python data/stage_mayo_sinos.py --force
 
 echo "[stage-v3] done."
 ls -la "$REPO/data/mayo_ldct/staged" | head -40
