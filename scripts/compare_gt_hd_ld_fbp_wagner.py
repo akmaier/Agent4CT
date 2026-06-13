@@ -82,8 +82,19 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+def _pick_z_center(geom_json: dict, zgrid: np.ndarray, z_offset_mm: float):
+    """Source-frame z of the central rebinned slab (no FBP), so truth can
+    be loaded before the FBP grid is built (we need the truth pixel
+    spacing to set the FBP FOV)."""
+    nz = int(geom_json["nz_rebinned"])
+    nz_center = nz // 2 + int(round(z_offset_mm))
+    nz_center = max(0, min(nz - 1, nz_center))
+    return float(zgrid[nz_center])
+
+
 def _fbp_central_slab(sino_h5: Path, geom_json: dict, zgrid: np.ndarray,
-                       z_offset_mm: float, slab_half: int, device: str):
+                       z_offset_mm: float, slab_half: int, device: str,
+                       pixel_spacing: float = None):
     """Load central slab, FBP each member with v3-final geometry, average."""
     rotview = int(geom_json["rotview"])
     nu = int(geom_json["nu"])
@@ -105,8 +116,26 @@ def _fbp_central_slab(sino_h5: Path, geom_json: dict, zgrid: np.ndarray,
 
     angle_start = float(geom_json.get("angle_start_corrected", 0.0))
     angle_end = angle_start + 2.0 * math.pi
-    geom = FanBeamGeometry.mayo_ldct_fitted(
+    # FBP grid pixel spacing MUST match this patient's truth display FOV.
+    # mayo_ldct_fitted()'s 0.700857 mm was calibrated on L014, whose truth
+    # PixelSpacing is 0.703125 mm (360 mm FOV). Mayo patients are
+    # reconstructed at varying display FOVs (340/360/380/400 mm →
+    # ps 0.6641/0.7031/0.7422/0.7812). Rendering every FBP at 0.700857
+    # would put the off-360 patients at the wrong physical scale and the
+    # anatomy would not overlap truth (SSIM collapses to ~0.6). We scale
+    # the calibrated spacing by (truth_ps / 0.703125) to preserve the
+    # sub-pixel fit while matching each patient's FOV. det_spacing / sod /
+    # sdd / det_offset are FOV-independent and stay at the fitted values.
+    fitted = FanBeamGeometry.mayo_ldct_fitted(
         n_angles=rotview, n_det=nu,
+        angle_start=angle_start, angle_end=angle_end,
+    )
+    if pixel_spacing is None:
+        pixel_spacing = fitted.pixel_spacing
+    geom = FanBeamGeometry(
+        image_size=512, pixel_spacing=pixel_spacing,
+        n_angles=rotview, n_det=nu, det_spacing=fitted.det_spacing,
+        sod=fitted.sod, sdd=fitted.sdd,
         angle_start=angle_start, angle_end=angle_end,
     )
     proj = PyronnFanBeamProjector(geom).to(device)
@@ -151,22 +180,26 @@ def _run_patient(patient: str, sino_dir: Path, truth_root: Path,
     zgrid_hd = np.load(zgrid_hd_path)
     zgrid_ld = np.load(zgrid_ld_path)
 
-    # HD FBP at central slab.
-    fbp_hd, z_center_hd, slab_hd = _fbp_central_slab(
-        sino_hd, geom_hd, zgrid_hd, z_offset_mm, slab_half, device)
-    # LD FBP at the same central slab index (LD sino may have a slightly
-    # different nz; we re-pick its centre to keep the FBP slab anchored
-    # to the patient mid-volume regardless).
-    fbp_ld, z_center_ld, slab_ld = _fbp_central_slab(
-        sino_ld, geom_ld, zgrid_ld, z_offset_mm, slab_half, device)
-
-    # Truth at the HD z-centre (HD/LD share the same physical z because
-    # they're alternate dose levels of the same scan).
-    truth_info = _load_truth_slice_for_z(truth_root / patient, z_center_hd)
+    # Truth FIRST (at the HD central-slab z) so we know this patient's
+    # display FOV / pixel spacing before building the FBP grid. HD/LD
+    # share the same physical z (alternate dose levels of the same scan).
+    z_center_hd0 = _pick_z_center(geom_hd, zgrid_hd, z_offset_mm)
+    truth_info = _load_truth_slice_for_z(truth_root / patient, z_center_hd0)
     if truth_info is None:
         return {"patient": patient, "error": "no truth slice",
                 "split": out["split"]}
     truth, target_pz, bracket, truth_meta = truth_info
+    truth_ps = float(truth_meta["pixel_spacing"])
+    # Scale the L014-calibrated FBP spacing to this patient's truth FOV.
+    ps_eff = 0.700857 * (truth_ps / 0.703125)
+
+    # HD / LD FBP at central slab, rendered on the FOV-matched grid.
+    fbp_hd, z_center_hd, slab_hd = _fbp_central_slab(
+        sino_hd, geom_hd, zgrid_hd, z_offset_mm, slab_half, device,
+        pixel_spacing=ps_eff)
+    fbp_ld, z_center_ld, slab_ld = _fbp_central_slab(
+        sino_ld, geom_ld, zgrid_ld, z_offset_mm, slab_half, device,
+        pixel_spacing=ps_eff)
 
     dr = float(display_max)
     truth_t = torch.from_numpy(truth).to(device).float()[None, None]
