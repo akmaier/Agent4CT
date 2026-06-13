@@ -14,6 +14,26 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-13 — ⚠️ `intensity_calibrate` background-offset bug (affects ALL Mayo calibrated metrics) + opt-in `bg_target` fix
+
+**Read this before trusting any Mayo calibrated SSIM/PSNR number, including every Mayo-LDCT leaderboard score.**
+
+`ddssl_ldct.metrics.intensity_calibrate` (the two-point calibration behind every calibrated SSIM/PSNR via `evaluate_calibrated`) mapped the recon **background → 0**: `a = fg_truth/(fg_pred−bg_pred)`, `pred_cal = a·(pred − bg_pred)`. It computed `fg_truth` but **never `bg_truth`**, i.e. it assumed truth's background is 0.
+
+That assumption is **false for Mayo**: truth μ at air/low tissue is **~+0.0005 mu**, not 0 (μ = 0.02·(1+HU/1000); even air HU > −1000 in the recon, and the bg mask includes low soft tissue). So every Mayo calibrated recon came out ~0.0005 mu **too dark in the background**, and a clamp/threshold at 0 looked artificially optimal.
+
+How it was found (user-driven, L277): the L277 posterior "blue shadow" + visible **air texture** + a fishy SSIM max at threshold = 0. Diagnosis chain in the entries below (cutoff sweeps were a red herring; the cutoff can't touch the body). Full-image surface over (offset, threshold) put the SSIM max at **offset = +0.0005, T = 0** (not 0,0). Verified **systematic across all 10 Wagner patients** (SLURM `offset_allwagner`): air gap (truth − recon) **positive for every patient** (mean +0.00048 mu); an offset correction recovers **mean +0.0096 SSIM, up to +0.042 (L277)**. Images: `results/mayo_debug/offset_allwagner.png`, `L277_air_verify.png`, `L277_fullimage_surface.png`.
+
+**Fix (commit `bcfa2720`)** — opt-in `bg_target` on `intensity_calibrate` + `evaluate_calibrated`:
+- `bg_target=None` (**default**) — unchanged `bg_pred → 0`. **breast_ct / demo_dl and every existing caller are byte-for-byte identical** (their background μ scaling is different / unknown — deliberately NOT changed).
+- `bg_target="truth"` — proper two-point affine `bg_pred → bg_truth`, `fg_pred → fg_truth`. **Mayo callers opt in**: `scripts/validate_mayo_helix2fan.py`, `scripts/compare_gt_hd_ld_fbp_wagner.py`, `scripts/compare_gt_hd_ld_fbp_wagner_trunc.py`.
+- `bg_target=<float>` — explicit target.
+
+**Implications for the next agent:**
+- Every Mayo-LDCT leaderboard SSIM/PSNR recorded **before 2026-06-13 is ~0.01 low on average** (more for low-FOV-overlap slices like L277). They were all scored with the bg→0 metric. When a Mayo solver is next evaluated, pass `bg_target="truth"` (or the corrected validator) and **re-note its leaderboard row**; absolute numbers rise slightly, rank order is unlikely to change.
+- Do NOT globally flip the default — other datasets' truth backgrounds are not characterised. Mayo-only opt-in is intentional.
+- This was a metric bug, independent of geometry/truncation. But it MIGHT have biased the v3 geometry fit (whose loss used a learned post-FBP affine + ReLU-at-0). A re-fit-v3 sanity check is logged in the 2026-06-13 v3-recheck entry.
+
 ## 2026-06-12 — v4 (in progress): why the geometry hunt was so painful, and the single-physical-geometry plan
 
 v3 is production (entry below) and stays production until v4 proves itself. This entry documents the **root-cause diagnosis** of why three weeks of geometry fitting produced an effective-parameter stack instead of one clean geometry, plus the v4 identification plan.

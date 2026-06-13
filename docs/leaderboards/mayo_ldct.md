@@ -5,6 +5,8 @@ description: Real-helical-data leaderboard (Wagner split). Step-3 TPE refinement
 
 # Mayo-LDCT leaderboard (Wagner split)
 
+> ⚠️ **2026-06-13 — calibrated-metric bug found (`intensity_calibrate` background offset).** Every SSIM/PSNR below was scored with a calibration that mapped the recon background to 0, but Mayo truth background is ~+0.0005 μ — so these numbers are **~0.01 SSIM low on average** (more for low-overlap slices). Fixed via opt-in `bg_target="truth"` (commit `bcfa2720`); other datasets unchanged. Re-score with the corrected metric when a solver is next evaluated, then update its row. See [`docs/findings.md` 2026-06-13 entry](../findings.md).
+
 > 🆕 **2026-06-12 — v3 geometry promoted to production.** The SSR rebin
 > parameters (`MAYO_LDCT_SSR_DEFAULTS`) were re-fitted with a learnable
 > z-axis scaling (`s_z = 1.001665`) plus updated sod/sdd/Δz/post-FBP
