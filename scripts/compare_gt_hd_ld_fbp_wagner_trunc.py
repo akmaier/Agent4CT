@@ -216,10 +216,6 @@ def _run_patient(patient, sino_dir, truth_root, args):
     truth_ps = float(tmeta["pixel_spacing"])
     ps_eff = 0.700857 * (truth_ps / 0.703125)
 
-    # isocenter channel sampling for the cylinder length unit
-    fitted = FanBeamGeometry.mayo_ldct_fitted(n_angles=2, n_det=2)
-    du_iso = fitted.det_spacing * fitted.sod / fitted.sdd
-
     dr = float(args.display_max)
     truth_t = torch.from_numpy(truth).to(args.device).float()[None, None]
 
@@ -227,7 +223,7 @@ def _run_patient(patient, sino_dir, truth_root, args):
     for dose, slab in [("hd", slab_hd), ("ld", slab_ld)]:
         for arm, pad in [("raw", 0), ("tc", args.pad)]:
             fbp = _fbp_slab(slab, geom_hd if dose == "hd" else geom_ld,
-                            ps_eff, args.device, pad, du_iso, args.mu_water)
+                            ps_eff, args.device, pad, args.mu_water)
             cal_np, ssim, psnr, rmse = _cal(fbp, truth_t, dr, args.device)
             res[f"{dose}_{arm}"] = {"img": cal_np, "ssim_cal": ssim,
                                      "psnr_cal": psnr, "rmse_cal": rmse}

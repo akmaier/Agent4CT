@@ -46,6 +46,13 @@ def water_cylinder_extrapolate(sino: torch.Tensor, du_iso: float, pad: int,
     """
     if pad <= 0:
         return sino
+    # edge_k must be >= 2 (need a slope from >=2 samples). Guard the nasty
+    # `sino[..., -edge_k:]` footgun: edge_k=0 silently slices the WHOLE axis
+    # (since `-0 == 0`), producing a "(D) vs (0)" broadcast error downstream.
+    edge_k = int(edge_k)
+    if edge_k < 2:
+        raise ValueError(f"edge_k must be >= 2, got {edge_k!r} "
+                         f"(check the caller's argument order)")
     *lead, D = sino.shape
     dev, dt = sino.device, sino.dtype
     eps = 1e-4
