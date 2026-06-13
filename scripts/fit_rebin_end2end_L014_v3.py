@@ -123,6 +123,17 @@ def main() -> int:
     hi = torch.nn.Parameter(torch.tensor(0.05, device="cuda"))
     alpha_dz = torch.tensor(1.0, device="cuda")
 
+    # Sanity re-fit (2026-06-13): with V3_CAL_CORRECTED=1 the post-FBP lower
+    # clamp is a LEARNABLE floor `lo` (init slightly negative) instead of the
+    # ReLU-at-0 — the recon background can then sit at truth's ~+0.0005 mu
+    # level and slightly-negative truth pixels can be matched, mirroring the
+    # corrected intensity_calibrate (bg_target="truth"). Used to check whether
+    # the bg->0 calibration bug biased the v3 GEOMETRY. Default off => original v3.
+    CAL_CORRECTED = os.environ.get("V3_CAL_CORRECTED", "0") == "1"
+    TAG = "v3cal" if CAL_CORRECTED else "v3"
+    lo = torch.nn.Parameter(torch.tensor(-0.001, device="cuda"))
+    print(f"[fit-{TAG}] CAL_CORRECTED={CAL_CORRECTED}", flush=True)
+
     u_centre_nom = (nu - 1) / 2.0
     v_centre_nom = (nv - 1) / 2.0
     slab_offsets_mm = [-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0]
@@ -177,14 +188,17 @@ def main() -> int:
         filt_fft = torch.complex(h_2d * fft_fbp.real, h_2d * fft_fbp.imag)
         filt = torch.fft.ifft2(filt_fft).real
         scaled = a * (filt - bg)
-        clipped = F.relu(scaled)
+        if CAL_CORRECTED:
+            clipped = torch.clamp(scaled, min=lo)   # learnable floor, not relu(0)
+        else:
+            clipped = F.relu(scaled)
         clipped = torch.minimum(clipped, hi)
         return clipped
 
-    opt = torch.optim.Adam(
-        [sod, sdd, s_z, delta_z, w_slab_logits, h_radial, a, bg, hi],
-        lr=2e-3,
-    )
+    opt_params = [sod, sdd, s_z, delta_z, w_slab_logits, h_radial, a, bg, hi]
+    if CAL_CORRECTED:
+        opt_params.append(lo)
+    opt = torch.optim.Adam(opt_params, lr=2e-3)
     n_iters = 1500
     log_every = max(1, n_iters // 30)
     lam_h = 1e-4
@@ -274,7 +288,7 @@ def main() -> int:
               f"RMSE={rmse_cal_arr.mean():.5f}", flush=True)
 
     # ---- Save ----
-    out_json = REPO / "results" / "breast_debug" / "L014_rebin_end2end_fit_v3.json"
+    out_json = REPO / "results" / "breast_debug" / f"L014_rebin_end2end_fit_{TAG}.json"
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_blob = {
         "rebin_fitted": {
@@ -295,6 +309,8 @@ def main() -> int:
             "a": float(a.item()),
             "bg": float(bg.item()),
             "hi": float(hi.item()),
+            "lo": float(lo.item()) if CAL_CORRECTED else 0.0,
+            "cal_corrected": CAL_CORRECTED,
             "h_radial": [float(x) for x in h_radial.detach().cpu().numpy()],
         },
         "fbp_held_fixed": {
@@ -338,7 +354,7 @@ def main() -> int:
     print(f"[fit-v3] wrote {out_json}", flush=True)
 
     # Diagnostic PNG
-    out_png = REPO / "results" / "mayo_debug" / "L014_rebin_end2end_fit_v3.png"
+    out_png = REPO / "results" / "mayo_debug" / f"L014_rebin_end2end_fit_{TAG}.png"
     out_png.parent.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(N_GT, 3, figsize=(12, 3 * N_GT))
     for k in range(N_GT):
