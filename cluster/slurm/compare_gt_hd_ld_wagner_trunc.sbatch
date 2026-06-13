@@ -30,5 +30,5 @@ export STAGED_HELIX2FAN_SUBDIR=staged_helix2fan_v3
 
 echo "[cmp-trunc] host=$(hostname) job=$SLURM_JOB_ID"
 nvidia-smi -L
-python -u scripts/compare_gt_hd_ld_fbp_wagner_trunc.py --tag v3trunc --pad 384
+python -u scripts/compare_gt_hd_ld_fbp_wagner_trunc.py --tag "${TRUNC_TAG:-v3trunc}" --pad 384
 echo "[cmp-trunc] done."

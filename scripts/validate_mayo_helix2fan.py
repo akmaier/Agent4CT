@@ -87,6 +87,12 @@ def parse_args() -> argparse.Namespace:
                         "'nominal' = pure DICOM-CT-PD header values "
                         "(0.703125 / 595 / 1085.6 / 1.285839) — keep for "
                         "diagnostic comparison.")
+    p.add_argument("--no-truncation", action="store_true",
+                   help="Disable the water-cylinder truncation correction "
+                        "(MAYO_LDCT_TRUNCATION). On by default for the "
+                        "'fitted' geometry — removes the bright-rim/cupping "
+                        "artifact on large (FOV>=380 mm) patients. See "
+                        "ddssl_ldct/truncation.py + findings.md 2026-06-13.")
     return p.parse_args()
 
 
@@ -209,16 +215,22 @@ def main() -> int:
     angle_end = angle_start + 2.0 * _math.pi
     print(f"[validate] angle_start={angle_start:.4f} rad, "
           f"angle_end={angle_end:.4f} rad (1 full rotation)")
-    from ddssl_ldct.geometry import MAYO_LDCT_DET_OFFSET  # noqa: E402
+    from ddssl_ldct.geometry import (  # noqa: E402
+        MAYO_LDCT_DET_OFFSET, MAYO_LDCT_TRUNCATION,
+    )
+    trunc = None
     if args.geometry == "fitted":
         geom = FanBeamGeometry.mayo_ldct_fitted(
             n_angles=rotview, n_det=nu,
             angle_start=angle_start, angle_end=angle_end,
         )
         det_offset_mm = MAYO_LDCT_DET_OFFSET
+        if not args.no_truncation:
+            trunc = MAYO_LDCT_TRUNCATION
         print(f"[validate] FBP geometry = FITTED (job 762284)  "
               f"pixel_spacing={geom.pixel_spacing}  du={geom.det_spacing}  "
-              f"sod={geom.sod}  sdd={geom.sdd}  det_off={det_offset_mm:+.4f} mm")
+              f"sod={geom.sod}  sdd={geom.sdd}  det_off={det_offset_mm:+.4f} mm  "
+              f"truncation={'ON ' + str(trunc) if trunc else 'OFF'}")
     else:
         # DICOM-nominal fallback: pixel_spacing from truth DICOM,
         # everything else from the helix2fan geometry json (or Wagner
@@ -238,14 +250,10 @@ def main() -> int:
         print(f"[validate] FBP geometry = NOMINAL (DICOM-CT-PD header)  "
               f"pixel_spacing={geom.pixel_spacing}  du={geom.det_spacing}  "
               f"sod={geom.sod}  sdd={geom.sdd}")
-    proj = PyronnFanBeamProjector(geom).to(args.device)
-    if abs(det_offset_mm) > 1e-9:
-        # Sub-pixel detector centre shift — PYRO-NN puts the symmetric
-        # centre on the geometric mid-channel, but the data-driven fit
-        # places the central ray slightly off there.
-        proj._tensor_geom["detector_origin"] = (
-            proj._tensor_geom["detector_origin"] + det_offset_mm
-        )
+    # det_offset_mm + truncation now go through the constructor (the offset
+    # also propagates to the widened truncation sibling).
+    proj = PyronnFanBeamProjector(
+        geom, det_offset_mm=det_offset_mm, truncation=trunc).to(args.device)
 
     # FBP each slab member individually, then average — equivalent to
     # the standard "thick-slice" reconstruction the scanner does at

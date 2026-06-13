@@ -100,8 +100,27 @@ class PyronnFanBeamProjector(torch.nn.Module):
     every step.
     """
 
-    def __init__(self, geometry: FanBeamGeometry, redundancy: str = "auto"):
+    def __init__(self, geometry: FanBeamGeometry, redundancy: str = "auto",
+                 det_offset_mm: float = 0.0, truncation: Optional[dict] = None):
         """
+        det_offset_mm:
+            Sub-pixel detector-centre shift (mm) applied to the PYRO-NN
+            ``detector_origin`` at construction. Replaces the external
+            ``proj._tensor_geom["detector_origin"] += ...`` hack so the
+            offset also propagates to the widened truncation sibling.
+            Default 0.0 (no shift) — existing callers are unaffected.
+
+        truncation:
+            None (default) → no truncation correction; identical behaviour
+            to before. Otherwise a dict ``{"pad": int, "mu_water": float,
+            "edge_k": int}`` enabling water-cylinder edge extrapolation in
+            ``fbp()``: the FBP runs on a detector widened by ``2*pad``
+            channels (a composed sibling projector on the SAME image grid),
+            with the input sinogram extrapolated to that width first. Only
+            ``fbp()`` is affected — ``forward_project`` stays on the real
+            (narrow) detector. See ddssl_ldct/truncation.py and the
+            ``MAYO_LDCT_TRUNCATION`` preset in ddssl_ldct/geometry.py.
+
         redundancy:
             "auto"      Pick by angular_range. ≥ 2π → "full_scan"; otherwise
                         Parker (short scan).
@@ -206,6 +225,33 @@ class PyronnFanBeamProjector(torch.nn.Module):
             torch.from_numpy(rw).cuda().contiguous(),
             persistent=False,
         )
+
+        # Sub-pixel detector-centre offset, applied once here so it also
+        # reaches the widened truncation sibling below.
+        self._det_offset_mm = float(det_offset_mm)
+        if abs(self._det_offset_mm) > 1e-9:
+            self._tensor_geom["detector_origin"] = (
+                self._tensor_geom["detector_origin"] + self._det_offset_mm
+            )
+
+        # Truncation correction: compose a widened-detector sibling that
+        # back-projects onto the SAME image grid. fbp() extrapolates the
+        # input sino to the widened width and routes through it.
+        self._trunc = None
+        if truncation is not None:
+            pad = int(truncation["pad"])
+            self._trunc = {
+                "pad": pad,
+                "mu_water": float(truncation.get("mu_water", 0.02)),
+                "edge_k": int(truncation.get("edge_k", 7)),
+                # isocentre channel sampling — the cylinder length unit
+                "du_iso": float(g.det_spacing * g.sod / g.sdd),
+            }
+            wide_geom = FanBeamGeometry(**{**g.__dict__, "n_det": g.n_det + 2 * pad})
+            self._wide = PyronnFanBeamProjector(
+                wide_geom, redundancy=redundancy,
+                det_offset_mm=det_offset_mm, truncation=None,
+            )
 
     # ---- helpers -----------------------------------------------------------
 
@@ -356,7 +402,20 @@ class PyronnFanBeamProjector(torch.nn.Module):
         upstream ``example_fan_2d.py`` recipe. See class docstring for the
         choice of redundancy weighting (default is mode-aware: a flat
         ``angular_range / π`` for 2π full scan, Parker otherwise).
+
+        If ``truncation`` was set at construction, the input sinogram is
+        water-cylinder-extrapolated to the widened detector and the FBP is
+        performed by the widened sibling (same image grid). The output
+        shape / image grid is unchanged.
         """
+        if self._trunc is not None:
+            from .truncation import water_cylinder_extrapolate
+            sino_wide = water_cylinder_extrapolate(
+                sino, self._trunc["du_iso"], self._trunc["pad"],
+                mu_water=self._trunc["mu_water"], edge_k=self._trunc["edge_k"],
+            )
+            return self._wide.fbp(sino_wide, filter_name=filter_name)
+
         A = sino.shape[-2]
         if A == self._redundancy_weights.shape[0]:
             rw = self._redundancy_weights

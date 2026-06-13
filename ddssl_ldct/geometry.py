@@ -152,8 +152,22 @@ class FanBeamGeometry:
 
 # Sub-pixel detector-origin offset (mm) — recovered alongside the fitted
 # geometry above. Apply at the projector level (see `mayo_ldct_fitted`
-# docstring for the recipe).
+# docstring for the recipe). Preferred: pass `det_offset_mm=MAYO_LDCT_DET_OFFSET`
+# to `PyronnFanBeamProjector(...)` (it propagates to the truncation sibling);
+# the older external `proj._tensor_geom["detector_origin"] += ...` still works.
 MAYO_LDCT_DET_OFFSET = -0.0397
+
+
+# Water-cylinder truncation-correction preset for Mayo FBP. Validated on the
+# 10 Wagner patients (SLURM 763608, 2026-06-13): HD SSIM_cal 0.915 → 0.943,
+# biggest on the 400 mm-FOV (largest) patients, self-gating near-no-op on the
+# 340 mm patients. Enable on any Mayo FBP by constructing
+#     PyronnFanBeamProjector(geom, det_offset_mm=MAYO_LDCT_DET_OFFSET,
+#                            truncation=MAYO_LDCT_TRUNCATION)
+# `pad` = detector channels added per side (widened virtual detector);
+# `mu_water` (mm^-1) sets the cylinder decay width; `edge_k` = boundary
+# samples used for the value/slope fit. See ddssl_ldct/truncation.py.
+MAYO_LDCT_TRUNCATION = {"pad": 384, "mu_water": 0.02, "edge_k": 7}
 
 
 # ---------------------------------------------------------------------------

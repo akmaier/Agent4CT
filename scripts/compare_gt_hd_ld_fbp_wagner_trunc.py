@@ -150,27 +150,30 @@ def _load_slab(sino_h5, geom_json, zgrid, z_offset_mm, slab_half):
     return slab, z_center
 
 
-def _fbp_slab(slab, geom_json, pixel_spacing, device, pad, du_iso, mu_water):
-    """FBP-average a slab. pad>0 -> water-cylinder extrapolate + widened det."""
+def _fbp_slab(slab, geom_json, pixel_spacing, device, pad, mu_water, edge_k=7):
+    """FBP-average a slab via the PRODUCTION projector.
+
+    pad>0 -> PyronnFanBeamProjector(truncation=...) does the water-cylinder
+    extrapolation + widened-detector back-projection internally, so this
+    run exercises the same code path solvers will use. The reference numpy
+    ``water_cylinder_extrapolate`` above is kept for documentation/parity.
+    """
     rotview = int(geom_json["rotview"])
     nu = int(geom_json["nu"])
     angle_start = float(geom_json.get("angle_start_corrected", 0.0))
     angle_end = angle_start + 2.0 * math.pi
     fitted = FanBeamGeometry.mayo_ldct_fitted(
         n_angles=rotview, n_det=nu, angle_start=angle_start, angle_end=angle_end)
-    n_det = nu + 2 * pad
     geom = FanBeamGeometry(
         image_size=512, pixel_spacing=pixel_spacing, n_angles=rotview,
-        n_det=n_det, det_spacing=fitted.det_spacing,
+        n_det=nu, det_spacing=fitted.det_spacing,
         sod=fitted.sod, sdd=fitted.sdd,
         angle_start=angle_start, angle_end=angle_end)
-    proj = PyronnFanBeamProjector(geom).to(device)
-    proj._tensor_geom["detector_origin"] = (
-        proj._tensor_geom["detector_origin"] + MAYO_LDCT_DET_OFFSET)
+    trunc = {"pad": pad, "mu_water": mu_water, "edge_k": edge_k} if pad > 0 else None
+    proj = PyronnFanBeamProjector(
+        geom, det_offset_mm=MAYO_LDCT_DET_OFFSET, truncation=trunc).to(device)
     fbps = []
     for s in slab:
-        if pad > 0:
-            s = water_cylinder_extrapolate(s, du_iso, pad, mu_water)
         s_t = torch.from_numpy(np.ascontiguousarray(s)).to(device).float()[None, None]
         fbp_one = proj.fbp(s_t).detach()[0, 0].cpu().numpy()
         fbps.append(np.fliplr(np.flipud(fbp_one)))
