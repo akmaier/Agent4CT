@@ -48,38 +48,37 @@ def cal(fbp, truth):
     return (c["pred_cal"], float(c["val_ssim"]), float(c["val_psnr"]), float(c["val_rmse"]))
 
 
-_PROJ_CACHE = {}
-
-
-def get_proj(ps, rot, nu):
-    """Per-sample-ps projector cache (angle is uniform; only ps varies)."""
-    key = round(float(ps), 5)
-    if key not in _PROJ_CACHE:
-        geom = FanBeamGeometry(image_size=512, pixel_spacing=key, n_angles=rot, n_det=nu,
-                               det_spacing=1.285044, sod=595.362, sdd=1086.803,
-                               angle_start=0.0, angle_end=2 * math.pi)
-        _PROJ_CACHE[key] = PyronnFanBeamProjector(geom).to(dev)  # env det_offset+truncation
-    return _PROJ_CACHE[key]
+def _proj_for_ps(ps, rot, nu):
+    """Build a per-sample-ps projector (angle uniform; only ps varies). NOT
+    cached — each holds a widened truncation sibling; keeping ~5 alive at once
+    OOMs the 16 GB GPU alongside the 5 GB full-split sino. Built + freed per
+    ps-group instead."""
+    geom = FanBeamGeometry(image_size=512, pixel_spacing=round(float(ps), 5), n_angles=rot,
+                           n_det=nu, det_spacing=1.285044, sod=595.362, sdd=1086.803,
+                           angle_start=0.0, angle_end=2 * math.pi)
+    return PyronnFanBeamProjector(geom).to(dev)   # env det_offset + truncation
 
 
 def run_split(split, out_dir):
     with h5py.File(CANON / f"{split}_truth.h5", "r") as f:
         truth = torch.from_numpy(f["truth"][:]).to(dev).float().unsqueeze(1)
-        ps = np.asarray(f["ps"][:])
+        pss = np.asarray(f["ps"][:])   # per-slice pixel-spacing (NOT psnr)
     res = {}
     for dose in ("fulldose", "lowdose"):
         with h5py.File(CANON / f"{split}_sino_{dose}.h5", "r") as f:
             sino = torch.from_numpy(f["sino"][:]).to(dev).float().unsqueeze(1)
         rot, nu = sino.shape[-2], sino.shape[-1]
         fbp = torch.empty(sino.shape[0], 1, 512, 512, device=dev)
-        for u in np.unique(np.round(ps, 5)):
-            idx = np.where(np.round(ps, 5) == u)[0]
-            fbp[idx] = get_proj(u, rot, nu).fbp(sino[idx]).clamp(min=0.0)
+        for u in np.unique(np.round(pss, 5)):
+            idx = np.where(np.round(pss, 5) == u)[0]
+            pj = _proj_for_ps(u, rot, nu)
+            fbp[idx] = pj.fbp(sino[idx]).clamp(min=0.0)
+            del pj; torch.cuda.empty_cache()
+        del sino; torch.cuda.empty_cache()
         ss = np.array([cal(fbp[i:i+1], truth[i:i+1])[1] for i in range(fbp.shape[0])])
-        ps = np.array([float(evaluate_calibrated(fbp[i:i+1], truth[i:i+1], baseline=fbp[i:i+1],
-                       display_min=0.0, display_max=DR, fov=False)["val_psnr"]) for i in range(fbp.shape[0])])
-        res[dose] = {"ssim": ss, "psnr": ps, "fbp": fbp}
-        del sino
+        pnr = np.array([float(evaluate_calibrated(fbp[i:i+1], truth[i:i+1], baseline=fbp[i:i+1],
+                        display_min=0.0, display_max=DR, fov=False)["val_psnr"]) for i in range(fbp.shape[0])])
+        res[dose] = {"ssim": ss, "psnr": pnr, "fbp": fbp}
     labels = slot_patients(split)
     n = truth.shape[0]
     if len(labels) != n:
