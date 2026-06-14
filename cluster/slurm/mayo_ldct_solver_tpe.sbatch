@@ -33,13 +33,16 @@ export HDF5_USE_FILE_LOCKING=FALSE
 echo "[mayo-tpe] host=$(hostname) job=$SLURM_JOB_ID solver=$SOLVER"
 nvidia-smi -L
 
+# ITERATIONS=1 => corrected re-score (run only the seeded old-best config on
+# the all-slices corrected path: bg_target=truth + det_offset + truncation,
+# train_n=579 / val_n=214 via MAYO_CLAMPS). ITERATIONS=20 => full TPE refinement.
 python scripts/learned_solver_search_agent.py \
     --solver "$SOLVER" \
     --sampler tpe \
     --calibrated \
     --dataset mayo_ldct_2d \
-    --iterations 20 \
-    --tpe-startup 5 \
-    --notes "Mayo-LDCT Step-3 TPE search for $SOLVER, full Wagner-train set"
+    --iterations "${ITERATIONS:-20}" \
+    --tpe-startup "${TPE_STARTUP:-5}" \
+    --notes "Mayo-LDCT REBUILD ($SOLVER) corrected all-slices path, iterations=${ITERATIONS:-20}"
 
 echo "[mayo-tpe] done."

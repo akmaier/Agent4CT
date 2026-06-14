@@ -1539,9 +1539,14 @@ def main():
         # space to Mayo-safe values everywhere the knob exists.
         if args.dataset == "mayo_ldct_2d" and not args.solver.endswith("_mayo_phase4"):
             MAYO_CLAMPS = {
-                "val_n":      ([5], "choice"),         # was [20] / 100 default
-                "val_chunk":  ([1], "choice"),         # was [4]; chunk=1 = no FBP batching
-                "train_n":    ([50], "choice"),        # the proven agentic cap
+                # REBUILD 2026-06-14: TPE must "fully consider all slices" (user).
+                # val scored on ALL 214 L277 slices; train over the FULL 579-slice
+                # Wagner-train pool (RotatingSubsetDataset n_per_epoch=579 = whole
+                # pool/epoch). Old short-budget caps (val_n=5, train_n=50) are gone.
+                # The agentic fast loop uses 200 stratified separately.
+                "val_n":      ([214], "choice"),       # ALL L277 val slices
+                "val_chunk":  ([1], "choice"),         # chunk=1 = no FBP batching (Mayo OOM-safe)
+                "train_n":    ([579], "choice"),       # FULL Wagner-train pool (all slices)
                 "batch_size": ([1], "choice"),         # batch>1 OOMs Mayo's 2304-angle FBP
                 "lpd_hidden": ([32, 48], "choice"),    # cap at 48 (agentic Mayo winner)
                 "lpd_iters":  ([2, 3], "choice"),      # tighter than v1 — LPD ep=20 + iters=4
