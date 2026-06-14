@@ -48,14 +48,33 @@ def cal(fbp, truth):
     return (c["pred_cal"], float(c["val_ssim"]), float(c["val_psnr"]), float(c["val_rmse"]))
 
 
-def run_split(split, proj, out_dir):
+_PROJ_CACHE = {}
+
+
+def get_proj(ps, rot, nu):
+    """Per-sample-ps projector cache (angle is uniform; only ps varies)."""
+    key = round(float(ps), 5)
+    if key not in _PROJ_CACHE:
+        geom = FanBeamGeometry(image_size=512, pixel_spacing=key, n_angles=rot, n_det=nu,
+                               det_spacing=1.285044, sod=595.362, sdd=1086.803,
+                               angle_start=0.0, angle_end=2 * math.pi)
+        _PROJ_CACHE[key] = PyronnFanBeamProjector(geom).to(dev)  # env det_offset+truncation
+    return _PROJ_CACHE[key]
+
+
+def run_split(split, out_dir):
     with h5py.File(CANON / f"{split}_truth.h5", "r") as f:
         truth = torch.from_numpy(f["truth"][:]).to(dev).float().unsqueeze(1)
+        ps = np.asarray(f["ps"][:])
     res = {}
     for dose in ("fulldose", "lowdose"):
         with h5py.File(CANON / f"{split}_sino_{dose}.h5", "r") as f:
             sino = torch.from_numpy(f["sino"][:]).to(dev).float().unsqueeze(1)
-        fbp = proj.fbp(sino).clamp(min=0.0)   # fbp() batch-chunks internally
+        rot, nu = sino.shape[-2], sino.shape[-1]
+        fbp = torch.empty(sino.shape[0], 1, 512, 512, device=dev)
+        for u in np.unique(np.round(ps, 5)):
+            idx = np.where(np.round(ps, 5) == u)[0]
+            fbp[idx] = get_proj(u, rot, nu).fbp(sino[idx]).clamp(min=0.0)
         ss = np.array([cal(fbp[i:i+1], truth[i:i+1])[1] for i in range(fbp.shape[0])])
         ps = np.array([float(evaluate_calibrated(fbp[i:i+1], truth[i:i+1], baseline=fbp[i:i+1],
                        display_min=0.0, display_max=DR, fov=False)["val_psnr"]) for i in range(fbp.shape[0])])
@@ -72,19 +91,13 @@ def run_split(split, proj, out_dir):
 def main():
     out_dir = REPO / "results" / "mayo_debug" / "canonical_hd_ld"
     out_dir.mkdir(parents=True, exist_ok=True)
-    with h5py.File(CANON / "val_sino_lowdose.h5", "r") as f:
-        rot, nu = f["sino"].shape[-2], f["sino"].shape[-1]
-    geom = FanBeamGeometry(image_size=512, pixel_spacing=0.700857, n_angles=rot, n_det=nu,
-                           det_spacing=1.285044, sod=595.362, sdd=1086.803,
-                           angle_start=0.0, angle_end=2 * math.pi)
-    proj = PyronnFanBeamProjector(geom).to(dev)   # env applies det_offset + truncation
 
     summary = {"splits": {}, "patients": {}}
     splits_data = {}
     for split in ("train", "val", "test"):
         if not (CANON / f"{split}_truth.h5").exists():
             print(f"[canon-cmp] {split}: not staged yet, skip", flush=True); continue
-        d = run_split(split, proj, out_dir)
+        d = run_split(split, out_dir)
         splits_data[split] = d
         hd_ss, ld_ss = d["hd"]["ssim"], d["ld"]["ssim"]
         summary["splits"][split] = {
