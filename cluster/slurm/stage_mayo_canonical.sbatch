@@ -16,5 +16,5 @@ source "$REPO/.venv/bin/activate"
 export PYTHONPATH="$REPO:${PYTHONPATH:-}"; export HDF5_USE_FILE_LOCKING=FALSE
 export AGENT4CT_DATASET=mayo_ldct_2d
 nvidia-smi -L || true
-python data/stage_mayo_canonical.py --splits "${SPLITS:-val}" --doses "${DOSES:-lowdose,fulldose}" ${VALIDATE:+--validate} ${FORCE:+--force}
+python data/stage_mayo_canonical.py --splits "${SPLITS:-val}" --doses "${DOSES:-lowdose,fulldose}" ${VALIDATE:+--validate} ${FORCE:+--force} ${TRUTH_ONLY:+--truth-only}
 echo "[stage-canon] done."

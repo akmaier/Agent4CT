@@ -60,7 +60,7 @@ def patient_roll(geom_json):
     return int(round(a0 / (2 * math.pi / rot))) % rot
 
 
-def stage_split(split, sino_dir, truth_root, out_dir, doses, force):
+def stage_split(split, sino_dir, truth_root, out_dir, doses, force, truth_only=False):
     import json, hdf5plugin
     pats = WAGNER[split]
     # enumerate truth slices per patient (sorted by patient_z), build slot list
@@ -74,16 +74,25 @@ def stage_split(split, sino_dir, truth_root, out_dir, doses, force):
     n = len(triples)
     print(f"[canon] {split}: {n} slices across {len(pats)} patients", flush=True)
 
-    # truth h5 (dose-independent) — written once
+    # truth h5 (dose-independent). PER-SAMPLE geometry (user choice 2026-06-14):
+    # store the NATIVE truth (no resampling) + a per-slice recon pixel-spacing
+    # `ps` (= ps_eff). Each slice is later reconstructed at its own ps so HD-FBP
+    # stays at the native ~0.95 (the canonical common-grid resample cost ~0.02
+    # SSIM, which the user declined). The sino stays the lossless canonical-angle
+    # form (roll + u-flip + slab), so only ps varies per sample; angle is uniform.
     truth_h5 = out_dir / f"{split}_truth.h5"
-    if force or not truth_h5.exists():
+    if force or truth_only or not truth_h5.exists():
         with h5py.File(truth_h5, "w") as ft:
             dt = ft.create_dataset("truth", shape=(n, 512, 512), dtype="float32",
                                    chunks=(1, 512, 512), **hdf5plugin.LZ4())
+            psd = ft.create_dataset("ps", shape=(n,), dtype="float64")
             for i, (pid, pz, fp, nps) in enumerate(triples):
-                tr = resample_truth(_load_mu(fp), nps)
-                dt[i] = np.flip(np.flip(tr, 0), 1)   # folded image-flip
-        print(f"[canon] wrote {truth_h5.name}", flush=True)
+                tr = _load_mu(fp)                        # NATIVE truth (no resample)
+                dt[i] = np.flip(np.flip(tr, 0), 1)       # folded image-flip
+                psd[i] = 0.700857 * nps / 0.703125       # per-slice recon ps_eff
+        print(f"[canon] wrote {truth_h5.name} (native truth + per-slice ps)", flush=True)
+    if truth_only:
+        return n
 
     # sino h5 per dose
     for dose in doses:
@@ -129,15 +138,20 @@ def validate(out_dir, device="cuda"):
         sino = torch.from_numpy(f["sino"][:]).to(device).float().unsqueeze(1)
     with h5py.File(out_dir / "val_truth.h5", "r") as f:
         truth = torch.from_numpy(f["truth"][:]).to(device).float().unsqueeze(1)
+        ps = np.asarray(f["ps"][:])
     rot, nu = sino.shape[-2], sino.shape[-1]
-    geom = FanBeamGeometry(image_size=512, pixel_spacing=COMMON_PS, n_angles=rot,
-                           n_det=nu, det_spacing=1.285044, sod=595.362, sdd=1086.803,
-                           angle_start=0.0, angle_end=2 * math.pi)
-    proj = PyronnFanBeamProjector(geom).to(device)  # env-applied det_offset + truncation
-    ld = proj.fbp(sino).clamp(min=0.0)
+    # PER-SAMPLE ps: reconstruct each slice at its own ps_eff (cache projectors).
+    ld = torch.empty_like(truth)
+    for u in np.unique(np.round(ps, 5)):
+        geom = FanBeamGeometry(image_size=512, pixel_spacing=float(u), n_angles=rot,
+                               n_det=nu, det_spacing=1.285044, sod=595.362, sdd=1086.803,
+                               angle_start=0.0, angle_end=2 * math.pi)
+        proj = PyronnFanBeamProjector(geom).to(device)  # env-applied det_offset + truncation
+        idx = np.where(np.round(ps, 5) == u)[0]
+        ld[idx] = proj.fbp(sino[idx]).clamp(min=0.0)
     r = evaluate_calibrated(ld, truth, baseline=ld, display_min=0.0, display_max=0.05, fov=False)
-    print(f"[canon] VALIDATE val canonical LD-FBP SSIM={r['val_ssim']:.4f} "
-          f"(expect ~0.81; per-patient baseline was 0.8078)", flush=True)
+    print(f"[canon] VALIDATE val per-sample LD-FBP SSIM={r['val_ssim']:.4f} "
+          f"(expect ~0.81 baseline 0.8078; canonical-resample was 0.8000)", flush=True)
 
 
 def main():
@@ -145,6 +159,9 @@ def main():
     p.add_argument("--splits", default="val,train,test")
     p.add_argument("--doses", default="lowdose,fulldose")
     p.add_argument("--force", action="store_true")
+    p.add_argument("--truth-only", action="store_true",
+                   help="Only (re)write the native truth h5 + per-slice ps; reuse "
+                        "the existing lossless canonical sino h5s.")
     p.add_argument("--validate", action="store_true")
     p.add_argument("--data-root", default="/cluster/maier/Agent4CT/data/mayo_ldct")
     p.add_argument("--subdir", default="staged_helix2fan_v3")
@@ -156,7 +173,7 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     doses = a.doses.split(",")
     for split in a.splits.split(","):
-        stage_split(split, sino_dir, truth_root, out_dir, doses, a.force)
+        stage_split(split, sino_dir, truth_root, out_dir, doses, a.force, a.truth_only)
     if a.validate:
         validate(out_dir)
     return 0
