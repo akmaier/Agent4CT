@@ -226,6 +226,21 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
         pred_cal = pred_cal * mask_2d
         truth = truth * mask_2d
 
+    # Sanitize non-finite recon pixels. The all-slices Mayo val set (214 L277
+    # slices) includes air-dominated volume-edge slices; some solvers' norm
+    # layers emit NaN/Inf on near-uniform inputs, and since SSIM/PSNR are
+    # computed over the WHOLE batch a single bad slice poisons the aggregate
+    # to NaN (the symptom that produced SSIM=nan, hr=0). Mapping non-finite
+    # pred -> 0 makes that slice score low (finite) instead of nuking the whole
+    # val score. Clean preds are unchanged (nan_to_num is identity on finite
+    # tensors), so breast_ct / demo_dl are unaffected.
+    _n_bad = int((~torch.isfinite(pred_cal)).sum())
+    if _n_bad:
+        print(f"[metrics] WARN: {_n_bad} non-finite calibrated-pred px -> 0 "
+              f"(degenerate/air slice?)", flush=True)
+    pred_cal = torch.nan_to_num(pred_cal, nan=0.0,
+                                posinf=float(display_max), neginf=0.0)
+
     result = {
         "pred_cal":     pred_cal,
         "fov_mask":     mask_2d,
@@ -243,6 +258,8 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
                                             bg_target=bg_target)
         if mask_2d is not None:
             baseline_cal = baseline_cal * mask_2d
+        baseline_cal = torch.nan_to_num(baseline_cal, nan=0.0,
+                                        posinf=float(display_max), neginf=0.0)
         bl_rmse = float(((baseline_cal - truth) ** 2).mean().sqrt().cpu())
         result["baseline_psnr"] = float(psnr(baseline_cal, truth, data_range=dr).cpu())
         result["baseline_ssim"] = float(ssim(baseline_cal, truth, data_range=dr).cpu())
