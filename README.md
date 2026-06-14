@@ -53,31 +53,22 @@ inline.
 |---|---|---:|---:|---|
 | **Breast-CT** (128-view sparse) | Learned Primal-Dual (I=8, hidden=96, 1.49 M) | 0.9996 | **0.9062** | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | ITNet v3 (3.7 M) | 0.9178 | 0.4676 | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
-| **Mayo-LDCT** (Wagner split, real helical) | DD-UNet supervised L2 (Step-3 TPE iter-12; 0.466 M) | — | **0.3890** | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | _rebuilding (2026-06-14) — see below_ | — | — | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
 
-Mayo-LDCT Step-3 TPE refinement **closed 2026-06-09**: full 19-solver
-inventory exercised (the only dataset with complete coverage — see
-the leaderboard for the cross-dataset compare). 12 above the FBP
-baseline, 10 structural STOPs, 1 deprioritised checkpoint variant.
-Top entries beyond DD-UNet sup TPE (0.3890): **Learned Primal-Dual
-TPE** (0.3063), **USwin TPE** (0.2492), **diff_recon DCstep
-unconstrained** DDPM v4 prior TPE (0.2377 — eta=0.30 corner
-discovered by TPE), **diff_recon DCstep unconstrained** DDPM v2 prior
-TPE (0.2352 — eta=0.31 noise init), **ItNet v3 TPE** (0.2181),
-**diff_recon DCstep constrained** DDPM v4 prior TPE (0.1632),
-**diff_recon DCstep constrained** DDPM v2 prior TPE (0.1071),
-**TV-iterative non-trainable** (0.0557), **Hammernik VN** Step-3 TPE
-(0.0551 — overturns Step-2 STOP), **NAF** (0.0202), **DD-BF N2I**
-(0.0047). See the leaderboard for the full ranking, the non-trainable
-solver report, and per-solver verdicts.
+Mayo-LDCT is **being rebuilt from scratch (2026-06-14).** All prior
+agentic/TPE results were discarded: they were scored with the `bg→0`
+calibration bug (see [`docs/findings.md`](docs/findings.md) 2026-06-13)
+and predate the fully hard-wired v3 geometry + truncation-corrected FBP
+path. The rebuild starts from a clean **HD vs LD FBP baseline over every
+truth slice** of all 10 Wagner patients (the headroom-scoring endpoints),
+after which solvers are re-run on the corrected path. See the
+[Mayo-LDCT leaderboard](docs/leaderboards/mayo_ldct.md) for status.
 
 [![Breast-CT champion (LPD)](docs/runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](docs/leaderboards/breast_ct.md)
-[![Mayo-LDCT champion (DD-UNet sup TPE)](docs/runs/mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02/iterations/iter-0012/comparison.png)](docs/leaderboards/mayo_ldct.md)
 
-*Top: current breast-CT champion (Learned Primal-Dual, TPE iter-11
-— hr 0.9062). Bottom: current Mayo-LDCT champion (DD-UNet supervised
-L2, Step-3 TPE iter-12 — hr 0.3890 vs the FBP baseline). Click either
-for the full leaderboard.*
+*Current breast-CT champion (Learned Primal-Dual, TPE iter-11 — hr
+0.9062). Click for the full leaderboard. (Mayo-LDCT is being rebuilt —
+see its leaderboard for the HD/LD FBP baseline as it lands.)*
 
 ---
 

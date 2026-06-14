@@ -1,2 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1			0	discard	architecture	itnet_v2-claude-agentic-breast-ct	claude-opus-4.7-1m	itnet_v2-claude-agentic: pretrain_epochs=2, pretrain_lr=0.0005, epochs=3, lr=0.0005, batch_size=1, unet_c=16, itnet_k=2, itnet_alpha_init=0.01, residual_learning=False, val_n=5, train_n=50, rationale=ITNet v2 iter-1 (first attempt). Seeded small (k=2, c=16, train_n=50) per ITNet v3 / LPD-iter-1 OOM lesson. ITNet v2 has pretrain pass + simpler architecture than v3, may fit even with unrolled iters.

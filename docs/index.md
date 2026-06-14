@@ -54,28 +54,25 @@ Each iteration is one 5-minute Slurm job. The agent edits `pentathlon/<challenge
 ## 🏆 Leaderboards
 
 Best-of-best per solver per dataset under the canonical
-calibrated-SSIM-headroom scoring convention. Full 19-solver inventory
-exercised on each dataset as of 2026-06-09.
+calibrated-SSIM-headroom scoring convention.
 
 | Dataset | Top solver | hr | Leaderboard |
 |---|---|---:|---|
-| **Mayo-LDCT** (real helical, Wagner split) | DD-UNet supervised L2 *(Step-3 TPE iter-12)* | **0.3890** | [mayo_ldct](leaderboards/mayo_ldct.html) |
 | **Breast-CT** (Sidky synthetic + anatomy, 128 views) | Learned Primal-Dual *(TPE iter-11)* | **0.9062** | [breast_ct](leaderboards/breast_ct.html) |
 | **Demo-DL** (Sidky synthetic ellipses, 128 views) | DD-UNet supervised L2 *(TPE iter-15)* | **0.4950** | [demo_dl](leaderboards/demo_dl.html) |
+| **Mayo-LDCT** (real helical, Wagner split) | _rebuilding (2026-06-14)_ | — | [mayo_ldct](leaderboards/mayo_ldct.html) |
 
-[![Mayo champion](runs/mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02/iterations/iter-0012/comparison.png)](leaderboards/mayo_ldct.html)
 [![Breast-CT champion](runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](leaderboards/breast_ct.html)
 [![Demo-DL champion](runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png)](leaderboards/demo_dl.html)
 
-*Top: Mayo-LDCT champion (DD-UNet supervised L2, Step-3 TPE iter-12 — hr 0.3890).
-Middle: Breast-CT champion (Learned Primal-Dual, TPE iter-11 — hr 0.9062).
+*Top: Breast-CT champion (Learned Primal-Dual, TPE iter-11 — hr 0.9062).
 Bottom: Demo-DL champion (DD-UNet supervised L2, TPE iter-15 — hr 0.4950).
-Click any leaderboard link for the full per-solver ranking with comparison images.*
+Click any leaderboard link for the full per-solver ranking with comparison images.
+**Mayo-LDCT is being rebuilt (2026-06-14)** from a clean HD/LD FBP baseline after
+the `bg→0` calibration-bug fix — see its leaderboard for status.*
 
-See [Leaderboards](leaderboards/) for the cross-dataset summary, full
-19-solver inventory coverage matrix, and the 2026-06-08/09 Step-3 TPE
-findings (DD-UNet sup +191% on Mayo, Hammernik VN STOP overturned via
-TPE, ItNet v1 inventory-gap closure on synthetic datasets, etc.).
+See [Leaderboards](leaderboards/) for the cross-dataset summary and
+per-solver rankings with comparison images.
 
 ## Quick links
 
