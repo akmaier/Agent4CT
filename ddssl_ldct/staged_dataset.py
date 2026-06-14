@@ -397,13 +397,16 @@ def load_val_split(kind: str, split: str, n: int, *, device,
     # at +x, CCW positive). For breast_ct this is +32 of 128 views.
     if info.sino_angle_shift != 0:
         sino_t = torch.roll(sino_t, shifts=int(info.sino_angle_shift), dims=-2)
-    # Alias `clean = noisy` so downstream solvers that compute a
-    # "noiseless reference" via `proj.fbp(val_clean)` for the comparison
-    # figure don't NPE on real-sino datasets. There is no separate clean
-    # measurement available; the reference panel will show FBP(real_sino)
-    # twice. The metric pipeline only uses truth and pred — this alias
-    # never affects scores.
-    return truth_t, sino_t.clone(), sino_t
+    # Alias `clean = noisy` (SAME tensor, no copy) so downstream solvers that
+    # compute a "noiseless reference" via `proj.fbp(val_clean)` for the
+    # comparison figure don't NPE on real-sino datasets. There is no separate
+    # clean measurement available; the reference panel shows FBP(real_sino)
+    # twice. `clean` is only ever read (one FBP for the panel) — never mutated —
+    # so sharing the tensor is safe and the metric pipeline (truth + pred only)
+    # is unaffected. The previous `.clone()` doubled sino GPU memory; with the
+    # all-slices Mayo footprint (train_n=579 + val_n=214) that clone is ~5 GB
+    # and triggered CUDA OOM. Dropping it keeps behaviour identical.
+    return truth_t, sino_t, sino_t
 
 
 def FanBeamGeometryFromManifest(manifest_path: Path, *,

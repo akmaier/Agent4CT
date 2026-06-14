@@ -4,7 +4,12 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=lme49,lme53,lme170,lme171
+# All-slices Mayo (train_n=579 + val_n=214) needs a big-memory GPU. Exclude the
+# <=12 GB nodes (gtx1080 8GB / gtx1080ti 11GB / titanxp 12GB); this leaves
+# v100 (lme53), q8000 48GB (lme170/171), q6000 24GB (lme221), q5000 16GB
+# (lme222/223). The OLD list (lme49,53,170,171) wrongly excluded the big GPUs
+# — fine for the old val_n=20/train_n=50 footprint, OOM now.
+#SBATCH --exclude=lme49,lme50,lme51,lme52
 #SBATCH --mem=32G
 #SBATCH --time=14:00:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
