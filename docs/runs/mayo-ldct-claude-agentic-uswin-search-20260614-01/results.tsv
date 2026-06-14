@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.945996	0.334534	keep	architecture	uswin-claude-agentic-breast-ct	claude-opus-4.7-1m	uswin-claude-agentic: uswin_c=16, lr=0.0001, epochs=8, batch_size=1, val_chunk=1, train_n=200, val_n=20, grad_clip=1.0, seed=42, rationale=iter-1 feasibility: USwin c=16 + grad-clip + per-sample ps, train_n=200 stratified. Onboarded into DD-BF parked slot. Hyp: the Swin-UNet image denoiser trains stably (no NaN) and clears the LD-FBP baseline.

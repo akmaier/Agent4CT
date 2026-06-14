@@ -101,16 +101,16 @@ the NaN fix):
 | Rank | Solver | Best iter | SSIM | hr | params | Source | Comparison |
 |---:|---|---|---:|---:|---:|---|---|
 | 1 | **DD-UNet supervised L2** | iter-7 (epochs=8, lr=0.0002, unet_c=24) | 0.9626 | 0.4296 | 1.045 M | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/results.tsv) | [![DD-UNet supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0007/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0007/comparison.png) |
-| 2 | ITNet v3 | iter-6 (epochs=8, itnet_k=3, lr=0.0002, unet_c=24) | 0.9603 | 0.3848 | 8.318 M | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/results.tsv) | [![ITNet v3](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0006/comparison.png)](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0006/comparison.png) |
+| 2 | ITNet v3 | iter-8 (epochs=12, itnet_k=3, lr=0.0002, unet_c=24) | 0.9623 | 0.4047 | 8.318 M | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/results.tsv) | [![ITNet v3](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0008/comparison.png)](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0008/comparison.png) |
 | 3 | DD-BF supervised L2 | iter-1 (epochs=8, lr=0.005) | 0.9502 | 0.0493 |  | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/results.tsv) | [![DD-BF supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
-| 4 | Learned Primal-Dual | iter-7 (epochs=8, lpd_hidden=48, lpd_iters=3, lr=0.001) | 0.9333 | 0.0000 | 0.155 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![Learned Primal-Dual](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0007/comparison.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0007/comparison.png) |
+| 4 | U-Swin | iter-1 (epochs=8, lr=0.0001, uswin_c=16) | 0.9460 | 0.3345 | 1.760 M | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/results.tsv) | [![U-Swin](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 5 | Learned Primal-Dual | iter-7 (epochs=8, lpd_hidden=48, lpd_iters=3, lr=0.001) | 0.9333 | 0.0000 | 0.155 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![Learned Primal-Dual](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0007/comparison.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0007/comparison.png) |
 <!-- AGENTIC_TABLE_END -->
 
-**iter-8 in flight**: DD-UNet `lambda_neg→0.0` (λ=0.1 lifted it to **0.9626**,
-new champion), ITNet `epochs→12` (lr=2e-4 is its optimum at 0.9603), LPD
-`I→6` (**lr climb 0.79→0.93 cleared via lr=1e-3**; deeper unrolling now that the
-proximals train). **DD-BF PARKED** at iter-7 — capped ~0.95 / hr 0.05 across 5
-config families (lr, img_n_bf, kernel, epochs, proj_n_bf); its slot is reused to
-**onboard USwin** (already per-sample-wired). Can resume DD-BF to iter-20 on
-request. Still to onboard: Hammernik-2017/VN, ItNet v1/v2, Wu-2015, the two N2I
-variants, diffusion-recon (DPS), NAF, R²-Gaussian, RAM.
+**iter-9 in flight**: **DD-UNet PARKED** as champion (**0.9626**, hr 0.43 — 8 iters,
+capacity/lr/epochs/λ_neg all explored) → slot reused to onboard **Hammernik-2017
+VN**. ITNet `epochs→16` (0.9623, epochs still helping), LPD `lr→2e-3` (I=6 hurt
+again; lr is the sole lever, at 0.9333 ≈ baseline), USwin `c→24` (iter-1 0.9460,
+hr 0.33 — strong onboarding). DD-BF parked (capped ~0.95). Both parked solvers
+can resume to iter-20 on request. Still to onboard: Hammernik-VN, ItNet v1/v2,
+Wu-2015, the two N2I variants, diffusion-recon (DPS), NAF, R²-Gaussian, RAM.

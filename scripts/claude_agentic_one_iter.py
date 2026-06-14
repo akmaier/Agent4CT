@@ -96,6 +96,10 @@ SOLVER_MAP = {
         ("pentathlon/demo_dl_reference/solver_itnet.py", "ITNET_CONFIG_PATH"),
     "wu_2015":
         ("pentathlon/demo_dl_reference/solver_wu_2015.py", "WU_CONFIG_PATH"),
+    # Hammernik 2017 image-space variational network (Mayo rebuild 2026-06-14):
+    # per-sample-ps-wired; image-domain denoiser of the FBP (no in-model proj).
+    "hammernik_2017":
+        ("pentathlon/demo_dl_reference/solver_hammernik_2017.py", "HAMMERNIK_CONFIG_PATH"),
     # Diffusion posterior sampling with a Mayo-trained DDPM prior
     # (2026-06-07). Two variants share the same solver and env var; the
     # ckpt path is passed inside the per-iter CFG_JSON as `recon_ckpt`.
