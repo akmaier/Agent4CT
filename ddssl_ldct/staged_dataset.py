@@ -310,7 +310,12 @@ GEOMETRIES: dict[str, DatasetInfo] = {
         sod=595.362, sdd=1086.803,                  # was 595.0 / 1085.6 (DICOM)
         display_min=0.0, display_max=0.05,
         has_real_sino=True,
-        staged_dir=_DEFAULT_DATA_ROOT / "mayo_ldct" / "staged",
+        # CANONICAL per-sample data (2026-06-14): lossless angle-rolled sinos +
+        # native truth + per-slice ps. Uniform angle_start=0 so only ps varies;
+        # load_val_split(..., return_ps=True) returns the per-slice ps and
+        # solvers reconstruct per-sample via mayo_proj_cache(). pixel_spacing
+        # below is just the default/fallback for the pipeline init.
+        staged_dir=_DEFAULT_DATA_ROOT / "mayo_ldct" / "staged_canonical",
         sino_file_tmpl="{split}_sino_lowdose.h5",
     ),
 }
@@ -342,8 +347,9 @@ def geometry_overrides(kind: str) -> dict:
 def load_val_split(kind: str, split: str, n: int, *, device,
                    seed: int = 1042, noise_i0: float = 1e5,
                    noise_sigma_e: float = 10.0,
-                   geom: FanBeamGeometry | None = None
-                   ) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor]:
+                   geom: FanBeamGeometry | None = None,
+                   return_ps: bool = False
+                   ) -> tuple:
     """Return (phantoms, clean, noisy) tensors on `device`.
 
     For kind="phantoms": synthetic ellipse phantoms + simulated low-dose sino
@@ -371,7 +377,7 @@ def load_val_split(kind: str, split: str, n: int, *, device,
             noisy = simulate_low_dose(clean, i0=noise_i0,
                                        sigma_e=noise_sigma_e,
                                        seed=seed + 10_000)
-        return phantoms, clean, noisy
+        return (phantoms, clean, noisy, None) if return_ps else (phantoms, clean, noisy)
 
     assert info.staged_dir is not None, f"{kind!r} has no staged_dir"
     truth_path = info.staged_dir / info.truth_file_tmpl.format(split=split)
@@ -384,6 +390,7 @@ def load_val_split(kind: str, split: str, n: int, *, device,
         n_truth = f[info.truth_dataset].shape[0]
         n_eff = min(n, n_truth)
         truth = f[info.truth_dataset][:n_eff][...]
+        ps_arr = f["ps"][:n_eff][...] if "ps" in f else None   # per-slice recon ps (canonical)
     with h5py.File(sino_path, "r") as f:
         sino = f[info.sino_dataset][:n_eff][...]
     truth_t = torch.from_numpy(truth).to(device=device, dtype=torch.float32)
@@ -406,7 +413,33 @@ def load_val_split(kind: str, split: str, n: int, *, device,
     # is unaffected. The previous `.clone()` doubled sino GPU memory; with the
     # all-slices Mayo footprint (train_n=579 + val_n=214) that clone is ~5 GB
     # and triggered CUDA OOM. Dropping it keeps behaviour identical.
+    if return_ps:
+        return truth_t, sino_t, sino_t, ps_arr
     return truth_t, sino_t, sino_t
+
+
+def mayo_proj_cache(ps_array, n_angles, n_det, device, *,
+                    det_spacing: float = 1.285044, sod: float = 595.362,
+                    sdd: float = 1086.803) -> dict:
+    """Per-ps projector cache for the canonical Mayo data. Angle is uniform
+    (angle_start=0, baked into the canonical sinos); only the recon pixel-
+    spacing varies per patient (4 distinct values). Returns
+    ``{round(ps,5): PyronnFanBeamProjector}``. Each projector auto-applies
+    MAYO_LDCT_DET_OFFSET + MAYO_LDCT_TRUNCATION via the
+    AGENT4CT_DATASET=mayo_ldct_2d env hard-wiring. Solvers (batch_size=1) look
+    up ``cache[round(float(ps[i]), 5)]`` per sample and swap it into the
+    pipeline's FBP projector before the forward pass."""
+    import math
+    from .pyronn_projector import PyronnFanBeamProjector
+    cache = {}
+    for u in np.unique(np.round(np.asarray(ps_array, dtype=float), 5)):
+        geom = FanBeamGeometry(image_size=512, pixel_spacing=float(u),
+                               n_angles=int(n_angles), n_det=int(n_det),
+                               det_spacing=det_spacing, sod=sod, sdd=sdd,
+                               angle_start=0.0, angle_end=2 * math.pi)
+        cache[round(float(u), 5)] = PyronnFanBeamProjector(geom).to(device)
+    print(f"[staged] mayo_proj_cache: {sorted(cache)} ps values", flush=True)
+    return cache
 
 
 def FanBeamGeometryFromManifest(manifest_path: Path, *,

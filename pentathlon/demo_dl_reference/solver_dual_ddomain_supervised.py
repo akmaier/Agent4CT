@@ -60,7 +60,7 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
     split = "val" if (seed % 100_000) >= 1000 else "train"
     return load_val_split(kind, split, n, device=device,
                           seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
-                          geom=geom)
+                          geom=geom, return_ps=True)   # 4-tuple; ps=None for non-mayo
 
 
 class FullViewUNetPipeline(nn.Module):
@@ -108,14 +108,35 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"],
     )
 
-    train_ph, train_clean, train_noisy = build_dataset(
+    train_ph, train_clean, train_noisy, train_ps = build_dataset(
         geom, cfg["train_n"], cfg["seed"], cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    val_ph, val_clean, val_noisy = build_dataset(
+    val_ph, val_clean, val_noisy, val_ps = build_dataset(
         geom, cfg["val_n"], cfg["seed"] + 1000, cfg["noise_i0"], cfg["noise_sigma_e"], device)
+
+    # PER-SAMPLE geometry (Mayo canonical): each slice reconstructs at its own
+    # ps_eff (only ps varies; angle uniform). Build a per-ps projector cache and
+    # swap pipe.R_full per sample (batch_size=1). ps=None -> single fixed geom.
+    import numpy as _np
+    _per_ps = train_ps is not None
+    if _per_ps:
+        from ddssl_ldct.staged_dataset import mayo_proj_cache
+        _projs = mayo_proj_cache(_np.concatenate([train_ps, val_ps]),
+                                 cfg["n_angles"], cfg["n_det"], device)
+        _trk = _np.round(_np.asarray(train_ps, float), 5)
+        _vrk = _np.round(_np.asarray(val_ps, float), 5)
+
+    def _proj_for(idx_arr, key_arr):
+        return _projs[float(key_arr[int(idx_arr[0])])] if _per_ps else None
 
     with torch.no_grad():
         R_full = PyronnFanBeamProjector(geom).to(device)
-        ld_fbp = torch.clamp(R_full.fbp(val_noisy), min=0.0)
+        if _per_ps:
+            ld_fbp = torch.empty(val_noisy.shape[0], 1, 512, 512, device=device)
+            for u in _np.unique(_vrk):
+                ii = _np.where(_vrk == u)[0]
+                ld_fbp[ii] = _projs[float(u)].fbp(val_noisy[ii]).clamp(min=0.0)
+        else:
+            ld_fbp = torch.clamp(R_full.fbp(val_noisy), min=0.0)
 
     c = cfg["unet_c"]
     proj_dn = SmallUNet(c=c)
@@ -137,6 +158,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         n_seen = 0
         for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
+            if _per_ps:   # batch_size=1 for Mayo -> one ps per step
+                pipe.R_full = _projs[float(_trk[int(idx[0])])]
             sino = train_noisy[idx].to(device)
             truth = train_ph[idx].to(device)
             pred = pipe(sino)
@@ -157,6 +180,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         chunk = cfg.get("val_chunk", 10)
         preds = []
         for i in range(0, val_noisy.shape[0], chunk):
+            if _per_ps:   # val_chunk=1 for Mayo -> one ps per slice
+                pipe.R_full = _projs[float(_vrk[i])]
             preds.append(pipe(val_noisy[i:i + chunk]))
         pred = torch.cat(preds, dim=0)
 
