@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-14T22:56:41Z",
+  "updated": "2026-06-14T23:13:00Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1076,7 +1076,7 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T20:50:06Z",
       "status": "running",
-      "n_iterations": 6,
+      "n_iterations": 7,
       "best_score": 0.95015,
       "best_headroom": 0.0492686,
       "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
@@ -1088,9 +1088,9 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T20:50:06Z",
       "status": "running",
-      "n_iterations": 6,
-      "best_score": 0.960754,
-      "best_headroom": 0.422366,
+      "n_iterations": 7,
+      "best_score": 0.962643,
+      "best_headroom": 0.429644,
       "agent": "dual_domain_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m"
     },
@@ -1100,7 +1100,7 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T20:50:06Z",
       "status": "running",
-      "n_iterations": 6,
+      "n_iterations": 7,
       "best_score": 0.960324,
       "best_headroom": 0.384809,
       "agent": "itnet_v3-claude-agentic-breast-ct",
@@ -1112,8 +1112,8 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T20:50:06Z",
       "status": "running",
-      "n_iterations": 6,
-      "best_score": 0.900015,
+      "n_iterations": 7,
+      "best_score": 0.933281,
       "best_headroom": 0.0,
       "agent": "learned_primal_dual-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m"
