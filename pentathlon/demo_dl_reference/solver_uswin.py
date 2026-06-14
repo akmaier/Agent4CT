@@ -32,7 +32,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty, clip_and_step
 from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
 
@@ -179,7 +179,7 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
     split = "val" if (seed % 100_000) >= 1000 else "train"
     return load_val_split(kind, split, n, device=device,
                           seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
-                          geom=geom)
+                          geom=geom, return_ps=True)   # 4-tuple; ps=None for non-mayo
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
@@ -208,14 +208,23 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"],
     )
 
-    train_ph, _, train_noisy = build_dataset(geom, cfg["train_n"], cfg["seed"],
+    train_ph, _, train_noisy, train_ps = build_dataset(geom, cfg["train_n"], cfg["seed"],
         cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    val_ph, _, val_noisy = build_dataset(geom, cfg["val_n"], cfg["seed"] + 1000,
+    val_ph, _, val_noisy, val_ps = build_dataset(geom, cfg["val_n"], cfg["seed"] + 1000,
         cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    proj = PyronnFanBeamProjector(geom).to(device)
+    # PER-SAMPLE geometry (Mayo canonical): USwin denoises an image-space FBP,
+    # so only the FBP (+ baseline) is per-ps; no in-model projector swap.
+    from ddssl_ldct.staged_dataset import (mayo_per_sample_setup,
+                                           mayo_per_sample_fbp)
+    per_ps, _projs, _trk, _vrk = mayo_per_sample_setup(train_ps, val_ps, cfg, device)
     with torch.no_grad():
-        train_fbp = torch.clamp(proj.fbp(train_noisy), min=0.0)
-        val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
+        if per_ps:
+            train_fbp = mayo_per_sample_fbp(_projs, _trk, train_noisy, cfg["image_size"])
+            val_fbp = mayo_per_sample_fbp(_projs, _vrk, val_noisy, cfg["image_size"])
+        else:
+            proj = PyronnFanBeamProjector(geom).to(device)
+            train_fbp = torch.clamp(proj.fbp(train_noisy), min=0.0)
+            val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
 
     model = USwin(c=cfg["uswin_c"], window=cfg["swin_window"],
                   heads=cfg["swin_heads"]).to(device)
@@ -232,12 +241,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             idx = perm[i:i + cfg["batch_size"]]
             pred = model(train_fbp[idx])
             loss = supervised_recon_loss(pred, train_ph[idx], lambda_neg=1.0)
-            opt.zero_grad(); loss.backward(); opt.step()
+            opt.zero_grad(); loss.backward(); clip_and_step(opt, loss, cfg.get("grad_clip", 0.0))
             running += float(loss.detach().cpu()); nb += 1
         print(f"[train] epoch {ep+1}/{cfg['epochs']}  loss={running/max(1,nb):.6g}",
               flush=True)
-        if time.time() - t0 > 480:
-            print(f"[train] 8-min wall at epoch {ep+1}", flush=True); break
+        if time.time() - t0 > cfg.get("max_train_s", 1800):
+            print(f"[train] wall ({cfg.get('max_train_s', 1800)}s) at epoch {ep+1}", flush=True); break
     train_time = time.time() - t0
 
     model.eval()

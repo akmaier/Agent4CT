@@ -30,7 +30,7 @@ from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
 from ddssl_ldct.models import SmallUNet
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty, clip_and_step
 from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
 
@@ -106,7 +106,7 @@ def pretrain_denoiser(denoiser, fbp_images, truth_images, epochs, lr, device):
             loss = supervised_recon_loss(pred, truth, lambda_neg=1.0)
             opt.zero_grad()
             loss.backward()
-            opt.step()
+            clip_and_step(opt, loss, cfg.get("grad_clip", 0.0))
             running += float(loss.detach().cpu())
         print(f"[pretrain] epoch {ep+1}/{epochs}  loss={running/n:.5f}", flush=True)
 
@@ -130,7 +130,7 @@ def finetune_itnet(itnet, train_sinos, train_fbps, epochs, lr, device):
             loss = supervised_recon_loss(pred, target, lambda_neg=1.0)
             opt.zero_grad()
             loss.backward()
-            opt.step()
+            clip_and_step(opt, loss, cfg.get("grad_clip", 0.0))
             running += float(loss.detach().cpu())
         print(f"[finetune] epoch {ep+1}/{epochs}  loss={running/n:.5f}", flush=True)
 

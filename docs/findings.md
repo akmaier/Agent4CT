@@ -14,6 +14,59 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-14 — ⚠️ Mayo solver collapse to SSIM 0.3089 is a TRAINING NaN (FBP-adjoint gradient explosion), NOT data — fixed by grad-clip + nonfinite-grad skip
+
+**After** the canonical per-sample re-stage (below) fixed the *data* (val LD-FBP
+baseline back to 0.8065, verified in the solver's own `load_val_split` path),
+every training solver STILL collapsed to the *identical* **SSIM 0.3089**. That
+identical-across-architectures value was the tell: the prediction collapses to a
+**constant** image. A zero/NaN pred calibrates (via `evaluate_calibrated`) to the
+constant `mean(truth)`, and SSIM(flat, val_truth) on air-dominated abdomen CT is
+exactly 0.3089 — *data-independent*, hence identical for DD-UNet, DD-BF, LPD, …
+
+**Root cause = gradient explosion through the 2304-view FBP adjoint.** Standalone
+runs (the TPE driver discards solver stdout on success, so the losses were never
+seen — run the solver directly to see them) show the loss goes **NaN within 1–2
+epochs**:
+
+| lr | epoch 1 | epoch 2+ | val SSIM |
+|----|---------|----------|----------|
+| 5e-4 (seed) | **NaN** | NaN | 0.3089 |
+| 1e-4 | 0.000001 (finite) | **NaN** | 0.3089 |
+
+Lower lr only **delays** the blow-up. `SmallUNet(residual=True)` is near-identity
+at init (pred ≈ FBP ≈ 0.81), so a *collapse to 0.31* means training actively
+destroys the init — gradient explosion. Mayo's FBP back-projects over **2304
+views** (ramp `|freq|` weighting summed over ~18× more views than demo_dl's 128),
+so the backward occasionally overflows to a nonfinite gradient; the first such
+unguarded `opt.step()` poisons every weight → NaN forever. **Why the old runs
+hid it:** the old short-budget clamp was `train_n=50` (~250 steps); the blow-up
+needs ~600+ steps, which only the rebuild's `train_n=579` reaches in epoch 1–2.
+
+**The fix — clip the grad NORM and skip the step on a nonfinite loss OR
+gradient.** Guarding the *loss* alone is insufficient: a **finite loss can carry
+an Inf gradient**, and `clip_grad_norm_` of an Inf-norm gradient yields NaN grads
+that the step then applies (this is exactly why a first clip-only attempt still
+NaN'd at epoch 1). Centralised as `ddssl_ldct.metrics.clip_and_step(opt, loss,
+grad_clip)` (checks `torch.isfinite` on both loss and the returned grad norm);
+`grad_clip=1.0` is injected for every Mayo run via `MAYO_CLAMPS` in
+`learned_solver_search_agent.py` (`grad_clip=0` ⇒ off, so demo_dl/breast are
+untouched). **Validated** (jobs 763796/763797): DD-UNet **0.3089 → 0.9544**
+(lr 1e-4) / **0.9514** (lr 5e-4), only **~0.5 % of batches skipped** (0–4 / 579
+per epoch) — negligible. Robust across lr, so TPE may explore lr freely.
+
+**Per-sample ps wiring (the other half).** The canonical sino is angle-uniform
+(`angle_start=0`) but each slice must be reconstructed at its **own** `ps_eff`
+(per-patient display-FOV 0.66–0.78) to land on the NATIVE un-resampled truth —
+preserving native HD ≈ 0.95 (the user declined the ~0.02-SSIM canonical-resample
+cost). Helpers `mayo_per_sample_setup` / `mayo_per_sample_fbp` in
+`staged_dataset.py` build a per-ps projector cache (≤4 distinct ps); each
+`batch_size=1` solver swaps its projector per slice (`pipe.R_full` /
+`model.R` / `itnet.projector`) in the train + val loops, and computes its LD-FBP
+baseline (and ITNet's FBP init) per ps-group. **Both fixes are required** for
+every Mayo training-through-FBP solver; LPD/tv_iterative already clipped but
+lacked the nonfinite-grad *skip* (so they too would NaN at train_n=579).
+
 ## 2026-06-14 — ⚠️ Mayo staged TRAINING data is geometry-broken (per-patient angle/ps not handled) → canonical re-stage
 
 **The staged `{train,val,test}_sino_*.h5` used by every solver are NOT usable as-is.**

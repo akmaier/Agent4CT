@@ -407,6 +407,36 @@ def supervised_recon_loss(pred: torch.Tensor, target: torch.Tensor,
     return recon + lambda_neg * negativity_penalty(pred)
 
 
+def clip_and_step(optimizer, loss, grad_clip: float = 0.0) -> bool:
+    """Clip the global grad-norm then ``optimizer.step()``, but SKIP the step
+    (and zero the grads) if the loss OR the gradient norm is nonfinite.
+
+    Why this exists: Mayo's 2304-view FBP adjoint amplifies training gradients
+    ~18x vs demo_dl's 128 views (ramp ``|freq|`` weighting summed over many more
+    views), so the backward occasionally overflows to a nonfinite gradient and
+    an unguarded ``opt.step()`` poisons every weight -> the recon collapses to a
+    constant (calibrated SSIM 0.3089 on the Mayo val split, identical across all
+    architectures because the output is data-independent). A finite *loss* can
+    still carry an Inf *gradient* whose clip yields NaN, so guarding the loss
+    alone is insufficient — we check the returned grad norm too. See
+    docs/findings.md 2026-06-14.
+
+    grad_clip <= 0 -> no clipping (norm is still computed so nonfinite-gradient
+    batches are skipped; demo_dl/breast keep their exact behaviour since they
+    never produce one). Returns True iff the step was applied. Model-agnostic:
+    pulls params straight from ``optimizer.param_groups`` so it drops into any
+    solver regardless of the model variable name.
+    """
+    params = [p for g in optimizer.param_groups for p in g["params"]]
+    max_norm = grad_clip if (grad_clip and grad_clip > 0) else float("inf")
+    gnorm = torch.nn.utils.clip_grad_norm_(params, max_norm)
+    if torch.isfinite(loss) and torch.isfinite(gnorm):
+        optimizer.step()
+        return True
+    optimizer.zero_grad(set_to_none=True)
+    return False
+
+
 def psnr(pred: torch.Tensor, target: torch.Tensor, data_range: float | None = None) -> torch.Tensor:
     if data_range is None:
         data_range = float(target.amax() - target.amin())

@@ -1556,12 +1556,20 @@ def main():
                 "unet_c":     ([16, 24], "choice"),    # Mayo winners used 16-24
                 "itnet_k":    ([2, 3], "choice"),      # patched-cfg Mayo winner was k=3
                 "uswin_c":    ([16], "choice"),        # USwin Mayo winner was c=16
+                # Mayo's 2304-view FBP adjoint amplifies training gradients ~18x
+                # vs demo_dl's 128 views -> un-clipped solvers NaN within 1-2
+                # epochs at train_n=579 (confirmed 2026-06-14: collapse to the
+                # constant-output SSIM 0.3089). Inject grad-norm clipping; each
+                # FBP-training solver reads cfg["grad_clip"] and also skips any
+                # nonfinite-gradient batch. See docs/findings.md 2026-06-14.
+                "grad_clip":  ([1.0], "choice"),
             }
             print(f"[agent] applying mayo_ldct_2d search-space clamp", flush=True)
             spec["space"] = dict(spec["space"])
             # ALWAYS-INSERT keys (force these into the space even if absent).
             # The solver's CONFIG default is otherwise used, which OOMs Mayo.
-            ALWAYS_INSERT = {"train_n", "val_n", "val_chunk", "batch_size"}
+            ALWAYS_INSERT = {"train_n", "val_n", "val_chunk", "batch_size",
+                             "grad_clip"}
             for k, v in MAYO_CLAMPS.items():
                 if k in spec["space"]:
                     print(f"[agent]   clamp {k}: "

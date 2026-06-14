@@ -156,6 +156,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
         n_seen = 0
+        n_skip = 0
         for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
             if _per_ps:   # batch_size=1 for Mayo -> one ps per step
@@ -167,11 +168,28 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                                           lambda_neg=cfg["lambda_neg"], base="mse")
             opt.zero_grad(set_to_none=True)
             loss.backward()
-            opt.step()
-            running += float(loss.detach().cpu()) * idx.numel()
-            n_seen += idx.numel()
+            # Mayo's 2304-view FBP adjoint amplifies gradients ~18x vs demo_dl's
+            # 128 views (ramp |freq| weighting summed over many views), so the
+            # backward occasionally overflows to a nonfinite gradient and the run
+            # NaNs within 1-2 epochs (standalone: lr=5e-4 NaNs ep1, lr=1e-4 ep2).
+            # Clip the grad NORM and skip the step on ANY nonfinite loss OR
+            # gradient -- a FINITE loss can still carry an Inf grad whose clip
+            # yields NaN, so guarding the loss alone is not enough. grad_clip=0 ->
+            # off (demo_dl/breast unchanged); Mayo injects grad_clip=1.0 via clamp.
+            gc = float(cfg.get("grad_clip", 0.0))
+            gnorm = torch.nn.utils.clip_grad_norm_(
+                pipe.parameters(), gc if gc > 0 else float("inf"))
+            if torch.isfinite(loss) and torch.isfinite(gnorm):
+                opt.step()
+                running += float(loss.detach().cpu()) * idx.numel()
+                n_seen += idx.numel()
+            else:
+                opt.zero_grad(set_to_none=True)
+                n_skip += 1
         mean_loss = running / max(1, n_seen)
-        print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}", flush=True)
+        print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.6f}"
+              f"  (skipped {n_skip}/{n_seen + n_skip} nonfinite-grad batches)",
+              flush=True)
 
     train_time = time.time() - t0
 

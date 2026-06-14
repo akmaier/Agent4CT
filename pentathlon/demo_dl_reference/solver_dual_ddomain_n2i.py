@@ -36,7 +36,7 @@ from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose, split_projections
 from ddssl_ldct.models import SmallUNet
 from ddssl_ldct.training import DualDomainPipeline
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
+from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty, clip_and_step
 from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
 
@@ -128,7 +128,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             losses = pipe.training_step(batch)
             opt.zero_grad(set_to_none=True)
             losses["loss"].backward()
-            opt.step()
+            clip_and_step(opt, losses["loss"], cfg.get("grad_clip", 0.0))
             running += float(losses["loss"].detach().cpu())
         mean_loss = running / max(1, train_noisy.shape[0])
         print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}", flush=True)

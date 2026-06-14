@@ -47,7 +47,7 @@ from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.models import TrainableBilateralFilter2d
 from ddssl_ldct.metrics import (
     evaluate_calibrated, make_4panel_comparison,
-    supervised_recon_loss,
+    supervised_recon_loss, clip_and_step,
 )
 from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
@@ -124,7 +124,7 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
     split = "val" if (seed % 100_000) >= 1000 else "train"
     return load_val_split(kind, split, n, device=device,
                           seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
-                          geom=geom)
+                          geom=geom, return_ps=True)   # 4-tuple; ps=None for non-mayo
 
 
 class FullViewBilateralPipeline(nn.Module):
@@ -176,14 +176,23 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"],
     )
 
-    train_ph, train_clean, train_noisy = build_dataset(
+    train_ph, train_clean, train_noisy, train_ps = build_dataset(
         geom, cfg["train_n"], cfg["seed"], cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    val_ph, val_clean, val_noisy = build_dataset(
+    val_ph, val_clean, val_noisy, val_ps = build_dataset(
         geom, cfg["val_n"], cfg["seed"] + 1000, cfg["noise_i0"], cfg["noise_sigma_e"], device)
 
+    # PER-SAMPLE geometry (Mayo canonical): reconstruct each slice at its own
+    # ps_eff via a per-ps projector cache; swap pipe.R_full per sample (bs=1).
+    from ddssl_ldct.staged_dataset import (mayo_per_sample_setup,
+                                           mayo_per_sample_fbp)
+    per_ps, _projs, _trk, _vrk = mayo_per_sample_setup(train_ps, val_ps, cfg, device)
+
     with torch.no_grad():
-        R_full = PyronnFanBeamProjector(geom).to(device)
-        ld_fbp = torch.clamp(R_full.fbp(val_noisy), min=0.0)
+        if per_ps:
+            ld_fbp = mayo_per_sample_fbp(_projs, _vrk, val_noisy, cfg["image_size"])
+        else:
+            R_full = PyronnFanBeamProjector(geom).to(device)
+            ld_fbp = torch.clamp(R_full.fbp(val_noisy), min=0.0)
 
     proj_dn = BilateralFilterStack(
         n_filters=cfg["proj_n_bf"], kernel_size=cfg["proj_kernel"],
@@ -211,6 +220,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         n_seen = 0
         for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
+            if per_ps:                      # swap to this slice's ps projector
+                pipe.R_full = _projs[float(_trk[int(idx[0])])]
             sino = train_noisy[idx].to(device)
             truth = train_ph[idx].to(device)
             pred = pipe(sino)
@@ -218,7 +229,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                                           lambda_neg=cfg["lambda_neg"], base="mse")
             opt.zero_grad(set_to_none=True)
             loss.backward()
-            opt.step()
+            clip_and_step(opt, loss, cfg.get("grad_clip", 0.0))
             running += float(loss.detach().cpu()) * idx.numel()
             n_seen += idx.numel()
         mean_loss = running / max(1, n_seen)
@@ -240,6 +251,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         chunk = cfg.get("val_chunk", 10)
         preds = []
         for i in range(0, val_noisy.shape[0], chunk):
+            if per_ps:                      # val_chunk=1 for Mayo -> one ps/slice
+                pipe.R_full = _projs[float(_vrk[i])]
             preds.append(pipe(val_noisy[i:i + chunk]))
         pred = torch.cat(preds, dim=0)
 

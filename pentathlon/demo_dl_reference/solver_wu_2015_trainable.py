@@ -52,7 +52,7 @@ import torch.nn.functional as F
 from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.metrics import (
-    evaluate_calibrated, make_4panel_comparison, supervised_recon_loss,
+    evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, clip_and_step,
 )
 from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
@@ -301,7 +301,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                                           base=cfg.get("loss_base", "mse"))
             opt.zero_grad(set_to_none=True)
             loss.backward()
-            opt.step()
+            clip_and_step(opt, loss, cfg.get("grad_clip", 0.0))
             running += float(loss.detach().cpu()) * idx.numel()
             n_seen += idx.numel()
         mean_loss = running / max(1, n_seen)

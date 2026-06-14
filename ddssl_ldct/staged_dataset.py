@@ -390,10 +390,36 @@ def load_val_split(kind: str, split: str, n: int, *, device,
         tkey = info.truth_dataset if info.truth_dataset in f else "truth"   # canonical uses "truth"
         n_truth = f[tkey].shape[0]
         n_eff = min(n, n_truth)
-        truth = f[tkey][:n_eff][...]
-        ps_arr = f["ps"][:n_eff][...] if "ps" in f else None   # per-slice recon ps (canonical)
+        # Mayo SUBSET (the agentic loop's "200 stratified" train_n): the canonical
+        # h5 is patient-ordered, so the first n_eff slices would be ~1 patient.
+        # Round-robin across ps-groups (≈ per-patient display-FOV) so the subset
+        # spans patients -> better generalisation to the held-out val patient.
+        # Full-set (TPE: n_eff==n_truth) and single-ps val fall through to first-n.
+        sel = slice(0, n_eff)
+        if kind == "mayo_ldct_2d" and "ps" in f and 0 < n_eff < n_truth:
+            allps = np.round(np.asarray(f["ps"][:], dtype=float), 5)
+            groups: dict = {}
+            for i, p in enumerate(allps):
+                groups.setdefault(float(p), []).append(i)
+            order = sorted(groups)
+            if len(order) > 1:   # only stratify when >1 group present
+                picks, ptr = [], {p: 0 for p in order}
+                while len(picks) < n_eff:
+                    advanced = False
+                    for p in order:
+                        if ptr[p] < len(groups[p]):
+                            picks.append(groups[p][ptr[p]]); ptr[p] += 1; advanced = True
+                            if len(picks) >= n_eff:
+                                break
+                    if not advanced:
+                        break
+                sel = sorted(picks)
+                print(f"[staged] mayo stratified subset: {n_eff}/{n_truth} across "
+                      f"{len(order)} ps-groups {order}", flush=True)
+        truth = f[tkey][sel][...]
+        ps_arr = f["ps"][sel][...] if "ps" in f else None   # per-slice recon ps (canonical)
     with h5py.File(sino_path, "r") as f:
-        sino = f[info.sino_dataset][:n_eff][...]
+        sino = f[info.sino_dataset][sel][...]
     truth_t = torch.from_numpy(truth).to(device=device, dtype=torch.float32)
     sino_t  = torch.from_numpy(sino ).to(device=device, dtype=torch.float32)
     if truth_t.dim() == 3:   # (N, H, W) -> (N, 1, H, W)
@@ -441,6 +467,45 @@ def mayo_proj_cache(ps_array, n_angles, n_det, device, *,
         cache[round(float(u), 5)] = PyronnFanBeamProjector(geom).to(device)
     print(f"[staged] mayo_proj_cache: {sorted(cache)} ps values", flush=True)
     return cache
+
+
+def mayo_per_sample_setup(train_ps, val_ps, cfg, device):
+    """Set up per-sample-ps reconstruction for the canonical Mayo data.
+
+    The canonical sinos are angle-uniform (angle_start=0) but each slice must be
+    reconstructed at its OWN recon pixel-spacing ``ps_eff`` so the FBP lands on
+    the NATIVE (un-resampled) truth grid — preserving the native HD SSIM ~0.95
+    (the per-patient FOV varies 0.66-0.78; a single fixed ps mis-scales every
+    off-nominal slice by ~5%). Build a per-ps projector cache (≤4 distinct ps)
+    and return rounded ps keys so a batch_size=1 solver can swap its projector
+    per slice: ``model.<proj_attr> = projs[float(trk[idx[0]])]``.
+
+    Returns ``(per_ps, projs, trk, vrk)``. ``per_ps`` is False when ps is None
+    (non-Mayo datasets) so the caller falls back to its single fixed geometry.
+    """
+    if train_ps is None:
+        return False, None, None, None
+    projs = mayo_proj_cache(np.concatenate([train_ps, val_ps]),
+                            cfg["n_angles"], cfg["n_det"], device)
+    return (True, projs,
+            np.round(np.asarray(train_ps, float), 5),
+            np.round(np.asarray(val_ps, float), 5))
+
+
+def mayo_per_sample_fbp(projs, keys, noisy, image_size=512):
+    """Per-ps-group LD-FBP baseline of ``noisy`` (B,1,A,D) -> (B,1,H,W).
+
+    Reconstructs each ps-group with its cached projector (the canonical Mayo
+    baseline = the headroom-scoring 'low-dose FBP, no denoising' endpoint).
+    ``keys`` = ``np.round(ps, 5)`` per slice (the ``vrk``/``trk`` from
+    :func:`mayo_per_sample_setup`)."""
+    import torch
+    out = torch.empty(noisy.shape[0], 1, image_size, image_size,
+                      device=noisy.device)
+    for u in np.unique(keys):
+        ii = np.where(keys == u)[0]
+        out[ii] = projs[float(u)].fbp(noisy[ii]).clamp(min=0.0)
+    return out
 
 
 def FanBeamGeometryFromManifest(manifest_path: Path, *,
