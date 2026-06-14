@@ -14,6 +14,46 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-14 — ⚠️ Mayo staged TRAINING data is geometry-broken (per-patient angle/ps not handled) → canonical re-stage
+
+**The staged `{train,val,test}_sino_*.h5` used by every solver are NOT usable as-is.**
+Reconstructing the staged val sino via the solver path (`load_val_split` →
+`proj.fbp`, one uniform geometry) scores **SSIM 0.24 vs truth**, while the
+validated all-slices baseline (`compare_hd_ld_fbp_allslices.py`, per-patient)
+scores **0.81** on the same L277 data. Every solver re-scored on this data
+collapsed to ~0.31 (worse than the LD-FBP input; two different supervised nets
+gave *identical* 0.3089 → constant-output collapse).
+
+**Root cause:** the helix2fan rebin emits **per-patient geometry** — each
+patient's per-`*_geometry.json` `angle_start_corrected` differs a lot (L145
+−4.94, L277 −5.03, L014 −6.48 rad ≈ 88° apart) and per-patient pixel-spacing
+(0.66–0.78, the display-FOV). The baseline reconstructs **each patient with its
+own** angle_start + ps_eff + sino-u-flip + 5-slice slab + image-flip. The staged
+training pipeline reconstructs **all patients with one fixed geometry**
+(`angle_start=0`, ps=0.700857, no per-slice flip/slab) → every recon is rotated
++ mis-scaled vs truth.
+
+**Diagnostic ladder (all on cluster, jobs 763669–763674), each recovered only
+fractionally — proving it is not any single convention:** as-is 0.244; image
+flips 0.24–0.25; z-shifts ±5 → 0.243; best-match across all 214 truth slices
+only ~0.25 (recon matches *no* axial truth); ps sweep 0.66–0.76 → 0.22–0.28;
++per-patient angle_start → 0.31; +per-patient ps → 0.33; **full baseline
+transform (u-flip + angle + ps + image-flip) on the staged sino caps at 0.43**
+(vs 0.81 on the raw sino) → the staged sino *content* is also degraded (single
+mis-z-interpolated slice vs the raw multi-slice slab). truth h5 itself is valid
+(L277 μ stats correct).
+
+**Fix (user-approved 2026-06-14): canonical-frame re-stage.** Re-stage from the
+raw v3 per-patient sinos into a single canonical frame so one uniform geometry
+reconstructs every patient: per truth slice, store
+`roll(flip_u(slab_mean), round(-angle_start_corrected/Δ))` (Δ=2π/rotview) and
+resample truth to a common pixel-spacing; fold the image-flip into the stored
+truth. Then `proj.fbp(canonical_sino, angle_start=0, common_ps)` must reproduce
+the baseline ≈0.81 (validate on L277 before full re-stage). Supports all solvers
+(sinogram preserved). **LESSON: "staged-h5 counts match" ≠ "content aligned" —
+always FBP-vs-truth-validate staged data before training. The 0.466 M /
+hr-0.389 era Mayo leaderboard numbers were on this broken/old staging too.**
+
 ## 2026-06-14 — Mayo leaderboard reset + all-slices HD/LD FBP baseline
 
 The old Mayo leaderboard was **discarded** (scored with the `bg→0` bug, on a
