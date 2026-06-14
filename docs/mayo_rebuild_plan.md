@@ -73,6 +73,14 @@ prints the active geometry + calibration so no run can drift silently.
 
 ## Phase 3 — Adjust agentic loop; TPE honours all-slices
 
+> **Orchestration model: Opus 4.8 (1M context)** (`claude-opus-4-8[1m]`),
+> chosen 2026-06-14. The loop has no LLM baked into the cluster jobs — the
+> driving Claude Code session reads results, writes the next per-iter
+> `CFG_JSON`, decides keep/discard, and dispatches the next sbatch. The
+> cluster does all the heavy compute, so the LLM cost is only the short
+> orchestration turns. TPE/Optuna search is LLM-free. An autonomous
+> continuation (scheduled agent / `/loop`) must be launched with Opus 4.8.
+
 - **Agentic 5-min loop (adjusted):** train each iteration on a fixed,
   stratified **train subset** (sampled across z and all 4 train patients)
   so the iteration fits the 5-min budget — but the keep/discard decision
