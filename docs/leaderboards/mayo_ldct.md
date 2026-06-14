@@ -100,17 +100,17 @@ the NaN fix):
 <!-- AGENTIC_TABLE_START -->
 | Rank | Solver | Best iter | SSIM | hr | params | Source | Comparison |
 |---:|---|---|---:|---:|---:|---|---|
-| 1 | **DD-UNet supervised L2** | iter-3 (epochs=8, lr=0.0002, unet_c=24) | 0.9608 | 0.4185 | 1.045 M | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/results.tsv) | [![DD-UNet supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0003/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0003/comparison.png) |
+| 1 | **DD-UNet supervised L2** | iter-5 (epochs=14, lr=0.0002, unet_c=24) | 0.9577 | 0.4224 | 1.045 M | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/results.tsv) | [![DD-UNet supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0005/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0005/comparison.png) |
 | 2 | ITNet v3 | iter-3 (epochs=8, itnet_k=3, lr=0.0001, unet_c=24) | 0.9551 | 0.3715 | 8.318 M | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/results.tsv) | [![ITNet v3](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0003/comparison.png)](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0003/comparison.png) |
 | 3 | DD-BF supervised L2 | iter-1 (epochs=8, lr=0.005) | 0.9502 | 0.0493 |  | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/results.tsv) | [![DD-BF supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
-| 4 | Learned Primal-Dual | iter-1 (epochs=8, lpd_hidden=48, lpd_iters=3, lr=0.0001) | 0.7922 | 0.0000 | 0.155 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![Learned Primal-Dual](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 4 | Learned Primal-Dual | iter-5 (epochs=8, lpd_hidden=48, lpd_iters=3, lr=0.0003) | 0.8715 | 0.0000 | 0.155 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![Learned Primal-Dual](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0005/comparison.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0005/comparison.png) |
 <!-- AGENTIC_TABLE_END -->
 
-**iter-5 in flight** (one new knob each; all capacity bumps `c→32`/`hidden→96`
-regressed within the val_n=20 ±0.01 noise band, so reverted to the c=24 / I=3
-optima): DD-UNet `epochs→14`, ITNet `alpha_init→0.006` (stronger TV prior),
-DD-BF `img_kernel→9` (wider kernel), LPD `lr→3e-4` (train the proximals harder).
-DD-UNet (~0.961) + ITNet (~0.955) appear plateaued at their config optimum.
+**iter-6 in flight**: **LPD jumped 0.79→0.87 at lr=3e-4** (its proximals were
+under-trained at lr=1e-4) — now `lr→5e-4`, chasing above-baseline. DD-UNet
+`lr→3e-4`, ITNet `lr→2e-4`, DD-BF `proj_n_bf→3`. DD-UNet (~0.961) + ITNet
+(~0.955) are plateaued at their config optimum (capacity / epochs / lr / TV-prior
+all explored within the val_n=20 ±0.01 noise band).
 Solvers still to onboard (per-sample ps wiring pending): Hammernik-2017/VN,
 ItNet v1/v2, Wu-2015, the two N2I variants, diffusion-recon (DPS), NAF,
 R²-Gaussian, RAM.
