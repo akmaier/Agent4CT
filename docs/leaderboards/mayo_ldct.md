@@ -97,12 +97,14 @@ Best agentic iter so far (newest wave: iter-1 feasibility — all trained stably
 
 | Rank | Solver | Best iter | SSIM | hr | params | Source | Comparison |
 |---:|---|---|---:|---:|---:|---|---|
-| 1 | **DD-UNet supervised L2** | iter-1 (c=16, ep=8, lr=1e-4) | **0.9584** | **0.4025** | 0.466 M | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/results.tsv) | [![DD-UNet](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 1 | **DD-UNet supervised L2** | iter-2 (c=24, ep=8, lr=1e-4) | **0.9597** | **0.4170** | 1.045 M | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/results.tsv) | [![DD-UNet](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0002/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0002/comparison.png) |
 | 2 | **ITNet v3** | iter-1 (k=3, c=16) | 0.9501 | 0.3439 | 3.70 M | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/results.tsv) | [![ITNet v3](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0001/comparison.png) |
 | 3 | **DD-BF supervised L2** | iter-1 (6 params) | 0.9501 | 0.0493 | 6 | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/results.tsv) | [![DD-BF](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
 | 4 | Learned Primal-Dual | iter-1 (I=3, hidden=48) | 0.7922 | 0.0000 | 0.155 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![LPD](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0001/comparison.png) |
 
-**iter-2 in flight** (one-knob hypotheses): DD-UNet `c→24`, ITNet `k→4`,
-DD-BF `lr→1e-2`, LPD `I→6` (I=3 under-refines below baseline). Solvers still to
+**iter-3 in flight** (each builds on the solver's best config, one new knob):
+DD-UNet `lr→2e-4` (c=24 kept), ITNet `c→24` (k=4 reverted to 3), DD-BF
+`img_n_bf→15` (lr reverted to 5e-3), LPD `lr_schedule cosine→none` (depth reverted;
+cosine decayed lr to 0 by ep8, under-training the proximals). Solvers still to
 onboard (per-sample ps wiring pending): Hammernik-2017/VN, ItNet v1/v2, Wu-2015,
 the two N2I variants, diffusion-recon (DPS), NAF, R²-Gaussian, RAM.
