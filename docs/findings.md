@@ -14,6 +14,34 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-14 — Mayo leaderboard reset + all-slices HD/LD FBP baseline
+
+The old Mayo leaderboard was **discarded** (scored with the `bg→0` bug, on a
+slice subset, before the v3 geometry + truncation FBP path was hard-wired).
+Rebuild plan: [`docs/mayo_rebuild_plan.md`](mayo_rebuild_plan.md).
+
+**New baseline (SLURM 763659, all 1538 truth slices of all 10 Wagner
+patients, frozen production path, `bg_target="truth"`)** — defines the
+headroom endpoints `score = (SSIM − LD_FBP)/(HD_FBP − LD_FBP)` per split:
+
+| split | n | HD-FBP (oracle) SSIM | LD-FBP (baseline) SSIM | gap |
+|---|---:|---:|---:|---:|
+| train | 579 | 0.9501 | 0.8659 | 0.0843 |
+| val (L277) | 214 | 0.9331 | 0.8078 | 0.1252 |
+| test | 745 | 0.9528 | 0.8848 | 0.0680 |
+| overall | 1538 | 0.9491 | 0.8670 | 0.0821 |
+
+Notes: z-registration residual ≤ 0.38 mm for every patient (sign-flip
+nearest-z mapping is sound — no global offset needed); HD-FBP L277 0.9331
+reproduces the validated central-slice 0.9315. Large-FOV patients
+(L277/L058, ps 0.742) have the lowest LD SSIM + biggest headroom; the
+val patient L277 has the largest gap (0.125). Tool:
+`scripts/compare_hd_ld_fbp_allslices.py` (loads each sino into RAM once —
+the staged h5 is view-axis-chunked, so per-z-plane disk reads re-read the
+whole 4.4 GB file). Images: `docs/leaderboards/baseline_2026-06-14/` +
+`results/mayo_debug/allslices_hd_ld/`. **Headroom from here is computed
+against these endpoints and is NOT comparable to the discarded numbers.**
+
 ## 2026-06-13 — ⚠️ `intensity_calibrate` background-offset bug (affects ALL Mayo calibrated metrics) + opt-in `bg_target` fix
 
 **Read this before trusting any Mayo calibrated SSIM/PSNR number, including every Mayo-LDCT leaderboard score.**
