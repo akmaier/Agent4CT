@@ -429,6 +429,17 @@ class PyronnFanBeamProjector(torch.nn.Module):
         performed by the widened sibling (same image grid). The output
         shape / image grid is unchanged.
         """
+        # Batch-chunk to bound peak memory. With truncation on, the widened
+        # detector (n_det + 2*pad) plus the ramp-filter N->2N zero-pad makes the
+        # intermediate spectrum O(B * A * 4*n_det) — a full val batch (e.g. 214
+        # slices) needs several GiB in one allocation and OOMs a 16 GB GPU.
+        # Processing in sub-batches is numerically identical (FBP is per-slice).
+        _CHUNK = 8
+        if sino.shape[0] > _CHUNK:
+            outs = [self.fbp(sino[i:i + _CHUNK], filter_name=filter_name)
+                    for i in range(0, sino.shape[0], _CHUNK)]
+            return torch.cat(outs, dim=0)
+
         if self._trunc is not None:
             from .truncation import water_cylinder_extrapolate
             sino_wide = water_cylinder_extrapolate(
