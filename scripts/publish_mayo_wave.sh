@@ -7,7 +7,10 @@
 # by hand before running this, since it states the NEXT hypotheses).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-rsync -e ssh -a "lme-bastion:/cluster/maier/Agent4CT/docs/runs/mayo-ldct-claude-agentic-*-search-*" docs/runs/ 2>/dev/null || true
+# NB: restrict to the CURRENT rebuild run-id (20260614-01). A bare `-search-*`
+# glob re-pulls the obsolete pre-rebuild agentic runs (20260603/20260610/phase4)
+# that were intentionally discarded — keep this pinned to the rebuild.
+rsync -e ssh -a "lme-bastion:/cluster/maier/Agent4CT/docs/runs/mayo-ldct-claude-agentic-*-search-20260614-01" docs/runs/ 2>/dev/null || true
 python3 scripts/rebuild_runs_index.py | tail -1
 python3 scripts/gen_mayo_leaderboard.py
 git add docs/runs docs/leaderboards/mayo_ldct.md README.md scripts/gen_mayo_leaderboard.py scripts/rebuild_runs_index.py scripts/publish_mayo_wave.sh 2>/dev/null || true

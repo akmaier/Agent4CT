@@ -69,7 +69,9 @@ def best_row(slug_dir: Path):
 
 def main() -> int:
     rows = []
-    for d in sorted(RUNS.glob("mayo-ldct-claude-agentic-*-search-*")):
+    # Pinned to the CURRENT rebuild run-id (2026-06-14) so the obsolete
+    # pre-rebuild agentic runs (20260603/20260610/phase4) never leak back in.
+    for d in sorted(RUNS.glob("mayo-ldct-claude-agentic-*-search-20260614-01")):
         m = re.match(r"mayo-ldct-claude-agentic-(.+)-search-\d{8}-\d+$", d.name)
         if not m:
             continue
