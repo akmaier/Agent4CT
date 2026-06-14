@@ -4,12 +4,13 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-# All-slices Mayo (train_n=579 + val_n=214) needs a big-memory GPU. Exclude the
-# <=12 GB nodes (gtx1080 8GB / gtx1080ti 11GB / titanxp 12GB); this leaves
-# v100 (lme53), q8000 48GB (lme170/171), q6000 24GB (lme221), q5000 16GB
-# (lme222/223). The OLD list (lme49,53,170,171) wrongly excluded the big GPUs
-# — fine for the old val_n=20/train_n=50 footprint, OOM now.
-#SBATCH --exclude=lme49,lme50,lme51,lme52
+# All-slices Mayo (train_n=579 + val_n=214, ~6 GB data after the clone fix)
+# needs a working >=16 GB GPU. Target the q5000 (16 GB) nodes lme222/223 —
+# proven reliable this session (the all-slices baseline + v3cal fits ran
+# there). Exclude: 1080/1080ti/titanxp (<=12 GB OOM: lme49/50/51/52);
+# q8000 lme170/171 (NVML driver/library version mismatch — nvidia fails);
+# v100 lme53 + q6000 lme221 (drain/excluded historically).
+#SBATCH --exclude=lme49,lme50,lme51,lme52,lme53,lme170,lme171,lme221
 #SBATCH --mem=32G
 #SBATCH --time=14:00:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
@@ -36,7 +37,7 @@ export PYTHONPATH="$REPO:${PYTHONPATH:-}"
 export HDF5_USE_FILE_LOCKING=FALSE
 
 echo "[mayo-tpe] host=$(hostname) job=$SLURM_JOB_ID solver=$SOLVER"
-nvidia-smi -L
+nvidia-smi -L || echo "[mayo-tpe] WARN: nvidia-smi -L failed (NVML?); continuing to let torch report"
 
 # Optuna SQLite on NODE-LOCAL disk: sqlite file-locking over the cluster NFS
 # throws "database is locked" intermittently (and leaves 0-byte stale .db).
