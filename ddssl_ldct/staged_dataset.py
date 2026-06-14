@@ -387,9 +387,10 @@ def load_val_split(kind: str, split: str, n: int, *, device,
     if not sino_path.exists():
         raise FileNotFoundError(f"{kind} {split} sino missing: {sino_path}")
     with h5py.File(truth_path, "r") as f:
-        n_truth = f[info.truth_dataset].shape[0]
+        tkey = info.truth_dataset if info.truth_dataset in f else "truth"   # canonical uses "truth"
+        n_truth = f[tkey].shape[0]
         n_eff = min(n, n_truth)
-        truth = f[info.truth_dataset][:n_eff][...]
+        truth = f[tkey][:n_eff][...]
         ps_arr = f["ps"][:n_eff][...] if "ps" in f else None   # per-slice recon ps (canonical)
     with h5py.File(sino_path, "r") as f:
         sino = f[info.sino_dataset][:n_eff][...]
