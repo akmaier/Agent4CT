@@ -47,6 +47,7 @@ and removes the singleton channel dimension and keeps everything on CUDA.
 """
 from __future__ import annotations
 import math
+import os
 from typing import Optional
 
 import numpy as np
@@ -57,6 +58,7 @@ from .geometry import FanBeamGeometry
 
 # Lazy global to avoid importing CUDA modules at package import time.
 _PYRONN_IMPORTED = False
+_MAYO_GEOM_LOGGED = False
 
 
 def _import_pyronn():
@@ -140,6 +142,25 @@ class PyronnFanBeamProjector(torch.nn.Module):
         """
         super().__init__()
         _import_pyronn()
+
+        # HARD-WIRED Mayo production geometry. When AGENT4CT_DATASET=mayo_ldct_2d
+        # (set by every Mayo dispatch and inherited by each solver subprocess)
+        # and the caller left the geometry-calibration kwargs at their defaults,
+        # apply the production detector offset + water-cylinder truncation so no
+        # solver can silently run Mayo on the uncalibrated FBP path. Explicit
+        # kwargs (baseline scripts, the widened-detector sibling below) and all
+        # other datasets are untouched.
+        if (det_offset_mm == 0.0 and truncation is None
+                and os.environ.get("AGENT4CT_DATASET") == "mayo_ldct_2d"):
+            from .geometry import MAYO_LDCT_DET_OFFSET, MAYO_LDCT_TRUNCATION
+            det_offset_mm = MAYO_LDCT_DET_OFFSET
+            truncation = dict(MAYO_LDCT_TRUNCATION)
+            global _MAYO_GEOM_LOGGED
+            if not _MAYO_GEOM_LOGGED:
+                print(f"[pyronn] HARD-WIRED Mayo geometry: "
+                      f"det_offset_mm={det_offset_mm}, truncation={truncation} "
+                      f"(AGENT4CT_DATASET=mayo_ldct_2d)", flush=True)
+                _MAYO_GEOM_LOGGED = True
         from pyronn.ct_reconstruction.geometry.geometry_base import GeometryFan2D
         from pyronn.ct_reconstruction.layers.torch.projection_2d import FanProjection2D
         from pyronn.ct_reconstruction.layers.torch.backprojection_2d import FanBackProjection2D

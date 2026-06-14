@@ -81,6 +81,36 @@ def fov_mask(size: int, *, radius_pix: float | None = None,
 # negative tail but leaves the bias and span uncalibrated.
 
 
+import os as _os_metrics  # env-keyed production defaults (Mayo hard-wiring)
+
+_MAYO_CAL_LOGGED = False
+
+
+def _resolve_bg_target(bg_target):
+    """Resolve an unspecified ``bg_target`` from the environment so the Mayo
+    production calibration is **hard-wired**: when ``AGENT4CT_DATASET=mayo_ldct_2d``
+    (set by every Mayo dispatch and propagated to each solver subprocess), an
+    omitted ``bg_target`` defaults to ``"truth"`` — Mayo truth background sits at
+    ~+0.0005 μ (≠ 0), and the legacy ``None``/bg→0 form costs up to +0.042 SSIM
+    (findings.md 2026-06-13). ``AGENT4CT_BG_TARGET`` overrides explicitly. Other
+    datasets (breast_ct / demo_dl) are untouched — they stay ``None`` (legacy)."""
+    global _MAYO_CAL_LOGGED
+    if bg_target is not None:
+        return bg_target
+    env = _os_metrics.environ.get("AGENT4CT_BG_TARGET")
+    if env is None and _os_metrics.environ.get("AGENT4CT_DATASET") == "mayo_ldct_2d":
+        env = "truth"
+    if env is None:
+        return None
+    resolved = env if env == "truth" else float(env)
+    if not _MAYO_CAL_LOGGED:
+        print(f"[metrics] HARD-WIRED Mayo calibration: bg_target={resolved!r} "
+              f"(AGENT4CT_DATASET={_os_metrics.environ.get('AGENT4CT_DATASET')!r})",
+              flush=True)
+        _MAYO_CAL_LOGGED = True
+    return resolved
+
+
 def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
                         fg_threshold: float | None = None,
                         display_max: float | None = None,
@@ -111,6 +141,7 @@ def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
     If either mask is empty the input is returned unchanged. Operates
     pixel-wise; works on `(H,W)`, `(1,H,W)`, `(B,1,H,W)`, etc.
     """
+    bg_target = _resolve_bg_target(bg_target)
     if fg_threshold is None:
         tmin = float(truth.min())
         tmax = float(truth.max())
