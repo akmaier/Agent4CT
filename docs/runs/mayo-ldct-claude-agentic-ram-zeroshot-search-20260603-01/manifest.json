@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-ram-zeroshot-search-20260603-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-claude-agentic-ram-zeroshot-search",
+  "started": "2026-06-04T10:59:05Z",
+  "agent": "ram_zeroshot-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

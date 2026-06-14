@@ -1,0 +1,32 @@
+{
+  "ts": "2026-06-11T10:06:11Z",
+  "run_id": "mayo-ldct-claude-agentic-ddunet-n2i-phase4-search-20260610-01",
+  "iter": 11,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual_domain-claude-agentic: epochs=100, lr=5e-05, batch_size=1, unet_c=24, train_n=50, val_n=5, rationale=iter-11: KNOB=epochs: 120\u2192100 (revert from TIMEOUT). iter-10 (ep=120, lr=5e-5) timed out at ep 105/120 with loss=0.00001 \u2014 model converged but val pass didn't complete. Hypothesis: ep=100 fits walltime + lets val pass run; extrapolating from iter-8 (50/0.466) \u2192 iter-9 (80/0.471) \u2192 iter-10 (105/~0.475 estimated), ep=100 should land hr just above 0 if SSIM crosses 0.473.",
+  "val_score": 0.4674186706542969,
+  "headroom": 0.0,
+  "val_ssim": 0.4674186706542969,
+  "val_psnr": 12.512235641479492,
+  "val_rmse": 0.011840177699923515,
+  "kept": false,
+  "status": "discard",
+  "params_M": 1.045394,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "dual_domain-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "dual_domain-claude-agentic: epochs=100, lr=5e-05, batch_size=1, unet_c=24, train_n=50, val_n=5, rationale=iter-11: KNOB=epochs: 120\u2192100 (revert from TIMEOUT). iter-10 (ep=120, lr=5e-5) timed out at ep 105/120 with loss=0.00001 \u2014 model converged but val pass didn't complete. Hypothesis: ep=100 fits walltime + lets val pass run; extrapolating from iter-8 (50/0.466) \u2192 iter-9 (80/0.471) \u2192 iter-10 (105/~0.475 estimated), ep=100 should land hr just above 0 if SSIM crosses 0.473.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-ddunet-n2i-phase4-search-20260610-01/iterations/iter-0011/comparison.png",
+  "elapsed_s": 1720.8197329044342,
+  "cfg_full": {
+    "epochs": 100,
+    "lr": 5e-05,
+    "batch_size": 1,
+    "unet_c": 24,
+    "train_n": 50,
+    "val_n": 5,
+    "rationale": "iter-11: KNOB=epochs: 120\u2192100 (revert from TIMEOUT). iter-10 (ep=120, lr=5e-5) timed out at ep 105/120 with loss=0.00001 \u2014 model converged but val pass didn't complete. Hypothesis: ep=100 fits walltime + lets val pass run; extrapolating from iter-8 (50/0.466) \u2192 iter-9 (80/0.471) \u2192 iter-10 (105/~0.475 estimated), ep=100 should land hr just above 0 if SSIM crosses 0.473."
+  }
+}

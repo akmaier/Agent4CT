@@ -1,0 +1,33 @@
+{
+  "ts": "2026-06-07T13:18:02Z",
+  "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260603-01",
+  "iter": 5,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv_iterative-claude-agentic: tv_iterations=1600, tv_n_iter=1600, tv_lambda=0.01, tv_step=0.5, tv_outer_wall_s=1500, val_n=5, train_n=0, rationale=TV-iter iter-5: iter-4 hr=0.0283 (was 0.0197 at iter-3, 0.0108 at iter-1). Loss 4.15->3.71 from 400->800. Hyp: doubling to 1600 keeps climbing into hr=0.04+. If \u0394hr < 0.005 vs iter-4, plateau.",
+  "val_score": 0.5348966717720032,
+  "headroom": 0.03621530278883611,
+  "val_ssim": 0.5348966717720032,
+  "val_psnr": 12.907527923583984,
+  "val_rmse": 0.011313412338495255,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "tv_iterative-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "tv_iterative-claude-agentic: tv_iterations=1600, tv_n_iter=1600, tv_lambda=0.01, tv_step=0.5, tv_outer_wall_s=1500, val_n=5, train_n=0, rationale=TV-iter iter-5: iter-4 hr=0.0283 (was 0.0197 at iter-3, 0.0108 at iter-1). Loss 4.15->3.71 from 400->800. Hyp: doubling to 1600 keeps climbing into hr=0.04+. If \u0394hr < 0.005 vs iter-4, plateau.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0005/comparison.png",
+  "elapsed_s": 455.2131609916687,
+  "cfg_full": {
+    "tv_iterations": 1600,
+    "tv_n_iter": 1600,
+    "tv_lambda": 0.01,
+    "tv_step": 0.5,
+    "tv_outer_wall_s": 1500,
+    "val_n": 5,
+    "train_n": 0,
+    "rationale": "TV-iter iter-5: iter-4 hr=0.0283 (was 0.0197 at iter-3, 0.0108 at iter-1). Loss 4.15->3.71 from 400->800. Hyp: doubling to 1600 keeps climbing into hr=0.04+. If \u0394hr < 0.005 vs iter-4, plateau."
+  }
+}

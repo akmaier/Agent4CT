@@ -1,0 +1,33 @@
+{
+  "ts": "2026-06-11T06:20:23Z",
+  "run_id": "mayo-ldct-claude-agentic-wu-nontrain-phase4-search-20260610-01",
+  "iter": 5,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "wu_2015-claude-agentic: wu_n_bands=6, wu_n_outer=2, wu_motion_range=3, wu_motion_window=2, wu_soft_thresh=0.0015, train_n=50, val_n=5, rationale=iter-5: KNOB=wu_motion_range: 5\u21923. iter-2 winner (n_bands=6, soft=1.5e-3, motion_range=5) SSIM 0.358; iter-4 (soft=3e-3) regressed slightly to 0.349. Revert to iter-2 winner BUT narrow motion search from \u00b15 to \u00b13 pixels \u2014 Mayo's helical-rebin reflects mild residual motion; smaller range may resolve sub-pixel structure better, beating the 0.358 ceiling.",
+  "val_score": 0.35456207394599915,
+  "headroom": 0.0,
+  "val_ssim": 0.35456207394599915,
+  "val_psnr": 12.35301399230957,
+  "val_rmse": 0.012059221975505352,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "wu_2015-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "wu_2015-claude-agentic: wu_n_bands=6, wu_n_outer=2, wu_motion_range=3, wu_motion_window=2, wu_soft_thresh=0.0015, train_n=50, val_n=5, rationale=iter-5: KNOB=wu_motion_range: 5\u21923. iter-2 winner (n_bands=6, soft=1.5e-3, motion_range=5) SSIM 0.358; iter-4 (soft=3e-3) regressed slightly to 0.349. Revert to iter-2 winner BUT narrow motion search from \u00b15 to \u00b13 pixels \u2014 Mayo's helical-rebin reflects mild residual motion; smaller range may resolve sub-pixel structure better, beating the 0.358 ceiling.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-wu-nontrain-phase4-search-20260610-01/iterations/iter-0005/comparison.png",
+  "elapsed_s": 6.959294319152832,
+  "cfg_full": {
+    "wu_n_bands": 6,
+    "wu_n_outer": 2,
+    "wu_motion_range": 3,
+    "wu_motion_window": 2,
+    "wu_soft_thresh": 0.0015,
+    "train_n": 50,
+    "val_n": 5,
+    "rationale": "iter-5: KNOB=wu_motion_range: 5\u21923. iter-2 winner (n_bands=6, soft=1.5e-3, motion_range=5) SSIM 0.358; iter-4 (soft=3e-3) regressed slightly to 0.349. Revert to iter-2 winner BUT narrow motion search from \u00b15 to \u00b13 pixels \u2014 Mayo's helical-rebin reflects mild residual motion; smaller range may resolve sub-pixel structure better, beating the 0.358 ceiling."
+  }
+}

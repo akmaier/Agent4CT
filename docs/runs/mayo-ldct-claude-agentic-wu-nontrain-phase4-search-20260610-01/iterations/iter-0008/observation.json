@@ -1,0 +1,33 @@
+{
+  "ts": "2026-06-11T07:11:27Z",
+  "run_id": "mayo-ldct-claude-agentic-wu-nontrain-phase4-search-20260610-01",
+  "iter": 8,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "wu_2015-claude-agentic: wu_n_bands=6, wu_n_outer=2, wu_motion_range=5, wu_motion_window=3, wu_soft_thresh=0.0007, train_n=50, val_n=5, rationale=iter-8: KNOB=wu_motion_window: 2\u21923. iter-2 winner (n_bands=6, soft=1.5e-3) SSIM 0.358. Tried window=1 (iter-4), n_outer=3 (iter-6) \u2014 no gain. Hypothesis: wider motion window (3 vs 2) at SOFTER soft (7e-4) \u2014 averages over more residual-motion samples per pixel, may stabilize the closed-form estimate enough to cross the 0.358 ceiling.",
+  "val_score": 0.3443623483181,
+  "headroom": 0.0,
+  "val_ssim": 0.3443623483181,
+  "val_psnr": 12.415715217590332,
+  "val_rmse": 0.011972484178841114,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "wu_2015-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "wu_2015-claude-agentic: wu_n_bands=6, wu_n_outer=2, wu_motion_range=5, wu_motion_window=3, wu_soft_thresh=0.0007, train_n=50, val_n=5, rationale=iter-8: KNOB=wu_motion_window: 2\u21923. iter-2 winner (n_bands=6, soft=1.5e-3) SSIM 0.358. Tried window=1 (iter-4), n_outer=3 (iter-6) \u2014 no gain. Hypothesis: wider motion window (3 vs 2) at SOFTER soft (7e-4) \u2014 averages over more residual-motion samples per pixel, may stabilize the closed-form estimate enough to cross the 0.358 ceiling.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-wu-nontrain-phase4-search-20260610-01/iterations/iter-0008/comparison.png",
+  "elapsed_s": 6.9674060344696045,
+  "cfg_full": {
+    "wu_n_bands": 6,
+    "wu_n_outer": 2,
+    "wu_motion_range": 5,
+    "wu_motion_window": 3,
+    "wu_soft_thresh": 0.0007,
+    "train_n": 50,
+    "val_n": 5,
+    "rationale": "iter-8: KNOB=wu_motion_window: 2\u21923. iter-2 winner (n_bands=6, soft=1.5e-3) SSIM 0.358. Tried window=1 (iter-4), n_outer=3 (iter-6) \u2014 no gain. Hypothesis: wider motion window (3 vs 2) at SOFTER soft (7e-4) \u2014 averages over more residual-motion samples per pixel, may stabilize the closed-form estimate enough to cross the 0.358 ceiling."
+  }
+}

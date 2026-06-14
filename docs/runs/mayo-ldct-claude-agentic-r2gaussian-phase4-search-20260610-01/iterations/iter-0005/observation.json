@@ -1,0 +1,32 @@
+{
+  "ts": "2026-06-11T07:08:11Z",
+  "run_id": "mayo-ldct-claude-agentic-r2gaussian-phase4-search-20260610-01",
+  "iter": 5,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "r2gaussian-claude-agentic: gs_n_iter=2500, gs_n_gaussians=256, gs_outer_wall_s=1500, gs_lr_pos=0.003, train_n=2, val_n=2, rationale=iter-5: KNOB=gs_n_iter: 1500\u21922500. Trajectory iter-1\u21924 at 256g: 0.0219 (500i) \u2192 0.0134 (1500i). iter-4 didn't beat iter-1 \u2014 more iters at same density should still help if convergence is slow. Hypothesis: 2500 iters lets each Gaussian's position/scale fully relax \u2014 push past iter-1 ceiling.",
+  "val_score": 0.5328434705734253,
+  "headroom": 0.00710192648086283,
+  "val_ssim": 0.5328434705734253,
+  "val_psnr": 13.796960830688477,
+  "val_rmse": 0.010212261229753494,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.001536,
+  "train_n": 400,
+  "val_n": 2,
+  "agent": "r2gaussian-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "r2gaussian-claude-agentic: gs_n_iter=2500, gs_n_gaussians=256, gs_outer_wall_s=1500, gs_lr_pos=0.003, train_n=2, val_n=2, rationale=iter-5: KNOB=gs_n_iter: 1500\u21922500. Trajectory iter-1\u21924 at 256g: 0.0219 (500i) \u2192 0.0134 (1500i). iter-4 didn't beat iter-1 \u2014 more iters at same density should still help if convergence is slow. Hypothesis: 2500 iters lets each Gaussian's position/scale fully relax \u2014 push past iter-1 ceiling.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-r2gaussian-phase4-search-20260610-01/iterations/iter-0005/comparison.png",
+  "elapsed_s": 1224.0773479938507,
+  "cfg_full": {
+    "gs_n_iter": 2500,
+    "gs_n_gaussians": 256,
+    "gs_outer_wall_s": 1500,
+    "gs_lr_pos": 0.003,
+    "train_n": 2,
+    "val_n": 2,
+    "rationale": "iter-5: KNOB=gs_n_iter: 1500\u21922500. Trajectory iter-1\u21924 at 256g: 0.0219 (500i) \u2192 0.0134 (1500i). iter-4 didn't beat iter-1 \u2014 more iters at same density should still help if convergence is slow. Hypothesis: 2500 iters lets each Gaussian's position/scale fully relax \u2014 push past iter-1 ceiling."
+  }
+}

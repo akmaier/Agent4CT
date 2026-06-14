@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.298537	0	discard	architecture	tv_iterative_supervised-claude-agentic-breast-ct	claude-opus-4.7-1m	tv_iterative_supervised-claude-agentic: epochs=3, lr=0.0005, batch_size=1, K=10, step_init=0.0001, lambda_init=1e-05, val_n=5, train_n=50, rationale=TV-iterative supervised iter-1 on Mayo (first attempt). 20 trainable scalars over 10 unrolled GD iters. Breast-CT had hr=0 (FBP init makes 1st GD step a no-op); test if Mayo's noisier baseline gives the K=10 iters something to fix.

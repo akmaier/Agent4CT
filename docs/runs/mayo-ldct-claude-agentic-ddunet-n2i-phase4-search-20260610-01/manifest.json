@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-ddunet-n2i-phase4-search-20260610-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-claude-agentic-ddunet-n2i-phase4-search",
+  "started": "2026-06-10T18:30:43Z",
+  "agent": "dual_domain-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

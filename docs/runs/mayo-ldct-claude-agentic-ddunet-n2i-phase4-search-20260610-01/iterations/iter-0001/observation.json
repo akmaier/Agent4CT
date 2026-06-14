@@ -1,0 +1,32 @@
+{
+  "ts": "2026-06-10T18:31:34Z",
+  "run_id": "mayo-ldct-claude-agentic-ddunet-n2i-phase4-search-20260610-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual_domain-claude-agentic: epochs=5, lr=0.00019, batch_size=1, unet_c=16, train_n=50, val_n=5, rationale=iter-1 phase-4 retry: demo-DL TPE winner (ep=5, lr=1.9e-4, c=16, hr=0.3811). Hypothesis: N2I supervision floor was hit too fast at Step-2's lr=5e-4 + ep=3; lower lr + slightly more epochs may let it climb.",
+  "val_score": 0.4621334671974182,
+  "headroom": 0.0,
+  "val_ssim": 0.4621334671974182,
+  "val_psnr": 12.509756088256836,
+  "val_rmse": 0.01184355840086937,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.465762,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "dual_domain-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "dual_domain-claude-agentic: epochs=5, lr=0.00019, batch_size=1, unet_c=16, train_n=50, val_n=5, rationale=iter-1 phase-4 retry: demo-DL TPE winner (ep=5, lr=1.9e-4, c=16, hr=0.3811). Hypothesis: N2I supervision floor was hit too fast at Step-2's lr=5e-4 + ep=3; lower lr + slightly more epochs may let it climb.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-ddunet-n2i-phase4-search-20260610-01/iterations/iter-0001/comparison.png",
+  "elapsed_s": 51.05365347862244,
+  "cfg_full": {
+    "epochs": 5,
+    "lr": 0.00019,
+    "batch_size": 1,
+    "unet_c": 16,
+    "train_n": 50,
+    "val_n": 5,
+    "rationale": "iter-1 phase-4 retry: demo-DL TPE winner (ep=5, lr=1.9e-4, c=16, hr=0.3811). Hypothesis: N2I supervision floor was hit too fast at Step-2's lr=5e-4 + ep=3; lower lr + slightly more epochs may let it climb."
+  }
+}

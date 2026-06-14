@@ -1,0 +1,33 @@
+{
+  "ts": "2026-06-07T12:12:56Z",
+  "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260603-01",
+  "iter": 3,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv_iterative-claude-agentic: tv_iterations=400, tv_n_iter=400, tv_lambda=0.01, tv_step=0.5, tv_outer_wall_s=1500, val_n=5, train_n=0, rationale=TV-iter iter-3: iter-2 had a silent config-merge bug \u2014 the solver reads tv_iterations (default 200), not tv_n_iter (the agentic-cfg key). Set BOTH keys to 400 so the override actually lands. Hyp from iter-2 stands: if iter-1 (200 actual iters, hr=0.0108) is undercooked, doubling to 400 ACTUAL iters lifts hr into the 0.015-0.025 range. If hr < 0.012, TV plateaued at iter-1.",
+  "val_score": 0.5214316248893738,
+  "headroom": 0.019749848998111497,
+  "val_ssim": 0.5214316248893738,
+  "val_psnr": 12.760390281677246,
+  "val_rmse": 0.011506692506372929,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "tv_iterative-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "tv_iterative-claude-agentic: tv_iterations=400, tv_n_iter=400, tv_lambda=0.01, tv_step=0.5, tv_outer_wall_s=1500, val_n=5, train_n=0, rationale=TV-iter iter-3: iter-2 had a silent config-merge bug \u2014 the solver reads tv_iterations (default 200), not tv_n_iter (the agentic-cfg key). Set BOTH keys to 400 so the override actually lands. Hyp from iter-2 stands: if iter-1 (200 actual iters, hr=0.0108) is undercooked, doubling to 400 ACTUAL iters lifts hr into the 0.015-0.025 range. If hr < 0.012, TV plateaued at iter-1.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0003/comparison.png",
+  "elapsed_s": 88.01547884941101,
+  "cfg_full": {
+    "tv_iterations": 400,
+    "tv_n_iter": 400,
+    "tv_lambda": 0.01,
+    "tv_step": 0.5,
+    "tv_outer_wall_s": 1500,
+    "val_n": 5,
+    "train_n": 0,
+    "rationale": "TV-iter iter-3: iter-2 had a silent config-merge bug \u2014 the solver reads tv_iterations (default 200), not tv_n_iter (the agentic-cfg key). Set BOTH keys to 400 so the override actually lands. Hyp from iter-2 stands: if iter-1 (200 actual iters, hr=0.0108) is undercooked, doubling to 400 ACTUAL iters lifts hr into the 0.015-0.025 range. If hr < 0.012, TV plateaued at iter-1."
+  }
+}
