@@ -62,7 +62,11 @@ def best_row(slug_dir: Path):
             it, ss, hr = int(c[0]), float(c[2]), float(c[3])
         except (ValueError, IndexError):
             continue
-        if best is None or (hr, ss) > (best[1], best[2]):
+        # Select the best iter by SSIM (stable), not hr: the in-solver LD-FBP
+        # baseline carries tiny GPU-atomic backprojection noise, so hr can flip
+        # a lower-SSIM iter above a higher one. SSIM is the primary metric and
+        # gives the same cross-solver order (all share the val baseline).
+        if best is None or (ss, hr) > (best[2], best[1]):
             best = (it, hr, ss)
     return best
 
@@ -94,7 +98,7 @@ def main() -> int:
         res = f"../runs/{d.name}/results.tsv"
         rows.append((hr, ss, name, var, params, res, img))
 
-    rows.sort(key=lambda r: (-r[0], -r[1]))
+    rows.sort(key=lambda r: (-r[1], -r[0]))   # by SSIM (r[1]), hr tiebreak
     out = ["| Rank | Solver | Best iter | SSIM | hr | params | Source | Comparison |",
            "|---:|---|---|---:|---:|---:|---|---|"]
     for i, (hr, ss, name, var, params, res, img) in enumerate(rows, 1):
