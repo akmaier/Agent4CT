@@ -12,6 +12,7 @@ from __future__ import annotations
 import json, math, os, sys
 from pathlib import Path
 import h5py, numpy as np, torch
+import hdf5plugin  # noqa: F401 — registers the LZ4 filter for the canonical h5s
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 
 os.environ.setdefault("AGENT4CT_DATASET", "mayo_ldct_2d")
