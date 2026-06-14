@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.95015	0.0492686	keep	architecture	dual_domain_bilateral_supervised-claude-agentic-breast-ct	claude-opus-4.7-1m	dual_domain_bilateral_supervised-claude-agentic: lr=0.005, epochs=8, batch_size=1, val_chunk=1, train_n=200, val_n=20, grad_clip=1.0, seed=42, rationale=iter-1 feasibility: DD-BF (CONFIG default BF stack) lr=5e-3 + grad-clip + per-sample pipe.R_full, train_n=200 stratified. Hypothesis: bilateral stack trains stably; expect modest SSIM (weak family, demo_dl hr 0.263).

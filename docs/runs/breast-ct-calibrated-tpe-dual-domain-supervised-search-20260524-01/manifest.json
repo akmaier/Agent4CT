@@ -1,0 +1,21 @@
+{
+  "slug": "breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-dual-domain-supervised-search",
+  "started": "2026-05-24T17:38:26Z",
+  "agent": "dual-domain-supervised-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "done",
+  "notes": "breast-CT TPE search for dual_domain_supervised, seeded with agentic winner",
+  "finished": "2026-05-24T19:44:13Z",
+  "sampler": "tpe",
+  "best_params": {
+    "unet_c": 24,
+    "epochs": 18,
+    "lr": 0.00021362804373762617,
+    "batch_size": 1,
+    "lambda_neg": 0.5786860273454117,
+    "val_n": 20
+  },
+  "best_headroom": 0.8360687488626952
+}

@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-lpd-search",
+  "started": "2026-05-24T06:53:02Z",
+  "agent": "lpd-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "running",
+  "notes": "LPD TPE search on breast-CT, seeded with claude-agentic iter-3 winner (I=10/hidden=64/lr=5e-4/ep=20/cosine, hr=0.83)"
+}

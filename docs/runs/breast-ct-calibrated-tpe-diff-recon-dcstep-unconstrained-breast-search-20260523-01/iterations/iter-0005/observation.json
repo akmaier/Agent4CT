@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-23T19:13:38Z",
+  "run_id": "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01",
+  "iter": 5,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "diff-recon-dcstep-unconstrained-breast-search-tpe-calibrated-breast-ct: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_breast_unconstrained_final.pt, recon_mode=dps, recon_sample_steps=800, recon_eta=24.952, recon_init=noise, recon_eta_clamp=False, recon_dcstep_every=5, recon_dcstep_n_cg=25, recon_dcstep_warmup=40, recon_dcstep_relax=0.85",
+  "val_score": 0.3037545084953308,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.958051,
+  "train_n": 3600,
+  "agent": "diff-recon-dcstep-unconstrained-breast-search-tpe-calibrated-breast-ct",
+  "model": "random-search",
+  "advice_for_others": "diff-recon-dcstep-unconstrained-breast-search-tpe-calibrated-breast-ct: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_breast_unconstrained_final.pt, recon_mode=dps, recon_sample_steps=800, recon_eta=24.952, recon_init=noise, recon_eta_clamp=False, recon_dcstep_every=5, recon_dcstep_n_cg=25, recon_dcstep_warmup=40, recon_dcstep_relax=0.85 -> hr=0.0000",
+  "comparison_image": "runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01/iterations/iter-0005/comparison.png"
+}

@@ -81,4 +81,28 @@ and per-slice SSIM-vs-z curves are in
 
 ## Solver leaderboard
 
-_Empty — the rebuild has not added any solver yet._
+> **Rebuild in progress (2026-06-14).** Agentic autoresearch loop (Step 2 of
+> [`solver_plan.md`](../../solver_plan.md)) on the corrected per-sample path:
+> training-NaN grad-clip fix (`metrics.clip_and_step`) + per-sample `ps_eff`
+> reconstruction + `bg_target="truth"` calibration. Numbers are the **agentic
+> search metric** — calibrated full-image SSIM on a `val_n=20` stratified L277
+> subset, `train_n=200` stratified across the 4 train patients. The headroom
+> `hr` is the solver-internal `(SSIM − LD_FBP)/(oracle − LD_FBP)` on that
+> subset (in-solver LD-FBP baseline ≈ 0.918 on these 20 slices). The per-solver
+> winner will be re-evaluated on **all 214 val slices** for the final row.
+> Driving toward the iter-20 hard stop per solver; **updated every wave.**
+
+Best agentic iter so far (newest wave: iter-1 feasibility — all trained stably,
+0 nonfinite-grad skips, confirming the NaN fix):
+
+| Rank | Solver | Best iter | SSIM | hr | params | Source | Comparison |
+|---:|---|---|---:|---:|---:|---|---|
+| 1 | **DD-UNet supervised L2** | iter-1 (c=16, ep=8, lr=1e-4) | **0.9584** | **0.4025** | 0.466 M | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/results.tsv) | [![DD-UNet](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 2 | **ITNet v3** | iter-1 (k=3, c=16) | 0.9501 | 0.3439 | 3.70 M | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/results.tsv) | [![ITNet v3](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 3 | **DD-BF supervised L2** | iter-1 (6 params) | 0.9501 | 0.0493 | 6 | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/results.tsv) | [![DD-BF](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 4 | Learned Primal-Dual | iter-1 (I=3, hidden=48) | 0.7922 | 0.0000 | 0.155 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![LPD](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0001/comparison.png) |
+
+**iter-2 in flight** (one-knob hypotheses): DD-UNet `c→24`, ITNet `k→4`,
+DD-BF `lr→1e-2`, LPD `I→6` (I=3 under-refines below baseline). Solvers still to
+onboard (per-sample ps wiring pending): Hammernik-2017/VN, ItNet v1/v2, Wu-2015,
+the two N2I variants, diffusion-recon (DPS), NAF, R²-Gaussian, RAM.

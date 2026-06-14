@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-24T18:05:37Z",
+  "run_id": "breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01",
+  "iter": 4,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual-domain-bilateral-supervised-search-tpe-calibrated-breast-ct: proj_n_bf=3, img_n_bf=3, proj_kernel=3, img_kernel=11, proj_sx=0.0093529, proj_sy=0.38828, proj_sr=0.00056215, img_sx=0.35484, img_sr=0.013655, epochs=14, lr=0.0084069",
+  "val_score": 0.9888876080513,
+  "headroom": 0.2501759054697287,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0,
+  "train_n": 400,
+  "agent": "dual-domain-bilateral-supervised-search-tpe-calibrated-breast-ct",
+  "model": "random-search",
+  "advice_for_others": "dual-domain-bilateral-supervised-search-tpe-calibrated-breast-ct: proj_n_bf=3, img_n_bf=3, proj_kernel=3, img_kernel=11, proj_sx=0.0093529, proj_sy=0.38828, proj_sr=0.00056215, img_sx=0.35484, img_sr=0.013655, epochs=14, lr=0.0084069 -> hr=0.2502",
+  "comparison_image": "runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/iterations/iter-0004/comparison.png"
+}

@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.792232	0	discard	architecture	learned_primal_dual-claude-agentic-breast-ct	claude-opus-4.7-1m	learned_primal_dual-claude-agentic: lpd_iters=3, lpd_hidden=48, lr=0.0001, epochs=8, batch_size=1, val_chunk=1, train_n=200, val_n=20, grad_clip=1.0, seed=42, rationale=iter-1 feasibility: LPD I=3 hidden=48 lr=1e-4 + grad-clip+skip + per-sample model.R swap, train_n=200 stratified. Seeded from breast champion (hr 0.9062). Hypothesis: unrolled PD trains stably on Mayo and clears baseline.

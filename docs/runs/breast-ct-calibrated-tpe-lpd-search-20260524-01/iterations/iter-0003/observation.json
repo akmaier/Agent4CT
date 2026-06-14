@@ -1,0 +1,18 @@
+{
+  "ts": "2026-05-24T08:24:31Z",
+  "run_id": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
+  "iter": 3,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "lpd-search-tpe-calibrated-breast-ct: lpd_iters=10, lpd_hidden=64, lpd_n_primal=5, lpd_n_dual=5, lpd_share_weights=False, epochs=17, lr=0.00022821, lr_schedule=cosine, batch_size=1, grad_clip=0.3, lambda_neg=1, loss_base=mse, val_n=20, val_chunk=4",
+  "val_score": 0.9952178001403809,
+  "headroom": 0.6761759572830601,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.87498,
+  "train_n": 400,
+  "agent": "lpd-search-tpe-calibrated-breast-ct",
+  "model": "random-search",
+  "advice_for_others": "lpd-search-tpe-calibrated-breast-ct: lpd_iters=10, lpd_hidden=64, lpd_n_primal=5, lpd_n_dual=5, lpd_share_weights=False, epochs=17, lr=0.00022821, lr_schedule=cosine, batch_size=1, grad_clip=0.3, lambda_neg=1, loss_base=mse, val_n=20, val_chunk=4 -> hr=0.6762",
+  "comparison_image": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0003/comparison.png"
+}

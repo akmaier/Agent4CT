@@ -1,0 +1,12 @@
+{
+  "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search",
+  "started": "2026-05-23T17:46:20Z",
+  "agent": "diff-recon-dcstep-unconstrained-breast-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "done",
+  "notes": "Breast-DDPM diff-recon dcstep TPE (unconstrained) on breast-CT; uses the breast-trained checkpoint instead of the demo one the earlier TPE runs mistakenly used.",
+  "finished": "2026-05-23T22:48:04Z",
+  "sampler": "tpe"
+}

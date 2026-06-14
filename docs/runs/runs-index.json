@@ -1,11 +1,23 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-22T05:26:25Z",
+  "updated": "2026-06-14T21:09:08Z",
   "runs": [
+    {
+      "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
+      "short_id": "20260523-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-23T17:46:20Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.470216,
+      "best_headroom": 0.0,
+      "agent": "diff-recon-dcstep-constrained-breast-search-tpe-calibrated-breast-ct",
+      "model": "optuna-tpe-breast-ct"
+    },
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T13:20:47Z",
       "status": "done",
       "n_iterations": 20,
@@ -15,9 +27,21 @@
       "model": "optuna-tpe-breast-ct"
     },
     {
+      "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01",
+      "short_id": "20260523-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-23T17:46:20Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.462571,
+      "best_headroom": 0.0,
+      "agent": "diff-recon-dcstep-unconstrained-breast-search-tpe-calibrated-breast-ct",
+      "model": "optuna-tpe-breast-ct"
+    },
+    {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T13:20:44Z",
       "status": "done",
       "n_iterations": 20,
@@ -29,7 +53,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-dual-domain-bf-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T04:40:44Z",
       "status": "done",
       "n_iterations": 20,
@@ -41,7 +65,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-dual-domain-bf-v2-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T19:27:14Z",
       "status": "done",
       "n_iterations": 20,
@@ -51,9 +75,21 @@
       "model": "optuna-tpe-breast-ct"
     },
     {
+      "slug": "breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01",
+      "short_id": "20260524-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-24T17:40:07Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.989776,
+      "best_headroom": 0.263395,
+      "agent": "dual-domain-bilateral-supervised-search-tpe-calibrated-breast-ct",
+      "model": "optuna-tpe-breast-ct"
+    },
+    {
       "slug": "breast-ct-calibrated-tpe-dual-domain-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T04:03:55Z",
       "status": "done",
       "n_iterations": 20,
@@ -63,9 +99,21 @@
       "model": "optuna-tpe-breast-ct"
     },
     {
+      "slug": "breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01",
+      "short_id": "20260524-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-24T17:38:26Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.998874,
+      "best_headroom": 0.836069,
+      "agent": "dual-domain-supervised-search-tpe-calibrated-breast-ct",
+      "model": "optuna-tpe-breast-ct"
+    },
+    {
       "slug": "breast-ct-calibrated-tpe-dual-domain-v2-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T18:54:46Z",
       "status": "done",
       "n_iterations": 20,
@@ -77,7 +125,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-hammernik-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T03:14:50Z",
       "status": "done",
       "n_iterations": 18,
@@ -89,7 +137,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T03:05:27Z",
       "status": "done",
       "n_iterations": 20,
@@ -101,7 +149,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-itnet-v2-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T03:49:50Z",
       "status": "done",
       "n_iterations": 20,
@@ -113,7 +161,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-itnet-v3-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T01:14:17Z",
       "status": "done",
       "n_iterations": 20,
@@ -123,9 +171,21 @@
       "model": "optuna-tpe-breast-ct"
     },
     {
+      "slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
+      "short_id": "20260524-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-24T06:53:02Z",
+      "status": "running",
+      "n_iterations": 17,
+      "best_score": 0.999577,
+      "best_headroom": 0.906241,
+      "agent": "lpd-search-tpe-calibrated-breast-ct",
+      "model": "optuna-tpe-breast-ct"
+    },
+    {
       "slug": "breast-ct-calibrated-tpe-naf-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T13:20:47Z",
       "status": "done",
       "n_iterations": 20,
@@ -137,7 +197,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-r2gaussian-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T18:32:22Z",
       "status": "done",
       "n_iterations": 12,
@@ -149,7 +209,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-ram-zeroshot-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T13:20:47Z",
       "status": "done",
       "n_iterations": 20,
@@ -161,7 +221,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-ram-zeroshot-search-20260522-01",
       "short_id": "20260522-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-22T04:51:33Z",
       "status": "done",
       "n_iterations": 20,
@@ -173,7 +233,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-ram-zeroshot-v2-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T19:52:44Z",
       "status": "done",
       "n_iterations": 20,
@@ -185,7 +245,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-tv-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T04:53:03Z",
       "status": "done",
       "n_iterations": 20,
@@ -197,7 +257,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-tv-v2-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T18:53:44Z",
       "status": "done",
       "n_iterations": 20,
@@ -209,7 +269,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-uswin-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T01:55:30Z",
       "status": "done",
       "n_iterations": 20,
@@ -221,7 +281,7 @@
     {
       "slug": "breast-ct-calibrated-tpe-wu-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T05:49:42Z",
       "status": "done",
       "n_iterations": 20,
@@ -231,9 +291,21 @@
       "model": "optuna-tpe-breast-ct"
     },
     {
+      "slug": "breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01",
+      "short_id": "20260522-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-22T14:05:36Z",
+      "status": "running",
+      "n_iterations": 3,
+      "best_score": 0.989368,
+      "best_headroom": 0.247608,
+      "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
       "slug": "breast-ct-claude-agentic-dual-domain-bf-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-22T05:18:46Z",
       "status": "running",
       "n_iterations": 1,
@@ -245,7 +317,7 @@
     {
       "slug": "breast-ct-claude-agentic-dual-domain-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-22T05:04:14Z",
       "status": "running",
       "n_iterations": 4,
@@ -255,9 +327,33 @@
       "model": "claude-opus-4.7-1m"
     },
     {
+      "slug": "breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01",
+      "short_id": "20260522-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-22T18:34:11Z",
+      "status": "running",
+      "n_iterations": 2,
+      "best_score": 0.998571,
+      "best_headroom": 0.812008,
+      "agent": "dual_domain_supervised-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
+      "slug": "breast-ct-claude-agentic-learned-primal-dual-search-20260522-01",
+      "short_id": "20260522-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-22T21:41:43Z",
+      "status": "running",
+      "n_iterations": 3,
+      "best_score": 0.99876,
+      "best_headroom": 0.828981,
+      "agent": "learned_primal_dual-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
       "slug": "breast-ct-claude-agentic-ram-zeroshot-search-20260521-01",
       "short_id": "20260521-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "breast_ct",
       "started": "2026-05-21T20:12:59Z",
       "status": "running",
       "n_iterations": 5,
@@ -267,9 +363,21 @@
       "model": "claude-opus-4.7-1m"
     },
     {
+      "slug": "breast-ct-claude-agentic-wu-2015-l2-search-20260522-01",
+      "short_id": "20260522-01",
+      "challenge": "breast_ct",
+      "started": "2026-05-22T18:41:05Z",
+      "status": "running",
+      "n_iterations": 10,
+      "best_score": 0.971429,
+      "best_headroom": 0.218884,
+      "agent": "wu_2015_trainable-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
       "slug": "demo-dl-bf-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T13:20:23Z",
       "status": "done",
       "n_iterations": 20,
@@ -281,7 +389,7 @@
     {
       "slug": "demo-dl-ddpm-search-20260517-01",
       "short_id": "20260517-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T06:11:39Z",
       "status": "done",
       "n_iterations": 20,
@@ -293,7 +401,7 @@
     {
       "slug": "demo-dl-diffusion-recon-constrained-search-20260517-01",
       "short_id": "20260517-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T18:53:13Z",
       "status": "done",
       "n_iterations": 20,
@@ -305,7 +413,7 @@
     {
       "slug": "demo-dl-diffusion-recon-constrained-search-20260517-02",
       "short_id": "20260517-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T20:50:47Z",
       "status": "done",
       "n_iterations": 20,
@@ -317,7 +425,7 @@
     {
       "slug": "demo-dl-diffusion-recon-constrained-search-20260517-03",
       "short_id": "20260517-03",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T20:50:47Z",
       "status": "done",
       "n_iterations": 20,
@@ -329,7 +437,7 @@
     {
       "slug": "demo-dl-diffusion-recon-constrained-search-20260518-01",
       "short_id": "20260518-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-18T09:39:52Z",
       "status": "done",
       "n_iterations": 38,
@@ -341,7 +449,7 @@
     {
       "slug": "demo-dl-diffusion-recon-unconstrained-search-20260517-01",
       "short_id": "20260517-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T18:47:02Z",
       "status": "done",
       "n_iterations": 20,
@@ -353,7 +461,7 @@
     {
       "slug": "demo-dl-diffusion-recon-unconstrained-search-20260517-02",
       "short_id": "20260517-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T20:50:47Z",
       "status": "done",
       "n_iterations": 20,
@@ -365,7 +473,7 @@
     {
       "slug": "demo-dl-diffusion-recon-unconstrained-search-20260517-03",
       "short_id": "20260517-03",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T20:50:47Z",
       "status": "done",
       "n_iterations": 20,
@@ -377,7 +485,7 @@
     {
       "slug": "demo-dl-diffusion-recon-unconstrained-search-20260518-01",
       "short_id": "20260518-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-18T09:39:52Z",
       "status": "running",
       "n_iterations": 31,
@@ -389,7 +497,7 @@
     {
       "slug": "demo-dl-diffusion-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T19:56:12Z",
       "status": "done",
       "n_iterations": 20,
@@ -401,7 +509,7 @@
     {
       "slug": "demo-dl-diffusion-search-20260516-02",
       "short_id": "20260516-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T23:36:32Z",
       "status": "done",
       "n_iterations": 20,
@@ -413,7 +521,7 @@
     {
       "slug": "demo-dl-dual_domain-20260515-01",
       "short_id": "20260515-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-15T23:51:25Z",
       "status": "done",
       "n_iterations": 20,
@@ -425,7 +533,7 @@
     {
       "slug": "demo-dl-fair-naf-search-20260517-01",
       "short_id": "20260517-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T09:07:00Z",
       "status": "running",
       "n_iterations": 0,
@@ -437,7 +545,7 @@
     {
       "slug": "demo-dl-fair-uswin-search-20260517-01",
       "short_id": "20260517-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-17T08:12:14Z",
       "status": "done",
       "n_iterations": 20,
@@ -449,7 +557,7 @@
     {
       "slug": "demo-dl-hammernik-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T13:30:01Z",
       "status": "running",
       "n_iterations": 11,
@@ -461,7 +569,7 @@
     {
       "slug": "demo-dl-hammernik-search-20260516-02",
       "short_id": "20260516-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T14:33:21Z",
       "status": "done",
       "n_iterations": 19,
@@ -473,7 +581,7 @@
     {
       "slug": "demo-dl-hammernik-vn-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T17:43:33Z",
       "status": "running",
       "n_iterations": 4,
@@ -485,7 +593,7 @@
     {
       "slug": "demo-dl-hammernik-vn-search-20260516-02",
       "short_id": "20260516-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T20:18:14Z",
       "status": "done",
       "n_iterations": 20,
@@ -497,7 +605,7 @@
     {
       "slug": "demo-dl-itnet-20260515-01",
       "short_id": "20260515-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-15T23:54:15Z",
       "status": "done",
       "n_iterations": 20,
@@ -509,7 +617,7 @@
     {
       "slug": "demo-dl-itnet-v2-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T13:28:16Z",
       "status": "done",
       "n_iterations": 20,
@@ -521,7 +629,7 @@
     {
       "slug": "demo-dl-itnet-v3-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T13:29:58Z",
       "status": "done",
       "n_iterations": 0,
@@ -533,7 +641,7 @@
     {
       "slug": "demo-dl-itnet-v3-search-20260516-02",
       "short_id": "20260516-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T14:33:21Z",
       "status": "done",
       "n_iterations": 18,
@@ -545,7 +653,7 @@
     {
       "slug": "demo-dl-naf-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T18:26:21Z",
       "status": "done",
       "n_iterations": 20,
@@ -557,7 +665,7 @@
     {
       "slug": "demo-dl-naf-search-20260516-02",
       "short_id": "20260516-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T23:18:18Z",
       "status": "running",
       "n_iterations": 0,
@@ -569,7 +677,7 @@
     {
       "slug": "demo-dl-naf-search-20260516-03",
       "short_id": "20260516-03",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T23:36:32Z",
       "status": "running",
       "n_iterations": 16,
@@ -581,7 +689,7 @@
     {
       "slug": "demo-dl-r2gaussian-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T19:21:21Z",
       "status": "running",
       "n_iterations": 18,
@@ -593,7 +701,7 @@
     {
       "slug": "demo-dl-reference-20260515-01",
       "short_id": "20260515-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-15T14:23:32Z",
       "status": "running",
       "n_iterations": 4,
@@ -605,7 +713,7 @@
     {
       "slug": "demo-dl-reference-20260515-02",
       "short_id": "20260515-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-15T17:47:13Z",
       "status": "running",
       "n_iterations": 3,
@@ -617,7 +725,7 @@
     {
       "slug": "demo-dl-sparse-view-20260513-01",
       "short_id": "20260513-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-13T20:30:00Z",
       "status": "demo",
       "n_iterations": 3,
@@ -629,7 +737,7 @@
     {
       "slug": "demo-dl-tv-search-20260515-01",
       "short_id": "20260515-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-15T19:48:33Z",
       "status": "running",
       "n_iterations": 0,
@@ -641,7 +749,7 @@
     {
       "slug": "demo-dl-tv-search-20260515-02",
       "short_id": "20260515-02",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-15T20:20:10Z",
       "status": "running",
       "n_iterations": 20,
@@ -653,7 +761,7 @@
     {
       "slug": "demo-dl-tv-search-20260515-03",
       "short_id": "20260515-03",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-15T20:54:25Z",
       "status": "running",
       "n_iterations": 20,
@@ -665,7 +773,7 @@
     {
       "slug": "demo-dl-uswin-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T18:26:22Z",
       "status": "done",
       "n_iterations": 20,
@@ -677,7 +785,7 @@
     {
       "slug": "demo-dl-wu-search-20260516-01",
       "short_id": "20260516-01",
-      "challenge": "dl_sparse_view",
+      "challenge": "demo_dl",
       "started": "2026-05-16T13:02:44Z",
       "status": "done",
       "n_iterations": 20,
@@ -780,6 +888,18 @@
       "best_score": 0.927355,
       "best_headroom": 0.467614,
       "agent": "itnet-v3-search-tpe-calibrated",
+      "model": "optuna-tpe"
+    },
+    {
+      "slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
+      "short_id": "20260527-01",
+      "challenge": "dl_sparse_view",
+      "started": "2026-05-27T04:07:03Z",
+      "status": "done",
+      "n_iterations": 20,
+      "best_score": 0.961275,
+      "best_headroom": 0.494724,
+      "agent": "lpd-search-tpe-calibrated",
       "model": "optuna-tpe"
     },
     {
@@ -949,6 +1069,54 @@
       "best_headroom": 0.611967,
       "agent": "claude",
       "model": "claude-sonnet-4.5"
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01",
+      "short_id": "20260614-01",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-14T20:50:06Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.95015,
+      "best_headroom": 0.0492686,
+      "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01",
+      "short_id": "20260614-01",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-14T20:50:06Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.958359,
+      "best_headroom": 0.40252,
+      "agent": "dual_domain_supervised-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-itnet-v3-search-20260614-01",
+      "short_id": "20260614-01",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-14T20:50:06Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.950119,
+      "best_headroom": 0.343909,
+      "agent": "itnet_v3-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01",
+      "short_id": "20260614-01",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-14T20:50:06Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.792232,
+      "best_headroom": 0.0,
+      "agent": "learned_primal_dual-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
     }
   ]
 }
