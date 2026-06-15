@@ -220,7 +220,7 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
     split = "val" if (seed % 100_000) >= 1000 else "train"
     return load_val_split(kind, split, n, device=device,
                           seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
-                          geom=geom)
+                          geom=geom, return_ps=True)
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
@@ -251,16 +251,24 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"],
     )
 
-    train_ph, train_clean, train_noisy = build_dataset(
+    train_ph, train_clean, train_noisy, train_ps = build_dataset(
         geom, cfg["train_n"], cfg["seed"],
         cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    val_ph, val_clean, val_noisy = build_dataset(
+    val_ph, val_clean, val_noisy, val_ps = build_dataset(
         geom, cfg["val_n"], cfg["seed"] + 1000,
         cfg["noise_i0"], cfg["noise_sigma_e"], device)
 
+    # PER-SAMPLE geometry (Mayo canonical): swap model.projector per slice +
+    # build the per-ps FBP init/baseline (falls back to single proj non-mayo).
+    from ddssl_ldct.staged_dataset import (mayo_per_sample_setup,
+                                           mayo_per_sample_fbp)
+    per_ps, _projs, _trk, _vrk = mayo_per_sample_setup(train_ps, val_ps, cfg, device)
     proj = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
-        if cfg["vn_init"] == "fbp":
+        if per_ps and cfg["vn_init"] == "fbp":
+            train_u0 = mayo_per_sample_fbp(_projs, _trk, train_noisy, cfg["image_size"])
+            val_u0   = mayo_per_sample_fbp(_projs, _vrk, val_noisy, cfg["image_size"])
+        elif cfg["vn_init"] == "fbp":
             train_u0 = torch.clamp(proj.fbp(train_noisy), min=0.0)
             val_u0   = torch.clamp(proj.fbp(val_noisy),   min=0.0)
         elif cfg["vn_init"] == "backproj":
@@ -299,6 +307,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         n_batches = 0
         for i in range(0, cfg["train_n"], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
+            if per_ps:
+                model.projector = _projs[float(_trk[int(idx[0])])]
             u0 = train_u0[idx]
             sino = train_noisy[idx]
             truth = train_ph[idx]
@@ -313,8 +323,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         lambdas = [float(s.lam.detach().cpu()) for s in model.steps]
         print(f"[train] epoch {ep+1}/{cfg['epochs']}  loss={avg_loss:.6g}  "
               f"λ_t={[f'{l:.3g}' for l in lambdas]}", flush=True)
-        if time.time() - train_start > 480:        # 8-min wall
-            print(f"[train] 8-min wall reached at epoch {ep+1}", flush=True)
+        if time.time() - train_start > cfg.get("max_train_s", 1800):
+            print(f"[train] wall ({cfg.get('max_train_s', 1800)}s) reached at epoch {ep+1}", flush=True)
             break
     train_time = time.time() - train_start
 
@@ -323,13 +333,18 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     with torch.no_grad():
         chunk = max(1, cfg["batch_size"])
         for i in range(0, val_u0.shape[0], chunk):
+            if per_ps:
+                model.projector = _projs[float(_vrk[i])]
             preds.append(model(val_u0[i:i + chunk], val_noisy[i:i + chunk]))
     pred = torch.cat(preds, dim=0)
 
     # baseline = the FBP starting point (regardless of vn_init choice — use FBP
     # for fair comparison against the rest of the demo_dl_reference table)
     with torch.no_grad():
-        val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
+        if per_ps:
+            val_fbp = mayo_per_sample_fbp(_projs, _vrk, val_noisy, cfg["image_size"])
+        else:
+            val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
 
     # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
     # negative outliers in the raw pred would otherwise pull the bg mean
