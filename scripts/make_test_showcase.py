@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+"""Diverse TEST-set showcase figures for the Mayo leaderboard.
+
+For each leaderboard solver, re-run its BEST agentic config with
+``AGENT4CT_SHOWCASE=1`` so the figure montage shows **one central slice from
+each of the 5 held-out Wagner test patients** (L014/L056/L058/L075/L123) instead
+of 4 adjacent slices of the single val patient L277. The model still TRAINS on
+the train patients — only the 5 figure slices come from test, so the agentic
+SEARCH metric (val L277) is never tuned on test; these figures are
+presentation-only. Writes ``docs/runs/<search-slug>/test_showcase.png``
+co-located with each search run (so the existing pinned rsync + publish picks it
+up; no extra dashboard run dirs).
+
+Driver mode (no ``SOLVER`` env): iterate all leaderboard solvers, one subprocess
+per solver (fresh CUDA context each). Worker mode (``SOLVER`` + ``SEARCH_SLUG``
+env): run exactly one solver.
+
+  # one job loops every solver:
+  python scripts/make_test_showcase.py
+"""
+from __future__ import annotations
+import importlib.util
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+RUNS = REPO / "docs" / "runs"
+RUNID = "search-20260614-01"   # pinned rebuild run-id (never widen)
+
+# Leaderboard solver keys (dash = key.replace("_", "-")). Trainers only — the
+# inference/per-image solvers (NAF/R2G/RAM/diffusion) are not on the board yet.
+KEYS = [
+    "uswin", "itnet_v3", "itnet", "itnet_v2", "dual_domain_supervised",
+    "dual_domain_bilateral_supervised", "learned_primal_dual",
+    "hammernik_2017", "hammernik_vn", "wu_2015_trainable",
+]
+
+
+def best_iter_cfg(slug: str):
+    """Best iter (max SSIM) for a search run + its cfg_full from observation.json."""
+    tsv = RUNS / slug / "results.tsv"
+    if not tsv.exists():
+        return None
+    best = None
+    for ln in tsv.read_text().splitlines()[1:]:
+        c = ln.split("\t")
+        try:
+            it, ss = int(c[0]), float(c[2])
+        except (ValueError, IndexError):
+            continue
+        if best is None or ss > best[1]:
+            best = (it, ss)
+    if not best:
+        return None
+    it = best[0]
+    obs = RUNS / slug / "iterations" / f"iter-{it:04d}" / "observation.json"
+    if not obs.exists():
+        return None
+    return it, (json.loads(obs.read_text()).get("cfg_full") or {})
+
+
+def run_worker(solver: str, slug: str) -> None:
+    from scripts.claude_agentic_one_iter import SOLVER_MAP
+    if solver not in SOLVER_MAP:
+        print(f"[skip] {solver}: not in SOLVER_MAP", flush=True)
+        return
+    bc = best_iter_cfg(slug)
+    if not bc:
+        print(f"[skip] {solver}: no best cfg in {slug}", flush=True)
+        return
+    it, cfg = bc
+    os.environ.update(AGENT4CT_DATASET="mayo_ldct_2d",
+                      AGENT4CT_SHOWCASE="1", AGENT4CT_FIG_NSHOW="5")
+    solver_file, _ = SOLVER_MAP[solver]
+    spec = importlib.util.spec_from_file_location("scs_" + solver, REPO / solver_file)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    tmp = Path(tempfile.mkdtemp(prefix=f"showcase_{solver}_"))
+    try:
+        res = mod.main(tmp, cfg)
+        src = tmp / "comparison.png"
+        if src.exists():
+            dst = RUNS / slug / "test_showcase.png"
+            shutil.copy(src, dst)
+            ss = res.get("val_ssim", float("nan")) if isinstance(res, dict) else float("nan")
+            print(f"[ok] {solver}: best iter-{it}  test5 SSIM={ss:.4f}  -> "
+                  f"{dst.relative_to(REPO)}", flush=True)
+        else:
+            print(f"[nofig] {solver}: main() wrote no comparison.png", flush=True)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def main() -> int:
+    solver = os.environ.get("SOLVER")
+    if solver:  # worker
+        run_worker(solver, os.environ["SEARCH_SLUG"])
+        return 0
+    # driver: one subprocess per solver so a crash/OOM in one doesn't abort the
+    # rest and CUDA state is fresh each time.
+    for k in KEYS:
+        slug = f"mayo-ldct-claude-agentic-{k.replace('_', '-')}-{RUNID}"
+        if not (RUNS / slug).exists():
+            print(f"[skip] {k}: no run dir {slug}", flush=True)
+            continue
+        print(f"=== showcase {k} ===", flush=True)
+        env = {**os.environ, "SOLVER": k, "SEARCH_SLUG": slug}
+        subprocess.run([sys.executable, __file__], env=env)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

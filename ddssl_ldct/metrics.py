@@ -304,6 +304,11 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import numpy as np
+    import os
+
+    # Allow the test-showcase runner to widen the montage (e.g. 5 rows = one
+    # per held-out test patient) without per-solver edits.
+    n_show = int(os.environ.get("AGENT4CT_FIG_NSHOW", n_show))
 
     def _arr(t, i):
         x = t[i]

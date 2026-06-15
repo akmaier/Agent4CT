@@ -382,6 +382,22 @@ def load_val_split(kind: str, split: str, n: int, *, device,
     assert info.staged_dir is not None, f"{kind!r} has no staged_dir"
     truth_path = info.staged_dir / info.truth_file_tmpl.format(split=split)
     sino_path  = info.staged_dir / info.sino_file_tmpl .format(split=split)
+    # Presentation-only TEST showcase (AGENT4CT_SHOWCASE): replace the Mayo val
+    # load (single patient L277) with one CENTRAL slice from each of the 5
+    # held-out TEST patients, for diverse leaderboard figures. Only the val
+    # call is redirected (split=="train" untouched) -> the model still TRAINS on
+    # the train patients; these slices are reconstructed only for the figure.
+    # Indices are the per-patient central slice in Wagner test order; boundaries
+    # verified vs ps transitions (247/457) + counts (L014 154, L056 93, L058 210,
+    # L075 137, L123 151 = 745).
+    import os as _os
+    _sel_override = None
+    if _os.environ.get("AGENT4CT_SHOWCASE") and kind == "mayo_ldct_2d" and split == "val":
+        truth_path = info.staged_dir / info.truth_file_tmpl.format(split="test")
+        sino_path  = info.staged_dir / info.sino_file_tmpl .format(split="test")
+        _sel_override = [77, 200, 352, 525, 668]   # central slice / test patient
+        print(f"[staged] SHOWCASE: 5 central TEST slices {_sel_override} "
+              f"(L014 L056 L058 L075 L123) in place of val", flush=True)
     if not truth_path.exists():
         raise FileNotFoundError(f"{kind} {split} truth missing: {truth_path}")
     if not sino_path.exists():
@@ -395,8 +411,8 @@ def load_val_split(kind: str, split: str, n: int, *, device,
         # Round-robin across ps-groups (≈ per-patient display-FOV) so the subset
         # spans patients -> better generalisation to the held-out val patient.
         # Full-set (TPE: n_eff==n_truth) and single-ps val fall through to first-n.
-        sel = slice(0, n_eff)
-        if kind == "mayo_ldct_2d" and "ps" in f and 0 < n_eff < n_truth:
+        sel = _sel_override if _sel_override is not None else slice(0, n_eff)
+        if _sel_override is None and kind == "mayo_ldct_2d" and "ps" in f and 0 < n_eff < n_truth:
             allps = np.round(np.asarray(f["ps"][:], dtype=float), 5)
             groups: dict = {}
             for i, p in enumerate(allps):

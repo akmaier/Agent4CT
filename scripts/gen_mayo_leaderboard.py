@@ -94,7 +94,12 @@ def main() -> int:
             v = variant(o.get("cfg_full") or {})
             if v:
                 var = f"iter-{it} ({v})"
-        img = f"../runs/{d.name}/iterations/iter-{it:04d}/comparison.png"
+        # Prefer the diverse TEST-set showcase montage (one central slice per
+        # held-out test patient, made by scripts/make_test_showcase.py) over the
+        # val (L277) comparison.png when it has been generated.
+        showcase = d / "test_showcase.png"
+        img = (f"../runs/{d.name}/test_showcase.png" if showcase.exists()
+               else f"../runs/{d.name}/iterations/iter-{it:04d}/comparison.png")
         res = f"../runs/{d.name}/results.tsv"
         rows.append((hr, ss, name, var, params, res, img))
 
