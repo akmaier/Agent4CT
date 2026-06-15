@@ -103,18 +103,27 @@ the NaN fix):
 | 1 | **U-Swin** | iter-8 (epochs=36, lr=0.0005, uswin_c=24) | 0.9689 | 0.4381 | 3.954 M | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/results.tsv) | [![U-Swin](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0008/comparison.png)](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0008/comparison.png) |
 | 2 | ITNet v3 | iter-10 (epochs=20, itnet_k=3, lr=0.0002, unet_c=24) | 0.9657 | 0.4258 | 8.318 M | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/results.tsv) | [![ITNet v3](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0010/comparison.png)](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0010/comparison.png) |
 | 3 | DD-UNet supervised L2 | iter-7 (epochs=8, lr=0.0002, unet_c=24) | 0.9626 | 0.4296 | 1.045 M | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/results.tsv) | [![DD-UNet supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0007/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0007/comparison.png) |
-| 4 | DD-BF supervised L2 | iter-1 (epochs=8, lr=0.005) | 0.9502 | 0.0493 |  | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/results.tsv) | [![DD-BF supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
-| 5 | Hammernik VN (2017) | iter-9 (epochs=30, lr=0.0005) | 0.9433 | 0.2882 | 0.018 M | [results](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/results.tsv) | [![Hammernik VN (2017)](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0009/comparison.png)](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0009/comparison.png) |
-| 6 | Learned Primal-Dual | iter-9 (epochs=8, lpd_hidden=48, lpd_iters=3, lr=0.002) | 0.9358 | 0.0000 | 0.155 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![Learned Primal-Dual](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0009/comparison.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0009/comparison.png) |
-| 7 | Hammernik VN (MRI port) | iter-1 (epochs=8, lr=0.0005, vn_init=fbp) | 0.9091 | 0.1217 | 0.018 M | [results](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/results.tsv) | [![Hammernik VN (MRI port)](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 4 | ITNet v1 | iter-2 (itnet_k=1, pretrain_epochs=8, pretrain_lr=0.0002, unet_c=24) | 0.9536 | 0.3558 | 0.523 M | [results](../runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/results.tsv) | [![ITNet v1](../runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/iterations/iter-0002/comparison.png)](../runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/iterations/iter-0002/comparison.png) |
+| 5 | ITNet v2 | iter-3 (itnet_k=1, pretrain_epochs=8, pretrain_lr=0.0002, pretrain_patience=5, residual_learning=False, unet_c=24) | 0.9532 | 0.3367 | 0.523 M | [results](../runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/results.tsv) | [![ITNet v2](../runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0003/comparison.png)](../runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0003/comparison.png) |
+| 6 | DD-BF supervised L2 | iter-1 (epochs=8, lr=0.005) | 0.9502 | 0.0493 |  | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/results.tsv) | [![DD-BF supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 7 | Hammernik VN (2017) | iter-10 (epochs=38, lr=0.0005) | 0.9484 | 0.3203 | 0.018 M | [results](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/results.tsv) | [![Hammernik VN (2017)](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0010/comparison.png)](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0010/comparison.png) |
+| 8 | Learned Primal-Dual | iter-9 (epochs=8, lpd_hidden=48, lpd_iters=3, lr=0.002) | 0.9358 | 0.0000 | 0.155 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![Learned Primal-Dual](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0009/comparison.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0009/comparison.png) |
+| 9 | Hammernik VN (MRI port) | iter-1 (epochs=8, lr=0.0005, vn_init=fbp) | 0.9091 | 0.1217 | 0.018 M | [results](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/results.tsv) | [![Hammernik VN (MRI port)](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 10 | Wu 2015 trainable | iter-1 (epochs=8, lr=0.01) | 0.7412 | 0.0000 |  | [results](../runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/results.tsv) | [![Wu 2015 trainable](../runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/iterations/iter-0001/comparison.png) |
 <!-- AGENTIC_TABLE_END -->
 
-**In flight**: **USwin overtook ITNet as champion (0.9659** at epochs=20) →
-`epochs→28`. Hammernik-2017 `epochs→28` (0.9273, hr 0.21, climbing). Hammernik-VN
-just onboarded clean (iter-1 0.9091, hr 0.12 — per-sample wiring works; lr=5e-4
-start beat Hammernik-2017's lr=1e-4 iter-1) → `epochs→14`. Recurring agentic
-insight: **epochs is the dominant lever** for the image-domain denoisers (USwin,
-both Hammerniks) once lr is right; capacity/lr saturate early. PARKED (best on
-leaderboard, resume on request): ITNet v3 0.9657, DD-UNet 0.9626, DD-BF 0.9502,
-LPD 0.9358. Onboarding next into the free slot: ItNet v1, then ItNet v2, Wu-2015,
-the two N2I variants; NAF/R²-Gaussian/RAM/diffusion (inference/per-image) later.
+**In flight** (2026-06-15): three more trainers **onboarded** to the
+per-sample-`ps` path (clean — no NaN). **ItNet v1** is the headline: iter-1
+0.8287 (hr 0) → **iter-2 0.9536 (hr 0.356)** by cutting `itnet_k` 3→1. The LD
+sinogram is noisy, so data-consistency steps *re-inject* that noise — one DC
+step beats three. iter-3 (`pretrain_epochs→24`) in flight. **ItNet v2** is
+climbing out of an iter-1 collapse-to-zero (0.359 → 0.561 by turning off
+residual-learning; iter-3 `k→1`). **Wu-2015-trainable** onboarded (iter-1
+0.741, over-smoothed; iter-2 `lr→3e-2`). **Hammernik-2017** still climbing on
+epochs (iter-10 0.9484 / hr 0.32; iter-11 `epochs→50`). Recurring agentic
+insight: **fewer/weaker data-consistency steps win on noisy LDCT** (DC toward a
+noisy sino re-adds noise — opposite of the sparse-view regime), and **epochs is
+the dominant lever** for image-domain denoisers. PARKED (resume on request):
+**USwin 0.9689 champion**, ITNet v3 0.9657, DD-UNet 0.9626, DD-BF 0.9502, LPD
+0.9358, Hammernik-VN 0.9091. Next: the two N2I (self-supervised) variants;
+NAF/R²-Gaussian/RAM/diffusion (inference/per-image) last.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-15T04:44:29Z",
+  "updated": "2026-06-15T05:44:50Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1100,9 +1100,9 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T23:43:47Z",
       "status": "running",
-      "n_iterations": 9,
-      "best_score": 0.943292,
-      "best_headroom": 0.288233,
+      "n_iterations": 10,
+      "best_score": 0.94837,
+      "best_headroom": 0.320264,
       "agent": "hammernik_2017-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m"
     },
@@ -1116,6 +1116,30 @@
       "best_score": 0.909083,
       "best_headroom": 0.121703,
       "agent": "hammernik_vn-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-itnet-search-20260614-01",
+      "short_id": "20260614-01",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-15T05:18:12Z",
+      "status": "running",
+      "n_iterations": 2,
+      "best_score": 0.953571,
+      "best_headroom": 0.35584,
+      "agent": "itnet-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260614-01",
+      "short_id": "20260614-01",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-15T05:18:15Z",
+      "status": "running",
+      "n_iterations": 3,
+      "best_score": 0.953234,
+      "best_headroom": 0.336744,
+      "agent": "itnet_v2-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m"
     },
     {
@@ -1152,6 +1176,18 @@
       "best_score": 0.968895,
       "best_headroom": 0.438844,
       "agent": "uswin-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01",
+      "short_id": "20260614-01",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-15T05:20:03Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.741238,
+      "best_headroom": 0.0,
+      "agent": "wu_2015_trainable-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m"
     }
   ]
