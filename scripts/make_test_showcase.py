@@ -109,6 +109,9 @@ def main() -> int:
         if not (RUNS / slug).exists():
             print(f"[skip] {k}: no run dir {slug}", flush=True)
             continue
+        if (RUNS / slug / "test_showcase.png").exists() and not os.environ.get("SHOWCASE_FORCE"):
+            print(f"[skip] {k}: test_showcase.png exists (SHOWCASE_FORCE=1 to regen)", flush=True)
+            continue
         print(f"=== showcase {k} ===", flush=True)
         env = {**os.environ, "SOLVER": k, "SEARCH_SLUG": slug}
         subprocess.run([sys.executable, __file__], env=env)
