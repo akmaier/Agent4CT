@@ -1,0 +1,27 @@
+{
+  "ts": "2026-06-15T13:03:31Z",
+  "run_id": "mayo-ldct-claude-agentic-naf-search-20260614-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "naf-claude-agentic: val_n=20, rationale=iter-1 baseline: NAF per-scene implicit field (CONFIG defaults, 600s outer wall, val_n=20); feasibility vs LD-FBP headroom",
+  "val_score": 0.8636783361434937,
+  "headroom": 0.0,
+  "val_ssim": 0.8636783361434937,
+  "val_psnr": 30.111236572265625,
+  "val_rmse": 0.0015610192203894258,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.119617,
+  "train_n": 400,
+  "val_n": 15,
+  "agent": "naf-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "naf-claude-agentic: val_n=20, rationale=iter-1 baseline: NAF per-scene implicit field (CONFIG defaults, 600s outer wall, val_n=20); feasibility vs LD-FBP headroom",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0001/comparison.png",
+  "elapsed_s": 2455.781748533249,
+  "cfg_full": {
+    "val_n": 20,
+    "rationale": "iter-1 baseline: NAF per-scene implicit field (CONFIG defaults, 600s outer wall, val_n=20); feasibility vs LD-FBP headroom"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "ts": "2026-06-15T14:40:31Z",
+  "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260614-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv_iterative-claude-agentic: val_n=20, seed=42, rationale=iter-2 (toward 20): tv_lambda 0.001->0.0003 (iter-1 0.9497 hr0, default TV over-smooths < FBP; less reg preserves detail), tv_lambda=0.0003",
+  "val_score": 0.9318835139274597,
+  "headroom": 0.0,
+  "val_ssim": 0.9318835139274597,
+  "val_psnr": 34.076866149902344,
+  "val_rmse": 0.0009888417553156614,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 20,
+  "agent": "tv_iterative-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "tv_iterative-claude-agentic: val_n=20, seed=42, rationale=iter-2 (toward 20): tv_lambda 0.001->0.0003 (iter-1 0.9497 hr0, default TV over-smooths < FBP; less reg preserves detail), tv_lambda=0.0003",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0002/comparison.png",
+  "elapsed_s": 148.49415278434753,
+  "cfg_full": {
+    "val_n": 20,
+    "seed": 42,
+    "rationale": "iter-2 (toward 20): tv_lambda 0.001->0.0003 (iter-1 0.9497 hr0, default TV over-smooths < FBP; less reg preserves detail)",
+    "tv_lambda": 0.0003
+  }
+}

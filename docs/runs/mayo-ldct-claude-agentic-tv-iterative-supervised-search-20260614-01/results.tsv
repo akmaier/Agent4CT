@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.359006	0	discard	architecture	tv_iterative_supervised-claude-agentic-breast-ct	claude-opus-4.7-1m	tv_iterative_supervised-claude-agentic: val_n=20, rationale=iter-1 baseline: Unrolled-TV-L2 (K=10, 20 learnable scalars) w/ per-sample-ps train+val; feasibility vs LD-FBP

@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-tv-iterative-search-20260614-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-claude-agentic-tv-iterative-search",
+  "started": "2026-06-15T11:32:53Z",
+  "agent": "tv_iterative-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}
