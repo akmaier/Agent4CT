@@ -238,6 +238,17 @@ class TrainableWu2015(nn.Module):
         return g.clamp_min(0.0)
 
 
+def build_dataset(geom, n, seed, i0, sigma_e, device):  # noqa: F811
+    """Local override of the shared loader: return per-sample ps (4-tuple)."""
+    from ddssl_ldct.staged_dataset import load_val_split
+    import os
+    kind = os.environ.get("AGENT4CT_DATASET", "phantoms")
+    split = "val" if (seed % 100_000) >= 1000 else "train"
+    return load_val_split(kind, split, n, device=device,
+                          seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
+                          geom=geom, return_ps=True)
+
+
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
     import os
     env_path = os.environ.get("WU_CONFIG_PATH")
@@ -264,15 +275,29 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"],
     )
 
-    train_ph, train_clean, train_noisy = build_dataset(
+    train_ph, train_clean, train_noisy, train_ps = build_dataset(
         geom, cfg["train_n"], cfg["seed"], cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    val_ph, val_clean, val_noisy = build_dataset(
+    val_ph, val_clean, val_noisy, val_ps = build_dataset(
         geom, cfg["val_n"], cfg["seed"] + 1000,
         cfg["noise_i0"], cfg["noise_sigma_e"], device)
 
+    from ddssl_ldct.staged_dataset import (mayo_per_sample_setup,
+                                           mayo_per_sample_fbp)
+    per_ps, _projs, _trk, _vrk = mayo_per_sample_setup(train_ps, val_ps, cfg, device)
+    # Wu's residual path uses a 2x-dense projector. Build one per distinct ps
+    # (lazy, cached), keyed identically to _projs, so model.dense_proj can be
+    # swapped per slice alongside model.proj.
+    _dense = {}
+    def _dense_for(k):
+        if k not in _dense:
+            _dense[k] = _build_dense_projector(_projs[k].geom, factor=2, device=device)
+        return _dense[k]
     proj = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
-        fbp_init = torch.clamp(proj.fbp(val_noisy), min=0.0)
+        if per_ps:
+            fbp_init = mayo_per_sample_fbp(_projs, _vrk, val_noisy, cfg["image_size"])
+        else:
+            fbp_init = torch.clamp(proj.fbp(val_noisy), min=0.0)
 
     model = TrainableWu2015(geom, cfg, device=device).to(device)
     params_total = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -293,6 +318,10 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         n_seen = 0
         for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
             idx = perm[i:i + cfg["batch_size"]]
+            if per_ps:
+                k = float(_trk[int(idx[0])])
+                model.proj = _projs[k]
+                model.dense_proj = _dense_for(k)
             sino = train_noisy[idx].to(device)
             truth = train_ph[idx].to(device)
             pred = model(sino)
@@ -322,9 +351,13 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
 
     model.eval()
     with torch.no_grad():
-        chunk = cfg.get("val_chunk", 4)  # Wu is memory-heavy (dense projector)
+        chunk = 1 if per_ps else cfg.get("val_chunk", 4)  # Wu memory-heavy (dense proj)
         preds = []
         for i in range(0, val_noisy.shape[0], chunk):
+            if per_ps:
+                k = float(_vrk[i])
+                model.proj = _projs[k]
+                model.dense_proj = _dense_for(k)
             preds.append(model(val_noisy[i:i + chunk]))
         pred = torch.cat(preds, dim=0)
 

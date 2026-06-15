@@ -58,7 +58,7 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
     split = "val" if (seed % 100_000) >= 1000 else "train"
     return load_val_split(kind, split, n, device=device,
                           seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
-                          geom=geom)
+                          geom=geom, return_ps=True)
 
 
 class ItNetV2(nn.Module):
@@ -103,7 +103,7 @@ class ItNetV2(nn.Module):
         return x
 
 
-def pretrain_denoiser(denoiser, fbp_images, truth_images, epochs, lr, patience, device):
+def pretrain_denoiser(denoiser, fbp_images, truth_images, epochs, lr, patience, device, grad_clip=0.0):
     """Pre-train U-Net on (FBP, truth) pairs with early stopping."""
     denoiser.to(device)
     opt = torch.optim.Adam(denoiser.parameters(), lr=lr)
@@ -123,7 +123,7 @@ def pretrain_denoiser(denoiser, fbp_images, truth_images, epochs, lr, patience, 
             loss = supervised_recon_loss(pred, truth, lambda_neg=1.0)
             opt.zero_grad()
             loss.backward()
-            clip_and_step(opt, loss, cfg.get("grad_clip", 0.0))
+            clip_and_step(opt, loss, grad_clip)
             running += float(loss.detach().cpu())
         
         avg_loss = running / n
@@ -172,17 +172,24 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     )
 
     # Build datasets
-    train_ph, train_clean, train_noisy = build_dataset(
+    train_ph, train_clean, train_noisy, train_ps = build_dataset(
         geom, cfg["train_n"], cfg["seed"], cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    val_ph, val_clean, val_noisy = build_dataset(
+    val_ph, val_clean, val_noisy, val_ps = build_dataset(
         geom, cfg["val_n"], cfg["seed"] + 1000, cfg["noise_i0"], cfg["noise_sigma_e"], device)
 
-    # Compute FBPs
+    # Compute FBPs (per-sample ps for Mayo: swap itnet.projector at eval too)
+    from ddssl_ldct.staged_dataset import (mayo_per_sample_setup,
+                                           mayo_per_sample_fbp)
+    per_ps, _projs, _trk, _vrk = mayo_per_sample_setup(train_ps, val_ps, cfg, device)
     proj = PyronnFanBeamProjector(geom).to(device)
     with torch.no_grad():
-        train_fbp = torch.clamp(proj.fbp(train_noisy), min=0.0)
-        val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
-        val_ref = proj.fbp(val_clean)  # noiseless reference
+        if per_ps:
+            train_fbp = mayo_per_sample_fbp(_projs, _trk, train_noisy, cfg["image_size"])
+            val_fbp = mayo_per_sample_fbp(_projs, _vrk, val_noisy, cfg["image_size"])
+        else:
+            train_fbp = torch.clamp(proj.fbp(train_noisy), min=0.0)
+            val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
+        val_ref = proj.fbp(val_clean)  # noiseless reference (panel only)
 
     t0 = time.time()
 
@@ -201,6 +208,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         lr=cfg["pretrain_lr"],
         patience=cfg["pretrain_patience"],
         device=device,
+        grad_clip=cfg.get("grad_clip", 0.0),
     )
 
     # 2. Build ItNet v2
@@ -214,9 +222,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # 3. Evaluate on validation
     itnet.eval()
     with torch.no_grad():
-        chunk = 10
+        chunk = 1 if per_ps else 10
         preds = []
         for i in range(0, val_noisy.shape[0], chunk):
+            if per_ps:
+                itnet.projector = _projs[float(_vrk[i])]
             preds.append(itnet(val_fbp[i:i+chunk], val_noisy[i:i+chunk]))
         pred = torch.cat(preds, dim=0)
 
