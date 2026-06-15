@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.909083	0.121703	keep	architecture	hammernik_vn-claude-agentic-breast-ct	claude-opus-4.7-1m	hammernik_vn-claude-agentic: lr=0.0005, epochs=8, batch_size=1, val_chunk=1, train_n=200, val_n=20, grad_clip=1.0, vn_init=fbp, seed=42, rationale=iter-1 feasibility: Hammernik-VN (per-sample model.projector swap + per-ps FBP init) + grad-clip + clip_and_step, train_n=200 stratified, lr=5e-4 (VN under-trains at 1e-4 per hammernik_2017). Hyp: trains stably (no NaN) + clears baseline.

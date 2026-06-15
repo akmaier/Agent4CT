@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-15T01:32:59Z",
+  "updated": "2026-06-15T02:04:37Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1100,10 +1100,22 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T23:43:47Z",
       "status": "running",
-      "n_iterations": 4,
-      "best_score": 0.91013,
-      "best_headroom": 0.136029,
+      "n_iterations": 5,
+      "best_score": 0.927325,
+      "best_headroom": 0.214576,
       "agent": "hammernik_2017-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m"
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01",
+      "short_id": "20260614-01",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-15T01:35:15Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.909083,
+      "best_headroom": 0.121703,
+      "agent": "hammernik_vn-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m"
     },
     {
@@ -1136,9 +1148,9 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T23:13:13Z",
       "status": "running",
-      "n_iterations": 5,
-      "best_score": 0.959505,
-      "best_headroom": 0.393465,
+      "n_iterations": 6,
+      "best_score": 0.965885,
+      "best_headroom": 0.430644,
       "agent": "uswin-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m"
     }
