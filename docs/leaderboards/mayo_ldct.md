@@ -113,16 +113,16 @@ the NaN fix):
 | 3 | U-Swin | iter-10 (epochs=48, lr=0.0005, uswin_c=24) | 0.9709 | 0.4515 | 3.954 M | [results](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/results.tsv) | [![U-Swin](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/test_showcase.png) |
 | 4 | ITNet v3 | iter-10 (epochs=20, itnet_k=3, lr=0.0002, unet_c=24) | 0.9657 | 0.4258 | 8.318 M | [results](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/results.tsv) | [![ITNet v3](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/test_showcase.png) |
 | 5 | DD-UNet supervised L2 | iter-7 (epochs=8, lr=0.0002, unet_c=24) | 0.9626 | 0.4296 | 1.045 M | [results](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/results.tsv) | [![DD-UNet supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/test_showcase.png) |
-| 6 | DD-BF supervised L2 | iter-1 (epochs=8, lr=0.005) | 0.9502 | 0.0493 |  | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/results.tsv) | [![DD-BF supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/test_showcase.png) |
-| 7 | tv-iterative | iter-1 | 0.9497 | 0.0000 | 0 | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/results.tsv) | [![tv-iterative](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0001/comparison.png) |
-| 8 | Hammernik VN (2017) | iter-10 (epochs=38, lr=0.0005) | 0.9484 | 0.3203 | 0.018 M | [results](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/results.tsv) | [![Hammernik VN (2017)](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/test_showcase.png) |
-| 9 | Learned Primal-Dual | iter-5 (epochs=30, lpd_hidden=48, lpd_iters=4, lr=0.0003) | 0.9445 | 0.2089 | 0.207 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![Learned Primal-Dual](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/test_showcase.png) |
+| 6 | Learned Primal-Dual | iter-8 (epochs=30, lpd_hidden=48, lpd_iters=7, lr=0.0003) | 0.9591 | 0.3428 | 0.363 M | [results](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/results.tsv) | [![Learned Primal-Dual](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/test_showcase.png) |
+| 7 | tv-iterative | iter-6 (tv_clip_max=0.08) | 0.9528 | 0.1953 | 0 | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/results.tsv) | [![tv-iterative](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0006/comparison.png)](../runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0006/comparison.png) |
+| 8 | DD-BF supervised L2 | iter-1 (epochs=8, lr=0.005) | 0.9502 | 0.0493 |  | [results](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/results.tsv) | [![DD-BF supervised L2](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/test_showcase.png) |
+| 9 | Hammernik VN (2017) | iter-10 (epochs=38, lr=0.0005) | 0.9484 | 0.3203 | 0.018 M | [results](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/results.tsv) | [![Hammernik VN (2017)](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/test_showcase.png) |
 | 10 | ram | iter-6 (ram_post_fbp_blend=0.3) | 0.9386 | 0.0000 | 35.619 M | [results](../runs/mayo-ldct-claude-agentic-ram-search-20260614-01/results.tsv) | [![ram](../runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0006/comparison.png)](../runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0006/comparison.png) |
 | 11 | Hammernik VN (MRI port) | iter-7 (epochs=24, lr=0.0005, vn_init=fbp) | 0.9158 | 0.1438 | 0.018 M | [results](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/results.tsv) | [![Hammernik VN (MRI port)](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/test_showcase.png) |
 | 12 | Wu 2015 trainable | iter-10 (epochs=24, lr=0.01, wu_motion_range=3, wu_motion_window=3, wu_n_outer=1) | 0.9114 | 0.0508 |  | [results](../runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/results.tsv) | [![Wu 2015 trainable](../runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/test_showcase.png)](../runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/test_showcase.png) |
-| 13 | naf | iter-5 (naf_n_freqs=18, naf_tv_weight=0.001) | 0.8820 | 0.0000 | 0.126 M | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260614-01/results.tsv) | [![naf](../runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0005/comparison.png)](../runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0005/comparison.png) |
-| 14 | r2gaussian | iter-1 | 0.7502 | 0.0000 | 0.006 M | [results](../runs/mayo-ldct-claude-agentic-r2gaussian-search-20260614-01/results.tsv) | [![r2gaussian](../runs/mayo-ldct-claude-agentic-r2gaussian-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-r2gaussian-search-20260614-01/iterations/iter-0001/comparison.png) |
-| 15 | tv-iterative-supervised | iter-1 | 0.3590 | 0.0000 | 20 | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260614-01/results.tsv) | [![tv-iterative-supervised](../runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260614-01/iterations/iter-0001/comparison.png)](../runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260614-01/iterations/iter-0001/comparison.png) |
+| 13 | naf | iter-6 (naf_hidden=256, naf_n_freqs=14, naf_tv_weight=0.001) | 0.8977 | 0.0000 | 0.213 M | [results](../runs/mayo-ldct-claude-agentic-naf-search-20260614-01/results.tsv) | [![naf](../runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0006/comparison.png)](../runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0006/comparison.png) |
+| 14 | r2gaussian | iter-9 (gs_n_iter=6000) | 0.8806 | 0.0000 | 0.006 M | [results](../runs/mayo-ldct-claude-agentic-r2gaussian-search-20260614-01/results.tsv) | [![r2gaussian](../runs/mayo-ldct-claude-agentic-r2gaussian-search-20260614-01/iterations/iter-0009/comparison.png)](../runs/mayo-ldct-claude-agentic-r2gaussian-search-20260614-01/iterations/iter-0009/comparison.png) |
+| 15 | tv-iterative-supervised | iter-4 (tv_step_init=0.0001) | 0.8088 | 0.0000 | 20 | [results](../runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260614-01/results.tsv) | [![tv-iterative-supervised](../runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260614-01/iterations/iter-0004/comparison.png)](../runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260614-01/iterations/iter-0004/comparison.png) |
 <!-- AGENTIC_TABLE_END -->
 
 **Status** (2026-06-15): **champion = ITNet v1, 0.9726** (val_n=20 search metric;
@@ -150,16 +150,21 @@ re-injects noise; opposite of the sparse-view regime). The k=1 win does **not**
 transfer to ItNet v3 (k=3 stays better — architecture-dependent). (2) **epochs
 dominant** once k=1 locked (ItNet v1 plateaus ep104≈ep120). (3) **LPD is
 capacity-limited** on the 24 GB Q6000 — adding unrolled stages climbs steadily
-(`lpd_iters` 3→4→5: 0.9326→**0.9445**↑). (4) **TV / Wu are FBP-bounded**
-(tv-iterative caps 0.9497 at λ=0.001; Wu 0.911).
+(`lpd_iters` 3→7: 0.9326→**0.9591**↑, now #6, above the bilateral/TV baselines).
+(4) **TV-iterative clears LD-FBP once the recon clamp is widened** — `tv_clip_max`
+0.05→0.08 (the 0.05 clamp was cutting off bone >0.05 μ) lifted it
+0.9497 hr0 → **0.9528 hr0.20**; Wu stays FBP-bounded (0.911).
 
-**Inference / per-scene methods are confirmed structural negatives** (all below the
-LD-FBP baseline, headroom 0 — foreign-prior or per-scan-overfit methods can't beat
-FBP on this noisy real-helical data): **RAM** 0.9386 (foundation model; FBP-blend
-peaks at 0.3, test-time finetune *hurts*), **TV-iterative** 0.9497, **NAF** 0.882
-(per-scene field overfits noise), **R²-Gaussian** 0.750 (FBP-warm-start *hurts* on
-noisy LDCT, unlike dense-view). `tv-iterative-supervised` iter-1 (0.359) is a known
-per-sample-projector wiring bug — the fix (single-ps probe) is in flight.
+**Inference / per-scene methods remain structural negatives** (below LD-FBP,
+headroom 0 — foreign-prior or per-scan-overfit methods can't beat FBP on this noisy
+real-helical data): **RAM** 0.9386 (foundation model; FBP-blend peaks at 0.3,
+test-time finetune *hurts*), **NAF** 0.898 (per-scene field; capacity helps then
+collapses past hidden=256), **R²-Gaussian** 0.881 (climbs with optimisation depth —
+`gs_n_iter` 1200→6000: 0.766→0.881 — but **plateaus below FBP**; FBP-warm-start
+*hurts* on noisy LDCT, unlike dense-view). `tv-iterative-supervised` was a
+GD-divergence bug (step=0.01 drove the recon to all-zeros → SSIM 0.359); **fixed**
+via `tv_step_init`=1e-4 (now ~0.80, FBP-bounded by its shallow K=10 unrolling vs
+tv-iterative's 200 iterations).
 
 **Campaign:** agentic autoresearch is driving **all 19 solvers to iter-20**;
 remaining onboards (the two N2I self-supervised variants + DDPM/diffusion-recon) are

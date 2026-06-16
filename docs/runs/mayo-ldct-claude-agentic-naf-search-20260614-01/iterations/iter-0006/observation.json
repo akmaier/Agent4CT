@@ -1,0 +1,30 @@
+{
+  "ts": "2026-06-15T20:25:32Z",
+  "run_id": "mayo-ldct-claude-agentic-naf-search-20260614-01",
+  "iter": 6,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "naf-claude-agentic: val_n=20, rationale=iter-6 (toward 20): naf_hidden 192->256 (n_freqs plateaued 0.882; more MLP capacity for the field), naf_tv_weight=0.001, naf_n_freqs=14, naf_hidden=256",
+  "val_score": 0.8977189064025879,
+  "headroom": 0.0,
+  "val_ssim": 0.8977189064025879,
+  "val_psnr": 31.750547409057617,
+  "val_rmse": 0.0012925362680107355,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.212737,
+  "train_n": 400,
+  "val_n": 13,
+  "agent": "naf-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "naf-claude-agentic: val_n=20, rationale=iter-6 (toward 20): naf_hidden 192->256 (n_freqs plateaued 0.882; more MLP capacity for the field), naf_tv_weight=0.001, naf_n_freqs=14, naf_hidden=256",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0006/comparison.png",
+  "elapsed_s": 2439.247141599655,
+  "cfg_full": {
+    "val_n": 20,
+    "rationale": "iter-6 (toward 20): naf_hidden 192->256 (n_freqs plateaued 0.882; more MLP capacity for the field)",
+    "naf_tv_weight": 0.001,
+    "naf_n_freqs": 14,
+    "naf_hidden": 256
+  }
+}
