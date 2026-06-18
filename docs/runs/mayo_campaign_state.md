@@ -8,6 +8,31 @@ change ONE knob → named hypothesis → dispatch). The "2×hr=0 → STOP" rule 
 with genuine ablations (capacity / data / loss / seed / grad_clip probes that
 document *why* the ceiling holds).
 
+## Data provenance — `staged_canonical` (READ BEFORE touching Mayo data)
+
+The `mayo_ldct_2d` training loader (`ddssl_ldct/staged_dataset.py`) reads
+**`data/mayo_ldct/staged_canonical/`**: `{split}_truth.h5` (dataset key
+`"truth"` + a per-slice `"ps"` array = `ps_eff = 0.700857·native_ps/0.703125`)
+and `{split}_sino_{lowdose,fulldose}.h5` in the **canonical frame**
+(`roll + u-flip + slab`, per patient, so a uniform angle_start=0 FBP lands on
+truth). It is built **only** by **`data/stage_mayo_canonical.py`** from the
+surviving `raw/` (truth) + `staged_helix2fan_v3/` (per-patient v3 sinos):
+```
+python data/stage_mayo_canonical.py --force --validate --subdir staged_helix2fan_v3
+```
+(sbatch wrapper `cluster/slurm/restage_canonical_v3.sbatch`; `--validate` FBPs
+the val split per-sample and prints LD-FBP SSIM, expect **~0.81**). Do **NOT**
+rebuild it with `fetch_mayo_ldct.py` (writes key `"image"`, no `"ps"`, shuffled)
+or `stage_mayo_sinos.py` (older non-canonical packing) — both silently produce
+data the loader mis-reads. Geometry is **v3** (Powell-fitted `mayo_ldct_fitted`:
+sod 595.362 / sdd 1086.803 / det_spacing 1.285044 / ps 0.700857).
+
+**FOV (for figures + metrics):** reconstruct/evaluate within each volume's
+**reconstruction FOV** — the inscribed circle, radius
+`ReconstructionDiameter/2/PixelSpacing` = **256 px** (physical 340–400 mm,
+per-volume voxel size). NOT the 237.5 mm scanner *measurement* FOV (that's a
+larger, different quantity that keeps out-of-recon corners).
+
 ## Dispatch protocol (cluster: `ssh lme-bastion`, `cd /cluster/maier/Agent4CT`)
 - **Helper** (hardened: rm-first so a failed write can't leak a stale cfg, no
   f-string backslashes, post-write assert):

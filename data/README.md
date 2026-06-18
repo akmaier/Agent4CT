@@ -42,6 +42,23 @@ rm -rf data/<challenge>/staged
 python data/fetch_<challenge>.py --skip-download   # uses existing raw/
 ```
 
+> ⚠️ **`mayo_ldct` is the exception — do NOT use `fetch_mayo_ldct.py` to rebuild
+> its solver-facing data.** The training loader (`ddssl_ldct/staged_dataset.py`,
+> `mayo_ldct_2d`) reads **`data/mayo_ldct/staged_canonical/`**, built by the
+> dedicated **`data/stage_mayo_canonical.py`** — truth dataset keyed `"truth"` +
+> a per-slice `"ps"` array (`ps_eff = 0.700857·native_ps/0.703125`),
+> patient-ordered, with sinos in the **canonical frame** (`roll + u-flip + slab`,
+> per patient, so a uniform-angle FBP lands on the truth). `fetch_mayo_ldct.py`
+> writes a truth-only `staged/` keyed `"image"`, **no `"ps"`**, shuffled;
+> `stage_mayo_sinos.py` does the older non-canonical packing. Neither is what the
+> loader consumes. To rebuild `staged_canonical/` from the surviving `raw/`
+> (truth) + `staged_helix2fan_v3/` (per-patient v3 sinos):
+> ```bash
+> python data/stage_mayo_canonical.py --force --validate --subdir staged_helix2fan_v3
+> # --validate FBPs the val split per-sample + prints LD-FBP SSIM (expect ~0.81)
+> ```
+> (cluster sbatch wrapper: `cluster/slurm/restage_canonical_v3.sbatch`.)
+
 Note the iter solvers currently still train on the synthetic phantoms from
 `ddssl_ldct/phantoms.py`. To switch to real data, swap the solver's
 `build_dataset()` call for `StagedTruthDataset + RotatingSubsetDataset`

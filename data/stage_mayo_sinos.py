@@ -1,6 +1,13 @@
 """Aggregate per-patient helix2fan sinos into per-split H5s aligned to the
 existing per-split truth H5s.
 
+⚠️ NOT the builder for the solver-facing `staged_canonical/`. This does the
+OLDER, non-canonical packing (no per-patient angle roll / u-flip). The
+`mayo_ldct_2d` training loader reads `data/mayo_ldct/staged_canonical/`, which
+is built by **`data/stage_mayo_canonical.py`** (canonical-frame sinos +
+per-slice "ps"). To rebuild that dir use stage_mayo_canonical.py — see
+data/README.md "mayo_ldct is the exception".
+
 After the bulk helix2fan rebin (cluster/slurm/rebin_mayo_helix2fan.sbatch)
 finishes, this script:
 

@@ -235,6 +235,13 @@ def stage_h5(raw_per_patient: dict[str, list[Path]], staged_dir: Path, *,
              shuffle_seed: int = 20260516) -> dict:
     """Pack full-dose recon images (in μ mm^-1) into per-split truth HDF5s.
 
+    ⚠️ This writes the truth dataset keyed "image" with NO per-slice "ps",
+    in SHUFFLED order, to `staged/`. The `mayo_ldct_2d` training loader does
+    NOT read this — it reads `staged_canonical/` (truth keyed "truth" +
+    per-slice "ps" + canonical-frame sinos), built by
+    `data/stage_mayo_canonical.py`. Do NOT use fetch_mayo_ldct to rebuild
+    `staged_canonical/`; see data/README.md "mayo_ldct is the exception".
+
     Sinograms are NOT pre-computed — the harness forward-projects each
     truth through its challenge geometry at train time. This keeps the
     staged size small (~1 GB total) and lets the same staged data serve

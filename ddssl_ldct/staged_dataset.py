@@ -315,6 +315,17 @@ GEOMETRIES: dict[str, DatasetInfo] = {
         # load_val_split(..., return_ps=True) returns the per-slice ps and
         # solvers reconstruct per-sample via mayo_proj_cache(). pixel_spacing
         # below is just the default/fallback for the pipeline init.
+        #
+        # ⚠️ REBUILD THIS DIR WITH `data/stage_mayo_canonical.py` ONLY.
+        # It writes the truth dataset keyed "truth" + the per-slice "ps" array
+        # (ps_eff), patient-ordered, with sinos in the CANONICAL frame
+        # (roll + u-flip + slab, per patient) that this uniform-angle loader
+        # expects. Do NOT rebuild with `fetch_mayo_ldct.py` (writes key "image",
+        # NO "ps", shuffled) or `stage_mayo_sinos.py` (legacy non-canonical
+        # packing) — both produce data this loader silently mis-reads. To
+        # re-create from the surviving raw/ + staged_helix2fan_v3/:
+        #   python data/stage_mayo_canonical.py --force --validate --subdir staged_helix2fan_v3
+        # (--validate FBPs val LD vs GT, expect SSIM ~0.81). See data/README.md.
         staged_dir=_DEFAULT_DATA_ROOT / "mayo_ldct" / "staged_canonical",
         sino_file_tmpl="{split}_sino_lowdose.h5",
     ),
