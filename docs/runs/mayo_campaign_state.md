@@ -161,6 +161,14 @@ search-20260614-01 iters.**
   unstable, grad_clip=0.5 no help; val60 honest 0.9638).
 - **itnet_v2 0.9714 ceiling** (iter-19; ep72 optimal, k=1; ep88/seed/lr-0.6×/
   unet_c=32/patience/**train_n=300 all worse** — NOT data-limited unlike v1).
+- **itnet_v2 RESET 2026-06-18** (prior run overfit: val 0.9714 but valtest6 only
+  0.88). The fresh restart re-hit a **CONFIG-DEFAULT BUG**: `residual_learning=True`
+  double-applies the residual — `SmallUNet.forward` already returns `x−body(x)`
+  (identity at init), then v2 re-adds `denoiser(x)` at eval → ≈2x, which the k=3 DC
+  can't recover → stuck ~0.34, and lr changes make it WORSE (broken-target signature,
+  not under-training). **FIX: `residual_learning=False`** (matches the working v1/v3
+  recipe) — confirmed **0.3429→0.5373 @iter-3**. Now under-trained at ep8; raise
+  pretrain_epochs to climb back toward ~0.97. KEEP residual_learning=False.
 - **uswin 0.9709** (iter-14; epochs lever, still the path to 20).
 - **dual_domain_supervised 0.9626** (lambda_neg=0.1 best; capacity/lr/seed flat).
 - **dd-bf (bilateral-sup) capped 0.9502** — every scalar flat (lr/epochs/kernels/
