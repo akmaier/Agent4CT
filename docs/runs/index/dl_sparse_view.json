@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "dl_sparse_view",
  "label": "DL-Sparse-View",
- "updated": "2026-06-18T07:20:41Z",
+ "updated": "2026-06-18T09:29:19Z",
  "runs": [
   {
    "slug": "dl-sparse-view-loss-20260514-01",

@@ -1,12 +1,12 @@
 {
  "schema_version": 2,
- "updated": "2026-06-18T07:20:41Z",
+ "updated": "2026-06-18T09:29:19Z",
  "datasets": [
   {
    "challenge": "demo_dl",
    "label": "Demo-DL",
-   "n_runs": 50,
-   "n_iterations": 854,
+   "n_runs": 36,
+   "n_iterations": 649,
    "champion_slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
    "champion_score": 0.961275,
    "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
@@ -14,8 +14,8 @@
   {
    "challenge": "breast_ct",
    "label": "Breast-CT",
-   "n_runs": 31,
-   "n_iterations": 495,
+   "n_runs": 27,
+   "n_iterations": 434,
    "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
    "champion_score": 0.999577,
    "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"

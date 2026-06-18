@@ -1,5 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-3		-2.25767e-07	0	discard	architecture	hammernik-vn-search	random-search	hammernik-vn-search: epochs=13, lr=0.0003421, batch_size=2, vn_T=7, vn_n_filters=24, vn_kernel=9, vn_lambda_init=0.0094892, vn_init=backproj
-5		0.000566502	0	discard	architecture	hammernik-vn-search	random-search	hammernik-vn-search: epochs=10, lr=0.0002647, batch_size=4, vn_T=5, vn_n_filters=24, vn_kernel=11, vn_lambda_init=0.000469, vn_init=backproj
-8		7.567e-05	0	discard	architecture	hammernik-vn-search	random-search	hammernik-vn-search: epochs=15, lr=0.00018781, batch_size=2, vn_T=7, vn_n_filters=32, vn_kernel=7, vn_lambda_init=0.00011553, vn_init=backproj
-13		2.79252e-06	0	discard	architecture	hammernik-vn-search	random-search	hammernik-vn-search: epochs=15, lr=0.00065981, batch_size=4, vn_T=5, vn_n_filters=24, vn_kernel=7, vn_lambda_init=0.0079774, vn_init=fbp

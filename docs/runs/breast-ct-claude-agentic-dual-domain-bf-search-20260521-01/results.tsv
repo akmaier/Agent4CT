@@ -1,2 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1		0.957252	0	discard	architecture	dual_domain_bilateral-claude-agentic-breast-ct	claude-opus-4.7-1m	dual_domain_bilateral-claude-agentic: epochs=2, lr=0.001, batch_size=1, proj_kernel=3, img_kernel=5, proj_sx=0.05, proj_sy=0.05, proj_sr=0.002, img_sx=0.5, img_sy=0.5, img_sr=0.01, val_n=20

@@ -112,15 +112,19 @@ def summarize_run(run_dir: Path) -> dict:
             run = r["headroom"]
         curve.append([r["iter"], None if run == -math.inf else round(run, 4)])
 
-    # Best iter (max val_score) -> its val comparison.png; + test montage if any.
+    # best_iter = max val_score (the metric). val_image = the highest-val_score
+    # iter that ACTUALLY has a comparison.png — the harness only saved an image
+    # on some iters (new-best / every-N), so the metric-best iter often has none.
     best_iter, val_image, test_image = None, None, None
     if rows:
-        bi = max(rows, key=lambda r: r["val_score"]
-                 if math.isfinite(r["val_score"]) else -math.inf)
-        best_iter = bi["iter"]
-        comp = run_dir / "iterations" / f"iter-{best_iter:04d}" / "comparison.png"
-        if comp.exists():
-            val_image = f"runs/{slug}/iterations/iter-{best_iter:04d}/comparison.png"
+        best_iter = max(rows, key=lambda r: r["val_score"]
+                        if math.isfinite(r["val_score"]) else -math.inf)["iter"]
+        for r in sorted(rows, key=lambda r: r["val_score"]
+                        if math.isfinite(r["val_score"]) else -math.inf, reverse=True):
+            it = r["iter"]
+            if (run_dir / "iterations" / f"iter-{it:04d}" / "comparison.png").exists():
+                val_image = f"runs/{slug}/iterations/iter-{it:04d}/comparison.png"
+                break
     if (run_dir / "test_showcase.png").exists():
         test_image = f"runs/{slug}/test_showcase.png"
 
