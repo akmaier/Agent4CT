@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-18T23:30:50Z",
+ "updated": "2026-06-18T23:43:47Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
@@ -11,7 +11,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T20:38:59Z",
    "status": "running",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_score": 0.946237,
    "best_headroom": 0.0,
    "best_iter": 1,
@@ -37,9 +37,13 @@
     [
      5,
      0.0
+    ],
+    [
+     6,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0005/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0006/comparison.png",
    "test_image": null
   },
   {
@@ -95,7 +99,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T19:15:13Z",
    "status": "running",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_score": 0.964759,
    "best_headroom": 0.378675,
    "best_iter": 6,
@@ -129,9 +133,13 @@
     [
      7,
      0.3787
+    ],
+    [
+     8,
+     0.3787
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0007/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0008/comparison.png",
    "test_image": null
   },
   {
