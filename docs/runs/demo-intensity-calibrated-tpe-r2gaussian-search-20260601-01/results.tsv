@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+2		0.935337	0.289635	keep	architecture	r2gaussian-search-tpe-calibrated	random-search	r2gaussian-search-tpe-calibrated: gs_n_gaussians=512, gs_n_iter=21004, gs_lr_pos=0.0018713, gs_lr_scale=0.02335, gs_lr_amp=0.018997, gs_amp_init=0.0084685, gs_scale_init=0.02656, gs_tv_weight=2.5913e-05

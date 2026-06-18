@@ -1,0 +1,18 @@
+{
+  "ts": "2026-06-09T04:29:17Z",
+  "run_id": "mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v4-search-20260609-01",
+  "iter": 9,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "diff-recon-dcstep-constrained-mayo-v4-search-tpe-calibrated-mayo-ldct-2d: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_constrained_v4.pt, recon_mode=dps, recon_sample_steps=200, recon_eta=3.1154, recon_init=fbp, recon_eta_clamp=True, recon_dcstep_every=3, recon_dcstep_n_cg=10, recon_dcstep_warmup=10, recon_dcstep_relax=0.85, val_n=5, val_chunk=1, train_n=50, batch_size=1",
+  "val_score": 0.5121143460273743,
+  "headroom": 0.14525838202299612,
+  "kept": true,
+  "status": "keep",
+  "params_M": 8.594211,
+  "train_n": 50,
+  "agent": "diff-recon-dcstep-constrained-mayo-v4-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "random-search",
+  "advice_for_others": "diff-recon-dcstep-constrained-mayo-v4-search-tpe-calibrated-mayo-ldct-2d: recon_ckpt=/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_constrained_v4.pt, recon_mode=dps, recon_sample_steps=200, recon_eta=3.1154, recon_init=fbp, recon_eta_clamp=True, recon_dcstep_every=3, recon_dcstep_n_cg=10, recon_dcstep_warmup=10, recon_dcstep_relax=0.85, val_n=5, val_chunk=1, train_n=50, batch_size=1 -> hr=0.1453",
+  "comparison_image": "runs/mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v4-search-20260609-01/iterations/iter-0009/comparison.png"
+}

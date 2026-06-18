@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-v3-search-20260603-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-v3-search",
+  "started": "2026-06-03T12:17:34Z",
+  "agent": "diff-recon-dcstep-constrained-breast-v3-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "running",
+  "notes": "Diff-recon TPE on breast-CT against ddpm_breast_constrained_v3.pt (ch=128/60ep, v2 was still hr=0)"
+}

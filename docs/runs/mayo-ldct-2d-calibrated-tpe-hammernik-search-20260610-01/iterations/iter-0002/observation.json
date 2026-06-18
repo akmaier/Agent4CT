@@ -1,0 +1,18 @@
+{
+  "ts": "2026-06-10T18:28:17Z",
+  "run_id": "mayo-ldct-2d-calibrated-tpe-hammernik-search-20260610-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "hammernik-search-tpe-calibrated-mayo-ldct-2d: epochs=8, lr=0.00021619, batch_size=1, vn_T=5, vn_n_filters=24, vn_kernel=7, vn_lambda_init=0.00025913, val_n=5, val_chunk=1, train_n=50",
+  "val_score": 0.28935685753822327,
+  "headroom": 0.0,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.009605,
+  "train_n": 50,
+  "agent": "hammernik-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "random-search",
+  "advice_for_others": "hammernik-search-tpe-calibrated-mayo-ldct-2d: epochs=8, lr=0.00021619, batch_size=1, vn_T=5, vn_n_filters=24, vn_kernel=7, vn_lambda_init=0.00025913, val_n=5, val_chunk=1, train_n=50 -> hr=0.0000",
+  "comparison_image": "runs/mayo-ldct-2d-calibrated-tpe-hammernik-search-20260610-01/iterations/iter-0002/comparison.png"
+}

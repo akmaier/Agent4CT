@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-tv-iterative-supervised-search-20260610-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-tv-iterative-supervised-search",
+  "started": "2026-06-10T18:25:24Z",
+  "agent": "tv-iterative-supervised-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "running",
+  "notes": "Mayo Step-3 TPE for tv_iterative_supervised (clamped search space + local /tmp storage)"
+}

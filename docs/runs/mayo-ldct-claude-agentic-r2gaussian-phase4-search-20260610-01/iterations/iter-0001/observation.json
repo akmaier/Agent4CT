@@ -1,0 +1,31 @@
+{
+  "ts": "2026-06-10T18:35:15Z",
+  "run_id": "mayo-ldct-claude-agentic-r2gaussian-phase4-search-20260610-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "r2gaussian-claude-agentic: gs_n_iter=500, gs_n_gaussians=256, gs_outer_wall_s=1500, train_n=2, val_n=2, rationale=iter-1 phase-4 retry: minimal \u2014 only 256 Gaussians + 500 iters + train_n=2 to fit within the 30-min sbatch wall. Hypothesis: with sufficiently small budget, the per-scene Gaussian fit may complete and clear baseline; if it times out, iter-2 will shrink to 128 Gaussians + 200 iters.",
+  "val_score": 0.544794499874115,
+  "headroom": 0.02191318104950446,
+  "val_ssim": 0.544794499874115,
+  "val_psnr": 13.927507400512695,
+  "val_rmse": 0.010059922933578491,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.001536,
+  "train_n": 400,
+  "val_n": 2,
+  "agent": "r2gaussian-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "r2gaussian-claude-agentic: gs_n_iter=500, gs_n_gaussians=256, gs_outer_wall_s=1500, train_n=2, val_n=2, rationale=iter-1 phase-4 retry: minimal \u2014 only 256 Gaussians + 500 iters + train_n=2 to fit within the 30-min sbatch wall. Hypothesis: with sufficiently small budget, the per-scene Gaussian fit may complete and clear baseline; if it times out, iter-2 will shrink to 128 Gaussians + 200 iters.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-r2gaussian-phase4-search-20260610-01/iterations/iter-0001/comparison.png",
+  "elapsed_s": 171.11428904533386,
+  "cfg_full": {
+    "gs_n_iter": 500,
+    "gs_n_gaussians": 256,
+    "gs_outer_wall_s": 1500,
+    "train_n": 2,
+    "val_n": 2,
+    "rationale": "iter-1 phase-4 retry: minimal \u2014 only 256 Gaussians + 500 iters + train_n=2 to fit within the 30-min sbatch wall. Hypothesis: with sufficiently small budget, the per-scene Gaussian fit may complete and clear baseline; if it times out, iter-2 will shrink to 128 Gaussians + 200 iters."
+  }
+}

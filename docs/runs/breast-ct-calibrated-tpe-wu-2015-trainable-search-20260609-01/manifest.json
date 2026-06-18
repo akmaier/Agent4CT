@@ -1,0 +1,26 @@
+{
+  "slug": "breast-ct-calibrated-tpe-wu-2015-trainable-search-20260609-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-wu-2015-trainable-search",
+  "started": "2026-06-09T16:57:43Z",
+  "agent": "wu-2015-trainable-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "done",
+  "notes": "breast-CT TPE search for wu_2015_trainable, seeded with agentic winner",
+  "finished": "2026-06-09T18:29:09Z",
+  "sampler": "tpe",
+  "best_params": {
+    "epochs": 13,
+    "lr": 0.0004177028940034296,
+    "batch_size": 1,
+    "wu_n_bands": 6,
+    "wu_n_outer": 2,
+    "wu_motion_range": 5,
+    "wu_motion_window": 2,
+    "wu_soft_thresh": 0.000809358781552334,
+    "loss_base": "mse",
+    "lambda_neg": 0.728835264131027,
+    "val_n": 20
+  },
+  "best_headroom": 0.317019317689503
+}

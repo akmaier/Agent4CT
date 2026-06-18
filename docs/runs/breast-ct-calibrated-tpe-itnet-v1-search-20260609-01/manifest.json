@@ -1,0 +1,22 @@
+{
+  "slug": "breast-ct-calibrated-tpe-itnet-v1-search-20260609-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-itnet-v1-search",
+  "started": "2026-06-09T16:57:43Z",
+  "agent": "itnet-v1-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "done",
+  "notes": "breast-CT TPE search for itnet, seeded with agentic winner",
+  "finished": "2026-06-09T17:22:02Z",
+  "sampler": "tpe",
+  "best_params": {
+    "pretrain_epochs": 5,
+    "pretrain_lr": 0.0010189840244092777,
+    "itnet_k": 8,
+    "itnet_alpha": 0.015054688127065086,
+    "finetune_epochs": 11,
+    "finetune_lr": 0.000513764726076383,
+    "unet_c": 8
+  },
+  "best_headroom": 0.17025158085361058
+}

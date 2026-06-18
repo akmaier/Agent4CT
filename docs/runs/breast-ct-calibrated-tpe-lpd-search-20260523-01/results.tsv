@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.998599	0.820385	keep	architecture	lpd-search-tpe-calibrated-breast-ct	random-search	lpd-search-tpe-calibrated-breast-ct: lpd_iters=10, lpd_hidden=64, lpd_n_primal=5, lpd_n_dual=5, lpd_share_weights=False, epochs=20, lr=0.0005, lr_schedule=cosine, batch_size=1, grad_clip=1, lambda_neg=1, loss_base=mse, val_n=20, val_chunk=4

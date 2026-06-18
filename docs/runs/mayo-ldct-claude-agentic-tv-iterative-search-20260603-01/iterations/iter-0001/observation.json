@@ -1,0 +1,32 @@
+{
+  "ts": "2026-06-07T11:14:55Z",
+  "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260603-01",
+  "iter": 1,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv_iterative-claude-agentic: tv_n_iter=200, tv_lambda=0.01, tv_step=0.5, tv_outer_wall_s=1500, val_n=5, train_n=0, rationale=TV-iter non-trainable iter-1 (first Mayo attempt). Classical TV proximal gradient on FBP init. No params. Parallel test to NAF \u2014 pure classical, no training overhead. Small budget (tv_n_iter=200) to fit in 30-min wall.",
+  "val_score": 0.5126988291740417,
+  "headroom": 0.010759712656477238,
+  "val_ssim": 0.5126988291740417,
+  "val_psnr": 12.681093215942383,
+  "val_rmse": 0.011612223461270332,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 5,
+  "agent": "tv_iterative-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "tv_iterative-claude-agentic: tv_n_iter=200, tv_lambda=0.01, tv_step=0.5, tv_outer_wall_s=1500, val_n=5, train_n=0, rationale=TV-iter non-trainable iter-1 (first Mayo attempt). Classical TV proximal gradient on FBP init. No params. Parallel test to NAF \u2014 pure classical, no training overhead. Small budget (tv_n_iter=200) to fit in 30-min wall.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260603-01/iterations/iter-0001/comparison.png",
+  "elapsed_s": 57.236658811569214,
+  "cfg_full": {
+    "tv_n_iter": 200,
+    "tv_lambda": 0.01,
+    "tv_step": 0.5,
+    "tv_outer_wall_s": 1500,
+    "val_n": 5,
+    "train_n": 0,
+    "rationale": "TV-iter non-trainable iter-1 (first Mayo attempt). Classical TV proximal gradient on FBP init. No params. Parallel test to NAF \u2014 pure classical, no training overhead. Small budget (tv_n_iter=200) to fit in 30-min wall."
+  }
+}

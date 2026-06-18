@@ -1,0 +1,26 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-naf-search-20260608-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-naf-search",
+  "started": "2026-06-08T17:48:06Z",
+  "agent": "naf-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "done",
+  "notes": "Mayo Step-3 TPE for naf (clamped search space + local /tmp storage)",
+  "finished": "2026-06-09T02:30:13Z",
+  "sampler": "tpe",
+  "best_params": {
+    "naf_n_freqs": 8,
+    "naf_hidden": 192,
+    "naf_layers": 4,
+    "naf_n_iter": 3909,
+    "naf_lr": 0.008860451456140587,
+    "naf_tv_weight": 0.0009060836195074296,
+    "naf_outer_wall_s": 2400,
+    "val_n": 5,
+    "val_chunk": 1,
+    "train_n": 50,
+    "batch_size": 1
+  },
+  "best_headroom": 0.013144165963789534
+}

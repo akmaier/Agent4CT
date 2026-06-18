@@ -1,0 +1,12 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-uswin-search-20260608-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-uswin-search",
+  "started": "2026-06-08T10:35:04Z",
+  "agent": "uswin-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "done",
+  "notes": "Mayo-LDCT Step-3 TPE search for uswin, full Wagner-train set",
+  "finished": "2026-06-08T10:37:02Z",
+  "sampler": "tpe"
+}

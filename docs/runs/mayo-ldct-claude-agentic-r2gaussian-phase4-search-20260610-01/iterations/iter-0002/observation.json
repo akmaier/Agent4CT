@@ -1,0 +1,31 @@
+{
+  "ts": "2026-06-10T21:35:16Z",
+  "run_id": "mayo-ldct-claude-agentic-r2gaussian-phase4-search-20260610-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "r2gaussian-claude-agentic: gs_n_iter=1000, gs_n_gaussians=512, gs_outer_wall_s=1500, train_n=2, val_n=2, rationale=iter-2: KNOB=gs_n_gaussians: 256\u2192512 + gs_n_iter 500\u21921000. iter-1 hr=0.0219 ABOVE BASELINE with minimal config. Hypothesis: 2\u00d7 more Gaussians + 2\u00d7 more iters should still fit in the 30-min wall and improve hr \u2014 Gaussian density is the binding constraint.",
+  "val_score": 0.5221625566482544,
+  "headroom": 2.435763748664943e-05,
+  "val_ssim": 0.5221625566482544,
+  "val_psnr": 13.73526668548584,
+  "val_rmse": 0.010285056196153164,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.003072,
+  "train_n": 400,
+  "val_n": 2,
+  "agent": "r2gaussian-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "r2gaussian-claude-agentic: gs_n_iter=1000, gs_n_gaussians=512, gs_outer_wall_s=1500, train_n=2, val_n=2, rationale=iter-2: KNOB=gs_n_gaussians: 256\u2192512 + gs_n_iter 500\u21921000. iter-1 hr=0.0219 ABOVE BASELINE with minimal config. Hypothesis: 2\u00d7 more Gaussians + 2\u00d7 more iters should still fit in the 30-min wall and improve hr \u2014 Gaussian density is the binding constraint.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-r2gaussian-phase4-search-20260610-01/iterations/iter-0002/comparison.png",
+  "elapsed_s": 570.0356328487396,
+  "cfg_full": {
+    "gs_n_iter": 1000,
+    "gs_n_gaussians": 512,
+    "gs_outer_wall_s": 1500,
+    "train_n": 2,
+    "val_n": 2,
+    "rationale": "iter-2: KNOB=gs_n_gaussians: 256\u2192512 + gs_n_iter 500\u21921000. iter-1 hr=0.0219 ABOVE BASELINE with minimal config. Hypothesis: 2\u00d7 more Gaussians + 2\u00d7 more iters should still fit in the 30-min wall and improve hr \u2014 Gaussian density is the binding constraint."
+  }
+}

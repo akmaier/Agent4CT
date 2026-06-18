@@ -1,0 +1,12 @@
+{
+  "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260522-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-search",
+  "started": "2026-05-22T04:51:33Z",
+  "agent": "diff-recon-dcstep-unconstrained-search-tpe-calibrated-breast-ct",
+  "model": "optuna-tpe-breast-ct",
+  "status": "done",
+  "notes": "post-agentic TPE: RAM bounds from claude loop; diff_recon DDPM-ckpt fix",
+  "finished": "2026-05-22T09:46:25Z",
+  "sampler": "tpe"
+}

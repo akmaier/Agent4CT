@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.4786	0.00947352	keep	architecture	tv-search-tpe-calibrated-mayo-ldct-2d	random-search	tv-search-tpe-calibrated-mayo-ldct-2d: tv_lambda=0.0017552, tv_iterations=214, tv_lr=0.040485, tv_clip_max=0.035913, tv_decay=0.019552, val_n=214, val_chunk=1, train_n=579, batch_size=1

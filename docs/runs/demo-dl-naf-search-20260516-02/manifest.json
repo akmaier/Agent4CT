@@ -1,0 +1,10 @@
+{
+  "slug": "demo-dl-naf-search-20260516-02",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-naf-search",
+  "started": "2026-05-16T23:18:18Z",
+  "agent": "naf-search",
+  "model": "random-search",
+  "status": "running",
+  "notes": "naf hyperparameter random search"
+}

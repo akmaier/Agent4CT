@@ -1,0 +1,18 @@
+{
+  "ts": "2026-06-08T15:57:45Z",
+  "run_id": "mayo-ldct-2d-calibrated-tpe-lpd-search-20260608-06",
+  "iter": 12,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "lpd-search-tpe-calibrated-mayo-ldct-2d: lpd_iters=2, lpd_hidden=48, lpd_n_primal=5, lpd_n_dual=5, lpd_share_weights=False, epochs=6, lr=0.00037963, lr_schedule=cosine, batch_size=1, grad_clip=1, lambda_neg=1, loss_base=mse, val_n=5, val_chunk=1, train_n=50",
+  "val_score": 0.5160912275314331,
+  "headroom": 0.20099353014527677,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.103604,
+  "train_n": 50,
+  "agent": "lpd-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "random-search",
+  "advice_for_others": "lpd-search-tpe-calibrated-mayo-ldct-2d: lpd_iters=2, lpd_hidden=48, lpd_n_primal=5, lpd_n_dual=5, lpd_share_weights=False, epochs=6, lr=0.00037963, lr_schedule=cosine, batch_size=1, grad_clip=1, lambda_neg=1, loss_base=mse, val_n=5, val_chunk=1, train_n=50 -> hr=0.2010",
+  "comparison_image": "runs/mayo-ldct-2d-calibrated-tpe-lpd-search-20260608-06/iterations/iter-0012/comparison.png"
+}

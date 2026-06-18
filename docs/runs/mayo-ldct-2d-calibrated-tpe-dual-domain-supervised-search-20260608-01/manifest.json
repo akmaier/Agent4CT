@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search",
+  "started": "2026-06-08T10:36:05Z",
+  "agent": "dual-domain-supervised-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "running",
+  "notes": "Mayo-LDCT Step-3 TPE search for dual_domain_supervised, full Wagner-train set"
+}

@@ -1,0 +1,12 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-uswin-search-20260608-02",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-uswin-search",
+  "started": "2026-06-08T12:33:56Z",
+  "agent": "uswin-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "done",
+  "notes": "Mayo Step-3 TPE for uswin (clamped search space + local /tmp storage)",
+  "finished": "2026-06-08T12:35:55Z",
+  "sampler": "tpe"
+}

@@ -1,0 +1,29 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v4-search-20260609-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-diff-recon-dcstep-constrained-mayo-v4-search",
+  "started": "2026-06-09T01:38:07Z",
+  "agent": "diff-recon-dcstep-constrained-mayo-v4-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "done",
+  "notes": "Mayo Step-3 TPE for diffusion_recon_dcstep_constrained_mayo_v4 (clamped search space + local /tmp storage)",
+  "finished": "2026-06-09T07:44:39Z",
+  "sampler": "tpe",
+  "best_params": {
+    "recon_ckpt": "/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_constrained_v4.pt",
+    "recon_mode": "dps",
+    "recon_sample_steps": 200,
+    "recon_eta": 1.5187603144248185,
+    "recon_init": "fbp",
+    "recon_eta_clamp": true,
+    "recon_dcstep_every": 3,
+    "recon_dcstep_n_cg": 20,
+    "recon_dcstep_warmup": 25,
+    "recon_dcstep_relax": 0.85,
+    "val_n": 5,
+    "val_chunk": 1,
+    "train_n": 50,
+    "batch_size": 1
+  },
+  "best_headroom": 0.1632089819326925
+}

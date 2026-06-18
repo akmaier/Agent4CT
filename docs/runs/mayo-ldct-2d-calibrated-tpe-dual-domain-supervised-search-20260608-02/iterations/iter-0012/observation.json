@@ -1,0 +1,18 @@
+{
+  "ts": "2026-06-08T15:35:18Z",
+  "run_id": "mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02",
+  "iter": 12,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual-domain-supervised-search-tpe-calibrated-mayo-ldct-2d: unet_c=16, epochs=14, lr=0.00053896, batch_size=1, lambda_neg=0.78668, val_n=5",
+  "val_score": 0.5977254509925842,
+  "headroom": 0.3889535721854085,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.465762,
+  "train_n": 400,
+  "agent": "dual-domain-supervised-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "random-search",
+  "advice_for_others": "dual-domain-supervised-search-tpe-calibrated-mayo-ldct-2d: unet_c=16, epochs=14, lr=0.00053896, batch_size=1, lambda_neg=0.78668, val_n=5 -> hr=0.3890",
+  "comparison_image": "runs/mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02/iterations/iter-0012/comparison.png"
+}

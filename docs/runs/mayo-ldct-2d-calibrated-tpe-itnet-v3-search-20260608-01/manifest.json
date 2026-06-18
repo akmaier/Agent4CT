@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-itnet-v3-search-20260608-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-itnet-v3-search",
+  "started": "2026-06-08T10:36:11Z",
+  "agent": "itnet-v3-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "running",
+  "notes": "Mayo-LDCT Step-3 TPE search for itnet_v3, full Wagner-train set"
+}

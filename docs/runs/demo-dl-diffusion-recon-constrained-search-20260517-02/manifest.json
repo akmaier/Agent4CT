@@ -1,0 +1,12 @@
+{
+  "slug": "demo-dl-diffusion-recon-constrained-search-20260517-02",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "demo-dl-diffusion-recon-constrained-search",
+  "started": "2026-05-17T20:50:47Z",
+  "agent": "diffusion-recon-constrained-search",
+  "model": "random-search",
+  "status": "done",
+  "notes": "v2 diffusion-recon constrained   (random) \u2014 grad-normalised",
+  "finished": "2026-05-17T21:46:07Z",
+  "sampler": "random"
+}

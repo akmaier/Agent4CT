@@ -1,0 +1,24 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-tv-search-20260614-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-tv-search",
+  "started": "2026-06-14T09:06:15Z",
+  "agent": "tv-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "done",
+  "notes": "Mayo-LDCT REBUILD (tv_iterative) corrected all-slices path, iterations=1",
+  "finished": "2026-06-14T09:32:53Z",
+  "sampler": "tpe",
+  "best_params": {
+    "tv_lambda": 0.0017552372568499085,
+    "tv_iterations": 214,
+    "tv_lr": 0.04048513927858491,
+    "tv_clip_max": 0.03591327854003585,
+    "tv_decay": 0.01955211529233787,
+    "val_n": 214,
+    "val_chunk": 1,
+    "train_n": 579,
+    "batch_size": 1
+  },
+  "best_headroom": 0.009473522486227681
+}

@@ -1,0 +1,18 @@
+{
+  "ts": "2026-06-09T01:42:52Z",
+  "run_id": "mayo-ldct-2d-calibrated-tpe-naf-search-20260608-01",
+  "iter": 19,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "naf-search-tpe-calibrated-mayo-ldct-2d: naf_n_freqs=14, naf_hidden=192, naf_layers=6, naf_n_iter=2482, naf_lr=0.0021502, naf_tv_weight=1.8469e-06, naf_outer_wall_s=2400, val_n=5, val_chunk=1, train_n=50, batch_size=1",
+  "val_score": 0.4563664495944977,
+  "headroom": 0.004200284239782359,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.159745,
+  "train_n": 0,
+  "agent": "naf-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "random-search",
+  "advice_for_others": "naf-search-tpe-calibrated-mayo-ldct-2d: naf_n_freqs=14, naf_hidden=192, naf_layers=6, naf_n_iter=2482, naf_lr=0.0021502, naf_tv_weight=1.8469e-06, naf_outer_wall_s=2400, val_n=5, val_chunk=1, train_n=50, batch_size=1 -> hr=0.0042",
+  "comparison_image": "runs/mayo-ldct-2d-calibrated-tpe-naf-search-20260608-01/iterations/iter-0019/comparison.png"
+}

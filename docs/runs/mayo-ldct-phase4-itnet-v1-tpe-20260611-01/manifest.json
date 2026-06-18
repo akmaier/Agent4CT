@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-phase4-itnet-v1-tpe-20260611-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-phase4-itnet-v1-tpe",
+  "started": "2026-06-11T12:38:57Z",
+  "agent": "mayo-phase4-itnet-v1-tpe-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "running",
+  "notes": "Mayo-LDCT Step-3 TPE search for itnet_mayo_phase4, full Wagner-train set"
+}

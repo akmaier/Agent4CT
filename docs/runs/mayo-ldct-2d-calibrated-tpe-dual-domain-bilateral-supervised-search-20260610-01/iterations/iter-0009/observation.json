@@ -1,0 +1,18 @@
+{
+  "ts": "2026-06-10T18:25:38Z",
+  "run_id": "mayo-ldct-2d-calibrated-tpe-dual-domain-bilateral-supervised-search-20260610-01",
+  "iter": 9,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual-domain-bilateral-supervised-search-tpe-calibrated-mayo-ldct-2d: proj_n_bf=2, img_n_bf=5, proj_kernel=3, img_kernel=11, proj_sx=0.015984, proj_sy=0.49301, proj_sr=0.001021, img_sx=0.67001, img_sr=0.025428, epochs=7, lr=0.0026616, val_n=5, val_chunk=1, train_n=50, batch_size=1",
+  "val_score": 0.4989430904388428,
+  "headroom": 0.012711292561091159,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0,
+  "train_n": 50,
+  "agent": "dual-domain-bilateral-supervised-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "random-search",
+  "advice_for_others": "dual-domain-bilateral-supervised-search-tpe-calibrated-mayo-ldct-2d: proj_n_bf=2, img_n_bf=5, proj_kernel=3, img_kernel=11, proj_sx=0.015984, proj_sy=0.49301, proj_sr=0.001021, img_sx=0.67001, img_sr=0.025428, epochs=7, lr=0.0026616, val_n=5, val_chunk=1, train_n=50, batch_size=1 -> hr=0.0127",
+  "comparison_image": "runs/mayo-ldct-2d-calibrated-tpe-dual-domain-bilateral-supervised-search-20260610-01/iterations/iter-0009/comparison.png"
+}

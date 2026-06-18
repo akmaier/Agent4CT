@@ -1,0 +1,18 @@
+{
+  "ts": "2026-06-10T18:20:07Z",
+  "run_id": "mayo-ldct-2d-calibrated-tpe-itnet-v1-search-20260610-01",
+  "iter": 8,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "itnet-v1-search-tpe-calibrated-mayo-ldct-2d: pretrain_epochs=5, pretrain_lr=0.0011091, itnet_k=2, itnet_alpha=0.028607, finetune_epochs=9, finetune_lr=0.00058828, unet_c=16, val_n=5, val_chunk=1, train_n=50, batch_size=1",
+  "val_score": 0.28189679980278015,
+  "headroom": 0.024973923265096842,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.232881,
+  "train_n": 50,
+  "agent": "itnet-v1-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "random-search",
+  "advice_for_others": "itnet-v1-search-tpe-calibrated-mayo-ldct-2d: pretrain_epochs=5, pretrain_lr=0.0011091, itnet_k=2, itnet_alpha=0.028607, finetune_epochs=9, finetune_lr=0.00058828, unet_c=16, val_n=5, val_chunk=1, train_n=50, batch_size=1 -> hr=0.0250",
+  "comparison_image": "runs/mayo-ldct-2d-calibrated-tpe-itnet-v1-search-20260610-01/iterations/iter-0008/comparison.png"
+}

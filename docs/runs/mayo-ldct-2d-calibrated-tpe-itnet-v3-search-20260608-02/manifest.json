@@ -1,0 +1,12 @@
+{
+  "slug": "mayo-ldct-2d-calibrated-tpe-itnet-v3-search-20260608-02",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-2d-calibrated-tpe-itnet-v3-search",
+  "started": "2026-06-08T12:33:57Z",
+  "agent": "itnet-v3-search-tpe-calibrated-mayo-ldct-2d",
+  "model": "optuna-tpe-mayo-ldct-2d",
+  "status": "done",
+  "notes": "Mayo Step-3 TPE for itnet_v3 (clamped search space + local /tmp storage)",
+  "finished": "2026-06-08T12:35:42Z",
+  "sampler": "tpe"
+}

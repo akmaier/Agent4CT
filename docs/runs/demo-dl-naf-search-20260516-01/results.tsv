@@ -1,0 +1,21 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=192, naf_layers=4, naf_n_iter=682, naf_lr=0.0036172, naf_tv_weight=0.00078742
+2		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=96, naf_layers=3, naf_n_iter=763, naf_lr=0.0024869, naf_tv_weight=6.2374e-05
+3		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=128, naf_layers=5, naf_n_iter=681, naf_lr=0.0075063, naf_tv_weight=1.6029e-05
+4		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=6, naf_hidden=128, naf_layers=4, naf_n_iter=662, naf_lr=0.0045568, naf_tv_weight=0.00034573
+5		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=96, naf_layers=5, naf_n_iter=789, naf_lr=0.0015061, naf_tv_weight=7.4193e-05
+6		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=96, naf_layers=3, naf_n_iter=822, naf_lr=0.0027328, naf_tv_weight=0.000226
+7		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=96, naf_layers=5, naf_n_iter=777, naf_lr=0.0027825, naf_tv_weight=1.6741e-05
+8		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=128, naf_layers=4, naf_n_iter=649, naf_lr=0.0032746, naf_tv_weight=9.1179e-05
+9		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=128, naf_layers=4, naf_n_iter=922, naf_lr=0.0029161, naf_tv_weight=3.5271e-05
+10		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=6, naf_hidden=128, naf_layers=4, naf_n_iter=438, naf_lr=0.0010985, naf_tv_weight=5.4934e-05
+11		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=128, naf_layers=4, naf_n_iter=943, naf_lr=0.002333, naf_tv_weight=0.00055369
+12		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=128, naf_layers=4, naf_n_iter=915, naf_lr=0.0044025, naf_tv_weight=1.1886e-05
+13		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=128, naf_layers=4, naf_n_iter=902, naf_lr=0.018847, naf_tv_weight=4.409e-05
+14		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=128, naf_layers=3, naf_n_iter=843, naf_lr=0.0051835, naf_tv_weight=1.5684e-05
+15		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=96, naf_layers=4, naf_n_iter=818, naf_lr=0.0058416, naf_tv_weight=0.00015121
+16		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=8, naf_hidden=128, naf_layers=5, naf_n_iter=591, naf_lr=0.0014609, naf_tv_weight=2.1161e-05
+17		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=6, naf_hidden=128, naf_layers=3, naf_n_iter=364, naf_lr=0.0024544, naf_tv_weight=2.5701e-05
+18		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=12, naf_hidden=96, naf_layers=3, naf_n_iter=686, naf_lr=0.0016697, naf_tv_weight=1.9754e-05
+19		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=192, naf_layers=5, naf_n_iter=722, naf_lr=0.016828, naf_tv_weight=6.3955e-05
+20		0.250013	0	discard	architecture	naf-search	random-search	naf-search: naf_n_freqs=10, naf_hidden=128, naf_layers=4, naf_n_iter=626, naf_lr=0.0011822, naf_tv_weight=0.00048001

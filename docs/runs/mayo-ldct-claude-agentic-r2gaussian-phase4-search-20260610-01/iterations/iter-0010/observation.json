@@ -1,0 +1,32 @@
+{
+  "ts": "2026-06-11T09:45:25Z",
+  "run_id": "mayo-ldct-claude-agentic-r2gaussian-phase4-search-20260610-01",
+  "iter": 10,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "r2gaussian-claude-agentic: gs_n_iter=500, gs_n_gaussians=320, gs_outer_wall_s=1500, gs_lr_pos=0.0005, train_n=2, val_n=2, rationale=iter-10: KNOB=gs_n_gaussians: 256\u2192320 (1.25\u00d7, untested density between 256-sweet and 384-regressed). iter-8 (256/500i/lr=5e-4) hr=0.0438 BEST; iter-9 (lr=2e-4) regressed to 0.0401. Hypothesis: density mid-point (320) at proven 500i/lr=5e-4 may climb past 0.0438 \u2014 gauge whether ceiling at 256 or higher.",
+  "val_score": 0.538128137588501,
+  "headroom": 0.034732995018727286,
+  "val_ssim": 0.538128137588501,
+  "val_psnr": 14.042105674743652,
+  "val_rmse": 0.009928067214787006,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.00192,
+  "train_n": 400,
+  "val_n": 2,
+  "agent": "r2gaussian-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "r2gaussian-claude-agentic: gs_n_iter=500, gs_n_gaussians=320, gs_outer_wall_s=1500, gs_lr_pos=0.0005, train_n=2, val_n=2, rationale=iter-10: KNOB=gs_n_gaussians: 256\u2192320 (1.25\u00d7, untested density between 256-sweet and 384-regressed). iter-8 (256/500i/lr=5e-4) hr=0.0438 BEST; iter-9 (lr=2e-4) regressed to 0.0401. Hypothesis: density mid-point (320) at proven 500i/lr=5e-4 may climb past 0.0438 \u2014 gauge whether ceiling at 256 or higher.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-r2gaussian-phase4-search-20260610-01/iterations/iter-0010/comparison.png",
+  "elapsed_s": 289.81743574142456,
+  "cfg_full": {
+    "gs_n_iter": 500,
+    "gs_n_gaussians": 320,
+    "gs_outer_wall_s": 1500,
+    "gs_lr_pos": 0.0005,
+    "train_n": 2,
+    "val_n": 2,
+    "rationale": "iter-10: KNOB=gs_n_gaussians: 256\u2192320 (1.25\u00d7, untested density between 256-sweet and 384-regressed). iter-8 (256/500i/lr=5e-4) hr=0.0438 BEST; iter-9 (lr=2e-4) regressed to 0.0401. Hypothesis: density mid-point (320) at proven 500i/lr=5e-4 may climb past 0.0438 \u2014 gauge whether ceiling at 256 or higher."
+  }
+}
