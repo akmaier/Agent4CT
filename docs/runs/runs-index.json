@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-18T19:03:04Z",
+  "updated": "2026-06-18T20:10:13Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -67,38 +67,6 @@
       "test_image": null
     },
     {
-      "slug": "breast-ct-calibrated-tpe-dual-domain-bf-search-20260521-01",
-      "short_id": "20260521-01",
-      "name": "dual-domain-bf",
-      "challenge": "breast_ct",
-      "started": "2026-05-21T04:40:44Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.97152,
-      "best_headroom": 0.0,
-      "best_iter": 1,
-      "agent": "dual-domain-bf-search-tpe-calibrated-breast-ct",
-      "model": "optuna-tpe-breast-ct",
-      "val_image": "runs/breast-ct-calibrated-tpe-dual-domain-bf-search-20260521-01/iterations/iter-0001/comparison.png",
-      "test_image": null
-    },
-    {
-      "slug": "breast-ct-calibrated-tpe-dual-domain-bf-v2-search-20260521-01",
-      "short_id": "20260521-01",
-      "name": "dual-domain-bf-v2",
-      "challenge": "breast_ct",
-      "started": "2026-05-21T19:27:14Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.97152,
-      "best_headroom": 0.0,
-      "best_iter": 1,
-      "agent": "dual-domain-bf-v2-search-tpe-calibrated-breast-ct",
-      "model": "optuna-tpe-breast-ct",
-      "val_image": "runs/breast-ct-calibrated-tpe-dual-domain-bf-v2-search-20260521-01/iterations/iter-0001/comparison.png",
-      "test_image": null
-    },
-    {
       "slug": "breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01",
       "short_id": "20260524-01",
       "name": "dual-domain-bilateral-supervised",
@@ -128,22 +96,6 @@
       "agent": "dual-domain-supervised-search-tpe-calibrated-breast-ct",
       "model": "optuna-tpe-breast-ct",
       "val_image": "runs/breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01/iterations/iter-0019/comparison.png",
-      "test_image": null
-    },
-    {
-      "slug": "breast-ct-calibrated-tpe-dual-domain-v2-search-20260521-01",
-      "short_id": "20260521-01",
-      "name": "dual-domain-v2",
-      "challenge": "breast_ct",
-      "started": "2026-05-21T18:54:46Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.967393,
-      "best_headroom": 0.0,
-      "best_iter": 13,
-      "agent": "dual-domain-v2-search-tpe-calibrated-breast-ct",
-      "model": "optuna-tpe-breast-ct",
-      "val_image": "runs/breast-ct-calibrated-tpe-dual-domain-v2-search-20260521-01/iterations/iter-0013/comparison.png",
       "test_image": null
     },
     {
@@ -355,22 +307,6 @@
       "test_image": null
     },
     {
-      "slug": "breast-ct-claude-agentic-dual-domain-search-20260521-01",
-      "short_id": "20260521-01",
-      "name": "dual-domain",
-      "challenge": "breast_ct",
-      "started": "2026-05-22T05:04:14Z",
-      "status": "running",
-      "n_iterations": 4,
-      "best_score": 0.968895,
-      "best_headroom": 0.0,
-      "best_iter": 4,
-      "agent": "dual_domain-claude-agentic-breast-ct",
-      "model": "claude-opus-4.7-1m",
-      "val_image": "runs/breast-ct-claude-agentic-dual-domain-search-20260521-01/iterations/iter-0004/comparison.png",
-      "test_image": null
-    },
-    {
       "slug": "breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01",
       "short_id": "20260522-01",
       "name": "dual-domain-unet-l2",
@@ -512,22 +448,6 @@
       "agent": "diffusion-search",
       "model": "random-search",
       "val_image": "runs/demo-dl-diffusion-search-20260516-01/iterations/iter-0017/comparison.png",
-      "test_image": null
-    },
-    {
-      "slug": "demo-dl-dual_domain-20260515-01",
-      "short_id": "20260515-01",
-      "name": "-dual_domain",
-      "challenge": "demo_dl",
-      "started": "2026-05-15T23:51:25Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.297316,
-      "best_headroom": 0.600842,
-      "best_iter": 20,
-      "agent": "dual_domain-search",
-      "model": "random-search",
-      "val_image": "runs/demo-dl-dual_domain-20260515-01/iterations/iter-0020/comparison.png",
       "test_image": null
     },
     {
@@ -803,38 +723,6 @@
       "test_image": null
     },
     {
-      "slug": "demo-intensity-calibrated-tpe-dual-domain-bf-search-20260520-01",
-      "short_id": "20260520-01",
-      "name": "dual-domain-bf",
-      "challenge": "demo_dl",
-      "started": "2026-05-20T23:14:07Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.760499,
-      "best_headroom": 0.361085,
-      "best_iter": 1,
-      "agent": "dual-domain-bf-search-tpe-calibrated",
-      "model": "optuna-tpe",
-      "val_image": "runs/demo-intensity-calibrated-tpe-dual-domain-bf-search-20260520-01/iterations/iter-0001/comparison.png",
-      "test_image": null
-    },
-    {
-      "slug": "demo-intensity-calibrated-tpe-dual-domain-search-20260520-01",
-      "short_id": "20260520-01",
-      "name": "dual-domain",
-      "challenge": "demo_dl",
-      "started": "2026-05-20T22:55:16Z",
-      "status": "done",
-      "n_iterations": 20,
-      "best_score": 0.708766,
-      "best_headroom": 0.381145,
-      "best_iter": 7,
-      "agent": "dual-domain-search-tpe-calibrated",
-      "model": "optuna-tpe",
-      "val_image": "runs/demo-intensity-calibrated-tpe-dual-domain-search-20260520-01/iterations/iter-0007/comparison.png",
-      "test_image": null
-    },
-    {
       "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260520-01",
       "short_id": "20260520-01",
       "name": "hammernik",
@@ -1043,22 +931,6 @@
       "test_image": null
     },
     {
-      "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
-      "short_id": "20260614-01",
-      "name": "dual-domain-bilateral-n2i",
-      "challenge": "mayo_ldct",
-      "started": "2026-06-16T07:30:55Z",
-      "status": "running",
-      "n_iterations": 6,
-      "best_score": 0.950722,
-      "best_headroom": 0.0,
-      "best_iter": 3,
-      "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
-      "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0006/comparison.png",
-      "test_image": null
-    },
-    {
       "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01",
       "short_id": "20260614-01",
       "name": "dual-domain-bilateral-supervised",
@@ -1072,22 +944,6 @@
       "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/valtest_showcase.png",
-      "test_image": null
-    },
-    {
-      "slug": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01",
-      "short_id": "20260614-01",
-      "name": "dual-domain-n2i",
-      "challenge": "mayo_ldct",
-      "started": "2026-06-16T07:21:44Z",
-      "status": "running",
-      "n_iterations": 7,
-      "best_score": 0.953238,
-      "best_headroom": 0.135833,
-      "best_iter": 6,
-      "agent": "dual_domain_n2i-claude-agentic-breast-ct",
-      "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0007/comparison.png",
       "test_image": null
     },
     {
@@ -1152,22 +1008,6 @@
       "agent": "itnet-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/valtest_showcase.png",
-      "test_image": null
-    },
-    {
-      "slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260614-01",
-      "short_id": "20260614-01",
-      "name": "itnet-v2",
-      "challenge": "mayo_ldct",
-      "started": "2026-06-15T05:18:15Z",
-      "status": "running",
-      "n_iterations": 20,
-      "best_score": 0.971376,
-      "best_headroom": 0.474941,
-      "best_iter": 11,
-      "agent": "itnet_v2-claude-agentic-breast-ct",
-      "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/valtest_showcase.png",
       "test_image": null
     },
     {

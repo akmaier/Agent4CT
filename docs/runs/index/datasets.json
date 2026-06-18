@@ -1,12 +1,12 @@
 {
  "schema_version": 2,
- "updated": "2026-06-18T19:03:04Z",
+ "updated": "2026-06-18T20:10:13Z",
  "datasets": [
   {
    "challenge": "demo_dl",
    "label": "Demo-DL",
-   "n_runs": 36,
-   "n_iterations": 649,
+   "n_runs": 33,
+   "n_iterations": 589,
    "champion_slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
    "champion_score": 0.961275,
    "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
@@ -14,8 +14,8 @@
   {
    "challenge": "breast_ct",
    "label": "Breast-CT",
-   "n_runs": 27,
-   "n_iterations": 434,
+   "n_runs": 23,
+   "n_iterations": 370,
    "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
    "champion_score": 0.999577,
    "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"
@@ -23,8 +23,8 @@
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
-   "n_runs": 19,
-   "n_iterations": 240,
+   "n_runs": 16,
+   "n_iterations": 207,
    "champion_slug": "mayo-ldct-claude-agentic-uswin-search-20260614-01",
    "champion_score": 0.974148,
    "thumbnail": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/valtest_showcase.png"
