@@ -402,6 +402,35 @@ def load_val_split(kind: str, split: str, n: int, *, device,
     # verified vs ps transitions (247/457) + counts (L014 154, L056 93, L058 210,
     # L075 137, L123 151 = 745).
     import os as _os
+    # Presentation-only VAL+TEST showcase (AGENT4CT_SHOWCASE=valtest): 6 scenes =
+    # L277 central (val) + the 5 test-patient centrals, full 512² (NO FOV mask).
+    # Gated on the exact value "valtest" + early-return, so the live search metric
+    # and the older test-only showcase ("1") are untouched.
+    if _os.environ.get("AGENT4CT_SHOWCASE") == "valtest" and kind == "mayo_ldct_2d" and split == "val":
+        sd = info.staged_dir
+        _tk = lambda f: (info.truth_dataset if info.truth_dataset in f else "truth")
+        _sk = lambda f: (info.sino_dataset if info.sino_dataset in f else ("sino" if "sino" in f else list(f.keys())[0]))
+        def _rd(spl, idxs):
+            with h5py.File(sd / info.truth_file_tmpl.format(split=spl), "r") as f:
+                tr = f[_tk(f)][idxs]; pv = f["ps"][idxs] if "ps" in f else None
+            with h5py.File(sd / info.sino_file_tmpl.format(split=spl), "r") as f:
+                si = f[_sk(f)][idxs]
+            return tr, si, pv
+        with h5py.File(sd / info.truth_file_tmpl.format(split="val"), "r") as f:
+            _nv = f[_tk(f)].shape[0]
+        _vt, _vs, _vp = _rd("val", [_nv // 2])                      # L277 central
+        _tt, _ts, _tp = _rd("test", [77, 200, 352, 525, 668])       # 5 test centrals
+        truth = np.concatenate([_vt, _tt], 0); sino = np.concatenate([_vs, _ts], 0)
+        ps_arr = (np.concatenate([_vp, _tp], 0) if (_vp is not None and _tp is not None) else None)
+        truth_t = torch.from_numpy(np.ascontiguousarray(truth)).to(device=device, dtype=torch.float32)
+        sino_t  = torch.from_numpy(np.ascontiguousarray(sino )).to(device=device, dtype=torch.float32)
+        if truth_t.dim() == 3: truth_t = truth_t.unsqueeze(1)
+        if sino_t.dim() == 3:  sino_t = sino_t.unsqueeze(1)
+        print(f"[staged] SHOWCASE=valtest: L277-central(idx {_nv//2}) + 5 test-central "
+              f"-> {truth_t.shape[0]} scenes (full 512, no FOV)", flush=True)
+        if return_ps:
+            return truth_t, sino_t, sino_t, ps_arr
+        return truth_t, sino_t, sino_t
     _sel_override = None
     if _os.environ.get("AGENT4CT_SHOWCASE") and kind == "mayo_ldct_2d" and split == "val":
         truth_path = info.staged_dir / info.truth_file_tmpl.format(split="test")

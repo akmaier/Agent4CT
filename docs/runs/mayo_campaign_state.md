@@ -27,15 +27,23 @@ or `stage_mayo_sinos.py` (older non-canonical packing) — both silently produce
 data the loader mis-reads. Geometry is **v3** (Powell-fitted `mayo_ldct_fitted`:
 sod 595.362 / sdd 1086.803 / det_spacing 1.285044 / ps 0.700857).
 
-**FOV (for figures + metrics):** the FOV is the **detector-geometry measurement
-FOV** — a SCANNER property, computed from the detector geometry, NOT from the
-slice: `R_FOV = SOD·sin(atan(0.5·n_det·det_spacing/SDD))` (≈237.5 mm radius for
-the fitted Mayo geom; confirm the exact value/formula against the scanner before
-relying on it) → per-volume `R_FOV/ps_eff` px (≈321–359 px). Do **NOT** derive it
-from `ReconstructionDiameter/PixelSpacing` (inscribed circle = 256 px is TOO
-SMALL — recurring mistake 2026-06-18). **Current figures/eval use the full 512²
-view, NO mask** (user, 2026-06-18); the detector-geometry FOV may be applied
-later.
+**FOV / masking (corrected 2026-06-18, audited):**
+- **METRIC** (SSIM/RMSE/headroom in `evaluate_calibrated`): keeps its DEFAULT
+  inscribed-256px FOV mask, applied **symmetrically to BOTH pred and truth**
+  (`metrics.py`). This is INTENTIONAL and fine per the user ("the metric is ok").
+  Solvers call `evaluate_calibrated` with NO `fov=` arg → default mask. Do NOT
+  pass `fov=False`.
+- **DISPLAY / figures**: **UNMASKED**. `evaluate_calibrated` now returns the
+  UNMASKED calibrated `pred_cal`/`baseline_cal` (metric uses local masked copies),
+  so figures show the FULL 512² recon + GT — no circular mask. ("mask=False for
+  display.")
+- **Result figure** = `valtest_showcase.png` (L277 val + 5 test patients, central
+  slice each, `GT|FBP|recon|diff`, full view) via `make_test_showcase.py`
+  (`AGENT4CT_SHOWCASE=valtest`); the dashboard builder prefers it as the result image.
+- The detector-geometry measurement FOV `R = SOD·sin(atan(0.5·n_det·det_spacing/SDD))`
+  ≈237.5 mm is the eventual "correct" FOV but is **DEFERRED**. Never derive the FOV
+  from `ReconstructionDiameter/PixelSpacing` (the 256px inscribed circle is a recon
+  property, not the scanner FOV).
 
 ## Dispatch protocol (cluster: `ssh lme-bastion`, `cd /cluster/maier/Agent4CT`)
 - **Helper** (hardened: rm-first so a failed write can't leak a stale cfg, no

@@ -42,27 +42,29 @@ KEYS = [
 ]
 
 
-def best_iter_cfg(slug: str):
-    """Best iter (max SSIM) for a search run + its cfg_full from observation.json."""
+def last_iter_cfg(slug: str):
+    """LAST iter (max iter index) for a search run + its cfg_full from
+    observation.json. The dashboard shows each solver's FINAL-iteration result
+    (iter-20 mandate), not the metric-best — so the test showcase must use the
+    same iter the val figure does."""
     tsv = RUNS / slug / "results.tsv"
     if not tsv.exists():
         return None
-    best = None
+    last = None
     for ln in tsv.read_text().splitlines()[1:]:
         c = ln.split("\t")
         try:
-            it, ss = int(c[0]), float(c[2])
+            it = int(c[0])
         except (ValueError, IndexError):
             continue
-        if best is None or ss > best[1]:
-            best = (it, ss)
-    if not best:
+        if last is None or it > last:
+            last = it
+    if last is None:
         return None
-    it = best[0]
-    obs = RUNS / slug / "iterations" / f"iter-{it:04d}" / "observation.json"
+    obs = RUNS / slug / "iterations" / f"iter-{last:04d}" / "observation.json"
     if not obs.exists():
         return None
-    return it, (json.loads(obs.read_text()).get("cfg_full") or {})
+    return last, (json.loads(obs.read_text()).get("cfg_full") or {})
 
 
 def run_worker(solver: str, slug: str) -> None:
@@ -70,13 +72,13 @@ def run_worker(solver: str, slug: str) -> None:
     if solver not in SOLVER_MAP:
         print(f"[skip] {solver}: not in SOLVER_MAP", flush=True)
         return
-    bc = best_iter_cfg(slug)
+    bc = last_iter_cfg(slug)
     if not bc:
-        print(f"[skip] {solver}: no best cfg in {slug}", flush=True)
+        print(f"[skip] {solver}: no last-iter cfg in {slug}", flush=True)
         return
     it, cfg = bc
     os.environ.update(AGENT4CT_DATASET="mayo_ldct_2d",
-                      AGENT4CT_SHOWCASE="1", AGENT4CT_FIG_NSHOW="5")
+                      AGENT4CT_SHOWCASE="valtest", AGENT4CT_FIG_NSHOW="6")
     solver_file, _ = SOLVER_MAP[solver]
     spec = importlib.util.spec_from_file_location("scs_" + solver, REPO / solver_file)
     mod = importlib.util.module_from_spec(spec)
@@ -86,10 +88,10 @@ def run_worker(solver: str, slug: str) -> None:
         res = mod.main(tmp, cfg)
         src = tmp / "comparison.png"
         if src.exists():
-            dst = RUNS / slug / "test_showcase.png"
+            dst = RUNS / slug / "valtest_showcase.png"
             shutil.copy(src, dst)
             ss = res.get("val_ssim", float("nan")) if isinstance(res, dict) else float("nan")
-            print(f"[ok] {solver}: best iter-{it}  test5 SSIM={ss:.4f}  -> "
+            print(f"[ok] {solver}: last iter-{it}  valtest6 (L277+5test) SSIM={ss:.4f}  -> "
                   f"{dst.relative_to(REPO)}", flush=True)
         else:
             print(f"[nofig] {solver}: main() wrote no comparison.png", flush=True)
@@ -109,8 +111,8 @@ def main() -> int:
         if not (RUNS / slug).exists():
             print(f"[skip] {k}: no run dir {slug}", flush=True)
             continue
-        if (RUNS / slug / "test_showcase.png").exists() and not os.environ.get("SHOWCASE_FORCE"):
-            print(f"[skip] {k}: test_showcase.png exists (SHOWCASE_FORCE=1 to regen)", flush=True)
+        if (RUNS / slug / "valtest_showcase.png").exists() and not os.environ.get("SHOWCASE_FORCE"):
+            print(f"[skip] {k}: valtest_showcase.png exists (SHOWCASE_FORCE=1 to regen)", flush=True)
             continue
         print(f"=== showcase {k} ===", flush=True)
         env = {**os.environ, "SOLVER": k, "SEARCH_SLUG": slug}

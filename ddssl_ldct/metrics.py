@@ -212,28 +212,22 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
                                     display_max=display_max,
                                     bg_target=bg_target)
 
-    # FOV mask handling
+    # FOV mask handling. The mask is applied ONLY to LOCAL copies used for the
+    # metric (SSIM/RMSE/PSNR/headroom). The returned `pred_cal`/`baseline_cal`
+    # are the UNMASKED calibrated recons, so figures (make_4panel_comparison)
+    # display the FULL reconstruction — recon and GT both full-frame, no circular
+    # mask (the "mask=False for display" convention). The metric numbers are
+    # byte-identical to the previous in-place-masked computation (mask is 0/1 and
+    # nan_to_num is identity on finite pixels), so NO re-scoring is needed.
     if isinstance(fov, bool):
-        if fov:
-            mask_2d = fov_mask(truth.shape[-1],
-                                device=pred_cal.device, dtype=pred_cal.dtype)
-        else:
-            mask_2d = None
+        mask_2d = (fov_mask(truth.shape[-1], device=pred_cal.device,
+                            dtype=pred_cal.dtype) if fov else None)
     else:
         mask_2d = fov.to(device=pred_cal.device, dtype=pred_cal.dtype)
-    if mask_2d is not None:
-        # Broadcast (H,W) -> matching trailing dims of pred_cal/truth.
-        pred_cal = pred_cal * mask_2d
-        truth = truth * mask_2d
 
-    # Sanitize non-finite recon pixels. The all-slices Mayo val set (214 L277
-    # slices) includes air-dominated volume-edge slices; some solvers' norm
-    # layers emit NaN/Inf on near-uniform inputs, and since SSIM/PSNR are
-    # computed over the WHOLE batch a single bad slice poisons the aggregate
-    # to NaN (the symptom that produced SSIM=nan, hr=0). Mapping non-finite
-    # pred -> 0 makes that slice score low (finite) instead of nuking the whole
-    # val score. Clean preds are unchanged (nan_to_num is identity on finite
-    # tensors), so breast_ct / demo_dl are unaffected.
+    # Sanitize non-finite recon pixels (some solvers' norm layers emit NaN/Inf on
+    # near-uniform air slices; a single bad slice would poison the whole-batch
+    # SSIM/PSNR aggregate). Done on the UNMASKED pred_cal so display + metric agree.
     _n_bad = int((~torch.isfinite(pred_cal)).sum())
     if _n_bad:
         print(f"[metrics] WARN: {_n_bad} non-finite calibrated-pred px -> 0 "
@@ -241,30 +235,33 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
     pred_cal = torch.nan_to_num(pred_cal, nan=0.0,
                                 posinf=float(display_max), neginf=0.0)
 
+    # Local masked copies for the METRIC only (display tensors stay full-frame).
+    pred_m  = pred_cal * mask_2d if mask_2d is not None else pred_cal
+    truth_m = truth    * mask_2d if mask_2d is not None else truth
+
     result = {
-        "pred_cal":     pred_cal,
+        "pred_cal":     pred_cal,            # UNMASKED — for display / figures
         "fov_mask":     mask_2d,
-        "val_psnr":     float(psnr(pred_cal, truth, data_range=dr).cpu()),
-        "val_ssim":     float(ssim(pred_cal, truth, data_range=dr).cpu()),
-        "val_rmse":     float(((pred_cal - truth) ** 2).mean().sqrt().cpu()),
+        "val_psnr":     float(psnr(pred_m, truth_m, data_range=dr).cpu()),
+        "val_ssim":     float(ssim(pred_m, truth_m, data_range=dr).cpu()),
+        "val_rmse":     float(((pred_m - truth_m) ** 2).mean().sqrt().cpu()),
         "fg_threshold": float(fg_threshold),
         "calibration":  "intensity_calibrate (two-point linear, bg->0, fg_mean->truth_fg_mean)"
-                        + ("; FOV-masked" if mask_2d is not None else ""),
+                        + ("; metric FOV-masked, display unmasked" if mask_2d is not None else ""),
     }
     if baseline is not None:
         baseline_cal = intensity_calibrate(baseline, truth,
                                             fg_threshold=fg_threshold,
                                             display_max=display_max,
                                             bg_target=bg_target)
-        if mask_2d is not None:
-            baseline_cal = baseline_cal * mask_2d
         baseline_cal = torch.nan_to_num(baseline_cal, nan=0.0,
                                         posinf=float(display_max), neginf=0.0)
-        bl_rmse = float(((baseline_cal - truth) ** 2).mean().sqrt().cpu())
-        result["baseline_psnr"] = float(psnr(baseline_cal, truth, data_range=dr).cpu())
-        result["baseline_ssim"] = float(ssim(baseline_cal, truth, data_range=dr).cpu())
+        base_m = baseline_cal * mask_2d if mask_2d is not None else baseline_cal
+        bl_rmse = float(((base_m - truth_m) ** 2).mean().sqrt().cpu())
+        result["baseline_psnr"] = float(psnr(base_m, truth_m, data_range=dr).cpu())
+        result["baseline_ssim"] = float(ssim(base_m, truth_m, data_range=dr).cpu())
         result["baseline_rmse"] = bl_rmse
-        result["baseline_cal"]  = baseline_cal
+        result["baseline_cal"]  = baseline_cal    # UNMASKED — for display / figures
         result["headroom"]      = max(0.0, 1.0 - result["val_rmse"] / max(bl_rmse, 1e-12))
     return result
 

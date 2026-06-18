@@ -119,12 +119,25 @@ def summarize_run(run_dir: Path) -> dict:
     if rows:
         best_iter = max(rows, key=lambda r: r["val_score"]
                         if math.isfinite(r["val_score"]) else -math.inf)["iter"]
-        for r in sorted(rows, key=lambda r: r["val_score"]
-                        if math.isfinite(r["val_score"]) else -math.inf, reverse=True):
+        # Mayo agentic runs show the LAST iteration's val figure (final state /
+        # iter-20 mandate, per user request); other datasets (TPE searches) keep
+        # the metric-best iter. Walk in the chosen order, take the first iter that
+        # actually saved a comparison.png (the harness skips images on some iters).
+        if ch == "mayo_ldct":
+            order = sorted(rows, key=lambda r: r["iter"], reverse=True)
+        else:
+            order = sorted(rows, key=lambda r: r["val_score"]
+                           if math.isfinite(r["val_score"]) else -math.inf, reverse=True)
+        for r in order:
             it = r["iter"]
             if (run_dir / "iterations" / f"iter-{it:04d}" / "comparison.png").exists():
                 val_image = f"runs/{slug}/iterations/iter-{it:04d}/comparison.png"
                 break
+    # The 6-patient val+test montage (valtest_showcase.png: L277 + 5 test centrals,
+    # GT|FBP|recon|diff, full 512² no-FOV) is the canonical result image when
+    # present — prefer it over the per-iter val comparison.
+    if (run_dir / "valtest_showcase.png").exists():
+        val_image = f"runs/{slug}/valtest_showcase.png"
     if (run_dir / "test_showcase.png").exists():
         test_image = f"runs/{slug}/test_showcase.png"
 
