@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260614-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-claude-agentic-itnet-v2-search",
+  "started": "2026-06-18T19:15:13Z",
+  "agent": "itnet_v2-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

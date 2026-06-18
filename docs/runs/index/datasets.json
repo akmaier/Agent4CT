@@ -1,6 +1,6 @@
 {
  "schema_version": 2,
- "updated": "2026-06-18T21:24:16Z",
+ "updated": "2026-06-18T21:26:49Z",
  "datasets": [
   {
    "challenge": "demo_dl",
@@ -23,8 +23,8 @@
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
-   "n_runs": 18,
-   "n_iterations": 209,
+   "n_runs": 19,
+   "n_iterations": 213,
    "champion_slug": "mayo-ldct-claude-agentic-uswin-search-20260614-01",
    "champion_score": 0.974148,
    "thumbnail": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/valtest_showcase.png"
