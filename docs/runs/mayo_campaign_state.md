@@ -34,15 +34,27 @@ document *why* the ceiling holds).
 **Resumes (10):** uswin, itnet, itnet_v2, itnet_v3, dual_domain_supervised,
 dual_domain_bilateral_supervised, learned_primal_dual, hammernik_2017,
 hammernik_vn, wu_2015_trainable.
-**Onboards (9), do in this order, diffusion LAST:** `ram`✓, `tv_iterative`✓,
-`naf`✓, `r2gaussian`✓(wired, scp'd; iter-1 pending slot), tv_iterative_supervised,
-dual_domain_n2i, dual_domain_bilateral_n2i, ddpm, diffusion_recon.
-**Wired: 5/9** (ram/tv/naf/r2g done w/ results; tv_iterative_supervised wired
-per-sample-ps + scp'd, iter-1 pending). Remaining 4: dual_domain_n2i,
-dual_domain_bilateral_n2i (N2I half-angle + per-sample-ps), ddpm, diffusion_recon. ram/tv/naf all
-confirmed structural-negative (<LD-FBP): ram 0.9329, tv 0.9497, naf 0.864 — foreign
-/per-scene methods don't beat FBP on Mayo LDCT. Remaining 5: tv_iterative_supervised
-(trains, per-sample-ps), N2I pair (HALF-ANGLE projectors), ddpm+diffusion_recon (train).
+**Onboards (9) — ALL WIRED + driving (2026-06-16):** `ram`✓, `tv_iterative`✓,
+`naf`✓, `r2gaussian`✓, `tv_iterative_supervised`✓, `dual_domain_n2i`✓,
+`dual_domain_bilateral_n2i`✓, `diffusion_recon`✓ (con+uncon variants; "ddpm" =
+the reused DDPM prior, no separate recon solver). **ALL 19 solvers now have
+search-20260614-01 iters.**
+- **N2I pair** (`dual_domain_n2i`, `dual_domain_bilateral_n2i`): onboarded by
+  writing the per-sample HALF-ANGLE projector swap. `DualDomainPipeline`'s
+  `training_step`/`predict` use ONLY `self.R_half`, so swap a per-ps half-angle
+  cache `{k: PyronnFanBeamProjector(v.geom.split_angles()[0])}` into `pipe.R_half`
+  per sample (bs=1 train, chunk=1 val); full cache feeds the LD-FBP baseline.
+  Both structural-negative (hr0): UNet-N2I caps **0.9501** (ep32; ep64 overfits),
+  bilateral-N2I **0.9507** (6 params; epochs flat). Half-view info loss < full-view FBP.
+- **diffusion_recon** (DPS+DC-step vs REUSED Mayo DDPM v4 ckpts — NO retrain;
+  `checkpoints/ddpm_mayo_{constrained,unconstrained}_v4.pt`): **had a per-sample-ps
+  BUG** — built a single canonical-ps (0.700857) projector, mis-scaling L277's
+  native 0.74 by ~5% → baseline_PSNR 19.65 (vs ~36) AND corrupt DPS physics. FIXED
+  2026-06-16 with the single-val-ps probe (val is one patient). Pre-fix: con hr0.06,
+  uncon hr0 (steps 100→200 didn't matter). Post-fix validation in flight.
+- **structural-negatives confirmed <LD-FBP:** ram 0.9393 (blend0.3/factor0.7),
+  tv 0.9528 (clip0.08 CLEARS FBP hr0.20!), naf 0.911, r2g 0.916, tv_sup 0.863
+  (lambda_init0.02), N2I pair ~0.95. Per-scene/foreign/self-sup don't beat FBP.
 
 ### Onboard wiring recipe
 - **Val-only solvers** (no training; ram, tv, naf, r2g): val split = single
@@ -77,23 +89,31 @@ confirmed structural-negative (<LD-FBP): ram 0.9329, tv 0.9497, naf 0.864 — fo
   `ddssl_ldct/training.py` first) ON TOP of per-sample-ps.
 - **ddpm/diffusion** need training (solver_plan Step 4), constrained+unconstrained.
 
-## Per-solver knob insights / ceilings (as of this writing)
-- **itnet 0.9726 = CHAMPION, plateaued** (ep104≈ep120). k=1 (fewer DC steps win
-  on noisy LDCT); epochs dominant lever, now saturated.
-- **uswin 0.9709, still climbing** with epochs (36→48 lifted 0.9689→0.9709).
-- **itnet_v2 0.9714 ceiling** (ep72 optimal, k=1; ep88/seed/lr-0.6× all worse).
-- **itnet_v3 0.9657**, **dual_domain_supervised 0.9626**.
-- **dd-bf (bilateral) capped ~0.950** — lr/epochs/img_n_bf/img_kernel/proj_n_bf
-  all fail to beat iter-1; testing train_n×2 then structural ablations.
-- **hammernik_2017 0.9484**, **hammernik_vn 0.909** (ep8 best; testing ep16).
-- **wu_2015_trainable ~0.910** (n_outer=1 mandatory: 0→0.50 collapse,
-  2→oversmooth; testing ep24→40).
-- **learned_primal_dual climbing** 0.836→0.885 (lr=3e-4); epochs 10→30 in flight.
-- **RAM = STRUCTURAL NEGATIVE** — caps 0.9329 (blend=0.5), hr=0, below LD-FBP;
-  foundation model doesn't transfer zero-shot. `ram_finetune` is a no-op without
-  `ram_finetune_epochs>0`. File the negative verdict once it completes 20.
-- **tv_iterative** onboard baseline 0.9497 hr=0 (default TV over-smooths; tuning
-  lambda down).
+## Per-solver knob insights / ceilings (updated 2026-06-16)
+- **itnet 0.9729 = CHAMPION, iter-20 DONE.** k=1 (fewer DC steps win on noisy
+  LDCT); epochs dominant (ep104 peak); itnet_alpha + unet_c neutral at k=1;
+  **train_n 200→300 lifted 0.97256→0.97294 (mildly data-limited).**
+- **itnet_v3 0.9683 = iter-20 DONE** (ep40 peak; ep48 & lr3e-4 collapse; v3 is
+  unstable, grad_clip=0.5 no help; val60 honest 0.9638).
+- **itnet_v2 0.9714 ceiling** (iter-19; ep72 optimal, k=1; ep88/seed/lr-0.6×/
+  unet_c=32/patience/**train_n=300 all worse** — NOT data-limited unlike v1).
+- **uswin 0.9709** (iter-14; epochs lever, still the path to 20).
+- **dual_domain_supervised 0.9626** (lambda_neg=0.1 best; capacity/lr/seed flat).
+- **dd-bf (bilateral-sup) capped 0.9502** — every scalar flat (lr/epochs/kernels/
+  proj_n_bf/seed/loss/grad_clip); 6-param structural ceiling.
+- **hammernik_2017 0.9484**; **hammernik_vn 0.9203** — grad_clip 1.0→0.5 BROKE the
+  0.9158 early-stop plateau; lr5e-4 stays optimal (8e-4 worse even at gc0.5).
+- **wu_2015_trainable 0.9135** (n_outer=1 mandatory).
+- **learned_primal_dual 0.9641** (lpd_iters=7, lr=5e-4 PEAK; 3e-4=0.959, 6e-4=0.65
+  anomalous collapse, 7e-4=0.9638; huge arc from 0.836).
+- **STRUCTURAL-NEGATIVES (hr0, <LD-FBP), driving to 20 to document:** ram 0.9393
+  (blend0.3, factor0.7; finetune hurts), tv_iterative **0.9528 CLEARS FBP hr0.20**
+  (clip_max=0.08 preserves bone — the lever; 200 iters optimal), tv_sup 0.863
+  (lambda_init0.02 peak), naf 0.911, r2g 0.916, N2I-UNet 0.9501 (ep32),
+  N2I-bilateral 0.9507.
+- **diffusion_recon:** reused v4 DDPM prior; PER-SAMPLE-PS BUG FIXED 2026-06-16
+  (see onboards above). Constrained (hard-DC) clears FBP, unconstrained doesn't;
+  post-fix numbers pending.
 
 ## Publish trigger
 When the top-3 (itnet/uswin/itnet_v2) all reach iter-20, do ONE comprehensive

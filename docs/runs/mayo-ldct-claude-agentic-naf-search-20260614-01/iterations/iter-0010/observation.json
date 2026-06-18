@@ -1,0 +1,31 @@
+{
+  "ts": "2026-06-16T03:01:08Z",
+  "run_id": "mayo-ldct-claude-agentic-naf-search-20260614-01",
+  "iter": 10,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "naf-claude-agentic: val_n=20, rationale=iter-10 (toward 20): naf_n_iter 3000->4000 (climbing: 2000->0.898, 3000->0.910; how close to FBP 0.92 with more per-scene optim?), naf_tv_weight=0.001, naf_n_freqs=14, naf_hidden=256, naf_n_iter=4000",
+  "val_score": 0.7831740975379944,
+  "headroom": 0.0,
+  "val_ssim": 0.7831740975379944,
+  "val_psnr": 24.160158157348633,
+  "val_rmse": 0.003097148844972253,
+  "kept": false,
+  "status": "discard",
+  "params_M": 0.212737,
+  "train_n": 400,
+  "val_n": 7,
+  "agent": "naf-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "naf-claude-agentic: val_n=20, rationale=iter-10 (toward 20): naf_n_iter 3000->4000 (climbing: 2000->0.898, 3000->0.910; how close to FBP 0.92 with more per-scene optim?), naf_tv_weight=0.001, naf_n_freqs=14, naf_hidden=256, naf_n_iter=4000",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0010/comparison.png",
+  "elapsed_s": 2663.6600601673126,
+  "cfg_full": {
+    "val_n": 20,
+    "rationale": "iter-10 (toward 20): naf_n_iter 3000->4000 (climbing: 2000->0.898, 3000->0.910; how close to FBP 0.92 with more per-scene optim?)",
+    "naf_tv_weight": 0.001,
+    "naf_n_freqs": 14,
+    "naf_hidden": 256,
+    "naf_n_iter": 4000
+  }
+}

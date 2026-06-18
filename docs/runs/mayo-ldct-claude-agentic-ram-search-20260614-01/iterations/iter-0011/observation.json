@@ -1,0 +1,30 @@
+{
+  "ts": "2026-06-16T07:16:54Z",
+  "run_id": "mayo-ldct-claude-agentic-ram-search-20260614-01",
+  "iter": 11,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "ram_zeroshot-claude-agentic: val_n=20, seed=42, rationale=iter-11 (toward 20): ram_factor 0.7->0.5 at blend=0.3 (factor curve: 1.5=0.9233, 1.0=0.9386, 0.7=0.9393 slight peak; map where down-scaling turns over), ram_post_fbp_blend=0.3, ram_factor=0.5",
+  "val_score": 0.9384732246398926,
+  "headroom": 0.0,
+  "val_ssim": 0.9384732246398926,
+  "val_psnr": 35.15406799316406,
+  "val_rmse": 0.0008735075243748724,
+  "kept": false,
+  "status": "discard",
+  "params_M": 35.618953,
+  "train_n": 400,
+  "val_n": 20,
+  "agent": "ram_zeroshot-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "ram_zeroshot-claude-agentic: val_n=20, seed=42, rationale=iter-11 (toward 20): ram_factor 0.7->0.5 at blend=0.3 (factor curve: 1.5=0.9233, 1.0=0.9386, 0.7=0.9393 slight peak; map where down-scaling turns over), ram_post_fbp_blend=0.3, ram_factor=0.5",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0011/comparison.png",
+  "elapsed_s": 99.45931673049927,
+  "cfg_full": {
+    "val_n": 20,
+    "seed": 42,
+    "rationale": "iter-11 (toward 20): ram_factor 0.7->0.5 at blend=0.3 (factor curve: 1.5=0.9233, 1.0=0.9386, 0.7=0.9393 slight peak; map where down-scaling turns over)",
+    "ram_post_fbp_blend": 0.3,
+    "ram_factor": 0.5
+  }
+}

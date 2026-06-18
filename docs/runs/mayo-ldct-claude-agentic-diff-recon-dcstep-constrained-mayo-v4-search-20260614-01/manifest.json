@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260614-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search",
+  "started": "2026-06-16T08:10:00Z",
+  "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

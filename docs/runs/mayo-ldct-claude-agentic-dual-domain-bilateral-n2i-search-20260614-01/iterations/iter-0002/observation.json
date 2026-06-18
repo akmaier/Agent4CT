@@ -1,0 +1,33 @@
+{
+  "ts": "2026-06-16T08:03:50Z",
+  "run_id": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
+  "iter": 2,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "dual_domain_bilateral_n2i-claude-agentic: train_n=200, val_n=20, batch_size=1, val_chunk=1, grad_clip=1.0, seed=42, epochs=32, rationale=iter-2 (toward 20): epochs 20->32 (onboard 0.9504 hr0; 6-param BF N2I, test if more training sharpens toward FBP like UNet-N2I did 0.9388->0.9416 at ep16)",
+  "val_score": 0.9500553011894226,
+  "headroom": 0.0,
+  "val_ssim": 0.9500553011894226,
+  "val_psnr": 35.82460403442383,
+  "val_rmse": 0.0008086115121841431,
+  "kept": false,
+  "status": "discard",
+  "params_M": null,
+  "train_n": 400,
+  "val_n": 20,
+  "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "dual_domain_bilateral_n2i-claude-agentic: train_n=200, val_n=20, batch_size=1, val_chunk=1, grad_clip=1.0, seed=42, epochs=32, rationale=iter-2 (toward 20): epochs 20->32 (onboard 0.9504 hr0; 6-param BF N2I, test if more training sharpens toward FBP like UNet-N2I did 0.9388->0.9416 at ep16)",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0002/comparison.png",
+  "elapsed_s": 907.6102886199951,
+  "cfg_full": {
+    "train_n": 200,
+    "val_n": 20,
+    "batch_size": 1,
+    "val_chunk": 1,
+    "grad_clip": 1.0,
+    "seed": 42,
+    "epochs": 32,
+    "rationale": "iter-2 (toward 20): epochs 20->32 (onboard 0.9504 hr0; 6-param BF N2I, test if more training sharpens toward FBP like UNet-N2I did 0.9388->0.9416 at ep16)"
+  }
+}

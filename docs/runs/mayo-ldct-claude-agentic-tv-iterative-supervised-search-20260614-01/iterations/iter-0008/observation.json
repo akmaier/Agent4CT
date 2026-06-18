@@ -1,0 +1,30 @@
+{
+  "ts": "2026-06-16T01:08:39Z",
+  "run_id": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260614-01",
+  "iter": 8,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv_iterative_supervised-claude-agentic: tv_step_init=0.0001, val_n=20, rationale=iter-8: epochs 10->20 (K=10 best 0.809; K=16 worse; more training to better-learn the 20 step/lambda scalars), train_n=200, epochs=20",
+  "val_score": 0.8155256509780884,
+  "headroom": 0.0,
+  "val_ssim": 0.8155256509780884,
+  "val_psnr": 31.263412475585938,
+  "val_rmse": 0.0013670973712578416,
+  "kept": false,
+  "status": "discard",
+  "params_M": 2e-05,
+  "train_n": 400,
+  "val_n": 20,
+  "agent": "tv_iterative_supervised-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "tv_iterative_supervised-claude-agentic: tv_step_init=0.0001, val_n=20, rationale=iter-8: epochs 10->20 (K=10 best 0.809; K=16 worse; more training to better-learn the 20 step/lambda scalars), train_n=200, epochs=20",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260614-01/iterations/iter-0008/comparison.png",
+  "elapsed_s": 2807.3019247055054,
+  "cfg_full": {
+    "tv_step_init": 0.0001,
+    "val_n": 20,
+    "rationale": "iter-8: epochs 10->20 (K=10 best 0.809; K=16 worse; more training to better-learn the 20 step/lambda scalars)",
+    "train_n": 200,
+    "epochs": 20
+  }
+}

@@ -28,6 +28,13 @@ NAMES = {
     "hammernik-vn": "Hammernik VN (MRI port)",
     "uswin": "U-Swin",
     "wu-2015-trainable": "Wu 2015 trainable",
+    "ram": "RAM (zero-shot)",
+    "naf": "NAF",
+    "r2gaussian": "R2-Gaussian",
+    "tv-iterative": "TV-iterative",
+    "tv-iterative-supervised": "TV-iterative (unrolled)",
+    "diff-recon-dcstep-constrained-mayo-v4": "Diffusion (constrained DPS+DC)",
+    "diff-recon-dcstep-unconstrained-mayo-v4": "Diffusion (unconstrained DPS)",
 }
 
 # cfg keys that are common plumbing / geometry — omit from the "variant" string.
@@ -36,6 +43,9 @@ BOILER = {
     "lambda_neg", "max_train_s", "rationale", "noise_i0", "noise_sigma_e",
     "optimizer", "dataset_kind", "image_size", "pixel_spacing", "n_angles",
     "n_det", "det_spacing", "sod", "sdd", "display_min", "display_max",
+    # diffusion_recon plumbing (keep only the tuned knobs recon_eta / recon_dcstep_every)
+    "recon_ckpt", "recon_init", "recon_mode", "recon_sample_steps",
+    "recon_eta_clamp", "recon_dcstep_n_cg", "recon_dcstep_warmup", "recon_dcstep_relax",
 }
 
 
@@ -94,12 +104,12 @@ def main() -> int:
             v = variant(o.get("cfg_full") or {})
             if v:
                 var = f"iter-{it} ({v})"
-        # Prefer the diverse TEST-set showcase montage (one central slice per
-        # held-out test patient, made by scripts/make_test_showcase.py) over the
-        # val (L277) comparison.png when it has been generated.
-        showcase = d / "test_showcase.png"
-        img = (f"../runs/{d.name}/test_showcase.png" if showcase.exists()
-               else f"../runs/{d.name}/iterations/iter-{it:04d}/comparison.png")
+        # Link the best iter's val (L277) comparison.png — always regenerated
+        # by the solver at run time, so it stays in lock-step with the metric
+        # after every rsync. (The held-out-test montages (test_showcase.png)
+        # were a nicer view but went stale at 2026-06-15 and require a slow
+        # retrain to refresh; regenerate them FOV-cropped as a follow-up.)
+        img = f"../runs/{d.name}/iterations/iter-{it:04d}/comparison.png"
         res = f"../runs/{d.name}/results.tsv"
         rows.append((hr, ss, name, var, params, res, img))
 
