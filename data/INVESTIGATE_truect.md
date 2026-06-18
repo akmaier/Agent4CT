@@ -2,12 +2,24 @@
 
 ## Status
 
-Not in the social-budget table because the public release size is unclear.
-The report (Abadi et al. 2025) says 200 phantoms across 3 pathologies; if
-each phantom comes with the Mayo-CT-PD projection format (matching their
-2D rebinned 1152×736 layout), per-case is ~3-5 GB and the full set is
-~600 GB-1 TB — too big. But the **per-case** structure is naturally
-amenable to subsetting.
+**ACQUIRED 2026-06-18.** The full dataset (5 files, **174 GiB**) is on the cluster at
+`/cluster/maier/Agent4CT/data/truect/`, fetched via `rclone` from a private
+Backblaze B2 bucket (`cvit:truect22`) provided by the challenge organisers, and
+**SHA1-verified** (`rclone check` → 5 matching files, 0 differences).
+
+| File | Size |
+|---|---:|
+| `dcmproj_copd.zip` | 69.1 GB |
+| `dcmproj_liver.zip` | 48.2 GB |
+| `dcmproj_lung_lesion.zip` | 68.7 GB |
+| `reference.zip` | 359 MB |
+| `TrueCT-Documentation.pdf` | 400 KB |
+
+The raw `.zip` archives are **NOT yet extracted or staged** into the harness HDF5
+layout — that's the next step before any TrueCT solver work (read
+`TrueCT-Documentation.pdf` for the geometry/format first). The size estimate
+below (~600 GB–1 TB) was wrong — the published release is 174 GiB. The
+CodaLab-gating notes that follow are now **historical**, kept for provenance.
 
 ## CVIT-Duke page (checked 2026-05-15)
 

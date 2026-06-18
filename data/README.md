@@ -25,7 +25,7 @@ Subsequent agents can find what's already on disk here:
 | `dl_spectral` | `data/dl_spectral/raw/` + `staged/` | 3.3 GB | **2.1 GB** ✅ | 800 / 100 / 100 | 1000 cases from Zenodo 14262737. `stage_h5()` packs multi-channel truth `(N,3,H,W)` + sinograms `(N,2,A,D)`. Channels = adipose / fibroglandular / calcification (truth) and high-kVp / low-kVp (sino). Decompresses .npy.gz to a temp dir then mmaps to keep RAM under 30 MB. |
 | `mayo_ldct` | `data/mayo_ldct/raw/` + `staged/` | 69 GB | **0.8 GB** ✅ | 672 / 99 / 607 | Wagner 10-patient subset: `L004, L033, L064, L107, L143, L186, L221, L260, L288, L299` (L067 doesn't exist in TCIA's `LDCT-and-Projection-data` collection — replaced with L064). `stage_h5()` parses Full-Dose Images DICOM series and converts HU→μ mm⁻¹. Sinograms are forward-projected at train time (the projection-data series shipped in TCIA is per-frame DICOM-CT-PD and would need a separate parser if anyone needs measured-noise sinograms). Re-running the fetcher is idempotent. |
 | `dl_sparse_view` | — | — | — | — | **BLOCKED**. CodaLab-gated <https://dl-sparse-view-ct-challenge.eastus.cloudapp.azure.com/competitions/1>. No public Zenodo mirror (the README's old "Zenodo 13882980" claim is wrong; that record is DL-Spectral info, 0 files). |
-| `truect` | — | — | — | — | **BLOCKED**. CodaLab-gated, contact `cvit-inquire@duke.edu`. See `data/INVESTIGATE_truect.md`. |
+| `truect` | `data/truect/` (raw zips) | **174 GiB** ✅ | — *(not staged yet)* | — | **Acquired 2026-06-18** via rclone from private B2 bucket `cvit:truect22` (organiser-provided), SHA1-verified (5 files, 0 diffs). Files: `dcmproj_copd.zip` 69.1 GB, `dcmproj_liver.zip` 48.2 GB, `dcmproj_lung_lesion.zip` 68.7 GB, `reference.zip` 359 MB, `TrueCT-Documentation.pdf`. 200 phantoms (COPD/liver/lung-lesion). Raw zips NOT yet extracted/staged. See `data/INVESTIGATE_truect.md`. |
 
 All three staged datasets share **μ mm⁻¹** as the image-value convention
 (water = 0.02 mm⁻¹, matching `ddssl_ldct.phantoms.random_ellipses_phantom`).
@@ -66,7 +66,7 @@ under `/cluster/maier/` so the rest of the lab has working room. Verify with
 | DL-Sparse-View 2021 | ~10–20 GB | <1 % | ✅ |
 | DL-Spectral 2022 | ~30–50 GB | 2–3 % | ✅ |
 | LoDoPaB-CT | 55 GB | 3 % | ✅ |
-| TrueCT | ~40–80 GB (estimate; not published) | 3–5 % | ⚠️ verify size after manifest |
+| TrueCT | **174 GiB (acquired 2026-06-18)** | ~10 % | ✅ on cluster at `data/truect/` |
 | Mayo LDCT (Wagner 10-scan subset) | ~100–200 GB | 6–12 % | ✅ if needed for Mayo challenge |
 | Mayo LDCT (full) | 1.32 TB | 77 % | ❌ antisocial |
 | CT-MAR | ~150–300 GB (estimate) | 9–18 % | ⚠️ confirm post-challenge access |
