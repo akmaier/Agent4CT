@@ -32,6 +32,22 @@ breast_ct + demo_dl under fresh `search-20260618-01` via the generic
 config env `DD_CONFIG_PATH`). N2I is structurally FBP-bounded on dense-view
 breast/demo — expect hr near the LD-FBP baseline there.
 
+**Per-image N2I knob insights (confirmed across runs, 2026-06-18/19):**
+- **U-Net N2I OVERFITS each scan** — the per-scan `_fit_one_scene` loop has no
+  early-stop, so raising `n_iter` does NOT help and often HURTS: demo-n2i
+  0.4785→0.4293 @n_iter1200, breast-n2i 0.9553→0.9407 @n_iter600, mayo-n2i flat.
+  The lever is per-scan **lr↓** (anchor near the warm-start init): demo 0.4785→0.4880
+  (lr1e-4), mayo 0.9508→0.9541 (lr3e-4), breast 0.9553→0.9593 (lr1e-4) — confirmed
+  on all 3 datasets. `unet_c↑` is NOT the lever (mayo c16→c32 flat at 0.9508).
+- **Bilateral (6-param) BEATS the U-Net** on these substrates: it physically can't
+  overfit one scan (demo-bilat 0.77 hr+0.33 vs demo-n2i 0.49). For demo bilateral
+  `img_n_bf↑` (image-domain depth) is the working lever (1→3→5: 0.67→0.75→0.77).
+- **Bilateral over-smoothing lever is substrate-specific:** Mayo (2304-view) the
+  IMAGE-domain σ is inert and `proj_sr↓` is the lever; breast/demo (128-view) the
+  IMAGE-domain `img_sr` (default 0.02 too loose → degenerates to a Gaussian blur) is
+  the lever and proj-tuning HURTS (breast PSNR 38.17→37.90). Tighten `img_sr`→0.0005
+  for edge preservation.
+
 ## Data provenance — `staged_canonical` (READ BEFORE touching Mayo data)
 
 The `mayo_ldct_2d` training loader (`ddssl_ldct/staged_dataset.py`) reads
