@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-18T18:27:35Z",
+  "updated": "2026-06-18T19:01:22Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1049,13 +1049,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-16T07:30:55Z",
       "status": "running",
-      "n_iterations": 5,
+      "n_iterations": 6,
       "best_score": 0.950722,
       "best_headroom": 0.0,
       "best_iter": 3,
       "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0005/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0006/comparison.png",
       "test_image": null
     },
     {
@@ -1071,7 +1071,7 @@
       "best_iter": 9,
       "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0011/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/valtest_showcase.png",
       "test_image": null
     },
     {
@@ -1081,13 +1081,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-16T07:21:44Z",
       "status": "running",
-      "n_iterations": 6,
+      "n_iterations": 7,
       "best_score": 0.953238,
       "best_headroom": 0.135833,
       "best_iter": 6,
       "agent": "dual_domain_n2i-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0006/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0007/comparison.png",
       "test_image": null
     },
     {
@@ -1103,7 +1103,7 @@
       "best_iter": 7,
       "agent": "dual_domain_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0014/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/valtest_showcase.png",
       "test_image": null
     },
     {
@@ -1151,7 +1151,7 @@
       "best_iter": 20,
       "agent": "itnet-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/iterations/iter-0020/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/valtest_showcase.png",
       "test_image": null
     },
     {
@@ -1167,7 +1167,7 @@
       "best_iter": 11,
       "agent": "itnet_v2-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0020/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/valtest_showcase.png",
       "test_image": null
     },
     {
