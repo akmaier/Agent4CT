@@ -30,56 +30,66 @@
       <a class="a4c-nav-github" href="https://github.com/akmaier/Agent4CT">GitHub</a>
     </nav>
 
-    <section id="overview">
-      <h2 id="runs">Progress overview</h2>
+    <!-- LANDING: dataset picker (shown when no ?dataset= in the URL). -->
+    <section id="landing" hidden>
+      <h2>Pick a dataset</h2>
       <p class="muted">
-        Best <strong>headroom</strong> per run, plotted against iteration index.
-        Higher is better; <code>1.0</code> means the run matched the oracle on its in-loop val subset.
+        Each dataset has its own dashboard — runs, progress curves, and
+        comparison figures load only for the dataset you choose, so the page
+        stays fast.
       </p>
-      <div id="overview-charts">
-        <p id="overview-empty" class="muted">loading…</p>
-      </div>
-
-      <h2>Runs</h2>
-      <p class="muted">
-        Each card is one autoresearch run, addressed by
-        <code>&lt;challenge-slug&gt;-YYYYMMDD-NN</code>.
-        Click to expand and see the per-iteration timeline.
-      </p>
-      <div id="runs-grid" class="a4c-grid">
-        <p id="runs-empty" class="muted">loading runs…</p>
+      <div id="dataset-grid" class="a4c-grid">
+        <p class="muted">loading datasets…</p>
       </div>
     </section>
 
-    <section id="run-detail" hidden>
-      <hr>
-      <h2 id="run-detail-title">Run</h2>
-      <div class="dash-run-meta" id="run-detail-meta"></div>
+    <!-- DATASET VIEW: shown when ?dataset=<challenge> is present. -->
+    <div id="dataset-view" hidden>
+      <p><a href="dashboard.html" class="btn btn-small">← All datasets</a></p>
 
-      <div id="run-detail-final" class="a4c-callout" hidden></div>
+      <section id="overview">
+        <h2 id="dataset-title">Dataset</h2>
+        <p class="muted">
+          Best <strong>headroom</strong> per run vs iteration (running max).
+          <code>1.0</code> = matched the oracle on the in-loop val subset.
+        </p>
+        <div id="overview-charts">
+          <p id="overview-empty" class="muted">loading…</p>
+        </div>
 
-      <h3>Progress curve</h3>
-      <div class="chart-wrap">
-        <canvas id="run-chart" height="110"></canvas>
-      </div>
+        <h2 id="runs">Runs</h2>
+        <p class="muted">
+          Each card is one autoresearch run (<code>&lt;solver&gt;-YYYYMMDD-NN</code>)
+          with its best-iter <strong>validation</strong> and <strong>held-out
+          test</strong> figures. Click to expand the per-iteration timeline.
+        </p>
+        <div id="runs-grid" class="a4c-grid">
+          <p id="runs-empty" class="muted">loading runs…</p>
+        </div>
+      </section>
 
-      <h3>Iterations</h3>
-      <div id="run-detail-iters" class="dash-iters"></div>
+      <section id="run-detail" hidden>
+        <hr>
+        <h2 id="run-detail-title">Run</h2>
+        <div class="dash-run-meta" id="run-detail-meta"></div>
+        <div id="run-detail-final" class="a4c-callout" hidden></div>
+        <h3>Progress curve</h3>
+        <div class="chart-wrap"><canvas id="run-chart" height="110"></canvas></div>
+        <h3>Iterations</h3>
+        <div id="run-detail-iters" class="dash-iters"></div>
+        <h3>Stage checks (every 30 iter)</h3>
+        <div id="run-detail-stages" class="dash-stages"></div>
+      </section>
 
-      <h3>Stage checks (every 30 iter)</h3>
-      <div id="run-detail-stages" class="dash-stages"></div>
-    </section>
-
-    <section id="scratchpad">
-      <hr>
-      <h2 id="scratch-pad">Shared scratch pad</h2>
-      <p class="muted">
-        Cross-run observations.
-        Every iteration on every challenge appends one entry here; agents
-        read the last ~30 before their next edit. Newest first.
-      </p>
-      <div id="scratch-list"></div>
-    </section>
+      <section id="scratchpad" hidden>
+        <hr>
+        <h2 id="scratch-pad">Shared scratch pad</h2>
+        <p class="muted">
+          Cross-run observations for this dataset (most recent first, capped).
+        </p>
+        <div id="scratch-list"></div>
+      </section>
+    </div>
 
     <footer class="site-footer">
       <span class="site-footer-credits">

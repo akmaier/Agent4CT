@@ -419,3 +419,99 @@ img[data-zoomable]:hover {
 }
 .lightbox-close  { right: 1rem; }
 .lightbox-newtab { right: 4rem; }
+
+/* ===== per-dataset dashboard refactor (2026-06-18) ===================== */
+
+/* Landing: one card per dataset. */
+.dash-dataset-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  background: #fff;
+}
+.dash-dataset-card:hover {
+  text-decoration: none;
+  border-color: #155799;
+  box-shadow: 0 2px 8px rgba(21, 87, 153, 0.14);
+  transform: translateY(-1px);
+}
+.dash-dataset-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  color: #155799;
+}
+.dash-dataset-card .stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #555;
+  font-family: ui-monospace, Menlo, monospace;
+  margin: 0.15rem 0;
+}
+.dash-dataset-card .stat .label { color: #888; }
+.dataset-thumb {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  background: #f3f4f6;
+}
+
+/* Small muted slug under the run-card header. */
+.dash-run-slug {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.72rem;
+  word-break: break-all;
+  margin: -0.25rem 0 0.5rem;
+}
+
+/* Val + test thumbnail strip on each run card. */
+.run-thumbs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.75rem;
+}
+.run-thumb-fig {
+  flex: 1 1 0;
+  margin: 0;
+  min-width: 0;
+}
+.run-thumb {
+  width: 100%;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #e1e4e8;
+  background: #f3f4f6;
+  cursor: zoom-in;
+}
+.run-thumb-fig figcaption {
+  font-size: 0.68rem;
+  color: #888;
+  text-align: center;
+  margin-top: 0.15rem;
+}
+
+/* "Load more" pagination button (runs grid + scratchpad). */
+.load-more {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin: 0.5rem 0;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  border: 1px solid #155799;
+  border-radius: 6px;
+  background: #fff;
+  color: #155799;
+  cursor: pointer;
+}
+.load-more:hover { background: #155799; color: #fff; }
+
+.btn-small {
+  font-size: 0.85rem;
+  padding: 0.2rem 0.6rem;
+}

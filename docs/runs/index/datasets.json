@@ -1,0 +1,42 @@
+{
+ "schema_version": 2,
+ "updated": "2026-06-18T07:20:41Z",
+ "datasets": [
+  {
+   "challenge": "demo_dl",
+   "label": "Demo-DL",
+   "n_runs": 50,
+   "n_iterations": 854,
+   "champion_slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
+   "champion_score": 0.961275,
+   "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
+  },
+  {
+   "challenge": "breast_ct",
+   "label": "Breast-CT",
+   "n_runs": 31,
+   "n_iterations": 495,
+   "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
+   "champion_score": 0.999577,
+   "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"
+  },
+  {
+   "challenge": "mayo_ldct",
+   "label": "Mayo-LDCT",
+   "n_runs": 19,
+   "n_iterations": 232,
+   "champion_slug": "mayo-ldct-claude-agentic-uswin-search-20260614-01",
+   "champion_score": 0.974148,
+   "thumbnail": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0016/comparison.png"
+  },
+  {
+   "challenge": "dl_sparse_view",
+   "label": "DL-Sparse-View",
+   "n_runs": 8,
+   "n_iterations": 609,
+   "champion_slug": "dl-sparse-view-res-20260513-01",
+   "champion_score": 0.68416,
+   "thumbnail": "runs/dl-sparse-view-res-20260513-01/iterations/iter-0091/comparison.png"
+  }
+ ]
+}
