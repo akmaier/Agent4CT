@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-18T21:50:58Z",
+ "updated": "2026-06-18T22:03:55Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
@@ -37,7 +37,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T20:38:58Z",
    "status": "running",
-   "n_iterations": 2,
+   "n_iterations": 3,
    "best_score": 0.950806,
    "best_headroom": 0.173772,
    "best_iter": 2,
@@ -51,9 +51,13 @@
     [
      2,
      0.1738
+    ],
+    [
+     3,
+     0.1738
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
@@ -63,10 +67,10 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T19:15:13Z",
    "status": "running",
-   "n_iterations": 2,
-   "best_score": 0.34295,
+   "n_iterations": 3,
+   "best_score": 0.537331,
    "best_headroom": 0.0,
-   "best_iter": 1,
+   "best_iter": 3,
    "agent": "itnet_v2-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
@@ -77,9 +81,13 @@
     [
      2,
      0.0
+    ],
+    [
+     3,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
@@ -871,7 +879,7 @@
      0.3206
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0013/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/valtest_showcase.png",
    "test_image": null
   },
   {
