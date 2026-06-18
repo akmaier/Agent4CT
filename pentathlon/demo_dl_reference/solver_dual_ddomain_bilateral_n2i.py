@@ -11,6 +11,28 @@ Wagner showed dual bilateral filters achieve 97% of dual U-Net SSIM with
 only 8 total parameters (4 for projection + 4 for image domain) on
 abdomen CT.
 
+**Per-image protocol (2026-06-18 fix).** N2I is inherently a *per-image*
+self-supervised method (Hendriksen et al. 2020, Wagner et al. 2023): each
+scan is reconstructed by optimising on ITS OWN low-dose measurements
+(angularly split into two half-view subsets), with no clean ground truth
+and no cross-scan amortisation. The earlier implementation here WRONGLY
+trained one amortised BF stack on the 4 train patients and forward-applied
+it to val/test — that is not N2I. The recon is now:
+
+  1. **Warm-start pre-pass (cfg["warm_start"], default True):** a SHORT
+     amortised N2I pre-train on the TRAIN split (bounded by
+     ``pretrain_epochs`` / ``pretrain_steps``) using the SAME GT-free
+     N2I self-supervised loss. Captures ``warm_state = pipe.state_dict()``
+     as a generic BF-sigma initialisation. Skipped if ``warm_start`` is
+     False (then the train split is never loaded).
+  2. **Per-image fine-tune (the actual recon):** for EACH val/showcase
+     scan, build a FRESH ``DualDomainPipeline`` with fresh
+     ``BilateralFilterStack`` denoisers, load ``warm_state`` if present,
+     and run ``cfg["n_iter"]`` Adam steps of the N2I self-supervised loss
+     computed on THAT ONE scan's sinogram only (grad-clipped; nonfinite
+     steps skipped), guarded by a per-scene wall-time limit. Then
+     ``predict`` under no_grad.
+
 For the **supervised** (full 128-view, MSE-vs-clean) variant see
 `solver_dual_ddomain_bilateral_supervised.py` — built 2026-05-22 after
 finding that N2I systematically over-smooths on dense breast-CT scans
@@ -62,8 +84,17 @@ CONFIG = {
     "img_sx":        1.5,     # initial sigma_x (spatial)
     "img_sy":        1.5,     # initial sigma_y (spatial)
     "img_sr":        0.02,    # initial sigma_r (intensity range)
+    # --- Warm-start pre-pass (short amortised N2I on the train split) ---
+    "warm_start":      True,   # if False, the train split is never loaded
+    "pretrain_epochs": 3,      # bound for the warm-start pre-train
+    "pretrain_steps":  0,      # alt cap: max total opt.steps (0 = use epochs)
+    # --- Per-image fine-tune (the actual recon) ---
+    "n_iter":          400,    # per-scan Adam steps of the N2I self-sup loss
+    "grad_clip":       1.0,    # mandatory >0 for Mayo's 2304-view FBP adjoint
+    "outer_wall_s":    3600,   # whole val-loop wall; per_scene = outer / val_n
+    "per_scene_s":     None,   # optional per-scene override (s)
     # Training
-    "epochs":        20,
+    "epochs":        20,       # legacy; superseded by pretrain_epochs in warm-start
     "batch_size":    1,
     "lr":            5e-3,     # Wagner used 5e-3 for BFs (vs 5e-5 for U-Nets)
     "optimizer":     "adam",
@@ -115,7 +146,61 @@ def build_dataset(geom, n, seed, i0, sigma_e, device):
     split = "val" if (seed % 100_000) >= 1000 else "train"
     return load_val_split(kind, split, n, device=device,
                           seed=seed, noise_i0=i0, noise_sigma_e=sigma_e,
-                          geom=geom)
+                          geom=geom, return_ps=True)   # 4-tuple; ps=None for non-mayo
+
+
+def _build_bf_pipe(geom, cfg, device):
+    """Fresh DualDomainPipeline with fresh BilateralFilterStack denoisers."""
+    proj_dn = BilateralFilterStack(
+        n_filters=cfg["proj_n_bf"], kernel_size=cfg["proj_kernel"],
+        sigma_x=cfg["proj_sx"], sigma_y=cfg["proj_sy"], sigma_r=cfg["proj_sr"],
+    )
+    img_dn = BilateralFilterStack(
+        n_filters=cfg["img_n_bf"], kernel_size=cfg["img_kernel"],
+        sigma_x=cfg["img_sx"], sigma_y=cfg["img_sy"], sigma_r=cfg["img_sr"],
+    )
+    return DualDomainPipeline(geometry=geom, proj_denoiser=proj_dn,
+                              image_denoiser=img_dn).to(device)
+
+
+def _fit_one_scene(scan_sino, geom, cfg, device, warm_state,
+                   r_half=None, t_limit=None):
+    """Per-image N2I reconstruction of ONE scan with the BF stack.
+
+    Builds a FRESH DualDomainPipeline (fresh BilateralFilterStack denoisers),
+    loads ``warm_state`` if present, then runs ``cfg["n_iter"]`` Adam steps of
+    the GT-free N2I self-supervised loss (``pipe.training_step(sino)["loss"]``)
+    on THIS scan's sinogram only — grad-clipped via ``clip_and_step`` (skips the
+    step on a nonfinite loss OR gradient) — bounded by ``t_limit`` seconds.
+    Returns ``(pred (1,1,H,W), last_loss, n_done)``.
+
+    ``r_half``: per-slice HALF-ANGLE projector (Mayo per-ps). When None the
+    pipeline keeps the default half-projector built from ``geom``.
+    """
+    pipe = _build_bf_pipe(geom, cfg, device)
+    if warm_state is not None:
+        pipe.load_state_dict(warm_state)
+    if r_half is not None:   # Mayo: per-ps half-angle projector for the view-split
+        pipe.R_half = r_half
+    opt = torch.optim.Adam(pipe.parameters(), lr=cfg["lr"])
+    pipe.train()
+    t0 = time.time()
+    last_loss = float("inf")
+    n_done = 0
+    for it in range(int(cfg["n_iter"])):
+        losses = pipe.training_step(scan_sino)   # self-supervised; no clean target
+        loss = losses["loss"]
+        opt.zero_grad(set_to_none=True)
+        loss.backward()
+        if clip_and_step(opt, loss, cfg.get("grad_clip", 0.0)):
+            last_loss = float(loss.detach().cpu())
+        n_done = it + 1
+        if t_limit is not None and (time.time() - t0) > t_limit:
+            break
+    pipe.eval()
+    with torch.no_grad():
+        pred = pipe.predict(scan_sino)
+    return pred.detach(), last_loss, n_done
 
 
 def main(out_dir: Path, cfg: dict | None = None) -> dict:
@@ -148,70 +233,127 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"],
     )
 
-    train_ph, train_clean, train_noisy = build_dataset(
-        geom, cfg["train_n"], cfg["seed"], cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    val_ph, val_clean, val_noisy = build_dataset(
+    import numpy as _np
+    warm_start = bool(cfg.get("warm_start", True))
+    # The TRAIN split is ONLY consumed by the warm-start pre-pass; with
+    # warm_start=False we skip loading it entirely (pure per-image recon).
+    if warm_start:
+        train_ph, train_clean, train_noisy, train_ps = build_dataset(
+            geom, cfg["train_n"], cfg["seed"], cfg["noise_i0"], cfg["noise_sigma_e"], device)
+    else:
+        train_ph = train_clean = train_noisy = train_ps = None
+    val_ph, val_clean, val_noisy, val_ps = build_dataset(
         geom, cfg["val_n"], cfg["seed"] + 1000, cfg["noise_i0"], cfg["noise_sigma_e"], device)
+
+    # PER-SAMPLE geometry (Mayo canonical). N2I training_step/predict only use
+    # the HALF-ANGLE projector, so build a per-ps half-angle cache from the
+    # full-angle cache (g.split_angles()[0]) and swap pipe.R_half per sample.
+    # The full cache feeds the full-view LD-FBP baseline (headroom denominator).
+    _per_ps = val_ps is not None
+    _projs_half = None
+    if _per_ps:
+        from ddssl_ldct.staged_dataset import mayo_proj_cache
+        _all_ps = _np.concatenate([train_ps, val_ps]) if train_ps is not None else val_ps
+        _projs = mayo_proj_cache(_all_ps, cfg["n_angles"], cfg["n_det"], device)
+        _projs_half = {k: PyronnFanBeamProjector(v.geom.split_angles()[0]).to(device)
+                       for k, v in _projs.items()}
+        _trk = _np.round(_np.asarray(train_ps, float), 5) if train_ps is not None else None
+        _vrk = _np.round(_np.asarray(val_ps, float), 5)
 
     with torch.no_grad():
         R_full = PyronnFanBeamProjector(geom).to(device)
-        val_ref = R_full.fbp(val_clean)
-        ld_fbp = torch.clamp(R_full.fbp(val_noisy), min=0.0)
+        if _per_ps:
+            ld_fbp = torch.empty(val_noisy.shape[0], 1, 512, 512, device=device)
+            for u in _np.unique(_vrk):
+                ii = _np.where(_vrk == u)[0]
+                ld_fbp[ii] = _projs[float(u)].fbp(val_noisy[ii]).clamp(min=0.0)
+        else:
+            ld_fbp = torch.clamp(R_full.fbp(val_noisy), min=0.0)
 
-    # Build bilateral filter denoisers (stacks of n_bf chained BFs each).
-    proj_dn = BilateralFilterStack(
-        n_filters=cfg["proj_n_bf"], kernel_size=cfg["proj_kernel"],
-        sigma_x=cfg["proj_sx"], sigma_y=cfg["proj_sy"], sigma_r=cfg["proj_sr"],
-    )
-    img_dn = BilateralFilterStack(
-        n_filters=cfg["img_n_bf"], kernel_size=cfg["img_kernel"],
-        sigma_x=cfg["img_sx"], sigma_y=cfg["img_sy"], sigma_r=cfg["img_sr"],
-    )
-    pipe = DualDomainPipeline(geometry=geom, proj_denoiser=proj_dn, image_denoiser=img_dn).to(device)
-
-    params_total = sum(p.numel() for p in pipe.parameters() if p.requires_grad)
-    print(f"[solver] Bilateral dual-domain stack: proj_n_bf={cfg['proj_n_bf']} "
-          f"img_n_bf={cfg['img_n_bf']} params_total={params_total} "
-          f"(proj={sum(p.numel() for p in proj_dn.parameters())}, "
-          f"img={sum(p.numel() for p in img_dn.parameters())})", flush=True)
-
-    opt = torch.optim.Adam(pipe.parameters(), lr=cfg["lr"])
+    _tmp = _build_bf_pipe(geom, cfg, device)
+    params_total = sum(p.numel() for p in _tmp.parameters() if p.requires_grad)
+    print(f"[solver] Bilateral dual-domain stack (per-image): proj_n_bf={cfg['proj_n_bf']} "
+          f"img_n_bf={cfg['img_n_bf']} params_total={params_total}  "
+          f"warm_start={warm_start}", flush=True)
+    del _tmp
 
     t0 = time.time()
-    for ep in range(cfg["epochs"]):
-        pipe.train()
-        perm = torch.randperm(train_noisy.shape[0])
-        running = 0.0
-        for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
-            idx = perm[i:i + cfg["batch_size"]]
-            batch = train_noisy[idx].to(device)
-            losses = pipe.training_step(batch)
-            opt.zero_grad(set_to_none=True)
-            losses["loss"].backward()
-            clip_and_step(opt, losses["loss"], cfg.get("grad_clip", 0.0))
-            running += float(losses["loss"].detach().cpu())
-        mean_loss = running / max(1, train_noisy.shape[0])
 
-        # Log learned sigmas across the BF stacks.
-        proj_sigmas = proj_dn.sigmas()
-        img_sigmas = img_dn.sigmas()
-        proj_str = "; ".join(
-            f"σx={sx:.3f} σy={sy:.3f} σr={sr:.4f}" for (sx, sy, sr) in proj_sigmas)
-        img_str = "; ".join(
-            f"σx={sx:.3f} σy={sy:.3f} σr={sr:.4f}" for (sx, sy, sr) in img_sigmas)
-        print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}  "
-              f"proj[{proj_str}]  img[{img_str}]", flush=True)
+    # ------------------------------------------------------------------ #
+    # 1) Warm-start pre-pass: SHORT amortised N2I pre-train on the train
+    #    split (GT-free self-supervised loss). Capture warm_state as a
+    #    generic BF-sigma init for the per-image fits. Bounded by
+    #    pretrain_epochs or (if >0) a hard pretrain_steps cap.
+    # ------------------------------------------------------------------ #
+    warm_state = None
+    if warm_start:
+        pipe = _build_bf_pipe(geom, cfg, device)
+        proj_dn, img_dn = pipe.proj_denoiser, pipe.image_denoiser
+        opt = torch.optim.Adam(pipe.parameters(), lr=cfg["lr"])
+        max_steps = int(cfg.get("pretrain_steps", 0) or 0)
+        n_steps = 0
+        for ep in range(int(cfg.get("pretrain_epochs", 3))):
+            pipe.train()
+            perm = torch.randperm(train_noisy.shape[0])
+            running = 0.0
+            for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
+                idx = perm[i:i + cfg["batch_size"]]
+                if _per_ps:   # batch_size=1 for Mayo -> one ps per step
+                    pipe.R_half = _projs_half[float(_trk[int(idx[0])])]
+                batch = train_noisy[idx].to(device)
+                losses = pipe.training_step(batch)
+                opt.zero_grad(set_to_none=True)
+                losses["loss"].backward()
+                clip_and_step(opt, losses["loss"], cfg.get("grad_clip", 0.0))
+                running += float(losses["loss"].detach().cpu())
+                n_steps += 1
+                if max_steps and n_steps >= max_steps:
+                    break
+            mean_loss = running / max(1, train_noisy.shape[0])
+            # Log learned sigmas across the BF stacks.
+            proj_str = "; ".join(
+                f"σx={sx:.3f} σy={sy:.3f} σr={sr:.4f}" for (sx, sy, sr) in proj_dn.sigmas())
+            img_str = "; ".join(
+                f"σx={sx:.3f} σy={sy:.3f} σr={sr:.4f}" for (sx, sy, sr) in img_dn.sigmas())
+            print(f"[solver] warm-start epoch {ep+1:3d}/{cfg.get('pretrain_epochs', 3)}"
+                  f"  loss={mean_loss:.5f}  proj[{proj_str}]  img[{img_str}]", flush=True)
+            if max_steps and n_steps >= max_steps:
+                print(f"[solver] warm-start pretrain_steps cap {max_steps} hit", flush=True)
+                break
+        warm_state = {k: v.detach().clone() for k, v in pipe.state_dict().items()}
+    pretrain_time = time.time() - t0
 
-    train_time = time.time() - t0
-
-    # Validation
-    pipe.eval()
-    with torch.no_grad():
-        chunk = cfg.get("val_chunk", 10)
-        preds = []
-        for i in range(0, val_noisy.shape[0], chunk):
-            preds.append(pipe.predict(val_noisy[i:i + chunk]))
-        pred = torch.cat(preds, dim=0)
+    # ------------------------------------------------------------------ #
+    # 2) Per-image fine-tune: for EACH val/showcase scan, fit a FRESH
+    #    pipeline (warm_state init) on THAT scan's sinogram only, then
+    #    predict. This is the actual N2I reconstruction. AGENT4CT_SHOWCASE=
+    #    valtest is handled transparently by build_dataset -> the showcase
+    #    scans already arrive in val_noisy / val_ps.
+    # ------------------------------------------------------------------ #
+    val_n = val_noisy.shape[0]
+    outer_wall = float(cfg.get("outer_wall_s", 3600))
+    per_scene_s = cfg.get("per_scene_s") or (outer_wall / max(1, val_n))
+    t1 = time.time()
+    preds = []
+    for i in range(val_n):
+        r_half = _projs_half[float(_vrk[i])] if _per_ps else None
+        pred_i, last_loss, n_done = _fit_one_scene(
+            val_noisy[i:i + 1], geom, cfg, device, warm_state,
+            r_half=r_half, t_limit=per_scene_s)
+        preds.append(pred_i)
+        if (i + 1) % 2 == 0 or i == val_n - 1:
+            print(f"[fit] {i+1}/{val_n}  inner_iters={n_done}  "
+                  f"last_loss={last_loss:.4g}  elapsed={time.time()-t1:.1f}s",
+                  flush=True)
+        if time.time() - t1 > outer_wall:
+            print(f"[fit] outer wall {outer_wall}s hit at sample {i+1}", flush=True)
+            break
+    pred = torch.cat(preds, dim=0)
+    train_time = time.time() - t0   # warm-start + per-image total
+    # Trim labels / baseline to the scans we actually reconstructed (in case
+    # the outer wall cut the loop short), mirroring solver_naf.py.
+    val_ph = val_ph[:pred.shape[0]]
+    ld_fbp = ld_fbp[:pred.shape[0]]
 
     # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
     # negative outliers in the raw pred would otherwise pull the bg mean
@@ -235,9 +377,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         "baseline_rmse": baseline_rmse, "headroom": headroom,
         "calibration": metrics["calibration"],
         "fg_threshold": metrics["fg_threshold"],
-        "params_total": params_total, "train_n": cfg["train_n"],
-        "val_n": cfg["val_n"], "train_time_s": train_time,
+        "params_total": params_total,
+        "train_n": cfg["train_n"] if warm_start else 0,
+        "val_n": int(pred.shape[0]), "train_time_s": train_time,
+        "pretrain_time_s": pretrain_time,
         "config": cfg,
+        "training_scheme": "noise2inverse_per_image_warmstart_selfsup",
     }
     (out_dir / "result.json").write_text(json.dumps(result, indent=2))
     print(f"[solver] Dual-domain BF: val_score={val_score:.4f} headroom={headroom:.4f} "
