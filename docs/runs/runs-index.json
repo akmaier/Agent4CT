@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-18T22:30:42Z",
+  "updated": "2026-06-18T22:44:02Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1001,13 +1001,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-18T20:38:59Z",
       "status": "running",
-      "n_iterations": 3,
+      "n_iterations": 4,
       "best_score": 0.946237,
       "best_headroom": 0.0,
       "best_iter": 1,
       "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0003/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0004/comparison.png",
       "test_image": null
     },
     {
@@ -1033,13 +1033,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-18T20:38:58Z",
       "status": "running",
-      "n_iterations": 4,
+      "n_iterations": 5,
       "best_score": 0.954137,
       "best_headroom": 0.190511,
       "best_iter": 4,
       "agent": "dual_domain_n2i-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0004/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0005/comparison.png",
       "test_image": null
     },
     {
@@ -1087,7 +1087,7 @@
       "best_iter": 10,
       "agent": "hammernik_vn-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0013/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/valtest_showcase.png",
       "test_image": null
     },
     {
@@ -1113,13 +1113,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-18T19:15:13Z",
       "status": "running",
-      "n_iterations": 4,
+      "n_iterations": 5,
       "best_score": 0.745911,
       "best_headroom": 0.0,
       "best_iter": 4,
       "agent": "itnet_v2-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0004/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0005/comparison.png",
       "test_image": null
     },
     {
