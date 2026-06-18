@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "breast_ct",
  "label": "Breast-CT",
- "updated": "2026-06-18T15:52:20Z",
+ "updated": "2026-06-18T16:03:49Z",
  "runs": [
   {
    "slug": "breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01",

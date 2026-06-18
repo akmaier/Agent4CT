@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-18T15:52:20Z",
+  "updated": "2026-06-18T16:03:49Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1072,7 +1072,7 @@
       "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0011/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01",
@@ -1104,7 +1104,7 @@
       "agent": "dual_domain_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0014/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01",
@@ -1120,7 +1120,7 @@
       "agent": "hammernik_2017-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0013/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01",
@@ -1136,7 +1136,7 @@
       "agent": "hammernik_vn-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0013/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-itnet-search-20260614-01",
@@ -1152,7 +1152,7 @@
       "agent": "itnet-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/iterations/iter-0020/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260614-01",
@@ -1168,7 +1168,7 @@
       "agent": "itnet_v2-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0020/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-itnet-v3-search-20260614-01",
@@ -1184,7 +1184,7 @@
       "agent": "itnet_v3-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0020/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01",
@@ -1200,7 +1200,7 @@
       "agent": "learned_primal_dual-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0011/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-naf-search-20260614-01",
@@ -1296,7 +1296,7 @@
       "agent": "uswin-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0018/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/test_showcase.png"
+      "test_image": null
     },
     {
       "slug": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01",
@@ -1312,7 +1312,7 @@
       "agent": "wu_2015_trainable-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/iterations/iter-0011/comparison.png",
-      "test_image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/test_showcase.png"
+      "test_image": null
     }
   ]
 }

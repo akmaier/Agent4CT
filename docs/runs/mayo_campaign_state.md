@@ -50,9 +50,12 @@ later.
   (they're the bottleneck); squeeze fast ones (tv, ram) into brief gaps.
 - **Round-robin the most-behind** solver not currently running — do NOT
   over-feed the leaders (all must reach 20).
-- **Event-poll** (background bash, baseline 4, wakes on slot free) + **cron
-  `f2142633`** (`7,22,37,52`, agentic, fills idle slots — only acts when I leave
-  slots open, so it's a safety net while I drive).
+- **Driver = the 20-min loop cron `16f09972`** (session-only, `*/20`). Each tick:
+  check the queue + per-solver iters, PUBLISH newly-completed iters to the
+  dashboard (rsync docs/runs cluster→laptop → rebuild_runs_index.py → commit/push),
+  and spawn ONE general-purpose subagent per FREE QOS slot (most-behind solver) to
+  six-box + dispatch the next iter. (The old event-poll loop + cron `f2142633` are
+  RETIRED/DELETED — ignore any lingering references to them.)
 - Live per-solver state (max iter + best SSIM):
   ```
   for d in docs/runs/mayo-ldct-claude-agentic-*-search-20260614-01; do

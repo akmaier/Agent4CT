@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-18T15:52:20Z",
+ "updated": "2026-06-18T16:03:49Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260614-01",
@@ -558,7 +558,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0011/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01",
@@ -620,7 +620,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/iterations/iter-0011/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260614-01",
@@ -718,7 +718,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0020/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-itnet-search-20260614-01",
@@ -816,7 +816,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/iterations/iter-0020/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01",
@@ -886,7 +886,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0013/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01",
@@ -956,7 +956,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0013/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-uswin-search-20260614-01",
@@ -1050,7 +1050,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0018/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01",
@@ -1112,7 +1112,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0011/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01",
@@ -1186,7 +1186,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0014/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/test_showcase.png"
+   "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-itnet-v3-search-20260614-01",
@@ -1284,7 +1284,7 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0020/comparison.png",
-   "test_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/test_showcase.png"
+   "test_image": null
   }
  ]
 }
