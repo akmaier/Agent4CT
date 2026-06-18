@@ -21,6 +21,11 @@ export CUDA_HOME="$VENV/cuda-pip-bundle"
 export PATH="$CUDA_HOME/bin:$PATH"
 source "$VENV/bin/activate"
 export PYTHONPATH="$REPO:${PYTHONPATH:-}"
+# Disable HDF5 file locking: the staged H5s live on NFS and concurrent
+# agentic jobs (e.g. two breast_ct N2I solvers) opening the same truth.h5
+# read-only otherwise fail with "errno 37, No locks available". The Mayo
+# sbatch already sets this; the generic dispatcher must too.
+export HDF5_USE_FILE_LOCKING=FALSE
 
 : "${SLUG:?need SLUG}"
 : "${ITER_N:?need ITER_N}"
