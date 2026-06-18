@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "demo_dl",
  "label": "Demo-DL",
- "updated": "2026-06-18T09:34:02Z",
+ "updated": "2026-06-18T15:52:20Z",
  "runs": [
   {
    "slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",

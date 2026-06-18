@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-18T09:34:02Z",
+  "updated": "2026-06-18T15:52:20Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1023,7 +1023,7 @@
       "best_iter": 7,
       "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260614-01/iterations/iter-0007/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260614-01/iterations/iter-0009/comparison.png",
       "test_image": null
     },
     {
@@ -1055,7 +1055,7 @@
       "best_iter": 3,
       "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0003/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0004/comparison.png",
       "test_image": null
     },
     {
@@ -1071,7 +1071,7 @@
       "best_iter": 9,
       "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0009/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/iterations/iter-0011/comparison.png",
       "test_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/test_showcase.png"
     },
     {
@@ -1087,7 +1087,7 @@
       "best_iter": 3,
       "agent": "dual_domain_n2i-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0003/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0005/comparison.png",
       "test_image": null
     },
     {
@@ -1097,13 +1097,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T20:50:06Z",
       "status": "running",
-      "n_iterations": 13,
+      "n_iterations": 14,
       "best_score": 0.962643,
       "best_headroom": 0.429644,
       "best_iter": 7,
       "agent": "dual_domain_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0007/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/iterations/iter-0014/comparison.png",
       "test_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260614-01/test_showcase.png"
     },
     {
@@ -1113,13 +1113,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-14T23:43:47Z",
       "status": "running",
-      "n_iterations": 12,
+      "n_iterations": 13,
       "best_score": 0.94837,
       "best_headroom": 0.320568,
       "best_iter": 10,
       "agent": "hammernik_2017-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0010/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/iterations/iter-0013/comparison.png",
       "test_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260614-01/test_showcase.png"
     },
     {
@@ -1129,13 +1129,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-15T01:35:15Z",
       "status": "running",
-      "n_iterations": 12,
+      "n_iterations": 13,
       "best_score": 0.920324,
-      "best_headroom": 0.164577,
+      "best_headroom": 0.17906,
       "best_iter": 10,
       "agent": "hammernik_vn-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0010/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/iterations/iter-0013/comparison.png",
       "test_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260614-01/test_showcase.png"
     },
     {
@@ -1167,7 +1167,7 @@
       "best_iter": 11,
       "agent": "itnet_v2-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0011/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0020/comparison.png",
       "test_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/test_showcase.png"
     },
     {
@@ -1183,7 +1183,7 @@
       "best_iter": 17,
       "agent": "itnet_v3-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0017/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/iterations/iter-0020/comparison.png",
       "test_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260614-01/test_showcase.png"
     },
     {
@@ -1199,7 +1199,7 @@
       "best_iter": 9,
       "agent": "learned_primal_dual-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0009/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/iterations/iter-0011/comparison.png",
       "test_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260614-01/test_showcase.png"
     },
     {
@@ -1231,7 +1231,7 @@
       "best_iter": 12,
       "agent": "r2gaussian-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260614-01/iterations/iter-0012/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260614-01/iterations/iter-0013/comparison.png",
       "test_image": null
     },
     {
@@ -1247,7 +1247,7 @@
       "best_iter": 10,
       "agent": "ram_zeroshot-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0010/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0011/comparison.png",
       "test_image": null
     },
     {
@@ -1263,7 +1263,7 @@
       "best_iter": 6,
       "agent": "tv_iterative-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0006/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0011/comparison.png",
       "test_image": null
     },
     {
@@ -1295,7 +1295,7 @@
       "best_iter": 16,
       "agent": "uswin-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0016/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/iterations/iter-0018/comparison.png",
       "test_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/test_showcase.png"
     },
     {
