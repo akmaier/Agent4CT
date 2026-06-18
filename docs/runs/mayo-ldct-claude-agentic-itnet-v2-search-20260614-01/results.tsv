@@ -1,2 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1		0.34295	0	discard	architecture	itnet_v2-claude-agentic-breast-ct	claude-opus-4.7-1m	itnet_v2-claude-agentic: train_n=200, val_n=20, batch_size=1, val_chunk=1, grad_clip=1.0, seed=42, pretrain_epochs=8, pretrain_lr=0.0002, pretrain_patience=5, itnet_k=3, unet_c=24, rationale=iter-1 fresh restart (prior search-20260614-01 itnet_v2 wiped; it overfit -> valtest6 0.88 vs val 0.97). ItNet v2 (residual denoiser + learnable alpha + k=3 DC), per-sample ps_eff + grad-clip; pretrain_lr=2e-4

@@ -1,3 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1		0.754777	0	discard	architecture	naf-claude-agentic-breast-ct	claude-opus-4.7-1m	naf-claude-agentic: naf_n_freqs=10, naf_hidden=256, naf_layers=5, naf_n_iter=12000, naf_lr=0.005, naf_tv_weight=0.0001, naf_n_clip=0.05, naf_outer_wall_s=3600, val_n=5
-2		0.791408	0	discard	architecture	naf-claude-agentic-breast-ct	claude-opus-4.7-1m	naf-claude-agentic: naf_n_freqs=10, naf_hidden=256, naf_layers=5, naf_n_iter=12000, naf_lr=0.001, naf_tv_weight=0.0001, naf_n_clip=0.05, naf_outer_wall_s=3600, val_n=5

@@ -1,2 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1		0.968374	0.343734	keep	architecture	itnet-claude-agentic-breast-ct	claude-opus-4.7-1m	itnet-claude-agentic: train_n=200, val_n=20, batch_size=1, val_chunk=1, grad_clip=1.0, seed=42, pretrain_epochs=40, pretrain_lr=0.0002, itnet_k=1, unet_c=24, rationale=iter-4: pretrain_epochs 24->40 (only knob; k=1 locked). Epochs lever climbing 8ep 0.9536 -> 24ep 0.9629 (+0.0093); push to 40 for denoiser ceiling, approaching ITNet-v3 sibling 0.9657.

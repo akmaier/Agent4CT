@@ -1,2 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1		0.401724	0.234432	keep	architecture	mayo-phase4-itnet-v1-tpe-tpe-calibrated-mayo-ldct-2d	random-search	mayo-phase4-itnet-v1-tpe-tpe-calibrated-mayo-ldct-2d: pretrain_epochs=40, pretrain_lr=0.001, itnet_k=1, itnet_alpha=0.05, finetune_epochs=8, finetune_lr=0.0015, unet_c=40, train_n=75, val_n=5, batch_size=1

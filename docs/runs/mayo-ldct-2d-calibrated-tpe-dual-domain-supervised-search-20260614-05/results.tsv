@@ -1,2 +1,0 @@
-iter	commit	val_score	headroom	status	change_class	agent	model	rationale
-1		0.308914	0	discard	architecture	dual-domain-supervised-search-tpe-calibrated-mayo-ldct-2d	random-search	dual-domain-supervised-search-tpe-calibrated-mayo-ldct-2d: unet_c=16, epochs=10, lr=0.0005, batch_size=1, lambda_neg=1, val_n=214, val_chunk=1, train_n=579
