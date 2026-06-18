@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	rationale
+1		0.955253	0	discard	architecture	dual_domain_n2i-claude-agentic-breast-ct	claude-opus-4.7-1m	dual_domain_n2i-claude-agentic: warm_start=True, pretrain_epochs=3, train_n=200, n_iter=300, val_n=16, grad_clip=1.0, lr=0.001, unet_c=16, outer_wall_s=1500, seed=42

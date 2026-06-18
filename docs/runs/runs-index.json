@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-18T20:10:13Z",
+  "updated": "2026-06-18T21:02:00Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -307,6 +307,38 @@
       "test_image": null
     },
     {
+      "slug": "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
+      "short_id": "20260618-01",
+      "name": "dual-domain-bilateral-n2i",
+      "challenge": "breast_ct",
+      "started": "2026-06-18T20:56:06Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.972033,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
+      "slug": "breast-ct-claude-agentic-dual-domain-n2i-search-20260618-01",
+      "short_id": "20260618-01",
+      "name": "dual-domain-n2i",
+      "challenge": "breast_ct",
+      "started": "2026-06-18T20:17:45Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.955253,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "dual_domain_n2i-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/breast-ct-claude-agentic-dual-domain-n2i-search-20260618-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
       "slug": "breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01",
       "short_id": "20260522-01",
       "name": "dual-domain-unet-l2",
@@ -384,6 +416,38 @@
       "agent": "bf-search",
       "model": "random-search",
       "val_image": "runs/demo-dl-bf-20260516-01/iterations/iter-0019/comparison.png",
+      "test_image": null
+    },
+    {
+      "slug": "demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
+      "short_id": "20260618-01",
+      "name": "dual-domain-bilateral-n2i",
+      "challenge": "demo_dl",
+      "started": "2026-06-18T20:23:44Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.665719,
+      "best_headroom": 0.276254,
+      "best_iter": 1,
+      "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
+      "slug": "demo-dl-claude-agentic-dual-domain-n2i-search-20260618-01",
+      "short_id": "20260618-01",
+      "name": "dual-domain-n2i",
+      "challenge": "demo_dl",
+      "started": "2026-06-18T20:18:45Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.478525,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "dual_domain_n2i-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/demo-dl-claude-agentic-dual-domain-n2i-search-20260618-01/iterations/iter-0001/comparison.png",
       "test_image": null
     },
     {
@@ -931,6 +995,22 @@
       "test_image": null
     },
     {
+      "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
+      "short_id": "20260614-01",
+      "name": "dual-domain-bilateral-n2i",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-18T20:38:59Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.946237,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
       "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01",
       "short_id": "20260614-01",
       "name": "dual-domain-bilateral-supervised",
@@ -944,6 +1024,22 @@
       "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260614-01/valtest_showcase.png",
+      "test_image": null
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01",
+      "short_id": "20260614-01",
+      "name": "dual-domain-n2i",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-18T20:38:58Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.95014,
+      "best_headroom": 0.1065,
+      "best_iter": 1,
+      "agent": "dual_domain_n2i-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0001/comparison.png",
       "test_image": null
     },
     {
