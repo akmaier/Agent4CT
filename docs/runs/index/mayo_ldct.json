@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-18T23:10:45Z",
+ "updated": "2026-06-18T23:29:18Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
@@ -49,10 +49,10 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T20:38:58Z",
    "status": "running",
-   "n_iterations": 6,
-   "best_score": 0.955783,
+   "n_iterations": 7,
+   "best_score": 0.956155,
    "best_headroom": 0.199212,
-   "best_iter": 6,
+   "best_iter": 7,
    "agent": "dual_domain_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
@@ -79,9 +79,13 @@
     [
      6,
      0.1992
+    ],
+    [
+     7,
+     0.1992
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0006/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0007/comparison.png",
    "test_image": null
   },
   {
@@ -91,7 +95,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T19:15:13Z",
    "status": "running",
-   "n_iterations": 6,
+   "n_iterations": 7,
    "best_score": 0.964759,
    "best_headroom": 0.378675,
    "best_iter": 6,
@@ -121,9 +125,13 @@
     [
      6,
      0.3787
+    ],
+    [
+     7,
+     0.3787
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0006/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/iterations/iter-0007/comparison.png",
    "test_image": null
   },
   {
@@ -191,10 +199,10 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-16T08:04:52Z",
    "status": "running",
-   "n_iterations": 9,
-   "best_score": 0.865726,
+   "n_iterations": 10,
+   "best_score": 0.866131,
    "best_headroom": 0.0,
-   "best_iter": 9,
+   "best_iter": 10,
    "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
@@ -233,9 +241,13 @@
     [
      9,
      0.0
+    ],
+    [
+     10,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260614-01/iterations/iter-0009/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260614-01/iterations/iter-0010/comparison.png",
    "test_image": null
   },
   {
