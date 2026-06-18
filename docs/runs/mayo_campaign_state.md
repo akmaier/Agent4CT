@@ -145,7 +145,10 @@ search-20260614-01 iters.**
   0.9158 early-stop plateau; lr5e-4 stays optimal (8e-4 worse even at gc0.5).
 - **wu_2015_trainable 0.9135** (n_outer=1 mandatory).
 - **learned_primal_dual 0.9641** (lpd_iters=7, lr=5e-4 PEAK; 3e-4=0.959, 6e-4=0.65
-  anomalous collapse, 7e-4=0.9638; huge arc from 0.836).
+  anomalous collapse, 7e-4=0.9638; huge arc from 0.836). ⚠️ **iter-12 ep45 TIMED OUT
+  at BOTH the 1h (764506) and 2h (764562) walls** — ep45 @ lpd_iters=7 is too slow.
+  Re-dispatch with **ep≤35** (iter-9 ep30 ran in <1h) OR pass a **4h wall**
+  (agentic_redispatch.py TIME_OVERRIDE `04:00:00`). Do NOT retry ep45 at ≤2h.
 - **STRUCTURAL-NEGATIVES (hr0, <LD-FBP), driving to 20 to document:** ram 0.9393
   (blend0.3, factor0.7; finetune hurts), tv_iterative **0.9528 CLEARS FBP hr0.20**
   (clip_max=0.08 preserves bone — the lever; 200 iters optimal), tv_sup 0.863
