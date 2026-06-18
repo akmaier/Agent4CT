@@ -42,11 +42,15 @@ breast/demo — expect hr near the LD-FBP baseline there.
 - **Bilateral (6-param) BEATS the U-Net** on these substrates: it physically can't
   overfit one scan (demo-bilat 0.77 hr+0.33 vs demo-n2i 0.49). For demo bilateral
   `img_n_bf↑` (image-domain depth) is the working lever (1→3→5: 0.67→0.75→0.77).
-- **Bilateral over-smoothing lever is substrate-specific:** Mayo (2304-view) the
-  IMAGE-domain σ is inert and `proj_sr↓` is the lever; breast/demo (128-view) the
-  IMAGE-domain `img_sr` (default 0.02 too loose → degenerates to a Gaussian blur) is
-  the lever and proj-tuning HURTS (breast PSNR 38.17→37.90). Tighten `img_sr`→0.0005
-  for edge preservation.
+- **Bilateral over-smoothing lever is substrate-specific (and `img_sr` DIRECTION
+  flips between substrates):** Mayo (2304-view) — the IMAGE-domain σ is inert and
+  `proj_sr↓` is the lever. 128-view (breast/demo) — the IMAGE-domain `img_sr` is the
+  lever (not proj; proj-tuning HURTS, breast PSNR 38.17→37.90), BUT its sign is
+  substrate-specific: **breast wants `img_sr`→0.0005** (tight = edge-preserving on
+  real-μ tissue; 0.9723→0.9732 with img_n_bf=3), while **demo (synthetic phantoms)
+  wants `img_sr` LOOSE at 0.02** — tightening to 0.0005 OVER-sharpens and DROPS hr
+  (0.3335→0.1998, PSNR 20.18→18.60). For demo bilateral the lever is `img_n_bf`↑ at
+  loose img_sr (1→3→5: hr 0.28→0.33→0.33). Do NOT blindly tighten img_sr on demo.
 
 ## Data provenance — `staged_canonical` (READ BEFORE touching Mayo data)
 
