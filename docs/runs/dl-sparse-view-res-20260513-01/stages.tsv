@@ -1,3 +1,0 @@
-iter	stage_val_score	stage_headroom	gap	verdict	notes
-145	0.695264	0.620225	-0.0192636	ok	STAGE 0.6202 > iter best 0.6120 by +0.82pp! Resnet UNDER-fits in iter phase. Opposite of A (-6.56pp overfit) and main (-2.16pp overfit). NAFNet families overfit small subset; resnet scales positively with more data+epochs. 40 min train at train_n=1200 epochs=16.
-146	0.687749	0.62482	-0.0125493	ok	Stage hr=0.6248 (+0.46pp vs prev B stage 0.6202; +1.28pp vs iter-146 best). Epochs-up direction confirmed at stage scale. Note: stage auto-scales epochs to max(base*2, 16) so base=10 -> 20 stage epochs vs base=8 -> 16. So gain mixes 'iter-base epochs' and 'stage epoch count'. Either way 0.6248 is the new high-water mark across all 4 agents.

@@ -10,7 +10,7 @@ description: Agentic autoresearch for CT reconstruction — five challenges, one
 </div>
 
 <div class="a4c-callout warn">
-<strong>Running now</strong> · The first real autoresearch run, <code>dl-sparse-view-*</code>, targets the AAPM DL-Sparse-View CT challenge (128-view 2D fan-beam, perfectly-known truth) on the LME cluster. Iteration budget 150; stage check every 30 iterations on a 3× larger subset. Follow live progress on the <a href="dashboard.html">dashboard</a>.
+<strong>Active rebuild</strong> · The <strong>Mayo-LDCT</strong> leaderboard (real helical data, Wagner split) is being rebuilt from scratch on the LME cluster — 19 solvers driven to the iter-20 hard stop. Per-dataset progress (Mayo-LDCT, Breast-CT, Demo-DL) is on the <a href="dashboard.html">dashboard</a>.
 </div>
 
 ## The Pentathlon

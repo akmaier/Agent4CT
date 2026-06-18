@@ -2,9 +2,10 @@
 
 📊 **Live dashboard & docs:** <https://akmaier.github.io/Agent4CT/>
 
-🟢 **First run live:** `dl-sparse-view-*` — AAPM DL-Sparse-View CT challenge,
-128-view 2D fan-beam, perfectly-known truth. Iteration budget 150 (≈ one
-day). Follow on the [dashboard](https://akmaier.github.io/Agent4CT/dashboard.html).
+🟢 **Active rebuild:** the **Mayo-LDCT** leaderboard (real helical data, Wagner
+split) is being rebuilt on the LME cluster — 19 solvers driven to the iter-20
+hard stop. Per-dataset progress is on the
+[dashboard](https://akmaier.github.io/Agent4CT/dashboard.html).
 
 📋 **Working on this repo?** → start at [`solver_plan.md`](solver_plan.md)
 **before** touching any solver. It's the canonical recipe for adapting

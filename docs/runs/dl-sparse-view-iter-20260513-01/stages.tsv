@@ -1,3 +1,0 @@
-iter	stage_val_score	stage_headroom	gap	verdict	notes
-93	0.277635	0.550636	-0.00763507	overfit	Stage 0.5506 vs A iter best 0.6162 = -6.56pp GAP. A's NAFNet+BF-tail model massively overfits the 400-case iter subset. True capability ~0.55 not 0.62. 74 min train at train_n=1200 epochs=12.
-95	0.274898	0.499117	-0.00128781	ok	Capacity-down (n_bf 10->6 + blocks 5->4) HURT stage: 0.5506 -> 0.4991. Gap GREW from -6.56pp to -10.32pp. Hypothesis 'A overfits 400-case subset due to capacity' FALSIFIED. The iter-stage gap must come from training-dynamics mismatch (longer training, larger val set) not from overparameterization. Revert and try regularization-style probes (dropout) instead of capacity cuts.
