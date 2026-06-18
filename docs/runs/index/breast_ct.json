@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "breast_ct",
  "label": "Breast-CT",
- "updated": "2026-06-18T21:44:11Z",
+ "updated": "2026-06-18T21:50:58Z",
  "runs": [
   {
    "slug": "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
@@ -11,7 +11,7 @@
    "challenge": "breast_ct",
    "started": "2026-06-18T20:56:06Z",
    "status": "running",
-   "n_iterations": 1,
+   "n_iterations": 2,
    "best_score": 0.972033,
    "best_headroom": 0.0,
    "best_iter": 1,
@@ -20,6 +20,10 @@
    "curve": [
     [
      1,
+     0.0
+    ],
+    [
+     2,
      0.0
     ]
    ],
