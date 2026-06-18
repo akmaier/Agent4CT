@@ -8,6 +8,30 @@ change ONE knob → named hypothesis → dispatch). The "2×hr=0 → STOP" rule 
 with genuine ablations (capacity / data / loss / seed / grad_clip probes that
 document *why* the ceiling holds).
 
+## N2I solvers are PER-IMAGE self-supervised (2026-06-18 fix — do NOT revert)
+
+`dual_domain_n2i` and `dual_domain_bilateral_n2i` were re-implemented from
+AMORTIZED (one model trained on the 4 train patients, then forward-applied to
+val/test — **wrong** for N2I) to genuine **per-image** Noise2Inverse
+(commit `1f4c3394`, solver files only — `ddssl_ldct/training.py` untouched, its
+`training_step`/`predict` were already per-sinogram-pure):
+  1. short **warm-start pre-pass** (amortized N2I on the train split, GT-free) → U-Net init;
+  2. **per-scan fit** — each val/test image is optimized on its OWN measurements
+     (angular-subset split), no clean GT, then scored on the SAME L277 val + 5 test
+     scenes via `evaluate_calibrated` (scoring/loading contract unchanged).
+Per-image cfg knobs (the search tunes ONE per iter): `warm_start` (default True),
+`pretrain_epochs`, `n_iter` (per-scan Adam steps), `grad_clip=1.0` (mandatory —
+the 2304-view FBP adjoint overflows otherwise), `val_n`, `outer_wall_s`/`per_scene_s`.
+`training_scheme = noise2inverse_per_image_warmstart_selfsup`. GPU-smoke verified
+(both solvers, finite val_score + figures). **NEVER revert to amortized
+train-then-forward.** The 16 prior amortized-N2I runs (mayo 7 + breast 6 + demo 3)
+were purged 2026-06-18; supervised dual-domain runs were kept. N2I was restarted
+per-image on all 3 datasets: mayo under `search-20260614-01` (driven by this loop);
+breast_ct + demo_dl under fresh `search-20260618-01` via the generic
+`claude_agentic_one_iter.sbatch` (env `ITER_N`, `AGENT4CT_DATASET=breast_ct`/`phantoms`,
+config env `DD_CONFIG_PATH`). N2I is structurally FBP-bounded on dense-view
+breast/demo — expect hr near the LD-FBP baseline there.
+
 ## Data provenance — `staged_canonical` (READ BEFORE touching Mayo data)
 
 The `mayo_ldct_2d` training loader (`ddssl_ldct/staged_dataset.py`) reads
