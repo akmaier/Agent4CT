@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-18T23:43:47Z",
+ "updated": "2026-06-18T23:50:36Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
