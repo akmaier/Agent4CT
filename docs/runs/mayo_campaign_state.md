@@ -183,6 +183,15 @@ search-20260614-01 iters.**
   post-fix numbers pending.
 
 ## Publish trigger
+**Rsync trap (2026-06-18):** NEVER blanket `rsync docs/runs cluster→laptop`. The
+cluster holds ~100 historical/scratch run dirs that are deliberately pruned from
+the dashboard; a blanket rsync re-imports them all and bloats the index 78→197.
+Publish by rsyncing ONLY the campaign slugs:
+`for s in $(ssh lme-bastion 'cd /cluster/maier/Agent4CT && ls -d docs/runs/mayo-ldct-claude-agentic-*-search-20260614-01'); do rsync -az lme-bastion:/cluster/maier/Agent4CT/$s/ $s/; done`
+then `rebuild_runs_index.py` — sanity-check the count stays ~78 before commit
+(`git checkout -- docs/runs` if it jumped). Breast/demo N2I (search-20260618-01)
+publish the same way, per-slug.
+
 When the top-3 (itnet/uswin/itnet_v2) all reach iter-20, do ONE comprehensive
 publish: regenerate test-showcase figures (`make_test_showcase.py`, idempotent —
 `SHOWCASE_FORCE=1` to refresh changed best-iters) then
