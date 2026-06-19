@@ -35,6 +35,12 @@ autoresearch. "2×hr=0 → STOP" is retired; document *why* a ceiling holds.
    SEPARATE unbudgeted job: `mayo_showcase.sbatch` → `make_test_showcase.py`
    (covers all 19 solvers; L277-central + 5 test centrals, full-512, row-flipped).
    Test patients appear ONLY in the figure (presentation-only, no leakage).
+   **Montage policy (user directive, 2026-06-19): regenerate the valtest montage
+   for EVERY solver that records a new iter — INCLUDING regressed / low-scoring /
+   below-baseline results. ALL montages go on the dashboard. Do NOT defer or skip
+   montages to save QOS throughput (the user accepts the 4-slot contention).** The
+   only montages to skip are ones with NO valid recon to render (e.g. a 0.0-SSIM
+   OOM/crash iter) — dispatch those once the solver produces a finite recon.
 4. **Figures:** display full-512 UNMASKED + row-flipped (Mayo truth is stored
    z-flipped). `make_4panel` picks evenly-spaced rows (never first-n).
 5. **Subagents: Opus 4.8.** Every Agent-tool spawn + Workflow `agent()` uses
