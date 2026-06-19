@@ -501,6 +501,47 @@ subset, evaluates on the held test set, and records the result via
 `finalize`. The dashboard surfaces this as a banner on the run-detail
 page.
 
+## Result data flow — single source of truth (refactor in progress)
+
+**Why this is being refactored.** Result numbers historically lived in **6+
+places that each dropped fields and drifted**: `results.tsv` (no
+PSNR/RMSE/time/params), the per-iter `observation.json`, `index/*.json`,
+`runs-index.json`, the three leaderboard `.md` boards (numbers typed in by hand or
+by the agent), a separate `solver_params.json`, and `datasets.json`. Two
+generators even ranked champions by *different* metrics — the dashboard by **SSIM**,
+the leaderboards by **headroom** — so they crowned **different "winners" from the
+same data**. Any markdown/HTML that restates numbers inevitably goes stale. The
+fix deletes every hand-maintained copy and lets numbers exist in exactly one place.
+
+**The new workflow — one record → one builder → JS renders everything:**
+
+```
+observation.json   per-iter, written ONCE by the cluster job, never edited
+   │               (the immutable source of truth: SSIM, headroom, PSNR, RMSE,
+   │                params_M, elapsed_s, cfg_full, image paths)
+   ▼   build_registry.py   (the ONLY aggregator — deterministic, no LLM)
+docs/runs/index/  registry.jsonl + <challenge>.json + leaderboard.json + datasets.json
+   │               ONE ranking everywhere: headroom (SSIM tiebreak); below-baseline
+   │               runs still render (dimmed) so EVERY solver shows — never top-N
+   ▼   dashboard.js / leaderboard.js   (render tables on the fly in the browser)
+the live site — markdown carries prose only, never numbers, so nothing can drift
+```
+
+- **Production stays scripted, not agentic.** The cluster job writes the immutable
+  `observation.json`; one `publish.sh` does rsync → build → validate → commit →
+  push. The agent's only remaining jobs are *choosing the next config* and
+  *calling `publish.sh`* — it never edits a table or hand-writes a metric.
+- **A content-hash staleness gate** (`validate_registry.py`, run as a pre-commit
+  hook **and** a GitHub Action) fails any commit/PR whose rendered views disagree
+  with a fresh build, whose dashboard and leaderboard champions differ, or that
+  links a missing image.
+
+**Status:** the design is **adopted** (decisions fixed: full staleness gate;
+archive-tag before cleanup), but the **rollout has not started** — the current
+`harness.py` / `agent4ct_record.py` / `runs-index.json` path above is still live.
+Full design + phased, non-disruptive migration:
+[`result_register_refactor_plan.md`](result_register_refactor_plan.md).
+
 ## Status today
 
 What works:
