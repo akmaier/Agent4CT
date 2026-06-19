@@ -21,38 +21,28 @@ earlier uncalibrated runs (slug prefix `demo-dl-*`, `dl-sparse-view-*`)
 are kept at the bottom for historical context and **are not directly
 comparable**.
 
-## Calibrated leaderboard (canonical)
+## Leaderboard — every solver (rendered from the registry)
 
-Slug prefix `demo-intensity-calibrated-tpe-*`. Sorted by `hr`; one row
-per solver family (best TPE iteration). `params (M)` is the number of
-trainable parameters in millions; `0` = non-trainable hand-tuned solver;
-`(frozen)` = pretrained checkpoint loaded without finetuning. `PSNR (dB)` /
-`RMSE` / `time (s)` are logged per-iter by the current harness; `—` marks the
-pre-2026-06 TPE runs that predate those fields (only SSIM + headroom were
-recorded then, and the raw recon is not retained, so they can't be
-back-computed without re-running the solver).
+The table below is **rendered live from the registry**
+(`docs/runs/index/leaderboard.json`, built by
+[`scripts/build_registry.py`](../../scripts/build_registry.py) from each iter's
+immutable `observation.json`). It lists **every** solver exercised on the
+calibrated demo-DL substrate, ranked by **headroom** (SSIM tiebreak); any
+below-baseline / discarded solver stays on the board **dimmed and unranked** so
+the inventory is always complete — never a top-N. **No number on this page is
+typed by hand.** The pre-2026-06 TPE runs show `—` for PSNR/RMSE/time (only SSIM
++ headroom were recorded then). `params (M)` is trainable parameters in millions.
 
-| Rank | Solver | Variant | params (M) | SSIM | hr | PSNR (dB) | RMSE | time (s) | Source | Comparison |
-| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
-| 1 | **DD-UNet supervised L2** | c=16, ep=10, lr=6.5e-4, λ_neg=1.37, train_n=400 | 0.466 | 0.9625 | **0.4950** | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/results.tsv) | [iter-15](../runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png) |
-| 2 | **Learned Primal-Dual** | I=8, hidden=96, n_p=5, n_d=5, ep=18, lr=2.6e-4, cosine, clip=0.5, train_n=400 | 1.492 | 0.9613 | 0.4947 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/results.tsv) | [iter-10](../runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png) |
-| 3 | **ITNet v3** | ep=13, lr=7.5e-4, unet_c=16, k=3, α=9.1e-3, train_n=200 | 3.699 | 0.9178 | 0.4676 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/results.tsv) | [iter-9](../runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png) |
-| 4 | **ItNet v1** *(Step-3 TPE — COMPLETE 20/20, 2026-06-09)* | iter-1 (TPE seed) winner: pretrain_ep=6, pretrain_lr=5e-4, k=2, α=5e-3, finetune_ep=10, finetune_lr=1e-4, c=16, train_n=400 | 0.233 | 0.9471 | **0.4665** | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-itnet-v1-search-20260609-01/results.tsv) | [iter-1](../runs/demo-intensity-calibrated-tpe-itnet-v1-search-20260609-01/iterations/iter-0001/comparison.png) |
-| 5 | USwin | ep=14, lr=4.9e-4, c=24, win=8, heads=2, train_n=200 | 3.954 | 0.8722 | 0.4655 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/results.tsv) | [iter-11](../runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png) |
-| 6 | **RAM zero-shot** (pretrained) | σ=0.075, blend=0.42, factor=0.42, train_n=0 (frozen) | 35.619 *(frozen)* | 0.9181 | 0.4648 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/results.tsv) | [iter-16](../runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png) |
-| 7 | ITNet v2 | pre_ep=6, pre_lr=2.3e-4, k=3, α=0.032, residual=F, train_n=400 | 0.233 | 0.9178 | 0.4567 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/results.tsv) | [iter-20](../runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/iterations/iter-0020/comparison.png) |
-| 8 | **Diff-recon DC-step — DDPM unconstrained** | DPS, steps=200, η=4.11, η-clamp=T, dc_every=4, train_n=2000 | 0.958 *(frozen)* | 0.8251 | 0.4530 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/results.tsv) | [iter-17](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0017/comparison.png) |
-| 9 | **Diff-recon DC-step — DDPM constrained** | DPS, steps=500, η=4.98, η-clamp=F, dc_every=5, train_n=200 | 0.958 *(frozen)* | 0.8090 | 0.4418 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/results.tsv) | [iter-18](../runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/iterations/iter-0018/comparison.png) |
-| 10 | **DD-BF supervised L2** | proj_n=1, img_n=3, proj_k=3, img_k=11, ep=14, lr=1.0e-2, train_n=400 | 12 | 0.8873 | 0.4387 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-dual-domain-bilateral-supervised-search-20260601-01/results.tsv) | [iter-12](../runs/demo-intensity-calibrated-tpe-dual-domain-bilateral-supervised-search-20260601-01/iterations/iter-0012/comparison.png) |
-| 11 | NAF | n_freqs=6, hidden=256, n_iter=2216, lr=1.95e-3, train_n=0 | 0.270 | 0.8534 | 0.4160 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/results.tsv) | [iter-19](../runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/iterations/iter-0019/comparison.png) |
-| 12 | TV-iterative | λ=3.6e-3, iters=382, lr=0.099, train_n=0 | 0 | 0.8706 | 0.4056 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-tv-search-20260520-01/results.tsv) | [iter-13](../runs/demo-intensity-calibrated-tpe-tv-search-20260520-01/iterations/iter-0013/comparison.png) |
-| 13 | DD-UNet N2I | ep=5, lr=1.9e-4, unet_c=16, train_n=400 | 0.466 | 0.6854 | 0.3811 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-dual-domain-search-20260520-01/results.tsv) | [iter-17](../runs/demo-intensity-calibrated-tpe-dual-domain-search-20260520-01/iterations/iter-0017/comparison.png) |
-| 14 | Hammernik 2017 | ep=30, lr=1.5e-3, T=3, filters=16, kernel=7, train_n=200 | 0.004 | 0.7890 | 0.3622 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-hammernik-search-20260520-01/results.tsv) | [iter-6](../runs/demo-intensity-calibrated-tpe-hammernik-search-20260520-01/iterations/iter-0006/comparison.png) |
-| 15 | Hammernik VN | ep=17, lr=2.0e-4, T=3, filters=16, kernel=9, init=fbp, train_n=200 | 0.005 | 0.7722 | 0.3621 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/results.tsv) | [iter-11](../runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/iterations/iter-0011/comparison.png) |
-| 16 | DD-BF N2I | ep=23, lr=2.3e-3, proj_k=7, img_k=5, train_n=400 | 6 | 0.7605 | 0.3611 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-dual-domain-bf-search-20260520-01/results.tsv) | [iter-1](../runs/demo-intensity-calibrated-tpe-dual-domain-bf-search-20260520-01/iterations/iter-0001/comparison.png) |
-| 17 | **R²-Gaussian v2** (extended iter budget) | n_gauss=1024, n_iter=11434, lr_pos=1.7e-2, scale_init=0.024, tv=1.6e-4, train_n=0 | 0.003 | 0.9498 | 0.3455 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260602-01/results.tsv) | [iter-6](../runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260602-01/iterations/iter-0006/comparison.png) |
-| 18 | Wu 2015 (non-trainable) | n_bands=8, n_outer=1, range=3, thresh=1.2e-3, train_n=0 | 0 | 0.5495 | 0.2295 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/results.tsv) | [iter-18](../runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/iterations/iter-0018/comparison.png) |
-| 19 | **Wu 2015 trainable** | ep=17, lr=1.9e-3, n_bands=6, n_outer=1, l1 loss, train_n=400 | 10 | 0.5713 | 0.2288 | — | — | — | [results](../runs/demo-intensity-calibrated-tpe-wu-2015-trainable-search-20260601-01/results.tsv) | [iter-16](../runs/demo-intensity-calibrated-tpe-wu-2015-trainable-search-20260601-01/iterations/iter-0016/comparison.png) |
+The registry scope is the **calibrated** convention only
+(`demo-intensity-calibrated-tpe-*` + the `demo-dl-claude-agentic-*` N2I seeds).
+The legacy uncalibrated `demo-dl-*` runs use a *different scoring rule* and are
+**not** in the registry; the few kept for historical context are in the
+"Earlier uncalibrated runs" section near the bottom.
+
+<div data-leaderboard="demo_dl">loading leaderboard…</div>
+
+<script src="../assets/table.js"></script>
+<script src="../assets/leaderboard.js"></script>
 
 ## Below-baseline inventory (`hr = 0`, structural STOPs)
 

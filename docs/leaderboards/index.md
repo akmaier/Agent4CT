@@ -14,23 +14,23 @@ champion row below auto-updates each wave from the run data; the breast/demo
 boards are stable. The cross-dataset counts further down are a 2026-06-09
 snapshot.
 
-## Champion comparison images
+## Champions — rendered from the registry
 
-The rank-1 solver on each dataset, click any image to open the full leaderboard:
+The per-dataset champion (single canonical ranking = **headroom**, SSIM
+tiebreak) is rendered live from the registry below, so it can never drift from
+the dataset boards. Each panel is that dataset's **full** all-solver board
+(below-baseline solvers dimmed, never dropped). For the prose write-ups and the
+baseline tables, open the dataset board linked under "Full standings".
 
-| Dataset | Champion | hr | Visual |
-|---|---|---:|---|
-| **Mayo-LDCT** (real helical, Wagner split) | DD-UNet supervised L2 (live search-20260619-01, iter-2/20) | **0.3390** | [![Mayo champion](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0002/comparison.png)](mayo_ldct.html) |
-| **Breast-CT** (Sidky synthetic + anatomy, 128 views) | Learned Primal-Dual (TPE iter-11) | **0.9062** | [![Breast-CT LPD TPE](../runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](breast_ct.html) |
-| **Demo-DL** (Sidky synthetic ellipses, 128 views) | DD-UNet supervised L2 (TPE iter-15) | **0.4950** | [![Demo-DL DD-UNet sup TPE](../runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png)](demo_dl.html) |
+<h3>Mayo-LDCT</h3>
+<div data-leaderboard="mayo_ldct">loading leaderboard…</div>
+<h3>Breast-CT</h3>
+<div data-leaderboard="breast_ct">loading leaderboard…</div>
+<h3>Demo-DL</h3>
+<div data-leaderboard="demo_dl">loading leaderboard…</div>
 
-## Cross-dataset summary
-
-| Dataset | Above baseline | Below baseline | Total | Coverage |
-|---|---:|---:|---:|---|
-| **Demo-DL** | 19 | 1 (TV-iter sup STOP) | 20 | **19/19 inventory** |
-| **Breast-CT** | 16 | 13 | 29 | **19/19 inventory** |
-| **Mayo-LDCT** | 6 | 13 | 19 | **live `search-20260619-01`** |
+<script src="../assets/table.js"></script>
+<script src="../assets/leaderboard.js"></script>
 
 ## Full standings — every solver
 

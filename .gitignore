@@ -15,6 +15,22 @@ config/lme_cluster_agent_guide.md
 config/*_cluster_agent_guide.md
 !config/cluster_agent_guide.template.md
 /runs/
+# Regenerable calibration/geometry PNGs+npz — removed from the tree in the
+# 2026-06-19 result-register cleanup (recover from archive/pre-refactor-2026-06-19).
+/results/
+# Debug scratch served-tree junk — never commit into the Pages site again.
+docs/_*debug/
+docs/_breast_geom_debug/
+docs/_fov_eval/
+docs/_restage_verify/
+docs/_mayo_figure_fix/
+docs/_showcase_debug/
+docs/_n2i_smoke/
+docs/_n2i_onboard/
+docs/_reg_test/
+docs/_recorder_smoke/
+# Static baseline PNG dir — archived out of the served tree (numbers live in the board).
+docs/leaderboards/baseline_*/
 # /data/<challenge>/ holds large staged HDF5 datasets — never committed.
 # But data/*.py + data/*.md are the fetch scripts and ARE committed.
 /data/*

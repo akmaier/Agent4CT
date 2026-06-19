@@ -1,22 +1,274 @@
 {
- "schema_version": 2,
+ "schema_version": 3,
  "challenge": "demo_dl",
  "label": "Demo-DL",
- "updated": "2026-06-19T20:16:56Z",
+ "campaign": "intensity-calibrated+agentic",
+ "updated": "2026-06-19T20:28:40Z",
+ "leaderboard": {
+  "ranking_metric": "headroom",
+  "tiebreak": "val_ssim",
+  "rows": [
+   {
+    "solver_key": "lpd",
+    "solver_name": "Learned Primal-Dual",
+    "run_id": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
+    "best_iter": 10,
+    "params_M": 1.492304,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.4947240928024762,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png",
+    "excluded_reason": null,
+    "rank": 1
+   },
+   {
+    "solver_key": "itnet-v3",
+    "solver_name": "ITNet v3",
+    "run_id": "demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01",
+    "best_iter": 9,
+    "params_M": 3.698994,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.4676142000945369,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png",
+    "excluded_reason": null,
+    "rank": 2
+   },
+   {
+    "solver_key": "uswin",
+    "solver_name": "U-Swin",
+    "run_id": "demo-intensity-calibrated-tpe-uswin-search-20260520-01",
+    "best_iter": 11,
+    "params_M": 3.954049,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.46547344153668846,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png",
+    "excluded_reason": null,
+    "rank": 3
+   },
+   {
+    "solver_key": "ram-zeroshot",
+    "solver_name": "RAM (zero-shot)",
+    "run_id": "demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01",
+    "best_iter": 16,
+    "params_M": 35.618953,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.46477399523603546,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png",
+    "excluded_reason": null,
+    "rank": 4
+   },
+   {
+    "solver_key": "itnet-v2",
+    "solver_name": "ITNet v2",
+    "run_id": "demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01",
+    "best_iter": 20,
+    "params_M": 0.232882,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.4567072842609302,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/iterations/iter-0020/comparison.png",
+    "excluded_reason": null,
+    "rank": 5
+   },
+   {
+    "solver_key": "diff-recon-dcstep-unconstrained",
+    "solver_name": "Diffusion (unconstrained DPS)",
+    "run_id": "demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01",
+    "best_iter": 17,
+    "params_M": 0.958051,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.45298393121046876,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0017/comparison.png",
+    "excluded_reason": null,
+    "rank": 6
+   },
+   {
+    "solver_key": "diff-recon-dcstep-constrained",
+    "solver_name": "Diffusion (constrained DPS+DC)",
+    "run_id": "demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01",
+    "best_iter": 18,
+    "params_M": 0.958051,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.4417714789384829,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/iterations/iter-0018/comparison.png",
+    "excluded_reason": null,
+    "rank": 7
+   },
+   {
+    "solver_key": "dual-domain-bilateral-n2i",
+    "solver_name": "DD-BF N2I (per-image)",
+    "run_id": "demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
+    "best_iter": 8,
+    "params_M": 2.4e-05,
+    "params_source": "trainable_from_cfg",
+    "val_ssim": 0.7710667848587036,
+    "headroom": 0.4222017744019556,
+    "val_psnr": 17.804895401000977,
+    "val_rmse": 0.006437618285417557,
+    "elapsed_s": 345.30518674850464,
+    "image": "runs/demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0008/comparison.png",
+    "excluded_reason": null,
+    "rank": 8
+   },
+   {
+    "solver_key": "naf",
+    "solver_name": "NAF",
+    "run_id": "demo-intensity-calibrated-tpe-naf-search-20260521-01",
+    "best_iter": 19,
+    "params_M": 0.270337,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.4159581668712634,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/iterations/iter-0019/comparison.png",
+    "excluded_reason": null,
+    "rank": 9
+   },
+   {
+    "solver_key": "tv",
+    "solver_name": "TV-iterative",
+    "run_id": "demo-intensity-calibrated-tpe-tv-search-20260520-01",
+    "best_iter": 13,
+    "params_M": 0.0,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.4055776465644999,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-tv-search-20260520-01/iterations/iter-0013/comparison.png",
+    "excluded_reason": null,
+    "rank": 10
+   },
+   {
+    "solver_key": "hammernik",
+    "solver_name": "Hammernik VN (2017)",
+    "run_id": "demo-intensity-calibrated-tpe-hammernik-search-20260520-01",
+    "best_iter": 6,
+    "params_M": 0.003843,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.3621604716142309,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-hammernik-search-20260520-01/iterations/iter-0006/comparison.png",
+    "excluded_reason": null,
+    "rank": 11
+   },
+   {
+    "solver_key": "hammernik-vn",
+    "solver_name": "Hammernik VN (MRI port)",
+    "run_id": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01",
+    "best_iter": 11,
+    "params_M": 0.005379,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.3620519455870742,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/iterations/iter-0011/comparison.png",
+    "excluded_reason": null,
+    "rank": 12
+   },
+   {
+    "solver_key": "r2gaussian",
+    "solver_name": "R2-Gaussian",
+    "run_id": "demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01",
+    "best_iter": 14,
+    "params_M": 0.003072,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.29993611712687185,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0014/comparison.png",
+    "excluded_reason": null,
+    "rank": 13
+   },
+   {
+    "solver_key": "wu",
+    "solver_name": "Wu 2015 (non-trainable)",
+    "run_id": "demo-intensity-calibrated-tpe-wu-search-20260521-01",
+    "best_iter": 18,
+    "params_M": 0.0,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": 0.22950579171239938,
+    "val_psnr": null,
+    "val_rmse": null,
+    "elapsed_s": null,
+    "image": "runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/iterations/iter-0018/comparison.png",
+    "excluded_reason": null,
+    "rank": 14
+   },
+   {
+    "solver_key": "dual-domain-n2i",
+    "solver_name": "DD-UNet N2I (per-image)",
+    "run_id": "demo-dl-claude-agentic-dual-domain-n2i-search-20260618-01",
+    "best_iter": 20,
+    "params_M": 0.465762,
+    "params_source": "observation",
+    "val_ssim": 0.5331937074661255,
+    "headroom": 0.215468005498624,
+    "val_psnr": 15.549965858459473,
+    "val_rmse": 0.008345872163772583,
+    "elapsed_s": 251.66788482666016,
+    "image": "runs/demo-dl-claude-agentic-dual-domain-n2i-search-20260618-01/iterations/iter-0020/comparison.png",
+    "excluded_reason": null,
+    "rank": 15
+   }
+  ]
+ },
  "runs": [
   {
    "slug": "demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
-   "short_id": "20260618-01",
-   "name": "dual-domain-bilateral-n2i",
+   "solver_key": "dual-domain-bilateral-n2i",
+   "name": "DD-BF N2I (per-image)",
    "challenge": "demo_dl",
-   "started": "2026-06-18T20:23:44Z",
-   "status": "running",
+   "campaign": "search-20260618-01",
    "n_iterations": 20,
-   "best_score": 0.845647,
-   "best_headroom": 0.422202,
-   "best_iter": 20,
+   "best_iter": 8,
+   "best_headroom": 0.4222017744019556,
+   "best_ssim": 0.7710667848587036,
+   "best_score": 0.7710667848587036,
+   "started": "2026-06-19T13:03:11Z",
+   "status": "ranked",
+   "params_M": 2.4e-05,
+   "excluded_reason": null,
    "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T13:03:11Z",
    "curve": [
     [
      1,
@@ -99,46 +351,51 @@
      0.4222
     ]
    ],
-   "val_image": "runs/demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0020/comparison.png",
+   "val_image": "runs/demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0008/comparison.png",
    "test_image": null
   },
   {
    "slug": "demo-dl-claude-agentic-dual-domain-n2i-search-20260618-01",
-   "short_id": "20260618-01",
-   "name": "dual-domain-n2i",
+   "solver_key": "dual-domain-n2i",
+   "name": "DD-UNet N2I (per-image)",
    "challenge": "demo_dl",
-   "started": "2026-06-18T20:18:45Z",
-   "status": "running",
+   "campaign": "search-20260618-01",
    "n_iterations": 20,
-   "best_score": 0.533194,
-   "best_headroom": 0.215468,
    "best_iter": 20,
+   "best_headroom": 0.215468005498624,
+   "best_ssim": 0.5331937074661255,
+   "best_score": 0.5331937074661255,
+   "started": "2026-06-19T15:23:35Z",
+   "status": "ranked",
+   "params_M": 0.465762,
+   "excluded_reason": null,
    "agent": "dual_domain_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T15:23:35Z",
    "curve": [
     [
      1,
-     0.0
+     null
     ],
     [
      2,
-     0.0
+     null
     ],
     [
      3,
-     0.0
+     null
     ],
     [
      4,
-     0.0
+     null
     ],
     [
      5,
-     0.0
+     null
     ],
     [
      6,
-     0.0
+     null
     ],
     [
      7,
@@ -201,390 +458,23 @@
    "test_image": null
   },
   {
-   "slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
-   "short_id": "20260527-01",
-   "name": "lpd",
-   "challenge": "demo_dl",
-   "started": "2026-05-27T04:07:03Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.961275,
-   "best_headroom": 0.494724,
-   "best_iter": 10,
-   "agent": "lpd-search-tpe-calibrated",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ],
-    [
-     3,
-     0.0
-    ],
-    [
-     4,
-     0.0
-    ],
-    [
-     5,
-     0.4937
-    ],
-    [
-     6,
-     0.4937
-    ],
-    [
-     7,
-     0.4937
-    ],
-    [
-     8,
-     0.4937
-    ],
-    [
-     9,
-     0.4937
-    ],
-    [
-     10,
-     0.4947
-    ],
-    [
-     11,
-     0.4947
-    ],
-    [
-     12,
-     0.4947
-    ],
-    [
-     13,
-     0.4947
-    ],
-    [
-     14,
-     0.4947
-    ],
-    [
-     15,
-     0.4947
-    ],
-    [
-     16,
-     0.4947
-    ],
-    [
-     17,
-     0.4947
-    ],
-    [
-     18,
-     0.4947
-    ],
-    [
-     19,
-     0.4947
-    ],
-    [
-     20,
-     0.4947
-    ]
-   ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01",
-   "short_id": "20260521-01",
-   "name": "r2gaussian",
-   "challenge": "demo_dl",
-   "started": "2026-05-21T15:31:56Z",
-   "status": "timeout",
-   "n_iterations": 15,
-   "best_score": 0.840662,
-   "best_headroom": 0.299936,
-   "best_iter": 15,
-   "agent": "r2gaussian-search-tpe-calibrated",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     2,
-     0.2504
-    ],
-    [
-     5,
-     0.2517
-    ],
-    [
-     6,
-     0.2517
-    ],
-    [
-     7,
-     0.2517
-    ],
-    [
-     8,
-     0.2517
-    ],
-    [
-     9,
-     0.2517
-    ],
-    [
-     10,
-     0.2517
-    ],
-    [
-     11,
-     0.2517
-    ],
-    [
-     12,
-     0.2522
-    ],
-    [
-     13,
-     0.2522
-    ],
-    [
-     14,
-     0.2999
-    ],
-    [
-     15,
-     0.2999
-    ],
-    [
-     16,
-     0.2999
-    ],
-    [
-     17,
-     0.2999
-    ],
-    [
-     18,
-     0.2999
-    ]
-   ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0015/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-intensity-calibrated-tpe-naf-search-20260521-01",
-   "short_id": "20260521-01",
-   "name": "naf",
-   "challenge": "demo_dl",
-   "started": "2026-05-21T00:51:23Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.895438,
-   "best_headroom": 0.415958,
-   "best_iter": 6,
-   "agent": "naf-search-tpe-calibrated",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     1,
-     0.1436
-    ],
-    [
-     2,
-     0.3646
-    ],
-    [
-     3,
-     0.4092
-    ],
-    [
-     4,
-     0.4092
-    ],
-    [
-     5,
-     0.4092
-    ],
-    [
-     6,
-     0.4092
-    ],
-    [
-     7,
-     0.4092
-    ],
-    [
-     8,
-     0.4092
-    ],
-    [
-     9,
-     0.4092
-    ],
-    [
-     10,
-     0.4092
-    ],
-    [
-     11,
-     0.4092
-    ],
-    [
-     12,
-     0.4092
-    ],
-    [
-     13,
-     0.4092
-    ],
-    [
-     14,
-     0.4092
-    ],
-    [
-     15,
-     0.4092
-    ],
-    [
-     16,
-     0.4092
-    ],
-    [
-     17,
-     0.4092
-    ],
-    [
-     18,
-     0.4092
-    ],
-    [
-     19,
-     0.416
-    ],
-    [
-     20,
-     0.416
-    ]
-   ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/iterations/iter-0006/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01",
-   "short_id": "20260521-01",
-   "name": "ram-zeroshot",
-   "challenge": "demo_dl",
-   "started": "2026-05-21T00:43:37Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.941103,
-   "best_headroom": 0.464774,
-   "best_iter": 8,
-   "agent": "ram-zeroshot-search-tpe-calibrated",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     1,
-     0.457
-    ],
-    [
-     2,
-     0.457
-    ],
-    [
-     3,
-     0.457
-    ],
-    [
-     4,
-     0.4602
-    ],
-    [
-     5,
-     0.4602
-    ],
-    [
-     6,
-     0.4602
-    ],
-    [
-     7,
-     0.4602
-    ],
-    [
-     8,
-     0.4602
-    ],
-    [
-     9,
-     0.4602
-    ],
-    [
-     10,
-     0.4602
-    ],
-    [
-     11,
-     0.4602
-    ],
-    [
-     12,
-     0.4602
-    ],
-    [
-     13,
-     0.4602
-    ],
-    [
-     14,
-     0.4602
-    ],
-    [
-     15,
-     0.4634
-    ],
-    [
-     16,
-     0.4648
-    ],
-    [
-     17,
-     0.4648
-    ],
-    [
-     18,
-     0.4648
-    ],
-    [
-     19,
-     0.4648
-    ],
-    [
-     20,
-     0.4648
-    ]
-   ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0008/comparison.png",
-   "test_image": null
-  },
-  {
    "slug": "demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01",
-   "short_id": "20260521-01",
-   "name": "diff-recon-dcstep-constrained",
+   "solver_key": "diff-recon-dcstep-constrained",
+   "name": "Diffusion (constrained DPS+DC)",
    "challenge": "demo_dl",
-   "started": "2026-05-21T00:41:45Z",
-   "status": "done",
+   "campaign": "search-20260521-01",
    "n_iterations": 20,
-   "best_score": 0.857844,
-   "best_headroom": 0.441771,
-   "best_iter": 7,
+   "best_iter": 18,
+   "best_headroom": 0.4417714789384829,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-21T03:49:49Z",
+   "status": "ranked",
+   "params_M": 0.958051,
+   "excluded_reason": null,
    "agent": "diff-recon-dcstep-constrained-search-tpe-calibrated",
-   "model": "optuna-tpe",
+   "model": "random-search",
+   "ts": "2026-05-21T03:49:49Z",
    "curve": [
     [
      1,
@@ -667,22 +557,27 @@
      0.4418
     ]
    ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/iterations/iter-0007/comparison.png",
+   "val_image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/iterations/iter-0018/comparison.png",
    "test_image": null
   },
   {
    "slug": "demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01",
-   "short_id": "20260521-01",
-   "name": "diff-recon-dcstep-unconstrained",
+   "solver_key": "diff-recon-dcstep-unconstrained",
+   "name": "Diffusion (unconstrained DPS)",
    "challenge": "demo_dl",
-   "started": "2026-05-21T00:17:28Z",
-   "status": "done",
+   "campaign": "search-20260521-01",
    "n_iterations": 20,
-   "best_score": 0.873017,
-   "best_headroom": 0.452984,
-   "best_iter": 9,
+   "best_iter": 17,
+   "best_headroom": 0.45298393121046876,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-21T03:14:50Z",
+   "status": "ranked",
+   "params_M": 0.958051,
+   "excluded_reason": null,
    "agent": "diff-recon-dcstep-unconstrained-search-tpe-calibrated",
-   "model": "optuna-tpe",
+   "model": "random-search",
+   "ts": "2026-05-21T03:14:50Z",
    "curve": [
     [
      1,
@@ -765,120 +660,819 @@
      0.453
     ]
    ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0009/comparison.png",
+   "val_image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0017/comparison.png",
    "test_image": null
   },
   {
-   "slug": "demo-intensity-calibrated-tpe-wu-search-20260521-01",
-   "short_id": "20260521-01",
-   "name": "wu",
+   "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260520-01",
+   "solver_key": "hammernik",
+   "name": "Hammernik VN (2017)",
    "challenge": "demo_dl",
-   "started": "2026-05-21T00:12:44Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.603574,
-   "best_headroom": 0.229506,
-   "best_iter": 14,
-   "agent": "wu-search-tpe-calibrated",
-   "model": "optuna-tpe",
+   "campaign": "search-20260520-01",
+   "n_iterations": 19,
+   "best_iter": 6,
+   "best_headroom": 0.3621604716142309,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-20T23:47:39Z",
+   "status": "ranked",
+   "params_M": 0.003843,
+   "excluded_reason": null,
+   "agent": "hammernik-search-tpe-calibrated",
+   "model": "random-search",
+   "ts": "2026-05-20T23:47:39Z",
    "curve": [
     [
-     1,
-     0.1894
-    ],
-    [
      2,
-     0.2082
+     0.3418
     ],
     [
      3,
-     0.2082
+     0.3451
     ],
     [
      4,
-     0.2082
+     0.3451
     ],
     [
      5,
-     0.2082
+     0.3494
     ],
     [
      6,
-     0.2082
+     0.3622
     ],
     [
      7,
-     0.2082
+     0.3622
     ],
     [
      8,
-     0.2193
+     0.3622
     ],
     [
      9,
-     0.2203
+     0.3622
     ],
     [
      10,
-     0.2203
+     0.3622
     ],
     [
      11,
-     0.2203
+     0.3622
     ],
     [
      12,
-     0.2205
+     0.3622
     ],
     [
      13,
-     0.2252
+     0.3622
     ],
     [
      14,
-     0.2252
+     0.3622
     ],
     [
      15,
-     0.2252
+     0.3622
     ],
     [
      16,
-     0.2252
+     0.3622
     ],
     [
      17,
-     0.2252
+     0.3622
     ],
     [
      18,
-     0.2295
+     0.3622
     ],
     [
      19,
-     0.2295
+     0.3622
     ],
     [
      20,
-     0.2295
+     0.3622
     ]
    ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/iterations/iter-0014/comparison.png",
+   "val_image": "runs/demo-intensity-calibrated-tpe-hammernik-search-20260520-01/iterations/iter-0006/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01",
+   "solver_key": "hammernik-vn",
+   "name": "Hammernik VN (MRI port)",
+   "challenge": "demo_dl",
+   "campaign": "search-20260520-01",
+   "n_iterations": 19,
+   "best_iter": 11,
+   "best_headroom": 0.3620519455870742,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-21T01:14:17Z",
+   "status": "ranked",
+   "params_M": 0.005379,
+   "excluded_reason": null,
+   "agent": "hammernik-vn-search-tpe-calibrated",
+   "model": "random-search",
+   "ts": "2026-05-21T01:14:17Z",
+   "curve": [
+    [
+     2,
+     0.327
+    ],
+    [
+     3,
+     0.3506
+    ],
+    [
+     4,
+     0.3506
+    ],
+    [
+     5,
+     0.3506
+    ],
+    [
+     6,
+     0.3515
+    ],
+    [
+     7,
+     0.3515
+    ],
+    [
+     8,
+     0.3515
+    ],
+    [
+     9,
+     0.3515
+    ],
+    [
+     10,
+     0.3515
+    ],
+    [
+     11,
+     0.3621
+    ],
+    [
+     12,
+     0.3621
+    ],
+    [
+     13,
+     0.3621
+    ],
+    [
+     14,
+     0.3621
+    ],
+    [
+     15,
+     0.3621
+    ],
+    [
+     16,
+     0.3621
+    ],
+    [
+     17,
+     0.3621
+    ],
+    [
+     18,
+     0.3621
+    ],
+    [
+     19,
+     0.3621
+    ],
+    [
+     20,
+     0.3621
+    ]
+   ],
+   "val_image": "runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/iterations/iter-0011/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01",
+   "solver_key": "itnet-v2",
+   "name": "ITNet v2",
+   "challenge": "demo_dl",
+   "campaign": "search-20260520-01",
+   "n_iterations": 20,
+   "best_iter": 20,
+   "best_headroom": 0.4567072842609302,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-20T23:14:07Z",
+   "status": "ranked",
+   "params_M": 0.232882,
+   "excluded_reason": null,
+   "agent": "itnet-v2-search-tpe-calibrated",
+   "model": "random-search",
+   "ts": "2026-05-20T23:14:07Z",
+   "curve": [
+    [
+     1,
+     0.2335
+    ],
+    [
+     2,
+     0.2335
+    ],
+    [
+     3,
+     0.2335
+    ],
+    [
+     4,
+     0.2335
+    ],
+    [
+     5,
+     0.2335
+    ],
+    [
+     6,
+     0.4002
+    ],
+    [
+     7,
+     0.4275
+    ],
+    [
+     8,
+     0.4275
+    ],
+    [
+     9,
+     0.4341
+    ],
+    [
+     10,
+     0.4483
+    ],
+    [
+     11,
+     0.4483
+    ],
+    [
+     12,
+     0.4483
+    ],
+    [
+     13,
+     0.4483
+    ],
+    [
+     14,
+     0.4483
+    ],
+    [
+     15,
+     0.4483
+    ],
+    [
+     16,
+     0.4483
+    ],
+    [
+     17,
+     0.4483
+    ],
+    [
+     18,
+     0.4483
+    ],
+    [
+     19,
+     0.4483
+    ],
+    [
+     20,
+     0.4567
+    ]
+   ],
+   "val_image": "runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/iterations/iter-0020/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01",
+   "solver_key": "itnet-v3",
+   "name": "ITNet v3",
+   "challenge": "demo_dl",
+   "campaign": "search-20260520-01",
+   "n_iterations": 19,
+   "best_iter": 9,
+   "best_headroom": 0.4676142000945369,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-20T22:53:41Z",
+   "status": "ranked",
+   "params_M": 3.698994,
+   "excluded_reason": null,
+   "agent": "itnet-v3-search-tpe-calibrated",
+   "model": "random-search",
+   "ts": "2026-05-20T22:53:41Z",
+   "curve": [
+    [
+     1,
+     0.46
+    ],
+    [
+     2,
+     0.46
+    ],
+    [
+     3,
+     0.46
+    ],
+    [
+     5,
+     0.46
+    ],
+    [
+     6,
+     0.46
+    ],
+    [
+     7,
+     0.4648
+    ],
+    [
+     8,
+     0.4648
+    ],
+    [
+     9,
+     0.4676
+    ],
+    [
+     10,
+     0.4676
+    ],
+    [
+     11,
+     0.4676
+    ],
+    [
+     12,
+     0.4676
+    ],
+    [
+     13,
+     0.4676
+    ],
+    [
+     14,
+     0.4676
+    ],
+    [
+     15,
+     0.4676
+    ],
+    [
+     16,
+     0.4676
+    ],
+    [
+     17,
+     0.4676
+    ],
+    [
+     18,
+     0.4676
+    ],
+    [
+     19,
+     0.4676
+    ],
+    [
+     20,
+     0.4676
+    ]
+   ],
+   "val_image": "runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
+   "solver_key": "lpd",
+   "name": "Learned Primal-Dual",
+   "challenge": "demo_dl",
+   "campaign": "search-20260527-01",
+   "n_iterations": 20,
+   "best_iter": 10,
+   "best_headroom": 0.4947240928024762,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-27T13:06:22Z",
+   "status": "ranked",
+   "params_M": 1.492304,
+   "excluded_reason": null,
+   "agent": "lpd-search-tpe-calibrated",
+   "model": "random-search",
+   "ts": "2026-05-27T13:06:22Z",
+   "curve": [
+    [
+     1,
+     null
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     null
+    ],
+    [
+     4,
+     null
+    ],
+    [
+     5,
+     0.4937
+    ],
+    [
+     6,
+     0.4937
+    ],
+    [
+     7,
+     0.4937
+    ],
+    [
+     8,
+     0.4937
+    ],
+    [
+     9,
+     0.4937
+    ],
+    [
+     10,
+     0.4947
+    ],
+    [
+     11,
+     0.4947
+    ],
+    [
+     12,
+     0.4947
+    ],
+    [
+     13,
+     0.4947
+    ],
+    [
+     14,
+     0.4947
+    ],
+    [
+     15,
+     0.4947
+    ],
+    [
+     16,
+     0.4947
+    ],
+    [
+     17,
+     0.4947
+    ],
+    [
+     18,
+     0.4947
+    ],
+    [
+     19,
+     0.4947
+    ],
+    [
+     20,
+     0.4947
+    ]
+   ],
+   "val_image": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "demo-intensity-calibrated-tpe-naf-search-20260521-01",
+   "solver_key": "naf",
+   "name": "NAF",
+   "challenge": "demo_dl",
+   "campaign": "search-20260521-01",
+   "n_iterations": 20,
+   "best_iter": 19,
+   "best_headroom": 0.4159581668712634,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-21T13:09:40Z",
+   "status": "ranked",
+   "params_M": 0.270337,
+   "excluded_reason": null,
+   "agent": "naf-search-tpe-calibrated",
+   "model": "random-search",
+   "ts": "2026-05-21T13:09:40Z",
+   "curve": [
+    [
+     1,
+     0.1436
+    ],
+    [
+     2,
+     0.3646
+    ],
+    [
+     3,
+     0.4092
+    ],
+    [
+     4,
+     0.4092
+    ],
+    [
+     5,
+     0.4092
+    ],
+    [
+     6,
+     0.4092
+    ],
+    [
+     7,
+     0.4092
+    ],
+    [
+     8,
+     0.4092
+    ],
+    [
+     9,
+     0.4092
+    ],
+    [
+     10,
+     0.4092
+    ],
+    [
+     11,
+     0.4092
+    ],
+    [
+     12,
+     0.4092
+    ],
+    [
+     13,
+     0.4092
+    ],
+    [
+     14,
+     0.4092
+    ],
+    [
+     15,
+     0.4092
+    ],
+    [
+     16,
+     0.4092
+    ],
+    [
+     17,
+     0.4092
+    ],
+    [
+     18,
+     0.4092
+    ],
+    [
+     19,
+     0.416
+    ],
+    [
+     20,
+     0.416
+    ]
+   ],
+   "val_image": "runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/iterations/iter-0019/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01",
+   "solver_key": "r2gaussian",
+   "name": "R2-Gaussian",
+   "challenge": "demo_dl",
+   "campaign": "search-20260521-01",
+   "n_iterations": 15,
+   "best_iter": 14,
+   "best_headroom": 0.29993611712687185,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-21T18:21:59Z",
+   "status": "ranked",
+   "params_M": 0.003072,
+   "excluded_reason": null,
+   "agent": "r2gaussian-search-tpe-calibrated",
+   "model": "random-search",
+   "ts": "2026-05-21T18:21:59Z",
+   "curve": [
+    [
+     2,
+     0.2504
+    ],
+    [
+     5,
+     0.2517
+    ],
+    [
+     6,
+     0.2517
+    ],
+    [
+     7,
+     0.2517
+    ],
+    [
+     8,
+     0.2517
+    ],
+    [
+     9,
+     0.2517
+    ],
+    [
+     10,
+     0.2517
+    ],
+    [
+     11,
+     0.2517
+    ],
+    [
+     12,
+     0.2522
+    ],
+    [
+     13,
+     0.2522
+    ],
+    [
+     14,
+     0.2999
+    ],
+    [
+     15,
+     0.2999
+    ],
+    [
+     16,
+     0.2999
+    ],
+    [
+     17,
+     0.2999
+    ],
+    [
+     18,
+     0.2999
+    ]
+   ],
+   "val_image": "runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0014/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01",
+   "solver_key": "ram-zeroshot",
+   "name": "RAM (zero-shot)",
+   "challenge": "demo_dl",
+   "campaign": "search-20260521-01",
+   "n_iterations": 20,
+   "best_iter": 16,
+   "best_headroom": 0.46477399523603546,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-21T00:51:23Z",
+   "status": "ranked",
+   "params_M": 35.618953,
+   "excluded_reason": null,
+   "agent": "ram-zeroshot-search-tpe-calibrated",
+   "model": "random-search",
+   "ts": "2026-05-21T00:51:23Z",
+   "curve": [
+    [
+     1,
+     0.457
+    ],
+    [
+     2,
+     0.457
+    ],
+    [
+     3,
+     0.457
+    ],
+    [
+     4,
+     0.4602
+    ],
+    [
+     5,
+     0.4602
+    ],
+    [
+     6,
+     0.4602
+    ],
+    [
+     7,
+     0.4602
+    ],
+    [
+     8,
+     0.4602
+    ],
+    [
+     9,
+     0.4602
+    ],
+    [
+     10,
+     0.4602
+    ],
+    [
+     11,
+     0.4602
+    ],
+    [
+     12,
+     0.4602
+    ],
+    [
+     13,
+     0.4602
+    ],
+    [
+     14,
+     0.4602
+    ],
+    [
+     15,
+     0.4634
+    ],
+    [
+     16,
+     0.4648
+    ],
+    [
+     17,
+     0.4648
+    ],
+    [
+     18,
+     0.4648
+    ],
+    [
+     19,
+     0.4648
+    ],
+    [
+     20,
+     0.4648
+    ]
+   ],
+   "val_image": "runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png",
    "test_image": null
   },
   {
    "slug": "demo-intensity-calibrated-tpe-tv-search-20260520-01",
-   "short_id": "20260520-01",
-   "name": "tv",
+   "solver_key": "tv",
+   "name": "TV-iterative",
    "challenge": "demo_dl",
-   "started": "2026-05-20T23:47:40Z",
-   "status": "done",
+   "campaign": "search-20260520-01",
    "n_iterations": 20,
-   "best_score": 0.870587,
-   "best_headroom": 0.405578,
    "best_iter": 13,
+   "best_headroom": 0.4055776465644999,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-21T00:43:36Z",
+   "status": "ranked",
+   "params_M": 0.0,
+   "excluded_reason": null,
    "agent": "tv-search-tpe-calibrated",
-   "model": "optuna-tpe",
+   "model": "random-search",
+   "ts": "2026-05-21T00:43:36Z",
    "curve": [
     [
      1,
@@ -965,398 +1559,23 @@
    "test_image": null
   },
   {
-   "slug": "demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01",
-   "short_id": "20260520-01",
-   "name": "itnet-v2",
-   "challenge": "demo_dl",
-   "started": "2026-05-20T22:53:41Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.920274,
-   "best_headroom": 0.456707,
-   "best_iter": 7,
-   "agent": "itnet-v2-search-tpe-calibrated",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     1,
-     0.2335
-    ],
-    [
-     2,
-     0.2335
-    ],
-    [
-     3,
-     0.2335
-    ],
-    [
-     4,
-     0.2335
-    ],
-    [
-     5,
-     0.2335
-    ],
-    [
-     6,
-     0.4002
-    ],
-    [
-     7,
-     0.4275
-    ],
-    [
-     8,
-     0.4275
-    ],
-    [
-     9,
-     0.4341
-    ],
-    [
-     10,
-     0.4483
-    ],
-    [
-     11,
-     0.4483
-    ],
-    [
-     12,
-     0.4483
-    ],
-    [
-     13,
-     0.4483
-    ],
-    [
-     14,
-     0.4483
-    ],
-    [
-     15,
-     0.4483
-    ],
-    [
-     16,
-     0.4483
-    ],
-    [
-     17,
-     0.4483
-    ],
-    [
-     18,
-     0.4483
-    ],
-    [
-     19,
-     0.4483
-    ],
-    [
-     20,
-     0.4567
-    ]
-   ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/iterations/iter-0007/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-intensity-calibrated-tpe-hammernik-search-20260520-01",
-   "short_id": "20260520-01",
-   "name": "hammernik",
-   "challenge": "demo_dl",
-   "started": "2026-05-20T22:06:23Z",
-   "status": "done",
-   "n_iterations": 19,
-   "best_score": 0.789964,
-   "best_headroom": 0.36216,
-   "best_iter": 7,
-   "agent": "hammernik-search-tpe-calibrated",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     2,
-     0.3418
-    ],
-    [
-     3,
-     0.3451
-    ],
-    [
-     4,
-     0.3451
-    ],
-    [
-     5,
-     0.3494
-    ],
-    [
-     6,
-     0.3622
-    ],
-    [
-     7,
-     0.3622
-    ],
-    [
-     8,
-     0.3622
-    ],
-    [
-     9,
-     0.3622
-    ],
-    [
-     10,
-     0.3622
-    ],
-    [
-     11,
-     0.3622
-    ],
-    [
-     12,
-     0.3622
-    ],
-    [
-     13,
-     0.3622
-    ],
-    [
-     14,
-     0.3622
-    ],
-    [
-     15,
-     0.3622
-    ],
-    [
-     16,
-     0.3622
-    ],
-    [
-     17,
-     0.3622
-    ],
-    [
-     18,
-     0.3622
-    ],
-    [
-     19,
-     0.3622
-    ],
-    [
-     20,
-     0.3622
-    ]
-   ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-hammernik-search-20260520-01/iterations/iter-0007/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01",
-   "short_id": "20260520-01",
-   "name": "hammernik-vn",
-   "challenge": "demo_dl",
-   "started": "2026-05-20T22:06:23Z",
-   "status": "done",
-   "n_iterations": 19,
-   "best_score": 0.778708,
-   "best_headroom": 0.362052,
-   "best_iter": 16,
-   "agent": "hammernik-vn-search-tpe-calibrated",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     2,
-     0.327
-    ],
-    [
-     3,
-     0.3506
-    ],
-    [
-     4,
-     0.3506
-    ],
-    [
-     5,
-     0.3506
-    ],
-    [
-     6,
-     0.3515
-    ],
-    [
-     7,
-     0.3515
-    ],
-    [
-     8,
-     0.3515
-    ],
-    [
-     9,
-     0.3515
-    ],
-    [
-     10,
-     0.3515
-    ],
-    [
-     11,
-     0.3621
-    ],
-    [
-     12,
-     0.3621
-    ],
-    [
-     13,
-     0.3621
-    ],
-    [
-     14,
-     0.3621
-    ],
-    [
-     15,
-     0.3621
-    ],
-    [
-     16,
-     0.3621
-    ],
-    [
-     17,
-     0.3621
-    ],
-    [
-     18,
-     0.3621
-    ],
-    [
-     19,
-     0.3621
-    ],
-    [
-     20,
-     0.3621
-    ]
-   ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/iterations/iter-0016/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01",
-   "short_id": "20260520-01",
-   "name": "itnet-v3",
-   "challenge": "demo_dl",
-   "started": "2026-05-20T22:06:23Z",
-   "status": "done",
-   "n_iterations": 19,
-   "best_score": 0.927355,
-   "best_headroom": 0.467614,
-   "best_iter": 17,
-   "agent": "itnet-v3-search-tpe-calibrated",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     1,
-     0.46
-    ],
-    [
-     2,
-     0.46
-    ],
-    [
-     3,
-     0.46
-    ],
-    [
-     5,
-     0.46
-    ],
-    [
-     6,
-     0.46
-    ],
-    [
-     7,
-     0.4648
-    ],
-    [
-     8,
-     0.4648
-    ],
-    [
-     9,
-     0.4676
-    ],
-    [
-     10,
-     0.4676
-    ],
-    [
-     11,
-     0.4676
-    ],
-    [
-     12,
-     0.4676
-    ],
-    [
-     13,
-     0.4676
-    ],
-    [
-     14,
-     0.4676
-    ],
-    [
-     15,
-     0.4676
-    ],
-    [
-     16,
-     0.4676
-    ],
-    [
-     17,
-     0.4676
-    ],
-    [
-     18,
-     0.4676
-    ],
-    [
-     19,
-     0.4676
-    ],
-    [
-     20,
-     0.4676
-    ]
-   ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0017/comparison.png",
-   "test_image": null
-  },
-  {
    "slug": "demo-intensity-calibrated-tpe-uswin-search-20260520-01",
-   "short_id": "20260520-01",
-   "name": "uswin",
+   "solver_key": "uswin",
+   "name": "U-Swin",
    "challenge": "demo_dl",
-   "started": "2026-05-20T22:06:23Z",
-   "status": "done",
+   "campaign": "search-20260520-01",
    "n_iterations": 17,
-   "best_score": 0.903925,
-   "best_headroom": 0.465473,
-   "best_iter": 13,
+   "best_iter": 11,
+   "best_headroom": 0.46547344153668846,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-20T22:55:15Z",
+   "status": "ranked",
+   "params_M": 3.954049,
+   "excluded_reason": null,
    "agent": "uswin-search-tpe-calibrated",
-   "model": "optuna-tpe",
+   "model": "random-search",
+   "ts": "2026-05-20T22:55:15Z",
    "curve": [
     [
      2,
@@ -1427,1726 +1646,110 @@
      0.4655
     ]
    ],
-   "val_image": "runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0013/comparison.png",
+   "val_image": "runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png",
    "test_image": null
   },
   {
-   "slug": "demo-dl-diffusion-recon-unconstrained-search-20260518-01",
-   "short_id": "20260518-01",
-   "name": "-diffusion-recon-unconstrained",
+   "slug": "demo-intensity-calibrated-tpe-wu-search-20260521-01",
+   "solver_key": "wu",
+   "name": "Wu 2015 (non-trainable)",
    "challenge": "demo_dl",
-   "started": "2026-05-18T09:39:52Z",
-   "status": "running",
-   "n_iterations": 31,
-   "best_score": 0.591864,
-   "best_headroom": 0.160706,
-   "best_iter": 9,
-   "agent": "diffusion-recon-unconstrained-search-tpe",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ],
-    [
-     3,
-     0.06
-    ],
-    [
-     3,
-     0.06
-    ],
-    [
-     4,
-     0.06
-    ],
-    [
-     4,
-     0.06
-    ],
-    [
-     5,
-     0.06
-    ],
-    [
-     5,
-     0.06
-    ],
-    [
-     6,
-     0.06
-    ],
-    [
-     6,
-     0.06
-    ],
-    [
-     7,
-     0.06
-    ],
-    [
-     7,
-     0.06
-    ],
-    [
-     8,
-     0.06
-    ],
-    [
-     8,
-     0.1472
-    ],
-    [
-     9,
-     0.1472
-    ],
-    [
-     10,
-     0.1472
-    ],
-    [
-     9,
-     0.1557
-    ],
-    [
-     11,
-     0.1557
-    ],
-    [
-     10,
-     0.1557
-    ],
-    [
-     12,
-     0.1557
-    ],
-    [
-     11,
-     0.1557
-    ],
-    [
-     13,
-     0.1557
-    ],
-    [
-     14,
-     0.1557
-    ],
-    [
-     12,
-     0.1557
-    ],
-    [
-     15,
-     0.1557
-    ],
-    [
-     16,
-     0.1557
-    ],
-    [
-     17,
-     0.1557
-    ],
-    [
-     13,
-     0.1607
-    ],
-    [
-     18,
-     0.1607
-    ]
-   ],
-   "val_image": "runs/demo-dl-diffusion-recon-unconstrained-search-20260518-01/iterations/iter-0009/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-diffusion-recon-constrained-search-20260517-03",
-   "short_id": "20260517-03",
-   "name": "-diffusion-recon-constrained",
-   "challenge": "demo_dl",
-   "started": "2026-05-17T20:50:47Z",
-   "status": "done",
+   "campaign": "search-20260521-01",
    "n_iterations": 20,
-   "best_score": 0.252054,
-   "best_headroom": 0.0,
-   "best_iter": 15,
-   "agent": "diffusion-recon-constrained-search-tpe",
-   "model": "optuna-tpe",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ],
-    [
-     3,
-     0.0
-    ],
-    [
-     4,
-     0.0
-    ],
-    [
-     5,
-     0.0
-    ],
-    [
-     6,
-     0.0
-    ],
-    [
-     7,
-     0.0
-    ],
-    [
-     8,
-     0.0
-    ],
-    [
-     9,
-     0.0
-    ],
-    [
-     10,
-     0.0
-    ],
-    [
-     11,
-     0.0
-    ],
-    [
-     12,
-     0.0
-    ],
-    [
-     13,
-     0.0
-    ],
-    [
-     14,
-     0.0
-    ],
-    [
-     15,
-     0.0
-    ],
-    [
-     16,
-     0.0
-    ],
-    [
-     17,
-     0.0
-    ],
-    [
-     18,
-     0.0
-    ],
-    [
-     19,
-     0.0
-    ],
-    [
-     20,
-     0.0
-    ]
-   ],
-   "val_image": "runs/demo-dl-diffusion-recon-constrained-search-20260517-03/iterations/iter-0015/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-fair-naf-search-20260517-01",
-   "short_id": "20260517-01",
-   "name": "-fair-naf",
-   "challenge": "demo_dl",
-   "started": "2026-05-17T09:07:00Z",
-   "status": "running",
-   "n_iterations": 0,
-   "best_score": null,
-   "best_headroom": null,
-   "best_iter": null,
-   "agent": "naf-search",
-   "model": "random-search",
-   "curve": [],
-   "val_image": null,
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-fair-uswin-search-20260517-01",
-   "short_id": "20260517-01",
-   "name": "-fair-uswin",
-   "challenge": "demo_dl",
-   "started": "2026-05-17T08:12:14Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.781748,
-   "best_headroom": 0.809015,
-   "best_iter": 3,
-   "agent": "uswin-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.8042
-    ],
-    [
-     2,
-     0.8042
-    ],
-    [
-     3,
-     0.8042
-    ],
-    [
-     4,
-     0.8042
-    ],
-    [
-     5,
-     0.8042
-    ],
-    [
-     6,
-     0.8042
-    ],
-    [
-     7,
-     0.8042
-    ],
-    [
-     8,
-     0.8042
-    ],
-    [
-     9,
-     0.8042
-    ],
-    [
-     10,
-     0.809
-    ],
-    [
-     11,
-     0.809
-    ],
-    [
-     12,
-     0.809
-    ],
-    [
-     13,
-     0.809
-    ],
-    [
-     14,
-     0.809
-    ],
-    [
-     15,
-     0.809
-    ],
-    [
-     16,
-     0.809
-    ],
-    [
-     17,
-     0.809
-    ],
-    [
-     18,
-     0.809
-    ],
-    [
-     19,
-     0.809
-    ],
-    [
-     20,
-     0.809
-    ]
-   ],
-   "val_image": "runs/demo-dl-fair-uswin-search-20260517-01/iterations/iter-0003/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-ddpm-search-20260517-01",
-   "short_id": "20260517-01",
-   "name": "-ddpm",
-   "challenge": "demo_dl",
-   "started": "2026-05-17T06:11:39Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": -0.00276021,
-   "best_headroom": 0.99724,
-   "best_iter": 10,
-   "agent": "ddpm-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.9963
-    ],
-    [
-     2,
-     0.9963
-    ],
-    [
-     3,
-     0.9963
-    ],
-    [
-     4,
-     0.9963
-    ],
-    [
-     5,
-     0.9963
-    ],
-    [
-     6,
-     0.9963
-    ],
-    [
-     7,
-     0.9963
-    ],
-    [
-     8,
-     0.9965
-    ],
-    [
-     9,
-     0.9965
-    ],
-    [
-     10,
-     0.9972
-    ],
-    [
-     11,
-     0.9972
-    ],
-    [
-     12,
-     0.9972
-    ],
-    [
-     13,
-     0.9972
-    ],
-    [
-     14,
-     0.9972
-    ],
-    [
-     15,
-     0.9972
-    ],
-    [
-     16,
-     0.9972
-    ],
-    [
-     17,
-     0.9972
-    ],
-    [
-     18,
-     0.9972
-    ],
-    [
-     19,
-     0.9972
-    ],
-    [
-     20,
-     0.9972
-    ]
-   ],
-   "val_image": "runs/demo-dl-ddpm-search-20260517-01/iterations/iter-0010/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-naf-search-20260516-03",
-   "short_id": "20260516-03",
-   "name": "-naf",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T23:36:32Z",
-   "status": "running",
-   "n_iterations": 16,
-   "best_score": 0.821593,
-   "best_headroom": 0.541929,
-   "best_iter": 6,
-   "agent": "naf-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.4545
-    ],
-    [
-     2,
-     0.5098
-    ],
-    [
-     3,
-     0.5098
-    ],
-    [
-     4,
-     0.5098
-    ],
-    [
-     5,
-     0.5197
-    ],
-    [
-     6,
-     0.5419
-    ],
-    [
-     7,
-     0.5419
-    ],
-    [
-     8,
-     0.5419
-    ],
-    [
-     9,
-     0.5419
-    ],
-    [
-     10,
-     0.5419
-    ],
-    [
-     11,
-     0.5419
-    ],
-    [
-     12,
-     0.5419
-    ],
-    [
-     13,
-     0.5419
-    ],
-    [
-     14,
-     0.5419
-    ],
-    [
-     15,
-     0.5419
-    ],
-    [
-     16,
-     0.5419
-    ]
-   ],
-   "val_image": "runs/demo-dl-naf-search-20260516-03/iterations/iter-0006/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-hammernik-vn-search-20260516-02",
-   "short_id": "20260516-02",
-   "name": "-hammernik-vn",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T20:18:14Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.494294,
-   "best_headroom": 0.611318,
-   "best_iter": 10,
-   "agent": "hammernik-vn-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.5976
-    ],
-    [
-     2,
-     0.5976
-    ],
-    [
-     3,
-     0.5976
-    ],
-    [
-     4,
-     0.5976
-    ],
-    [
-     5,
-     0.5976
-    ],
-    [
-     6,
-     0.5976
-    ],
-    [
-     7,
-     0.5976
-    ],
-    [
-     8,
-     0.5976
-    ],
-    [
-     9,
-     0.5976
-    ],
-    [
-     10,
-     0.5976
-    ],
-    [
-     11,
-     0.5976
-    ],
-    [
-     12,
-     0.5976
-    ],
-    [
-     13,
-     0.6113
-    ],
-    [
-     14,
-     0.6113
-    ],
-    [
-     15,
-     0.6113
-    ],
-    [
-     16,
-     0.6113
-    ],
-    [
-     17,
-     0.6113
-    ],
-    [
-     18,
-     0.6113
-    ],
-    [
-     19,
-     0.6113
-    ],
-    [
-     20,
-     0.6113
-    ]
-   ],
-   "val_image": "runs/demo-dl-hammernik-vn-search-20260516-02/iterations/iter-0010/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-diffusion-search-20260516-01",
-   "short_id": "20260516-01",
-   "name": "-diffusion",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T19:56:12Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.325581,
-   "best_headroom": 0.0,
-   "best_iter": 17,
-   "agent": "diffusion-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ],
-    [
-     3,
-     0.0
-    ],
-    [
-     4,
-     0.0
-    ],
-    [
-     5,
-     0.0
-    ],
-    [
-     6,
-     0.0
-    ],
-    [
-     7,
-     0.0
-    ],
-    [
-     8,
-     0.0
-    ],
-    [
-     9,
-     0.0
-    ],
-    [
-     10,
-     0.0
-    ],
-    [
-     11,
-     0.0
-    ],
-    [
-     12,
-     0.0
-    ],
-    [
-     13,
-     0.0
-    ],
-    [
-     14,
-     0.0
-    ],
-    [
-     15,
-     0.0
-    ],
-    [
-     16,
-     0.0
-    ],
-    [
-     17,
-     0.0
-    ],
-    [
-     18,
-     0.0
-    ],
-    [
-     19,
-     0.0
-    ],
-    [
-     20,
-     0.0
-    ]
-   ],
-   "val_image": "runs/demo-dl-diffusion-search-20260516-01/iterations/iter-0017/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-r2gaussian-search-20260516-01",
-   "short_id": "20260516-01",
-   "name": "-r2gaussian",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T19:21:21Z",
-   "status": "running",
-   "n_iterations": 18,
-   "best_score": 0.865439,
-   "best_headroom": 0.505353,
    "best_iter": 18,
-   "agent": "r2gaussian-search",
+   "best_headroom": 0.22950579171239938,
+   "best_ssim": null,
+   "best_score": null,
+   "started": "2026-05-21T00:17:28Z",
+   "status": "ranked",
+   "params_M": 0.0,
+   "excluded_reason": null,
+   "agent": "wu-search-tpe-calibrated",
    "model": "random-search",
+   "ts": "2026-05-21T00:17:28Z",
    "curve": [
     [
      1,
-     0.0
+     0.1894
     ],
     [
      2,
-     0.0
+     0.2082
     ],
     [
      3,
-     0.4964
+     0.2082
     ],
     [
      4,
-     0.4964
+     0.2082
     ],
     [
      5,
-     0.4964
+     0.2082
     ],
     [
      6,
-     0.4964
+     0.2082
     ],
     [
      7,
-     0.4964
+     0.2082
     ],
     [
      8,
-     0.4964
+     0.2193
     ],
     [
      9,
-     0.4964
+     0.2203
     ],
     [
      10,
-     0.4964
+     0.2203
     ],
     [
      11,
-     0.4964
+     0.2203
     ],
     [
      12,
-     0.4964
+     0.2205
     ],
     [
      13,
-     0.4964
+     0.2252
     ],
     [
      14,
-     0.4964
+     0.2252
     ],
     [
      15,
-     0.4964
+     0.2252
     ],
     [
      16,
-     0.4964
+     0.2252
     ],
     [
      17,
-     0.5054
+     0.2252
     ],
     [
      18,
-     0.5054
-    ]
-   ],
-   "val_image": "runs/demo-dl-r2gaussian-search-20260516-01/iterations/iter-0018/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-uswin-search-20260516-01",
-   "short_id": "20260516-01",
-   "name": "-uswin",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T18:26:22Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.774022,
-   "best_headroom": 0.810304,
-   "best_iter": 10,
-   "agent": "uswin-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.8061
-    ],
-    [
-     2,
-     0.8061
-    ],
-    [
-     3,
-     0.8061
-    ],
-    [
-     4,
-     0.8061
-    ],
-    [
-     5,
-     0.8061
-    ],
-    [
-     6,
-     0.8061
-    ],
-    [
-     7,
-     0.8061
-    ],
-    [
-     8,
-     0.8061
-    ],
-    [
-     9,
-     0.8061
-    ],
-    [
-     10,
-     0.8103
-    ],
-    [
-     11,
-     0.8103
-    ],
-    [
-     12,
-     0.8103
-    ],
-    [
-     13,
-     0.8103
-    ],
-    [
-     14,
-     0.8103
-    ],
-    [
-     15,
-     0.8103
-    ],
-    [
-     16,
-     0.8103
-    ],
-    [
-     17,
-     0.8103
-    ],
-    [
-     18,
-     0.8103
+     0.2295
     ],
     [
      19,
-     0.8103
+     0.2295
     ],
     [
      20,
-     0.8103
+     0.2295
     ]
    ],
-   "val_image": "runs/demo-dl-uswin-search-20260516-01/iterations/iter-0010/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-itnet-v3-search-20260516-02",
-   "short_id": "20260516-02",
-   "name": "-itnet-v3",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T14:33:21Z",
-   "status": "done",
-   "n_iterations": 18,
-   "best_score": 0.723799,
-   "best_headroom": 0.821517,
-   "best_iter": 3,
-   "agent": "itnet-v3-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.7961
-    ],
-    [
-     2,
-     0.7961
-    ],
-    [
-     3,
-     0.8087
-    ],
-    [
-     4,
-     0.8087
-    ],
-    [
-     5,
-     0.8087
-    ],
-    [
-     6,
-     0.8087
-    ],
-    [
-     7,
-     0.8087
-    ],
-    [
-     8,
-     0.8087
-    ],
-    [
-     9,
-     0.8215
-    ],
-    [
-     10,
-     0.8215
-    ],
-    [
-     11,
-     0.8215
-    ],
-    [
-     13,
-     0.8215
-    ],
-    [
-     14,
-     0.8215
-    ],
-    [
-     15,
-     0.8215
-    ],
-    [
-     16,
-     0.8215
-    ],
-    [
-     17,
-     0.8215
-    ],
-    [
-     19,
-     0.8215
-    ],
-    [
-     20,
-     0.8215
-    ]
-   ],
-   "val_image": "runs/demo-dl-itnet-v3-search-20260516-02/iterations/iter-0003/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-hammernik-search-20260516-01",
-   "short_id": "20260516-01",
-   "name": "-hammernik",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T13:30:01Z",
-   "status": "running",
-   "n_iterations": 11,
-   "best_score": 0.415653,
-   "best_headroom": 0.515916,
-   "best_iter": 5,
-   "agent": "hammernik-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.2845
-    ],
-    [
-     2,
-     0.4765
-    ],
-    [
-     3,
-     0.4765
-    ],
-    [
-     4,
-     0.4765
-    ],
-    [
-     5,
-     0.4765
-    ],
-    [
-     6,
-     0.4765
-    ],
-    [
-     7,
-     0.5026
-    ],
-    [
-     8,
-     0.5026
-    ],
-    [
-     9,
-     0.5159
-    ],
-    [
-     10,
-     0.5159
-    ],
-    [
-     11,
-     0.5159
-    ]
-   ],
-   "val_image": "runs/demo-dl-hammernik-search-20260516-01/iterations/iter-0005/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-itnet-v2-search-20260516-01",
-   "short_id": "20260516-01",
-   "name": "-itnet-v2",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T13:28:16Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.369432,
-   "best_headroom": 0.480634,
-   "best_iter": 6,
-   "agent": "itnet-v2-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ],
-    [
-     3,
-     0.3565
-    ],
-    [
-     4,
-     0.3565
-    ],
-    [
-     5,
-     0.3565
-    ],
-    [
-     6,
-     0.4351
-    ],
-    [
-     7,
-     0.4351
-    ],
-    [
-     8,
-     0.4351
-    ],
-    [
-     9,
-     0.4351
-    ],
-    [
-     10,
-     0.4351
-    ],
-    [
-     11,
-     0.4351
-    ],
-    [
-     12,
-     0.4806
-    ],
-    [
-     13,
-     0.4806
-    ],
-    [
-     14,
-     0.4806
-    ],
-    [
-     15,
-     0.4806
-    ],
-    [
-     16,
-     0.4806
-    ],
-    [
-     17,
-     0.4806
-    ],
-    [
-     18,
-     0.4806
-    ],
-    [
-     19,
-     0.4806
-    ],
-    [
-     20,
-     0.4806
-    ]
-   ],
-   "val_image": "runs/demo-dl-itnet-v2-search-20260516-01/iterations/iter-0006/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-bf-20260516-01",
-   "short_id": "20260516-01",
-   "name": "-bf",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T13:20:23Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.319442,
-   "best_headroom": 0.61909,
-   "best_iter": 19,
-   "agent": "bf-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.6169
-    ],
-    [
-     2,
-     0.6169
-    ],
-    [
-     3,
-     0.6169
-    ],
-    [
-     4,
-     0.6169
-    ],
-    [
-     5,
-     0.6169
-    ],
-    [
-     6,
-     0.6169
-    ],
-    [
-     7,
-     0.6169
-    ],
-    [
-     8,
-     0.6169
-    ],
-    [
-     9,
-     0.6169
-    ],
-    [
-     10,
-     0.6169
-    ],
-    [
-     11,
-     0.6169
-    ],
-    [
-     12,
-     0.6169
-    ],
-    [
-     13,
-     0.6169
-    ],
-    [
-     14,
-     0.6169
-    ],
-    [
-     15,
-     0.6169
-    ],
-    [
-     16,
-     0.6169
-    ],
-    [
-     17,
-     0.6169
-    ],
-    [
-     18,
-     0.6169
-    ],
-    [
-     19,
-     0.6191
-    ],
-    [
-     20,
-     0.6191
-    ]
-   ],
-   "val_image": "runs/demo-dl-bf-20260516-01/iterations/iter-0019/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-wu-search-20260516-01",
-   "short_id": "20260516-01",
-   "name": "-wu",
-   "challenge": "demo_dl",
-   "started": "2026-05-16T13:02:44Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.182602,
-   "best_headroom": 0.41005,
-   "best_iter": 11,
-   "agent": "wu-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.356
-    ],
-    [
-     2,
-     0.388
-    ],
-    [
-     3,
-     0.3953
-    ],
-    [
-     4,
-     0.3953
-    ],
-    [
-     5,
-     0.3953
-    ],
-    [
-     6,
-     0.3986
-    ],
-    [
-     7,
-     0.3986
-    ],
-    [
-     8,
-     0.3986
-    ],
-    [
-     9,
-     0.4098
-    ],
-    [
-     10,
-     0.4098
-    ],
-    [
-     11,
-     0.4098
-    ],
-    [
-     12,
-     0.4098
-    ],
-    [
-     13,
-     0.4101
-    ],
-    [
-     14,
-     0.4101
-    ],
-    [
-     15,
-     0.4101
-    ],
-    [
-     16,
-     0.4101
-    ],
-    [
-     17,
-     0.4101
-    ],
-    [
-     18,
-     0.4101
-    ],
-    [
-     19,
-     0.4101
-    ],
-    [
-     20,
-     0.4101
-    ]
-   ],
-   "val_image": "runs/demo-dl-wu-search-20260516-01/iterations/iter-0011/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-itnet-20260515-01",
-   "short_id": "20260515-01",
-   "name": "-itnet",
-   "challenge": "demo_dl",
-   "started": "2026-05-15T23:54:15Z",
-   "status": "done",
-   "n_iterations": 20,
-   "best_score": 0.329573,
-   "best_headroom": 0.54323,
-   "best_iter": 15,
-   "agent": "itnet-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ],
-    [
-     3,
-     0.0
-    ],
-    [
-     4,
-     0.0
-    ],
-    [
-     5,
-     0.5432
-    ],
-    [
-     6,
-     0.5432
-    ],
-    [
-     7,
-     0.5432
-    ],
-    [
-     8,
-     0.5432
-    ],
-    [
-     9,
-     0.5432
-    ],
-    [
-     10,
-     0.5432
-    ],
-    [
-     11,
-     0.5432
-    ],
-    [
-     12,
-     0.5432
-    ],
-    [
-     13,
-     0.5432
-    ],
-    [
-     14,
-     0.5432
-    ],
-    [
-     15,
-     0.5432
-    ],
-    [
-     16,
-     0.5432
-    ],
-    [
-     17,
-     0.5432
-    ],
-    [
-     18,
-     0.5432
-    ],
-    [
-     19,
-     0.5432
-    ],
-    [
-     20,
-     0.5432
-    ]
-   ],
-   "val_image": "runs/demo-dl-itnet-20260515-01/iterations/iter-0015/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-tv-search-20260515-03",
-   "short_id": "20260515-03",
-   "name": "-tv",
-   "challenge": "demo_dl",
-   "started": "2026-05-15T20:54:25Z",
-   "status": "running",
-   "n_iterations": 20,
-   "best_score": 0.480428,
-   "best_headroom": 0.603272,
-   "best_iter": 17,
-   "agent": "tv-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.3714
-    ],
-    [
-     2,
-     0.3714
-    ],
-    [
-     3,
-     0.3714
-    ],
-    [
-     4,
-     0.3714
-    ],
-    [
-     5,
-     0.4835
-    ],
-    [
-     6,
-     0.4835
-    ],
-    [
-     7,
-     0.4835
-    ],
-    [
-     8,
-     0.4835
-    ],
-    [
-     9,
-     0.6033
-    ],
-    [
-     10,
-     0.6033
-    ],
-    [
-     11,
-     0.6033
-    ],
-    [
-     12,
-     0.6033
-    ],
-    [
-     13,
-     0.6033
-    ],
-    [
-     14,
-     0.6033
-    ],
-    [
-     15,
-     0.6033
-    ],
-    [
-     16,
-     0.6033
-    ],
-    [
-     17,
-     0.6033
-    ],
-    [
-     18,
-     0.6033
-    ],
-    [
-     19,
-     0.6033
-    ],
-    [
-     20,
-     0.6033
-    ]
-   ],
-   "val_image": null,
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-tv-search-20260515-02",
-   "short_id": "20260515-02",
-   "name": "-tv",
-   "challenge": "demo_dl",
-   "started": "2026-05-15T20:20:10Z",
-   "status": "running",
-   "n_iterations": 20,
-   "best_score": 0.306885,
-   "best_headroom": 0.387661,
-   "best_iter": 1,
-   "agent": "tv-search",
-   "model": "random-search",
-   "curve": [
-    [
-     1,
-     0.3877
-    ],
-    [
-     2,
-     0.3877
-    ],
-    [
-     3,
-     0.3877
-    ],
-    [
-     4,
-     0.3877
-    ],
-    [
-     5,
-     0.3877
-    ],
-    [
-     6,
-     0.3877
-    ],
-    [
-     7,
-     0.3877
-    ],
-    [
-     8,
-     0.3877
-    ],
-    [
-     9,
-     0.3877
-    ],
-    [
-     10,
-     0.3877
-    ],
-    [
-     11,
-     0.3877
-    ],
-    [
-     12,
-     0.3877
-    ],
-    [
-     13,
-     0.3877
-    ],
-    [
-     14,
-     0.3877
-    ],
-    [
-     15,
-     0.3877
-    ],
-    [
-     16,
-     0.3877
-    ],
-    [
-     17,
-     0.3877
-    ],
-    [
-     18,
-     0.3877
-    ],
-    [
-     19,
-     0.3877
-    ],
-    [
-     20,
-     0.3877
-    ]
-   ],
-   "val_image": null,
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-reference-20260515-02",
-   "short_id": "20260515-02",
-   "name": "-reference",
-   "challenge": "demo_dl",
-   "started": "2026-05-15T17:47:13Z",
-   "status": "running",
-   "n_iterations": 3,
-   "best_score": 0.4454,
-   "best_headroom": 0.5831,
-   "best_iter": 1,
-   "agent": "reference",
-   "model": "demo-implementations",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.5831
-    ],
-    [
-     3,
-     0.5831
-    ]
-   ],
-   "val_image": null,
-   "test_image": null
-  },
-  {
-   "slug": "demo-dl-sparse-view-20260513-01",
-   "short_id": "20260513-01",
-   "name": "-sparse-view",
-   "challenge": "demo_dl",
-   "started": "2026-05-13T20:30:00Z",
-   "status": "demo",
-   "n_iterations": 3,
-   "best_score": 0.62,
-   "best_headroom": 0.41,
-   "best_iter": 3,
-   "agent": "claude",
-   "model": "claude-sonnet-4.5",
-   "curve": [
-    [
-     1,
-     0.37
-    ],
-    [
-     2,
-     0.37
-    ],
-    [
-     3,
-     0.41
-    ]
-   ],
-   "val_image": "runs/demo-dl-sparse-view-20260513-01/iterations/iter-0003/comparison.png",
+   "val_image": "runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/iterations/iter-0018/comparison.png",
    "test_image": null
   }
  ]

@@ -1,33 +1,48 @@
 {
- "schema_version": 2,
- "updated": "2026-06-19T20:16:56Z",
+ "schema_version": 3,
+ "updated": "2026-06-19T20:28:40Z",
  "datasets": [
   {
-   "challenge": "demo_dl",
-   "label": "Demo-DL",
-   "n_runs": 35,
-   "n_iterations": 629,
-   "champion_slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
-   "champion_score": 0.961275,
-   "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
+   "challenge": "mayo_ldct",
+   "label": "Mayo-LDCT",
+   "campaign": "search-20260619-01",
+   "n_runs": 19,
+   "n_iterations": 34,
+   "n_solvers": 19,
+   "champion_slug": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
+   "champion_name": "DD-UNet supervised L2",
+   "champion_headroom": 0.3389846144100809,
+   "champion_ssim": 0.9097616076469421,
+   "champion_score": 0.3389846144100809,
+   "thumbnail": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0002/comparison.png"
   },
   {
    "challenge": "breast_ct",
    "label": "Breast-CT",
+   "campaign": "calibrated+agentic",
    "n_runs": 25,
    "n_iterations": 410,
+   "n_solvers": 25,
    "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
-   "champion_score": 0.999577,
+   "champion_name": "Learned Primal-Dual",
+   "champion_headroom": 0.9062405977538153,
+   "champion_ssim": null,
+   "champion_score": 0.9062405977538153,
    "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"
   },
   {
-   "challenge": "mayo_ldct",
-   "label": "Mayo-LDCT",
-   "n_runs": 19,
-   "n_iterations": 33,
-   "champion_slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01",
-   "champion_score": 0.924767,
-   "thumbnail": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0001/comparison.png"
+   "challenge": "demo_dl",
+   "label": "Demo-DL",
+   "campaign": "intensity-calibrated+agentic",
+   "n_runs": 15,
+   "n_iterations": 289,
+   "n_solvers": 15,
+   "champion_slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
+   "champion_name": "Learned Primal-Dual",
+   "champion_headroom": 0.4947240928024762,
+   "champion_ssim": null,
+   "champion_score": 0.4947240928024762,
+   "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
   }
  ]
 }

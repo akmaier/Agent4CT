@@ -56,23 +56,17 @@ Each iteration is one 5-minute Slurm job. The agent edits `pentathlon/<challenge
 Best-of-best per solver per dataset under the canonical
 calibrated-SSIM-headroom scoring convention.
 
-| Dataset | Top solver | hr | Leaderboard |
-|---|---|---:|---|
-| **Breast-CT** (Sidky synthetic + anatomy, 128 views) | Learned Primal-Dual *(TPE iter-11)* | **0.9062** | [breast_ct](leaderboards/breast_ct.html) |
-| **Demo-DL** (Sidky synthetic ellipses, 128 views) | DD-UNet supervised L2 *(TPE iter-15)* | **0.4950** | [demo_dl](leaderboards/demo_dl.html) |
-| **Mayo-LDCT** (real helical, Wagner split) | DD-UNet supervised L2 _(live, iter-2/20)_ | **0.3390** | [mayo_ldct](leaderboards/mayo_ldct.html) |
+The champion per dataset (single canonical ranking = **headroom**, SSIM
+tiebreak) is rendered live from the registry below, so it never drifts from the
+dataset boards.
 
-[![Breast-CT champion](runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](leaderboards/breast_ct.html)
-[![Demo-DL champion](runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png)](leaderboards/demo_dl.html)
+<div data-champions data-link-base="leaderboards/">loading champions…</div>
 
-*Top: Breast-CT champion (Learned Primal-Dual, TPE iter-11 — hr 0.9062).
-Bottom: Demo-DL champion (DD-UNet supervised L2, TPE iter-15 — hr 0.4950).
-Click any leaderboard link for the full per-solver ranking with comparison images.
-**Mayo-LDCT is being rebuilt (2026-06-14)** from a clean HD/LD FBP baseline after
-the `bg→0` calibration-bug fix — see its leaderboard for status.*
+<script src="assets/table.js"></script>
+<script src="assets/leaderboard.js"></script>
 
-See [Leaderboards](leaderboards/) for the cross-dataset summary and
-per-solver rankings with comparison images.
+See [Leaderboards](leaderboards/) for the full per-solver rankings (every solver,
+below-baseline dimmed, with comparison images) and the cross-dataset summary.
 
 ## Quick links
 
