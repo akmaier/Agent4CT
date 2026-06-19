@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T14:42:26Z",
+ "updated": "2026-06-19T14:50:10Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
