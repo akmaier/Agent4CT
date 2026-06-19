@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T00:50:31Z",
+ "updated": "2026-06-19T01:03:36Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
@@ -11,7 +11,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T20:38:59Z",
    "status": "running",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_score": 0.946953,
    "best_headroom": 0.0,
    "best_iter": 7,
@@ -53,9 +53,13 @@
     [
      9,
      0.0
+    ],
+    [
+     10,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0009/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0010/comparison.png",
    "test_image": null
   },
   {
@@ -65,7 +69,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T20:38:58Z",
    "status": "running",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_score": 0.956155,
    "best_headroom": 0.199212,
    "best_iter": 7,
@@ -107,9 +111,13 @@
     [
      9,
      0.1992
+    ],
+    [
+     10,
+     0.1992
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0009/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0010/comparison.png",
    "test_image": null
   },
   {
@@ -119,7 +127,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T19:15:13Z",
    "status": "running",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_score": 0.964759,
    "best_headroom": 0.410202,
    "best_iter": 6,
@@ -160,6 +168,10 @@
     ],
     [
      9,
+     0.4102
+    ],
+    [
+     10,
      0.4102
     ]
    ],
