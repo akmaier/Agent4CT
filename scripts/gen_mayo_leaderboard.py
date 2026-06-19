@@ -1,10 +1,15 @@
 """Regenerate the agentic-results table in docs/leaderboards/mayo_ldct.md from
-the run dirs — best iter per solver (max headroom, tie-break SSIM), ranked.
+the run dirs — best iter per solver (max SSIM, tie-break headroom), ranked.
 
 Run after each agentic wave + rsync, before commit. Replaces the content between
 the `<!-- AGENTIC_TABLE_START -->` / `<!-- AGENTIC_TABLE_END -->` markers so the
 table always reflects the true best-per-solver from the data (no manual tracking,
 no stale rows). Torch-free — runs on the laptop after rsyncing the run dirs.
+
+Columns: Rank | Solver | Best iter | params (M) | SSIM | hr | PSNR (dB) | RMSE |
+time (s) | Source | Comparison. PSNR/RMSE come from each iter's
+`observation.json` (val_psnr / val_rmse); compute time is the per-iter wall
+(`elapsed_s`) the agentic runner records.
 """
 from __future__ import annotations
 import json
@@ -15,14 +20,20 @@ REPO = Path(__file__).resolve().parents[1]
 RUNS = REPO / "docs" / "runs"
 LB = REPO / "docs" / "leaderboards" / "mayo_ldct.md"
 
+# Pinned to the CURRENT Mayo campaign run-id. The 2026-06-14 rebuild
+# (search-20260614-01) was purged in the 2026-06-19 reset (invalid val metric);
+# the fresh search is search-20260619-01. NEVER widen this glob — it keeps the
+# obsolete pre-rebuild agentic runs from leaking back in as extra rows.
+RUNID = "search-20260619-01"
+
 NAMES = {
     "dual-domain-supervised": "DD-UNet supervised L2",
     "itnet-v3": "ITNet v3",
     "itnet-v2": "ITNet v2",
     "itnet": "ITNet v1",
     "dual-domain-bilateral-supervised": "DD-BF supervised L2",
-    "dual-domain-n2i": "DD-UNet N2I",
-    "dual-domain-bilateral-n2i": "DD-BF N2I",
+    "dual-domain-n2i": "DD-UNet N2I (per-image)",
+    "dual-domain-bilateral-n2i": "DD-BF N2I (per-image)",
     "learned-primal-dual": "Learned Primal-Dual",
     "hammernik-2017": "Hammernik VN (2017)",
     "hammernik-vn": "Hammernik VN (MRI port)",
@@ -57,8 +68,20 @@ def variant(cfg: dict) -> str:
 
 def fmt_params(pm) -> str:
     if pm is None:
-        return ""
-    return f"{pm:.3f} M" if pm >= 0.001 else str(int(round(pm * 1e6)))
+        return "—"
+    return f"{pm:.3f}" if pm >= 0.001 else str(int(round(pm * 1e6)))
+
+
+def fmt_psnr(p) -> str:
+    return f"{p:.2f}" if isinstance(p, (int, float)) else "—"
+
+
+def fmt_rmse(r) -> str:
+    return f"{r:.2e}" if isinstance(r, (int, float)) else "—"
+
+
+def fmt_time(t) -> str:
+    return f"{t:.0f}" if isinstance(t, (int, float)) else "—"
 
 
 def best_row(slug_dir: Path):
@@ -83,9 +106,7 @@ def best_row(slug_dir: Path):
 
 def main() -> int:
     rows = []
-    # Pinned to the CURRENT rebuild run-id (2026-06-14) so the obsolete
-    # pre-rebuild agentic runs (20260603/20260610/phase4) never leak back in.
-    for d in sorted(RUNS.glob("mayo-ldct-claude-agentic-*-search-20260614-01")):
+    for d in sorted(RUNS.glob(f"mayo-ldct-claude-agentic-*-{RUNID}")):
         m = re.match(r"mayo-ldct-claude-agentic-(.+)-search-\d{8}-\d+$", d.name)
         if not m:
             continue
@@ -96,30 +117,31 @@ def main() -> int:
             continue
         it, hr, ss = b
         var = f"iter-{it}"
-        params = ""
+        params = psnr = rmse = tsec = "—"
         obs = d / "iterations" / f"iter-{it:04d}" / "observation.json"
         if obs.exists():
             o = json.loads(obs.read_text())
             params = fmt_params(o.get("params_M"))
+            psnr = fmt_psnr(o.get("val_psnr"))
+            rmse = fmt_rmse(o.get("val_rmse"))
+            tsec = fmt_time(o.get("elapsed_s"))
             v = variant(o.get("cfg_full") or {})
             if v:
                 var = f"iter-{it} ({v})"
         # Link the best iter's val (L277) comparison.png — always regenerated
         # by the solver at run time, so it stays in lock-step with the metric
-        # after every rsync. (The held-out-test montages (test_showcase.png)
-        # were a nicer view but went stale at 2026-06-15 and require a slow
-        # retrain to refresh; regenerate them FOV-cropped as a follow-up.)
+        # after every rsync.
         img = f"../runs/{d.name}/iterations/iter-{it:04d}/comparison.png"
         res = f"../runs/{d.name}/results.tsv"
-        rows.append((hr, ss, name, var, params, res, img))
+        rows.append((hr, ss, name, var, params, psnr, rmse, tsec, res, img))
 
     rows.sort(key=lambda r: (-r[1], -r[0]))   # by SSIM (r[1]), hr tiebreak
-    out = ["| Rank | Solver | Best iter | SSIM | hr | params | Source | Comparison |",
-           "|---:|---|---|---:|---:|---:|---|---|"]
-    for i, (hr, ss, name, var, params, res, img) in enumerate(rows, 1):
+    out = ["| Rank | Solver | Best iter | params (M) | SSIM | hr | PSNR (dB) | RMSE | time (s) | Source | Comparison |",
+           "|---:|---|---|---:|---:|---:|---:|---:|---:|---|---|"]
+    for i, (hr, ss, name, var, params, psnr, rmse, tsec, res, img) in enumerate(rows, 1):
         b = "**" if i == 1 else ""
-        out.append(f"| {i} | {b}{name}{b} | {var} | {ss:.4f} | {hr:.4f} | "
-                   f"{params} | [results]({res}) | [![{name}]({img})]({img}) |")
+        out.append(f"| {i} | {b}{name}{b} | {var} | {params} | {ss:.4f} | {hr:.4f} | "
+                   f"{psnr} | {rmse} | {tsec} | [results]({res}) | [![{name}]({img})]({img}) |")
     table = "\n".join(out)
 
     md = LB.read_text()

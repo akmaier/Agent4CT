@@ -31,7 +31,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 RUNS = REPO / "docs" / "runs"
-RUNID = "search-20260614-01"   # pinned rebuild run-id (never widen)
+RUNID = "search-20260619-01"   # pinned rebuild run-id (never widen). The
+# 2026-06-14 rebuild was purged in the 2026-06-19 reset; the live campaign is
+# search-20260619-01.
 
 # (solver_key, slug_dash). slug_dash defaults to solver_key.replace("_","-").
 # ALL 19 Mayo solvers get the 6-central-patient valtest montage. The 9
