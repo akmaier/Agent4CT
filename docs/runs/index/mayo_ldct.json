@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T00:10:41Z",
+ "updated": "2026-06-19T00:23:40Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
@@ -11,7 +11,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T20:38:59Z",
    "status": "running",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_score": 0.946953,
    "best_headroom": 0.0,
    "best_iter": 7,
@@ -45,9 +45,13 @@
     [
      7,
      0.0
+    ],
+    [
+     8,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0007/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01/iterations/iter-0008/comparison.png",
    "test_image": null
   },
   {
@@ -57,7 +61,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T20:38:58Z",
    "status": "running",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_score": 0.956155,
    "best_headroom": 0.199212,
    "best_iter": 7,
@@ -91,9 +95,13 @@
     [
      7,
      0.1992
+    ],
+    [
+     8,
+     0.1992
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0007/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260614-01/iterations/iter-0008/comparison.png",
    "test_image": null
   },
   {
@@ -103,9 +111,9 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T19:15:13Z",
    "status": "running",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_score": 0.964759,
-   "best_headroom": 0.378675,
+   "best_headroom": 0.410202,
    "best_iter": 6,
    "agent": "itnet_v2-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
@@ -141,6 +149,10 @@
     [
      8,
      0.3787
+    ],
+    [
+     9,
+     0.4102
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/valtest_showcase.png",
