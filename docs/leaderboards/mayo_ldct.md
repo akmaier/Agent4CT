@@ -107,16 +107,16 @@ and per-slice SSIM-vs-z curves are in
 
 ## Solver leaderboard
 
-> **Rebuild in progress (2026-06-14).** Agentic autoresearch loop (Step 2 of
-> [`solver_plan.md`](../../solver_plan.md)) on the corrected per-sample path:
-> training-NaN grad-clip fix (`metrics.clip_and_step`) + per-sample `ps_eff`
-> reconstruction + `bg_target="truth"` calibration. Numbers are the **agentic
-> search metric** — calibrated full-image SSIM on a `val_n=20` stratified L277
-> subset, `train_n=200` stratified across the 4 train patients. The headroom
-> `hr` is the solver-internal `(SSIM − LD_FBP)/(oracle − LD_FBP)` on that
-> subset (in-solver LD-FBP baseline ≈ 0.918 on these 20 slices). The per-solver
-> winner will be re-evaluated on **all 214 val slices** for the final row.
-> Driving toward the iter-20 hard stop per solver; **updated every wave.**
+> **`search-20260619-01` — in progress (2026-06-19).** Agentic autoresearch loop
+> (Step 2 of [`solver_plan.md`](../../solver_plan.md)) on the corrected per-sample
+> path: training-NaN grad-clip fix (`metrics.clip_and_step`) + per-sample `ps_eff`
+> reconstruction + `bg_target="truth"` calibration. Numbers are the **corrected
+> val metric** — calibrated full-image SSIM scored on **all 214 L277 slices**
+> inside the **321 px detector-geometry FOV** (`train_n=200` stratified across the
+> 4 train patients). The headroom `hr = (SSIM − LD_FBP)/(oracle − LD_FBP)` uses
+> the val row of the baseline table above (LD-FBP 0.8078, HD-FBP oracle 0.9331).
+> Each solver runs under a **hard 20-min train+score budget** (val figure
+> excluded), driving toward the iter-20 hard stop; **updated every wave.**
 
 Best agentic iter so far per solver (table auto-regenerated from run data each
 wave by [`scripts/gen_mayo_leaderboard.py`](../../scripts/gen_mayo_leaderboard.py),
