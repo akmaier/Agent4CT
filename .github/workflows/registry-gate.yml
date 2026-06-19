@@ -1,0 +1,40 @@
+name: registry-gate
+
+# The result-register staleness gate (result_register_refactor_plan.md §7).
+# FAILS the PR/push if any committed registry view disagrees with a fresh build,
+# if a dataset's dashboard champion != its leaderboard rank-1, if any rendered
+# image path is missing, or if a board's row count != that campaign's solver
+# inventory. Torch-free + deterministic, so it runs on a plain Python runner.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/runs/**"
+      - "scripts/build_registry.py"
+      - "scripts/validate_registry.py"
+      - "scripts/registry_lib.py"
+      - "docs/runs/CURRENT_RUNIDS.json"
+  pull_request:
+    paths:
+      - "docs/runs/**"
+      - "scripts/build_registry.py"
+      - "scripts/validate_registry.py"
+      - "scripts/registry_lib.py"
+      - "docs/runs/CURRENT_RUNIDS.json"
+  workflow_dispatch: {}
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # full history so build_registry's `git rev-parse HEAD` works
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate registry (staleness gate)
+        run: |
+          python3 scripts/validate_registry.py

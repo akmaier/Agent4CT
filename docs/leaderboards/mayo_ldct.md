@@ -96,14 +96,15 @@ Per-patient (calibrated SSIM, all slices):
 | L075 | test | 137 | 0.664 | 0.9626 | 0.9149 | 0.0477 |
 | L123 | test | 151 | 0.664 | 0.9631 | 0.9039 | 0.0591 |
 
-![HD vs LD FBP per-patient + per-split SSIM](baseline_2026-06-14/summary.png)
-
-Per-patient representative slices (min / median / max LD-SSIM; GT | HD | LD | LD−GT)
-and per-slice SSIM-vs-z curves are in
-[`baseline_2026-06-14/`](baseline_2026-06-14/) — e.g. val patient
-[L277 montage](baseline_2026-06-14/L277_montage.png) ·
-[L277 SSIM vs z](baseline_2026-06-14/L277_ssim_vs_z.png), test patient
-[L014 montage](baseline_2026-06-14/L014_montage.png).
+The per-patient baseline figures (HD/LD per-split SSIM summary, per-patient
+representative-slice montages, per-slice SSIM-vs-z curves) lived under
+`docs/leaderboards/baseline_2026-06-14/`; that 17 MB static-PNG dir was archived
+out of the served tree in the 2026-06-19 result-register cleanup. Recover it from
+the `archive/pre-refactor-2026-06-19` tag
+(`git checkout archive/pre-refactor-2026-06-19 -- docs/leaderboards/baseline_2026-06-14`)
+or regenerate via `scripts/compare_hd_ld_fbp_allslices.py`. The numeric baseline
+endpoints above (LD-FBP 0.8078 / HD-FBP 0.9331 on val L277) are what the headroom
+scoring uses and are unaffected.
 
 ## Solver leaderboard
 
