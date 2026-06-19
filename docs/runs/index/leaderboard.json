@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-19T20:43:49Z",
+ "updated": "2026-06-19T21:11:13Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -265,6 +265,22 @@
      "rank": null
     },
     {
+     "solver_key": "diff-recon-dcstep-unconstrained",
+     "solver_name": "Diffusion (unconstrained DPS)",
+     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
+     "best_iter": 2,
+     "params_M": 8.594211,
+     "params_source": "observation",
+     "val_ssim": 0.39601171016693115,
+     "headroom": 0.0,
+     "val_psnr": 11.246393203735352,
+     "val_rmse": 0.013697785325348377,
+     "elapsed_s": 868.3285479545593,
+     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0002/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
      "solver_key": "diff-recon-dcstep-constrained",
      "solver_name": "Diffusion (constrained DPS+DC)",
      "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
@@ -277,22 +293,6 @@
      "val_rmse": 0.009630956687033176,
      "elapsed_s": 1018.9639804363251,
      "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0001/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
-     "solver_key": "diff-recon-dcstep-unconstrained",
-     "solver_name": "Diffusion (unconstrained DPS)",
-     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
-     "best_iter": 1,
-     "params_M": 8.594211,
-     "params_source": "observation",
-     "val_ssim": 0.3688327968120575,
-     "headroom": 0.0,
-     "val_psnr": 10.54642105102539,
-     "val_rmse": 0.014847350306808949,
-     "elapsed_s": 868.6510360240936,
-     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0001/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
