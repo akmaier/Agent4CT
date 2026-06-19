@@ -39,6 +39,13 @@ breast/demo — expect hr near the LD-FBP baseline there.
   The lever is per-scan **lr↓** (anchor near the warm-start init): demo 0.4785→0.4880
   (lr1e-4), mayo 0.9508→0.9541 (lr3e-4), breast 0.9553→0.9593 (lr1e-4) — confirmed
   on all 3 datasets. `unet_c↑` is NOT the lever (mayo c16→c32 flat at 0.9508).
+- **`warm_start` is LOAD-BEARING-POSITIVE for the U-Net N2I (do NOT turn it off).**
+  Confirmed cross-substrate (2026-06-19): demo-n2i `warm_start`False 0.5081→0.4486
+  (−0.06), mayo-n2i False 0.9562→0.9414 (−0.015). The amortized warm-start init is
+  the anchor the per-scan lr↓ regularization relies on; without it each per-scan fit
+  lands in a worse basin. (demo-n2i also has a large init-driven noise floor: a seed
+  flip alone swung 0.5081→0.4203, so demo-n2i SSIM reads are noisy.) Don't spend
+  future iters re-testing `warm_start`=off — it's settled on all tested datasets.
 - **Bilateral (6-param) BEATS the U-Net** on these substrates: it physically can't
   overfit one scan (demo-bilat 0.77 hr+0.33 vs demo-n2i 0.49). For demo bilateral
   `img_n_bf↑` (image-domain depth) is the working lever (1→3→5: 0.67→0.75→0.77).
