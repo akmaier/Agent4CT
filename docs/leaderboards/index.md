@@ -8,8 +8,11 @@ description: Calibrated headroom rankings across the three CT reconstruction ben
 Best-of-best per solver per dataset under the canonical
 **calibrated-SSIM-headroom** scoring convention
 ([`evaluate_calibrated`](https://github.com/akmaier/Agent4CT/blob/main/ddssl_ldct/metrics.py)).
-All 3 leaderboards have **full 19-solver inventory coverage** as of
-2026-06-09.
+All 3 leaderboards have **full 19-solver inventory coverage**. **Mayo-LDCT is
+being re-run live** (`search-20260619-01`) under the corrected metric — the Mayo
+champion row below auto-updates each wave from the run data; the breast/demo
+boards are stable. The cross-dataset counts further down are a 2026-06-09
+snapshot.
 
 ## Champion comparison images
 
@@ -17,7 +20,7 @@ The rank-1 solver on each dataset, click any image to open the full leaderboard:
 
 | Dataset | Champion | hr | Visual |
 |---|---|---:|---|
-| **Mayo-LDCT** (real helical, Wagner split) | DD-UNet supervised L2 (Step-3 TPE iter-12) | **0.3890** | [![Mayo DD-UNet sup TPE](../runs/mayo-ldct-2d-calibrated-tpe-dual-domain-supervised-search-20260608-02/iterations/iter-0012/comparison.png)](mayo_ldct.html) |
+| **Mayo-LDCT** (real helical, Wagner split) | DD-UNet supervised L2 (live search-20260619-01, iter-2/20) | **0.3390** | [![Mayo champion](../runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0002/comparison.png)](mayo_ldct.html) |
 | **Breast-CT** (Sidky synthetic + anatomy, 128 views) | Learned Primal-Dual (TPE iter-11) | **0.9062** | [![Breast-CT LPD TPE](../runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](breast_ct.html) |
 | **Demo-DL** (Sidky synthetic ellipses, 128 views) | DD-UNet supervised L2 (TPE iter-15) | **0.4950** | [![Demo-DL DD-UNet sup TPE](../runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png)](demo_dl.html) |
 

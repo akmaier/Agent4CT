@@ -60,7 +60,7 @@ calibrated-SSIM-headroom scoring convention.
 |---|---|---:|---|
 | **Breast-CT** (Sidky synthetic + anatomy, 128 views) | Learned Primal-Dual *(TPE iter-11)* | **0.9062** | [breast_ct](leaderboards/breast_ct.html) |
 | **Demo-DL** (Sidky synthetic ellipses, 128 views) | DD-UNet supervised L2 *(TPE iter-15)* | **0.4950** | [demo_dl](leaderboards/demo_dl.html) |
-| **Mayo-LDCT** (real helical, Wagner split) | _rebuilding (2026-06-14)_ | — | [mayo_ldct](leaderboards/mayo_ldct.html) |
+| **Mayo-LDCT** (real helical, Wagner split) | DD-UNet supervised L2 _(live, iter-2/20)_ | **0.3390** | [mayo_ldct](leaderboards/mayo_ldct.html) |
 
 [![Breast-CT champion](runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](leaderboards/breast_ct.html)
 [![Demo-DL champion](runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png)](leaderboards/demo_dl.html)

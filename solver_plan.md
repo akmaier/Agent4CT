@@ -410,18 +410,35 @@ was pretrained on; document this caveat in the per-solver markdown
 
 Two writing targets after every dataset's autoresearch + TPE round:
 
-### 5.1 — Per-dataset leaderboard
+### 5.1 — Per-dataset leaderboard (ONE canonical board per dataset)
 
-`docs/leaderboards/<dataset>.md` (auto-generated section the agent
-keeps fresh). Schema:
+There is exactly **one canonical leaderboard per dataset**:
+`docs/leaderboards/<dataset>.md`. Jekyll renders that markdown **directly**
+into the website page (`/leaderboards/<dataset>.html`) — the `.md` *is* the
+website; there is no second copy to keep in sync. Current schema (all columns
+REQUIRED):
 
 ```markdown
-| Rank | Solver | Variant | SSIM | PSNR | RMSE | hr  | Source slug |
-|---:|---|---|---:|---:|---:|---:|---|
-| 1 | Learned Primal-Dual | I=8, hidden=96, ep=23, lr=3.2e-4 | 0.9996 | 56.0 | 0.0007 | 0.906 | breast-ct-calibrated-tpe-lpd-search-20260524-01 / trial 11 |
-| 2 | DD-UNet supervised L2 | c=32, ep=10, lr=5e-4 | 0.9987 | 54.9 | 0.0009 | 0.826 | breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01 / iter-3 |
-| … | … | … | … | … | … | … | … |
+| Rank | Solver | Variant | params (M) | SSIM | hr | PSNR (dB) | RMSE | time (s) | Source | Comparison |
+|---:|---|---|---:|---:|---:|---:|---:|---:|---|---|
+| 1 | DD-UNet supervised L2 | epochs=20, lr=1e-4, unet_c=16 | 0.466 | 0.9098 | 0.3390 | 36.88 | 7.16e-4 | 419 | [results](…) | [![…](…)](…) |
 ```
+
+- **`params (M)`** is mandatory — trainable params / 1e6 (integer count shown for
+  sub-0.001 M solvers; `(frozen)` for pretrained-no-finetune). Every solver MUST
+  emit `params_M` in its result dict (see the **Parameter-count reporting** note
+  in Step 4). If a value is genuinely unrecoverable, put `-`.
+- **`PSNR (dB)` / `RMSE` / `time (s)`** come from `observation.json`
+  (`val_psnr` / `val_rmse` / `elapsed_s`). `-` only for pre-2026-06 runs that
+  predate those fields (raw recon not retained → cannot back-compute).
+- **Mayo is AUTO-GENERATED** by `scripts/gen_mayo_leaderboard.py` between the
+  `<!-- AGENTIC_TABLE_START/END -->` markers (best iter per solver, ranked by
+  headroom). That same script ALSO syncs the Mayo champion row into the homepage
+  summaries (`README.md`, `docs/index.md`) and the leaderboards landing
+  (`docs/leaderboards/index.md`) — **do NOT hand-edit those summary rows**, they
+  are regenerated every wave (single source of truth = the run data). Breast/demo
+  boards are hand-curated; backfill new metrics with
+  `scripts/backfill_leaderboard_metrics.py` + `docs/leaderboards/solver_params.json`.
 
 Only the **best version of each solver family** per dataset gets a row.
 Multiple variants of the same solver (e.g. DD-UNet L2 vs DD-UNet N2I)

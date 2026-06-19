@@ -62,7 +62,7 @@ inline.
 |---|---|---:|---:|---|
 | **Breast-CT** (128-view sparse) | Learned Primal-Dual (I=8, hidden=96, 1.49 M) | 0.9996 | **0.9062** | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | ITNet v3 (3.7 M) | 0.9178 | 0.4676 | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
-| **Mayo-LDCT** (Wagner split, real helical) | DD-UNet supervised L2 (0.47 M) _(live `search-20260619-01`, iter-2/20)_ | 0.9098 | 0.3390 | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | DD-UNet supervised L2 _(live `search-20260619-01`, iter-2/20)_ | 0.9098 | 0.3390 | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
 
 Mayo-LDCT was **RESET on 2026-06-19** (the second reset). The 2026-06-14
 rebuild (`search-20260614-01`, 19 solvers) was **discarded and purged**: its

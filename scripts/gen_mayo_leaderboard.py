@@ -189,9 +189,45 @@ def main() -> int:
                 md, flags=re.S)
     LB.write_text(md)
     if rows:
+        sync_summaries(rows[0][2], rows[0][1], rows[0][0], max_it, rows[0][9])
         print(f"[leaderboard] {len(rows)} solvers; champion {rows[0][2]} "
               f"SSIM {rows[0][1]:.4f} (hr {rows[0][0]:.4f})")
     return 0
+
+
+def _sub_line(path: Path, pattern: str, new_line: str) -> None:
+    """Replace the single Mayo summary row in a hand-maintained surface so it
+    never drifts from the canonical board. Skips (warns) if the row isn't found."""
+    if not path.exists():
+        return
+    txt = path.read_text()
+    new, n = re.subn(pattern, lambda m: new_line, txt, count=1, flags=re.M)
+    if n:
+        path.write_text(new)
+    else:
+        print(f"[sync] WARN: Mayo row pattern not found in {path}")
+
+
+def sync_summaries(name: str, ss: float, hr: float, max_it: int, img: str) -> None:
+    """Keep the Mayo champion row in the homepage / landing summaries in lockstep
+    with the auto-generated canonical board (single source of truth = run data).
+    README.md = GitHub repo front page; docs/index.md = Pages site front page;
+    docs/leaderboards/index.md = leaderboards landing."""
+    _sub_line(REPO / "README.md",
+              r"^\| \*\*Mayo-LDCT\*\* \(Wagner split, real helical\) \|.*$",
+              f"| **Mayo-LDCT** (Wagner split, real helical) | {name} "
+              f"_(live `{RUNID}`, iter-{max_it}/20)_ | {ss:.4f} | {hr:.4f} | "
+              f"[`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |")
+    _sub_line(REPO / "docs" / "index.md",
+              r"^\| \*\*Mayo-LDCT\*\* \(real helical, Wagner split\) \|.*$",
+              f"| **Mayo-LDCT** (real helical, Wagner split) | {name} "
+              f"_(live, iter-{max_it}/20)_ | **{hr:.4f}** | "
+              f"[mayo_ldct](leaderboards/mayo_ldct.html) |")
+    _sub_line(REPO / "docs" / "leaderboards" / "index.md",
+              r"^\| \*\*Mayo-LDCT\*\* \(real helical, Wagner split\) \|.*$",
+              f"| **Mayo-LDCT** (real helical, Wagner split) | {name} "
+              f"(live {RUNID}, iter-{max_it}/20) | **{hr:.4f}** | "
+              f"[![Mayo champion]({img})](mayo_ldct.html) |")
 
 
 if __name__ == "__main__":
