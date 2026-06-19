@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T03:03:20Z",
+  "updated": "2026-06-19T03:23:58Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -985,13 +985,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-16T08:04:52Z",
       "status": "running",
-      "n_iterations": 11,
-      "best_score": 0.866994,
+      "n_iterations": 12,
+      "best_score": 0.879696,
       "best_headroom": 0.0,
-      "best_iter": 11,
+      "best_iter": 12,
       "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260614-01/iterations/iter-0011/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260614-01/iterations/iter-0012/comparison.png",
       "test_image": null
     },
     {
