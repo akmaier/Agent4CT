@@ -1,6 +1,6 @@
 {
  "schema_version": 2,
- "updated": "2026-06-19T17:59:27Z",
+ "updated": "2026-06-19T18:02:31Z",
  "datasets": [
   {
    "challenge": "demo_dl",
@@ -24,7 +24,7 @@
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
    "n_runs": 19,
-   "n_iterations": 21,
+   "n_iterations": 24,
    "champion_slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01",
    "champion_score": 0.924767,
    "thumbnail": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0001/comparison.png"
