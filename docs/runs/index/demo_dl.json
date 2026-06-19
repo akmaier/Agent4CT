@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "demo_dl",
  "label": "Demo-DL",
- "updated": "2026-06-19T08:30:37Z",
+ "updated": "2026-06-19T08:50:37Z",
  "runs": [
   {
    "slug": "demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
@@ -11,10 +11,10 @@
    "challenge": "demo_dl",
    "started": "2026-06-18T20:23:44Z",
    "status": "running",
-   "n_iterations": 16,
-   "best_score": 0.828441,
+   "n_iterations": 17,
+   "best_score": 0.836751,
    "best_headroom": 0.422202,
-   "best_iter": 16,
+   "best_iter": 17,
    "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
@@ -81,9 +81,13 @@
     [
      16,
      0.4222
+    ],
+    [
+     17,
+     0.4222
     ]
    ],
-   "val_image": "runs/demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0016/comparison.png",
+   "val_image": "runs/demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0017/comparison.png",
    "test_image": null
   },
   {
