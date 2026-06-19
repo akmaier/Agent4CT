@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-19T22:41:34Z",
+ "updated": "2026-06-19T23:01:42Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
@@ -21,7 +21,7 @@
    "label": "Breast-CT",
    "campaign": "calibrated+agentic",
    "n_runs": 25,
-   "n_iterations": 414,
+   "n_iterations": 415,
    "n_solvers": 25,
    "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
    "champion_name": "Learned Primal-Dual",

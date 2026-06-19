@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-06-19T22:41:34Z",
+ "updated": "2026-06-19T23:01:42Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -1439,18 +1439,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "breast_ct",
    "campaign": "search-20260524-01",
-   "n_iterations": 17,
+   "n_iterations": 18,
    "best_iter": 11,
    "best_headroom": 0.9062405977538153,
    "best_ssim": null,
    "best_score": null,
-   "started": "2026-05-24T20:10:20Z",
+   "started": "2026-06-19T22:45:31Z",
    "status": "ranked",
    "params_M": 1.492304,
    "excluded_reason": null,
    "agent": "lpd-search-tpe-calibrated-breast-ct",
    "model": "random-search",
-   "ts": "2026-05-24T20:10:20Z",
+   "ts": "2026-06-19T22:45:31Z",
    "curve": [
     [
      1,
@@ -1518,6 +1518,10 @@
     ],
     [
      17,
+     0.9062
+    ],
+    [
+     18,
      0.9062
     ]
    ],
