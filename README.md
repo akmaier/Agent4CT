@@ -70,7 +70,7 @@ each board. Click a leaderboard for the full all-solver table.
 |---|---|---:|---:|---|
 | **Breast-CT** (128-view sparse) | Learned Primal-Dual | — | **0.9062** | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | Learned Primal-Dual | — | **0.4947** | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
-| **Mayo-LDCT** (Wagner split, real helical) | DD-UNet supervised L2 | 0.9098 | **0.3390** | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | DD-UNet supervised L2 | 0.9182 | **0.3654** | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
 <!--/REGISTRY_TABLE-->
 
 Mayo-LDCT was **RESET on 2026-06-19** (the second reset). The 2026-06-14

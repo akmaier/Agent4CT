@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-19T21:11:13Z",
+ "updated": "2026-06-19T21:21:42Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -12,15 +12,15 @@
     "solver_key": "dual-domain-supervised",
     "solver_name": "DD-UNet supervised L2",
     "run_id": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
-    "best_iter": 2,
+    "best_iter": 3,
     "params_M": 0.465762,
     "params_source": "observation",
-    "val_ssim": 0.9097616076469421,
-    "headroom": 0.3389846144100809,
-    "val_psnr": 37.67353439331055,
-    "val_rmse": 0.0006535719730891287,
-    "elapsed_s": 893.0574941635132,
-    "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
+    "val_ssim": 0.9181913733482361,
+    "headroom": 0.3653571024466965,
+    "val_psnr": 38.02717590332031,
+    "val_rmse": 0.0006274964543990791,
+    "elapsed_s": 1151.400770187378,
+    "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0003/comparison.png",
     "excluded_reason": null,
     "rank": 1
    },
@@ -476,18 +476,18 @@
    "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
-   "best_iter": 2,
-   "best_headroom": 0.3389846144100809,
-   "best_ssim": 0.9097616076469421,
-   "best_score": 0.9097616076469421,
-   "started": "2026-06-19T16:49:47Z",
+   "n_iterations": 3,
+   "best_iter": 3,
+   "best_headroom": 0.3653571024466965,
+   "best_ssim": 0.9181913733482361,
+   "best_score": 0.9181913733482361,
+   "started": "2026-06-19T21:15:32Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
-   "agent": "dual_domain_supervised-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T16:49:47Z",
+   "agent": "dual_domain_supervised-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-19T21:15:32Z",
    "curve": [
     [
      1,
@@ -496,9 +496,13 @@
     [
      2,
      0.339
+    ],
+    [
+     3,
+     0.3654
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
@@ -724,21 +728,25 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 1,
+   "n_iterations": 2,
    "best_iter": 1,
    "best_headroom": 0.0,
    "best_ssim": 0.738335132598877,
    "best_score": 0.738335132598877,
-   "started": "2026-06-19T15:32:39Z",
+   "started": "2026-06-19T21:12:07Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
-   "agent": "r2gaussian-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T15:32:39Z",
+   "agent": "r2gaussian-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-19T21:12:07Z",
    "curve": [
     [
      1,
+     null
+    ],
+    [
+     2,
      null
     ]
    ],
