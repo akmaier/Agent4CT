@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "demo_dl",
  "label": "Demo-DL",
- "updated": "2026-06-19T06:10:44Z",
+ "updated": "2026-06-19T06:30:43Z",
  "runs": [
   {
    "slug": "demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
@@ -11,7 +11,7 @@
    "challenge": "demo_dl",
    "started": "2026-06-18T20:23:44Z",
    "status": "running",
-   "n_iterations": 10,
+   "n_iterations": 11,
    "best_score": 0.779571,
    "best_headroom": 0.422202,
    "best_iter": 6,
@@ -56,6 +56,10 @@
     ],
     [
      10,
+     0.4222
+    ],
+    [
+     11,
      0.4222
     ]
    ],
