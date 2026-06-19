@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T04:30:35Z",
+  "updated": "2026-06-19T04:43:31Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1193,13 +1193,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-15T11:13:09Z",
       "status": "running",
-      "n_iterations": 12,
+      "n_iterations": 13,
       "best_score": 0.939324,
       "best_headroom": 0.0,
       "best_iter": 10,
       "agent": "ram_zeroshot-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0012/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0013/comparison.png",
       "test_image": null
     },
     {
@@ -1209,13 +1209,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-15T11:32:53Z",
       "status": "running",
-      "n_iterations": 12,
+      "n_iterations": 13,
       "best_score": 0.952816,
-      "best_headroom": 0.196991,
+      "best_headroom": 0.198005,
       "best_iter": 6,
       "agent": "tv_iterative-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0012/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0013/comparison.png",
       "test_image": null
     },
     {
