@@ -1,0 +1,23 @@
+{
+  "train_n": 200,
+  "val_n": 6,
+  "batch_size": 1,
+  "grad_clip": 1.0,
+  "seed": 42,
+  "warm_start": true,
+  "pretrain_epochs": 3,
+  "n_iter": 400,
+  "outer_wall_s": 1200,
+  "lr": 2.3e-3,
+  "proj_n_bf": 1,
+  "img_n_bf": 1,
+  "proj_kernel": 7,
+  "img_kernel": 5,
+  "proj_sx": 1.0,
+  "proj_sy": 2.0,
+  "proj_sr": 0.02,
+  "img_sx": 1.5,
+  "img_sy": 1.5,
+  "img_sr": 0.02,
+  "rationale": "iter-1 feasibility, per-image N2I rewrite (commit 1f4c3394) for the BILATERAL dual-domain solver on demo_dl (phantoms, 128-view synthetic, 512^2). Twin of demo_dl_dual_domain_n2i_iter_01 (job 764702): shared training knobs MATCH that combo (train_n=200, val_n=6, n_iter=400, pretrain_epochs=3, outer_wall_s=1200, grad_clip=1.0, seed=42) so both N2I variants are scored by evaluate_calibrated on the SAME 6 val scenes (seed=42 -> identical split). The ONE intended difference is the architecture: BilateralFilterStack denoisers (6 trainable params at proj_n_bf=img_n_bf=1) instead of the U-Net. Bilateral knobs seed from the historical demo_dl DD-BF-N2I winner (leaderboard rank-16: proj_k=7, img_k=5, lr=2.3e-3, SSIM 0.7605) plus Wagner-2022 abdomen sigma defaults (proj_sx/sy/sr=1.0/2.0/0.02, img=1.5/1.5/0.02). lr=2.3e-3 (BFs want higher lr than U-Nets; Wagner used 5e-3, historical demo_dl DD-BF used 2.3e-3 -> keep the proven demo_dl value). Sizing: bilateral is ~2x faster per step than the U-Net N2I (Mayo smoke: bilateral ~0.12 s/step vs dual ~0.245 s/step at 2304 views; demo_dl is 128-view = 18x fewer angles so per-step is far cheaper). Steps = warm 3x200=600 + per-image 6x400=2400 = 3000 total; even at the conservative U-Net rate this is ~360-735 s wall, well under the generic claude_agentic_one_iter.sbatch 00:30:00 (1800 s) wall. outer_wall_s=1200 is a hard internal guard on the per-image loop. Hypothesis: per-image N2I trains stably for the BF stack on demo_dl (finite val_score, comparison.png produced) and yields a usable per-scene recon; expect hr near baseline since N2I is structurally bounded by FBP on this dense-/sparse-view phantom substrate and the 6-param BF has minimal capacity (solver_plan.md). This iter-1 establishes the per-image BF baseline; iter-2+ will tune one knob at a time (likely img_n_bf or img kernel/sigma first, per the solver design doc hints)."
+}

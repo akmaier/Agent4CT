@@ -33,12 +33,25 @@ sys.path.insert(0, str(REPO))
 RUNS = REPO / "docs" / "runs"
 RUNID = "search-20260614-01"   # pinned rebuild run-id (never widen)
 
-# Leaderboard solver keys (dash = key.replace("_", "-")). Trainers only — the
-# inference/per-image solvers (NAF/R2G/RAM/diffusion) are not on the board yet.
+# (solver_key, slug_dash). slug_dash defaults to solver_key.replace("_","-").
+# ALL 19 Mayo solvers get the 6-central-patient valtest montage. The 9
+# inference/per-image solvers were previously excluded; their main() reconstructs
+# the same 6 valtest scenes (L277-central + 5 test centrals) via the dataset-level
+# AGENT4CT_SHOWCASE=valtest redirect. Two solver/slug mismatches need an explicit
+# slug_dash override: ram (key ram_zeroshot, slug ...-ram-...) and the two
+# diffusion solvers (key diffusion_recon_*, slug ...-diff-recon-*).
 KEYS = [
-    "uswin", "itnet_v3", "itnet", "itnet_v2", "dual_domain_supervised",
-    "dual_domain_bilateral_supervised", "learned_primal_dual",
-    "hammernik_2017", "hammernik_vn", "wu_2015_trainable",
+    # 10 trainers
+    ("uswin",), ("itnet_v3",), ("itnet",), ("itnet_v2",),
+    ("dual_domain_supervised",), ("dual_domain_bilateral_supervised",),
+    ("learned_primal_dual",), ("hammernik_2017",), ("hammernik_vn",),
+    ("wu_2015_trainable",),
+    # 9 inference / per-image
+    ("naf",), ("ram_zeroshot", "ram"), ("r2gaussian",),
+    ("tv_iterative",), ("tv_iterative_supervised",),
+    ("dual_domain_n2i",), ("dual_domain_bilateral_n2i",),
+    ("diffusion_recon_dcstep_constrained_mayo_v4", "diff-recon-dcstep-constrained-mayo-v4"),
+    ("diffusion_recon_dcstep_unconstrained_mayo_v4", "diff-recon-dcstep-unconstrained-mayo-v4"),
 ]
 
 
@@ -106,8 +119,10 @@ def main() -> int:
         return 0
     # driver: one subprocess per solver so a crash/OOM in one doesn't abort the
     # rest and CUDA state is fresh each time.
-    for k in KEYS:
-        slug = f"mayo-ldct-claude-agentic-{k.replace('_', '-')}-{RUNID}"
+    for entry in KEYS:
+        k = entry[0]
+        dash = entry[1] if len(entry) > 1 else k.replace("_", "-")
+        slug = f"mayo-ldct-claude-agentic-{dash}-{RUNID}"
         if not (RUNS / slug).exists():
             print(f"[skip] {k}: no run dir {slug}", flush=True)
             continue

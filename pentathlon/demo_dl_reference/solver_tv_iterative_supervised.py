@@ -158,6 +158,27 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     print(f"[solver] device={device}  config={json.dumps(cfg, default=str)}", flush=True)
     torch.manual_seed(cfg["seed"])
 
+    # Mayo: the val split is a single patient (L277); probe its native ps and
+    # build the projector at it (canonical ps mis-scales L277 ~5%). Training
+    # reuses the same ps -- the 20 TV scalars are ps-robust. Mirrors tv_search.
+    if cfg.get("dataset_kind") == "mayo_ldct_2d":
+        from ddssl_ldct.staged_dataset import load_val_split as _lvs
+        _g0 = FanBeamGeometry(
+            image_size=cfg["image_size"], pixel_spacing=cfg["pixel_spacing"],
+            n_angles=cfg["n_angles"], n_det=cfg["n_det"],
+            det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"])
+        try:
+            _vps = _lvs("mayo_ldct_2d", "val", cfg["val_n"], device=device,
+                        seed=cfg["seed"] + 1000, noise_i0=cfg["noise_i0"],
+                        noise_sigma_e=cfg["noise_sigma_e"], geom=_g0,
+                        return_ps=True)[-1]
+            if _vps is not None:
+                import numpy as _np
+                cfg["pixel_spacing"] = round(float(_np.median(_np.asarray(_vps, float))), 5)
+                print(f"[solver] Mayo val ps -> pixel_spacing={cfg['pixel_spacing']}", flush=True)
+        except Exception as _e:
+            print(f"[solver] val-ps probe failed ({_e}); using default ps", flush=True)
+
     geom = FanBeamGeometry(
         image_size=cfg["image_size"], pixel_spacing=cfg["pixel_spacing"],
         n_angles=cfg["n_angles"], n_det=cfg["n_det"],
@@ -173,6 +194,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     with torch.no_grad():
         ld_fbp_train = torch.clamp(proj_full.fbp(train_noisy), min=0.0)
         ld_fbp_val   = torch.clamp(proj_full.fbp(val_noisy),   min=0.0)
+    per_ps = False  # single-ps projector (probe); loops below skip per-sample swaps
 
     model = UnrolledTV(
         geom, K=cfg["tv_K"],
@@ -188,12 +210,15 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     opt = torch.optim.Adam(model.parameters(), lr=cfg["lr"])
 
     t0 = time.time()
+    bs = 1 if per_ps else cfg["batch_size"]
     for ep in range(cfg["epochs"]):
         model.train()
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0; n_seen = 0
-        for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
-            idx = perm[i:i + cfg["batch_size"]]
+        for i in range(0, train_noisy.shape[0], bs):
+            idx = perm[i:i + bs]
+            if per_ps:
+                model.proj = _projs[float(_trk[int(idx[0])])]
             sino = train_noisy[idx].to(device)
             truth = train_ph[idx].to(device)
             fbp0 = ld_fbp_train[idx].to(device)
@@ -219,9 +244,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
 
     model.eval()
     with torch.no_grad():
-        chunk = cfg.get("val_chunk", 5)
+        chunk = 1 if per_ps else cfg.get("val_chunk", 5)
         preds = []
         for i in range(0, val_noisy.shape[0], chunk):
+            if per_ps:
+                model.proj = _projs[float(_vrk[i])]
             preds.append(model(val_noisy[i:i+chunk], ld_fbp_val[i:i+chunk]))
         pred = torch.cat(preds, dim=0)
 

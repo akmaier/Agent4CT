@@ -163,6 +163,27 @@ def main(out_dir: Path, cfg_override: dict | None = None) -> dict:
     print(f"[solver] config={json.dumps({k:v for k,v in cfg.items() if k.startswith('tv_')})}", flush=True)
     torch.manual_seed(cfg["seed"])
 
+    # Mayo: the val split is a single patient (L277) -> reconstruct at its
+    # native pixel-spacing so the FBP / TV recon lands on the un-resampled
+    # truth grid (the default ps mis-scales L277 by ~5% and reads as broken).
+    if cfg.get("dataset_kind") == "mayo_ldct_2d":
+        from ddssl_ldct.staged_dataset import load_val_split as _lvs
+        _g0 = FanBeamGeometry(
+            image_size=cfg["image_size"], pixel_spacing=cfg["pixel_spacing"],
+            n_angles=cfg["n_angles"], n_det=cfg["n_det"],
+            det_spacing=cfg["det_spacing"], sod=cfg["sod"], sdd=cfg["sdd"])
+        try:
+            _vps = _lvs("mayo_ldct_2d", "val", cfg["val_n"], device=device,
+                        seed=cfg["seed"] + 1000, noise_i0=cfg["noise_i0"],
+                        noise_sigma_e=cfg["noise_sigma_e"], geom=_g0,
+                        return_ps=True)[-1]
+            if _vps is not None:
+                import numpy as _np
+                cfg["pixel_spacing"] = round(float(_np.median(_np.asarray(_vps, float))), 5)
+                print(f"[solver] Mayo val ps -> pixel_spacing={cfg['pixel_spacing']}", flush=True)
+        except Exception as _e:
+            print(f"[solver] val-ps probe failed ({_e}); using default ps", flush=True)
+
     geom = FanBeamGeometry(
         image_size=cfg["image_size"], pixel_spacing=cfg["pixel_spacing"],
         n_angles=cfg["n_angles"], n_det=cfg["n_det"],

@@ -1,0 +1,13 @@
+{
+  "warm_start": true,
+  "pretrain_epochs": 6,
+  "train_n": 200,
+  "n_iter": 300,
+  "val_n": 16,
+  "grad_clip": 1.0,
+  "lr": 0.0001,
+  "unet_c": 32,
+  "outer_wall_s": 1500,
+  "seed": 42,
+  "rationale": "iter-6: ONE knob unet_c 16->32 (per-scan + warm-start U-Net capacity), anchored on the iter-4 PEAK cfg (ep6, lr=1e-4, 0.9596) -- NOT the regressed iter-5 (ep12 -> 0.9585). Failure mode/insight: the two working levers are now EXHAUSTED. (a) per-scan lr 1e-3->1e-4 PINS each GT-free split-view fit to its warm-start init and lifted 0.9553->0.9593 (iter-3); n_iter is NOT the lever (iter-2 n_iter600 DROPPED to 0.9407, the per-scan U-Net has no early-stop and overfits). (b) warm-start INIT quality saturated: pretrain_epochs 3->6 lifted 0.9593->0.9596 (iter-4) but 6->12 REGRESSED to 0.9585 (iter-5) -- init is saturated on breast, unlike demo which kept climbing. The ONE capacity axis never tried on THIS substrate is unet_c. Hypothesis: 0.9596 is a SUBSTRATE ceiling, not a capacity ceiling -- so c16->c32 will be ~FLAT (mirrors mayo n2i c16->c32 flat at 0.9508), documenting that breast per-image U-Net N2I is at its ~0.96 ceiling, structurally FBP-bounded on dense-view breast (hr=0 < the 128-view LD-FBP baseline). A surprise lift instead would mean the per-scan fit was capacity-starved. Wall: iter-5 (ep12, c16) ran 592s; doubling unet_c roughly doubles per-scan FLOPs but n_iter/val_n unchanged -> est ~700-800s, well under the 900s/15min wall (outer_wall_s=1500 hard cap)."
+}

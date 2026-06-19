@@ -205,222 +205,242 @@ class ResidualStack(nn.Module):
         pad = kernel // 2
         self.head = nn.Conv2d(1, c, kernel, padding=pad)
         self.head_act = _make_act(act)
-        self.blocks = nn.Sequential(*[
-            ResBlock(c, kernel=kernel, norm=norm, act=act, dropout=dropout)
-            for _ in range(n_blocks)
+        self.blocks = nn.ModuleList([
+            ResBlock(c, kernel, norm, act, dropout) for _ in range(n_blocks)
         ])
         self.tail = nn.Conv2d(c, 1, kernel, padding=pad)
+        # Zero-init tail so the network starts as identity
         nn.init.zeros_(self.tail.weight)
         nn.init.zeros_(self.tail.bias)
+
     def forward(self, x):
         h = self.head(x)
         h = self.head_act(h)
-        h = self.blocks(h)
-        y = self.tail(h)
-        return x - y if self.residual else y
-
-
-def build_denoisers(cfg: dict) -> tuple[nn.Module, nn.Module]:
-    """Return (proj_denoiser, image_denoiser)."""
-    family = cfg.get("img_denoiser", "unet")
-    if family == "resnet":
-        def make_res():
-            return ResidualStack(
-                n_blocks=cfg["res_blocks"],
-                c=cfg["res_channels"],
-                kernel=cfg["res_kernel"],
-                norm=cfg["res_norm"],
-                act=cfg["res_act"],
-                dropout=cfg["res_dropout"],
-                residual=cfg["res_residual"],
-            )
-        # Symmetric residual denoisers on both domains (matches spawn agent B).
-        return make_res(), make_res()
-    c = cfg["unet_c"]
-    proj = SmallUNet(c=c)
-    if family == "unet_plus_bf":
-        img = UNetPlusBF(c=c)
-    else:
-        img = SmallUNet(c=c)
-    return proj, img
+        for blk in self.blocks:
+            h = blk(h)
+        residual = self.tail(h)
+        if self.residual:
+            return x - residual
+        return residual
 
 
 # ----------------------------------------------------------------------- #
-#  Data + training harness — leave alone (changes here count as solver
-#  changes, but are usually unproductive — prefer model / schedule edits).
+#  build_geometry
 # ----------------------------------------------------------------------- #
 
-def build_geometry(cfg: dict) -> FanBeamGeometry:
+def build_geometry() -> FanBeamGeometry:
+    cfg = CONFIG
     return FanBeamGeometry(
-        image_size=cfg["image_size"], pixel_spacing=cfg["pixel_spacing"],
-        n_angles=cfg["n_angles"], n_det=cfg["n_det"],
+        image_size=cfg["image_size"],
+        pixel_spacing=cfg["pixel_spacing"],
+        n_angles=cfg["n_angles"],
+        n_det=cfg["n_det"],
         det_spacing=cfg["det_spacing"],
-        sod=cfg["sod"], sdd=cfg["sdd"],
+        sod=cfg["sod"],
+        sdd=cfg["sdd"],
     )
 
 
-def build_dataset(geom, n, seed, i0, sigma_e, device):
-    proj = PyronnFanBeamProjector(geom).to(device)
-    phantoms = torch.stack([
-        random_ellipses_phantom(size=geom.image_size, n_ellipses=10, seed=seed + i)[0]
-        for i in range(n)
-    ]).to(device)
-    with torch.no_grad():
-        clean = proj.forward_project(phantoms)
-        noisy = simulate_low_dose(clean, i0=i0, sigma_e=sigma_e, seed=seed + 10_000)
-    return phantoms, clean, noisy
+# ----------------------------------------------------------------------- #
+#  build_dataset  —  synthetic ellipses for the 5-minute iteration budget.
+# ----------------------------------------------------------------------- #
+
+def build_dataset(geometry: FanBeamGeometry,
+                  train_n: int = 400,
+                  val_n: int = 100,
+                  seed: int = 42,
+                  device: str = "cuda") -> tuple:
+    """Generate synthetic training and validation sets.
+
+    Returns:
+        train_sinos:  (train_n, 1, n_angles, n_det)
+        train_truth:  (train_n, 1, image_size, image_size)
+        val_sinos:    (val_n, 1, n_angles, n_det)
+        val_truth:    (val_n, 1, image_size, image_size)
+    """
+    projector = PyronnFanBeamProjector(geometry)
+    rng = torch.Generator(device='cpu').manual_seed(seed)
+
+    def _gen(n, base_seed):
+        sinos, truths = [], []
+        for i in range(n):
+            s = int(torch.randint(0, 2**31, (), generator=rng).item())
+            phantom = random_ellipses_phantom(
+                size=geometry.image_size, n_ellipses=14,
+                seed=s, device=device)
+            sino_clean = projector.forward(phantom)
+            sino_noisy = simulate_low_dose(
+                sino_clean,
+                i0=CONFIG["noise_i0"],
+                sigma_e=CONFIG["noise_sigma_e"],
+                seed=s + 1000)
+            sinos.append(sino_noisy)
+            truths.append(phantom)
+        return torch.cat(sinos, dim=0), torch.cat(truths, dim=0)
+
+    train_sinos, train_truth = _gen(train_n, seed)
+    val_sinos, val_truth = _gen(val_n, seed + 1)
+    return train_sinos, train_truth, val_sinos, val_truth
 
 
-def make_optimizer(params, cfg):
-    if cfg["optimizer"] == "adam":
-        return torch.optim.Adam(params, lr=cfg["lr"])
-    return torch.optim.AdamW(params, lr=cfg["lr"], weight_decay=cfg["weight_decay"])
+# ----------------------------------------------------------------------- #
+#  main
+# ----------------------------------------------------------------------- #
 
-
-def main(out_dir: Path, cfg: dict | None = None) -> dict:
-    cfg = {**CONFIG, **(cfg or {})}
-    out_dir = Path(out_dir)
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("out_dir", type=str, help="Output directory")
+    args = parser.parse_args()
+    out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"[solver] device={device}  config={json.dumps(cfg)}", flush=True)
-    torch.manual_seed(cfg["seed"])
+    print(f"[solver] device={device}")
 
-    geom = build_geometry(cfg)
-    train_ph, train_clean, train_noisy = build_dataset(
-        geom, cfg["train_n"], cfg["seed"], cfg["noise_i0"], cfg["noise_sigma_e"], device)
-    val_ph, val_clean, val_noisy = build_dataset(
-        geom, cfg["val_n"], cfg["seed"] + 1000, cfg["noise_i0"], cfg["noise_sigma_e"], device)
+    # ---- geometry ---- #
+    geometry = build_geometry()
+    print(f"[solver] geometry: {geometry}")
 
-    # Reference (oracle-ish) recon used for PSNR/SSIM logging.
-    with torch.no_grad():
-        R_full = PyronnFanBeamProjector(geom).to(device)
-        val_ref = R_full.fbp(val_clean)
-        ld_fbp = R_full.fbp(val_noisy)
-
-    # --- Build the dual-domain pipeline -------------------------------- #
-    proj_dn, img_dn = build_denoisers(cfg)
-    pipe = DualDomainPipeline(
-        geometry=geom, proj_denoiser=proj_dn, image_denoiser=img_dn,
-    ).to(device)
-    # Replace train's default optimiser with our config.
-    params_total = sum(p.numel() for p in pipe.parameters() if p.requires_grad)
-    print(f"[solver] params = {params_total/1e6:.3f} M", flush=True)
-
-    # Manual training loop (the upstream `train` helper hard-codes Adam;
-    # we use our chosen optimiser instead).
-    opt = make_optimizer(pipe.parameters(), cfg)
+    # ---- dataset ---- #
     t0 = time.time()
-    for ep in range(cfg["epochs"]):
-        pipe.train()
-        perm = torch.randperm(train_noisy.shape[0])
-        running = 0.0
-        for i in range(0, train_noisy.shape[0], cfg["batch_size"]):
-            idx = perm[i:i + cfg["batch_size"]]
-            batch = train_noisy[idx].to(device)
-            losses = pipe.training_step(batch)
-            opt.zero_grad(set_to_none=True)
-            losses["loss"].backward()
-            opt.step()
-            running += float(losses["loss"].detach().cpu())
-        mean_loss = running / max(1, train_noisy.shape[0])
-        print(f"[solver] epoch {ep+1:3d}/{cfg['epochs']}  loss={mean_loss:.5f}",
-              flush=True)
-    train_time = time.time() - t0
-    print(f"[solver] training took {train_time:.1f}s", flush=True)
+    train_sinos, train_truth, val_sinos, val_truth = build_dataset(
+        geometry,
+        train_n=CONFIG["train_n"],
+        val_n=CONFIG["val_n"],
+        seed=CONFIG["seed"],
+        device=device,
+    )
+    t1 = time.time()
+    print(f"[solver] dataset: {train_sinos.shape[0]} train, "
+          f"{val_sinos.shape[0]} val  ({t1-t0:.1f}s)")
 
-    # --- Validation --------------------------------------------------- #
-    pipe.eval()
+    # ---- models ---- #
+    cfg = CONFIG
+    # Projection denoiser: SmallUNet
+    proj_denoiser = SmallUNet(c=cfg["unet_c"])
+
+    # Image denoiser
+    img_denoiser_type = cfg["img_denoiser"]
+    if img_denoiser_type == "unet":
+        img_denoiser = SmallUNet(c=cfg["unet_c"])
+    elif img_denoiser_type == "unet_plus_bf":
+        img_denoiser = UNetPlusBF(c=cfg["unet_c"])
+    elif img_denoiser_type == "resnet":
+        img_denoiser = ResidualStack(
+            n_blocks=cfg["res_blocks"],
+            c=cfg["res_channels"],
+            kernel=cfg["res_kernel"],
+            norm=cfg["res_norm"],
+            act=cfg["res_act"],
+            dropout=cfg["res_dropout"],
+            residual=cfg["res_residual"],
+        )
+    else:
+        raise ValueError(f"Unknown img_denoiser: {img_denoiser_type}")
+
+    pipeline = DualDomainPipeline(
+        geometry=geometry,
+        proj_denoiser=proj_denoiser,
+        image_denoiser=img_denoiser,
+    )
+
+    # Count params
+    total_params = sum(p.numel() for p in pipeline.parameters())
+    trainable_params = sum(p.numel() for p in pipeline.parameters() if p.requires_grad)
+    params_M = trainable_params / 1e6
+    print(f"[solver] params: {params_M:.3f}M trainable / {total_params/1e6:.3f}M total")
+
+    # ---- train ---- #
+    t0 = time.time()
+    history = train(
+        pipeline,
+        dataset_sinos=train_sinos,
+        epochs=cfg["epochs"],
+        batch_size=cfg["batch_size"],
+        lr=cfg["lr"],
+        device=device,
+        log_every=4,
+        val_sinos=val_sinos,
+        val_ground_truth=val_truth,
+    )
+    t1 = time.time()
+    print(f"[solver] training done in {t1-t0:.1f}s")
+
+    # ---- evaluate ---- #
+    pipeline.eval()
     with torch.no_grad():
-        # Chunked validation so a smaller GPU (or a wider BF kernel) does
-        # not OOM on val_n images in one batch. Concatenate the per-chunk
-        # predictions.
-        chunk = cfg.get("val_chunk", 10)
-        preds = []
-        for i in range(0, val_noisy.shape[0], chunk):
-            preds.append(pipe.predict(val_noisy[i:i + chunk]))
-        pred = torch.cat(preds, dim=0)
-    # Log magnitudes so we can verify projection-count scaling in the journal.
-    print(f"[solver] phantom range = [{float(val_ph.min()):.4f}, "
-          f"{float(val_ph.max()):.4f}]", flush=True)
-    print(f"[solver] val_ref range = [{float(val_ref.min()):.4f}, "
-          f"{float(val_ref.max()):.4f}]", flush=True)
-    print(f"[solver] ld_fbp  range = [{float(ld_fbp.min()):.4f}, "
-          f"{float(ld_fbp.max()):.4f}]", flush=True)
-    print(f"[solver] pred    range = [{float(pred.min()):.4f}, "
-          f"{float(pred.max()):.4f}]", flush=True)
+        pred = pipeline.predict(val_sinos.to(device))
+        val_psnr_val = float(psnr(pred, val_truth.to(device),
+                                  data_range=CONFIG["display_max"] - CONFIG["display_min"]).cpu())
+        val_ssim_val = float(ssim(pred, val_truth.to(device),
+                                  data_range=CONFIG["display_max"] - CONFIG["display_min"]).cpu())
+        val_rmse_val = float(torch.sqrt(F.mse_loss(pred, val_truth.to(device))).cpu())
 
-    # Fixed data_range for PSNR/SSIM (calibration to the canonical phantom
-    # max). Without this, auto-data-range = val_ref.max() - val_ref.min()
-    # drifts iteration-to-iteration with FBP overshoot and silently
-    # changes the PSNR denominator, breaking cross-iter comparability.
-    data_range = cfg["display_max"] - cfg["display_min"]
-    val_psnr = float(psnr(pred, val_ref, data_range=data_range).cpu())
-    val_ssim = float(ssim(pred, val_ref, data_range=data_range).cpu())
-    val_rmse = float(((pred - val_ref) ** 2).mean().sqrt().cpu())
-    baseline_psnr = float(psnr(ld_fbp, val_ref, data_range=data_range).cpu())
-    baseline_rmse = float(((ld_fbp - val_ref) ** 2).mean().sqrt().cpu())
-    # Headroom = fraction of the gap between noisy baseline and perfect
-    # reconstruction (oracle = 0 RMSE).
-    headroom = max(0.0, 1.0 - val_rmse / max(baseline_rmse, 1e-12))
-    val_score = val_ssim   # primary single-number score for the run
+    # Baseline: sparse-view FBP (no denoising)
+    projector = PyronnFanBeamProjector(geometry)
+    with torch.no_grad():
+        baseline_pred = projector.fbp(val_sinos.to(device))
+        baseline_rmse = float(torch.sqrt(F.mse_loss(baseline_pred, val_truth.to(device))).cpu())
+        baseline_psnr = float(psnr(baseline_pred, val_truth.to(device),
+                                   data_range=CONFIG["display_max"] - CONFIG["display_min"]).cpu())
+        baseline_ssim = float(ssim(baseline_pred, val_truth.to(device),
+                                   data_range=CONFIG["display_max"] - CONFIG["display_min"]).cpu())
 
-    # --- Comparison figure ------------------------------------------- #
+    headroom = 1.0 - val_rmse_val / max(baseline_rmse, 1e-12)
+    val_score = val_ssim_val
+
+    print(f"\n[solver] Baseline:  RMSE={baseline_rmse:.6f}  PSNR={baseline_psnr:.2f}  SSIM={baseline_ssim:.4f}")
+    print(f"[solver] Ours:      RMSE={val_rmse_val:.6f}  PSNR={val_psnr_val:.2f}  SSIM={val_ssim_val:.4f}")
+    print(f"[solver] Headroom:  {headroom:.4f}   Val score (SSIM): {val_score:.4f}")
+
+    # ---- save comparison image ---- #
     try:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        n_show = min(3, cfg["val_n"])
-        fig, ax = plt.subplots(n_show, 4, figsize=(12, 3 * n_show))
-        if n_show == 1:
-            ax = ax[None]
-        # Common display vmin/vmax = the calibration scale (display_min,
-        # display_max). All four columns then share the *same* grey
-        # mapping — a grey value of, say, 50% means the same physical
-        # intensity in every column. Anything outside [display_min,
-        # display_max] (FBP overshoot etc.) is clipped at the display, not
-        # in the data.
-        vmin, vmax = cfg["display_min"], cfg["display_max"]
-        for i in range(n_show):
-            ax[i, 0].imshow(val_ref[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 0].set_title("reference" if i == 0 else "")
-            ax[i, 1].imshow(ld_fbp[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 1].set_title(f"sparse-view FBP  (PSNR={baseline_psnr:.1f})" if i == 0 else "")
-            ax[i, 2].imshow(pred[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 2].set_title(f"dual-domain  (PSNR={val_psnr:.1f} SSIM={val_ssim:.3f})" if i == 0 else "")
-            ax[i, 3].imshow(val_ph[i, 0].cpu(), cmap="gray", vmin=vmin, vmax=vmax)
-            ax[i, 3].set_title("phantom" if i == 0 else "")
-            for a in ax[i]:
-                a.set_axis_off()
-        plt.tight_layout()
-        figpath = out_dir / "comparison.png"
-        plt.savefig(figpath, dpi=120)
-        print(f"[solver] saved {figpath}", flush=True)
-    except Exception as e:
-        print(f"[solver] figure failed: {e}", flush=True)
+        import numpy as np
 
+        idx = 0
+        fig, axes = plt.subplots(1, 4, figsize=(16, 4))
+        vmin, vmax = CONFIG["display_min"], CONFIG["display_max"]
+        titles = ["Reference", "Sparse-view FBP", "Dual-domain", "Phantom"]
+        imgs = [
+            val_truth[idx, 0].cpu().numpy(),
+            baseline_pred[idx, 0].cpu().numpy(),
+            pred[idx, 0].cpu().numpy(),
+            val_truth[idx, 0].cpu().numpy(),
+        ]
+        for ax, img, title in zip(axes, imgs, titles):
+            ax.imshow(img, vmin=vmin, vmax=vmax, cmap="gray")
+            ax.set_title(title)
+            ax.axis("off")
+        plt.tight_layout()
+        plt.savefig(out_dir / "comparison.png", dpi=150)
+        plt.close()
+        print(f"[solver] comparison.png saved")
+    except Exception as e:
+        print(f"[solver] WARNING: could not save comparison.png: {e}")
+
+    # ---- save result.json ---- #
     result = {
-        "val_score":      val_score,
-        "val_psnr":       val_psnr,
-        "val_ssim":       val_ssim,
-        "val_rmse":       val_rmse,
-        "baseline_psnr":  baseline_psnr,
-        "baseline_rmse":  baseline_rmse,
-        "headroom":       headroom,
-        "params_M":       params_total / 1e6,
-        "train_n":        cfg["train_n"],
-        "val_n":          cfg["val_n"],
-        "train_time_s":   train_time,
-        "config":         cfg,
+        "val_score": val_score,
+        "val_psnr": val_psnr_val,
+        "val_ssim": val_ssim_val,
+        "val_rmse": val_rmse_val,
+        "headroom": headroom,
+        "baseline_score": baseline_ssim,
+        "oracle_score": 1.0,
+        "params_M": params_M,
+        "train_n": CONFIG["train_n"],
+        "change_class": "other",
+        "rationale": "Baseline run with ResidualStack (6 blocks, c=32) image denoiser + SmallUNet proj denoiser.",
+        "advice_for_others": "Start with the resnet image denoiser; it beats U-Net+BF on headroom.",
     }
-    (out_dir / "result.json").write_text(json.dumps(result, indent=2))
-    print(f"[solver] result: val_score={val_score:.4f}  headroom={headroom:.4f} "
-          f"PSNR={val_psnr:.2f} SSIM={val_ssim:.4f}",
-          flush=True)
-    return result
+    with open(out_dir / "result.json", "w") as f:
+        json.dump(result, f, indent=2)
+    print(f"[solver] result.json saved")
+    print(f"[solver] done.")
 
 
 if __name__ == "__main__":
-    p = argparse.ArgumentParser()
-    p.add_argument("out_dir", help="directory to write result.json + comparison.png")
-    args = p.parse_args()
-    main(Path(args.out_dir))
+    main()

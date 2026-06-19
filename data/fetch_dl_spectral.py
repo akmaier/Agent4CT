@@ -71,16 +71,28 @@ def fetch_raw(raw_dir: Path) -> list[Path]:
     return local
 
 
-def _load_npy_gz(path: Path) -> "np.ndarray":
+def _decompress_to_tmp(src: Path, tmp_dir: Path) -> Path:
+    """Decompress an .npy.gz into a memory-mappable .npy in tmp_dir.
+
+    Decompressing on disk lets us mmap one sample at a time instead of
+    loading 1000-case arrays into RAM (which OOMs on the login node).
+    """
     import gzip
-    import numpy as np
-    with gzip.open(path) as g:
-        return np.load(g, allow_pickle=False)
+    import shutil
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    dst = tmp_dir / src.name.removesuffix(".gz")
+    if dst.exists():
+        return dst
+    print(f"[stage]   decompressing {src.name} -> {dst.name}", flush=True)
+    with gzip.open(src) as g, open(dst, "wb") as out:
+        shutil.copyfileobj(g, out)
+    return dst
 
 
 def stage_h5(raw_paths: list[Path], staged_dir: Path, *,
              splits: dict | None = None,
-             shuffle_seed: int = 20260516) -> dict:
+             shuffle_seed: int = 20260516,
+             tmp_dir: Path | None = None) -> dict:
     """Pack 3-tissue phantoms + 2-kVp sinograms into per-split multi-channel
     HDF5 files.
 
@@ -90,6 +102,10 @@ def stage_h5(raw_paths: list[Path], staged_dir: Path, *,
         train_sinograms.h5  'sino'  shape (N_train, 2, 256, 1024) float32
                               channels = [highkVp, lowkVp] transmission
         val_*.h5 / test_*.h5 likewise
+
+    The .npy.gz inputs are decompressed once into `tmp_dir` (default:
+    `staged_dir/../_tmp_decompress`) and mmapped — sustained working set
+    stays under ~30 MB regardless of pool size.
     """
     import numpy as np
     from _common import pack_h5
@@ -99,12 +115,21 @@ def stage_h5(raw_paths: list[Path], staged_dir: Path, *,
     if raw_dir is None or not raw_dir.exists():
         raise RuntimeError("dl_spectral raw_dir not found")
 
-    print("[stage] loading phantom and sinogram arrays…", flush=True)
-    adi = _load_npy_gz(raw_dir / "Phantom_Adipose.npy.gz")
-    fib = _load_npy_gz(raw_dir / "Phantom_Fibroglandular.npy.gz")
-    cal = _load_npy_gz(raw_dir / "Phantom_Calcification.npy.gz")
-    hi = _load_npy_gz(raw_dir / "highkVpTransmission.npy.gz")
-    lo = _load_npy_gz(raw_dir / "lowkVpTransmission.npy.gz")
+    tmp_dir = tmp_dir or (staged_dir.parent / "_tmp_decompress")
+
+    print("[stage] decompressing .npy.gz inputs (one-time, ~7 GB tmp)…",
+          flush=True)
+    adi_p = _decompress_to_tmp(raw_dir / "Phantom_Adipose.npy.gz", tmp_dir)
+    fib_p = _decompress_to_tmp(raw_dir / "Phantom_Fibroglandular.npy.gz", tmp_dir)
+    cal_p = _decompress_to_tmp(raw_dir / "Phantom_Calcification.npy.gz", tmp_dir)
+    hi_p = _decompress_to_tmp(raw_dir / "highkVpTransmission.npy.gz", tmp_dir)
+    lo_p = _decompress_to_tmp(raw_dir / "lowkVpTransmission.npy.gz", tmp_dir)
+
+    adi = np.load(adi_p, mmap_mode="r")
+    fib = np.load(fib_p, mmap_mode="r")
+    cal = np.load(cal_p, mmap_mode="r")
+    hi = np.load(hi_p, mmap_mode="r")
+    lo = np.load(lo_p, mmap_mode="r")
     n_total = adi.shape[0]
     for arr, name in [(fib, "fib"), (cal, "cal"), (hi, "hi"), (lo, "lo")]:
         if arr.shape[0] != n_total:
@@ -123,27 +148,34 @@ def stage_h5(raw_paths: list[Path], staged_dir: Path, *,
     perm = rng.permutation(n_total)
     cursor = 0
     splits_out: dict[str, int] = {}
+    H, W = adi.shape[1], adi.shape[2]
+    A, D = hi.shape[1], hi.shape[2]
     for split, n_split in splits.items():
         idx = perm[cursor:cursor + n_split].tolist()
         cursor += n_split
 
-        truth = np.stack([adi[idx], fib[idx], cal[idx]], axis=1).astype("float32")
-        sino = np.stack([hi[idx], lo[idx]], axis=1).astype("float32")
+        def truth_emitter(idx=idx):
+            for i, src in enumerate(idx):
+                stk = np.stack([adi[src], fib[src], cal[src]], axis=0
+                               ).astype(np.float32)
+                yield i, stk
 
-        def truth_emitter(t=truth):
-            for i in range(t.shape[0]):
-                yield i, t[i]
-
-        def sino_emitter(s=sino):
-            for i in range(s.shape[0]):
-                yield i, s[i]
+        def sino_emitter(idx=idx):
+            for i, src in enumerate(idx):
+                stk = np.stack([hi[src], lo[src]], axis=0).astype(np.float32)
+                yield i, stk
 
         pack_h5(staged_dir / f"{split}_truth.h5", name="image",
-                shape=truth.shape, dtype="float32", cases=truth_emitter())
+                shape=(n_split, 3, H, W), dtype="float32",
+                cases=truth_emitter())
         pack_h5(staged_dir / f"{split}_sinograms.h5", name="sino",
-                shape=sino.shape, dtype="float32", cases=sino_emitter())
+                shape=(n_split, 2, A, D), dtype="float32",
+                cases=sino_emitter())
         splits_out[split] = n_split
         print(f"[stage] {split}: {n_split} cases", flush=True)
+
+    print(f"[stage] tmp decompress dir: {tmp_dir} — safe to rm after manifest "
+          f"is written.", flush=True)
     return splits_out
 
 

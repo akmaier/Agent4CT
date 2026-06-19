@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=lme49,lme50,lme51,lme52
+#SBATCH --exclude=lme49,lme50,lme51,lme52,lme53
 #SBATCH --mem=24G
 #SBATCH --time=02:30:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
@@ -20,5 +20,5 @@ export PYTHONPATH="$REPO:${PYTHONPATH:-}"
 echo "[hammernik-redo] host=$(hostname) job=$SLURM_JOB_ID"
 nvidia-smi -L
 python scripts/learned_solver_search_agent.py --solver hammernik --iterations 20 \
-    --notes "fair re-run hammernik 2017 (singleton, post-pack4-OOM)"
+    --notes "fair re-run hammernik 2017 (singleton, big-GPU only, lme53 driver-bad)"
 echo "done."

@@ -5,7 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
 #SBATCH --mem=24G
-#SBATCH --time=00:08:00            # 5-min iteration + ~3 min slack
+#SBATCH --time=00:13:00            # iter-40 (12 epochs cosine ~ 9-10 min training) + slack
+#SBATCH --exclude=lme222,lme223,lme49,lme50,lme51,lme52,lme171   # exclude slow/bad-driver nodes
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
 # One DL-Sparse-View RESIDUAL-stack iteration (spawn agent B). Runs the
@@ -28,8 +29,12 @@ OUT="$REPO/runs/iter-res-${SLURM_JOB_ID}"
 mkdir -p "$OUT"
 
 echo "[iter-res] host=$(hostname)  job=$SLURM_JOB_ID  out=$OUT"
-nvidia-smi -L
-python -c "import torch; print(f'torch={torch.__version__} cuda_ok={torch.cuda.is_available()} dev={torch.cuda.get_device_name(0)}')"
+nvidia-smi -L || echo "[iter-res] WARN: nvidia-smi failed (driver mismatch on this node?)"
+python -c "import torch; print(f'torch={torch.__version__} cuda_ok={torch.cuda.is_available()} dev={torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"NONE\"}')"
+if ! python -c "import torch; assert torch.cuda.is_available(), 'CUDA unavailable on this node'"; then
+    echo "[iter-res] FATAL: CUDA unavailable; resubmitting on a working node would help."
+    exit 3
+fi
 
 python pentathlon/dl_sparse_view_res/solver.py "$OUT"
 

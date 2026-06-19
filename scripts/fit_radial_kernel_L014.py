@@ -78,8 +78,15 @@ def _mu(fp: Path):
     return 0.02 * (1.0 + hu / 1000.0), ds
 
 
-def build_fbp_and_truth(target_pZ: float = -254.50):
-    """Returns (truth, fbp_cal) both as numpy float32 (512, 512) in mu units."""
+def build_fbp_and_truth(target_pZ: float = -254.50,
+                         filter_name: str = "ramlak"):
+    """Returns (truth, fbp_cal) both as numpy float32 (512, 512) in mu units.
+
+    ``filter_name`` is the PYRO-NN FBP ramp-filter window. Default is
+    ``ramlak`` (un-windowed) so the radial-kernel-fit downstream has a
+    clean baseline — Hann pre-blurs higher frequencies which the fit
+    would then have to undo, biasing the L2 solution.
+    """
     import os
     root = Path(os.environ.get("AGENT4CT_DATA",
                                 "/cluster/maier/Agent4CT/data")) / "mayo_ldct"
@@ -121,13 +128,14 @@ def build_fbp_and_truth(target_pZ: float = -254.50):
         angle_start=angle_start, angle_end=angle_start + 2*math.pi,
     )
     proj = PyronnFanBeamProjector(geom).to("cuda")
+    print(f"[fit] FBP filter = {filter_name!r}", flush=True)
     fbp_slab = np.zeros_like(truth_mu, dtype=np.float64)
     with h5py.File(sino_dir / "L014_sino_fulldose.h5", "r") as f:
         for j, w in weights.items():
             s = np.ascontiguousarray(np.flip(np.asarray(f["sino"][:, :, j],
                                                          dtype=np.float32), axis=-1))
             t = torch.from_numpy(s).to("cuda").float()[None, None]
-            out = proj.fbp(t).detach()[0, 0].cpu().numpy()
+            out = proj.fbp(t, filter_name=filter_name).detach()[0, 0].cpu().numpy()
             fbp_slab += w * np.fliplr(np.flipud(out))
     fbp_slab = np.clip(fbp_slab.astype(np.float32), 0.0, None)
 
@@ -245,7 +253,14 @@ def calc_metrics(pred_np: np.ndarray, truth_np: np.ndarray, dr: float = 0.05) ->
 # ---------------------------------------------------------------------------
 
 def main() -> int:
-    truth, fbp_cal = build_fbp_and_truth(target_pZ=-254.50)
+    # Filter to use for the FBP baseline ("hann" or "ramlak"). The output
+    # PNG/NPY filenames carry the filter name so multiple runs can coexist.
+    import os
+    filter_name = os.environ.get("FBP_FILTER", "ramlak")
+    print(f"[fit] using FBP filter = {filter_name!r} (override via FBP_FILTER env)",
+          flush=True)
+    truth, fbp_cal = build_fbp_and_truth(target_pZ=-254.50,
+                                           filter_name=filter_name)
     dr = 0.05
     metrics_before = calc_metrics(fbp_cal, truth, dr=dr)
     print(f"\n[fit] BEFORE  SSIM={metrics_before['ssim']:.4f}  "
@@ -266,13 +281,14 @@ def main() -> int:
     # --- Plot --------------------------------------------------------------
     out_dir = Path("/cluster/maier/Agent4CT/results/breast_debug")
     out_dir.mkdir(parents=True, exist_ok=True)
+    suf = filter_name  # filename suffix to keep multiple baselines side-by-side
 
     # Main 4-panel comparison
     fig, ax = plt.subplots(1, 4, figsize=(16, 4.2))
     ax[0].imshow(truth, cmap="gray", vmin=0, vmax=dr)
     ax[0].set_title("truth (GT#76, pZ=−254.50 mm)\nB30f / 5-mm slice", fontsize=10)
     ax[1].imshow(np.clip(fbp_cal, 0, None), cmap="gray", vmin=0, vmax=dr)
-    ax[1].set_title(f"FBP_cal (Hann, before filter)\n"
+    ax[1].set_title(f"FBP_cal ({filter_name}, before filter)\n"
                     f"SSIM={metrics_before['ssim']:.4f}  "
                     f"PSNR={metrics_before['psnr']:.2f} dB  "
                     f"RMSE={metrics_before['rmse']:.5f}",
@@ -290,7 +306,7 @@ def main() -> int:
     fig.suptitle("L014 fulldose: radial L2-smooth filter fit (B30f-vs-Hann + slab residual)",
                  fontsize=11)
     fig.tight_layout()
-    out_main = out_dir / "L014_radial_kernel_fit.png"
+    out_main = out_dir / f"L014_radial_kernel_fit_{suf}.png"
     fig.savefig(out_main, dpi=120)
     print(f"[fit] wrote {out_main}", flush=True)
 
@@ -306,7 +322,7 @@ def main() -> int:
                      fontsize=10)
     for a in ax2: a.set_xticks([]); a.set_yticks([])
     fig2.tight_layout()
-    out_diff = out_dir / "L014_radial_kernel_diff_beforeafter.png"
+    out_diff = out_dir / f"L014_radial_kernel_diff_beforeafter_{suf}.png"
     fig2.savefig(out_diff, dpi=120)
     print(f"[fit] wrote {out_diff}", flush=True)
 
@@ -322,13 +338,13 @@ def main() -> int:
                   fontsize=10)
     ax3.grid(alpha=0.3); ax3.legend()
     fig3.tight_layout()
-    out_curve = out_dir / "L014_radial_kernel_response.png"
+    out_curve = out_dir / f"L014_radial_kernel_response_{suf}.png"
     fig3.savefig(out_curve, dpi=120)
     print(f"[fit] wrote {out_curve}", flush=True)
 
     # Save the fitted filter
-    np.save(out_dir / "L014_radial_kernel_h_radial.npy", h_radial)
-    np.save(out_dir / "L014_radial_kernel_rho_axis.npy", rho_axis)
+    np.save(out_dir / f"L014_radial_kernel_h_radial_{suf}.npy", h_radial)
+    np.save(out_dir / f"L014_radial_kernel_rho_axis_{suf}.npy", rho_axis)
     print()
     print(f"=== SUMMARY ===")
     print(f"BEFORE  SSIM={metrics_before['ssim']:.4f}  PSNR={metrics_before['psnr']:.2f} dB  "

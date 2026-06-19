@@ -60,7 +60,7 @@ for ds in "${DATASETS[@]}"; do
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 $GRES_LINE
-#SBATCH --exclude=lme49,lme53,lme171
+#SBATCH --exclude=lme49,lme53,lme170,lme171
 #SBATCH --mem=$MEM
 #SBATCH --time=$WALL
 #SBATCH --output=$REPO/results/slurm/%x-%j.out

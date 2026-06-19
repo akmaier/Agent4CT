@@ -50,6 +50,18 @@ def fov_mask(size: int, *, radius_pix: float | None = None,
                               str(device), dtype_str)
 
 
+# Mayo-LDCT scanner measurement FOV (detector geometry), per commit 5ced1ec9:
+#   R_fov = SOD*sin(atan(0.5*n_det*det_spacing/SDD)) = 237.54 mm
+#   (SOD=595.362, SDD=1086.803, n_det=736, det_spacing=1.285044).
+# Wagner val patient L277 has ps=0.73979 -> 321 px. Used as the metric FOV for
+# mayo_ldct_2d (instead of the 256px Sidky inscribed circle, which is too small
+# and discards the valid 256->321px annulus) when AGENT4CT_FOV_GEOMETRY=1.
+# Display stays full-512 unmasked (make_4panel renders its own view).
+MAYO_LDCT_FOV_MM = 237.54
+MAYO_LDCT_VAL_PS = 0.73979
+MAYO_LDCT_VAL_FOV_PX = MAYO_LDCT_FOV_MM / MAYO_LDCT_VAL_PS   # ~321.1 px
+
+
 # ===========================================================================
 # Intensity calibration
 # ===========================================================================
@@ -220,8 +232,18 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
     # byte-identical to the previous in-place-masked computation (mask is 0/1 and
     # nan_to_num is identity on finite pixels), so NO re-scoring is needed.
     if isinstance(fov, bool):
-        mask_2d = (fov_mask(truth.shape[-1], device=pred_cal.device,
-                            dtype=pred_cal.dtype) if fov else None)
+        if fov:
+            import os
+            # Mayo (AGENT4CT_FOV_GEOMETRY=1): detector-geometry FOV (321px for
+            # L277). Every other dataset (and the live campaign, which does NOT set
+            # the flag) keeps the 256px Sidky inscribed circle (radius_pix=None).
+            _geom = (os.environ.get("AGENT4CT_DATASET") == "mayo_ldct_2d"
+                     and os.environ.get("AGENT4CT_FOV_GEOMETRY") == "1")
+            mask_2d = fov_mask(truth.shape[-1],
+                               radius_pix=(MAYO_LDCT_VAL_FOV_PX if _geom else None),
+                               device=pred_cal.device, dtype=pred_cal.dtype)
+        else:
+            mask_2d = None
     else:
         mask_2d = fov.to(device=pred_cal.device, dtype=pred_cal.dtype)
 
@@ -306,6 +328,11 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
     # Allow the test-showcase runner to widen the montage (e.g. 5 rows = one
     # per held-out test patient) without per-solver edits.
     n_show = int(os.environ.get("AGENT4CT_FIG_NSHOW", n_show))
+    # Mayo staged_canonical truth is stored z-flipped vs radiological-upright
+    # display, so the figure renders upside-down. Flip ROWS for the FIGURE only
+    # (display-only — SSIM/PSNR/headroom are computed elsewhere on the unflipped
+    # tensors, and are vertical-flip-invariant anyway, so the metric is untouched).
+    _mayo_flip = os.environ.get("AGENT4CT_DATASET") == "mayo_ldct_2d"
 
     def _arr(t, i):
         x = t[i]
@@ -355,7 +382,8 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
                                                        display_min, display_max, "gray"),
             (diff, "diff (rec - truth)",               -diff_lim,    diff_lim,    "bwr"),
         ]):
-            axes[r, c].imshow(img, cmap=cmap, vmin=vmin, vmax=vmax)
+            axes[r, c].imshow(np.flipud(img) if _mayo_flip else img,
+                              cmap=cmap, vmin=vmin, vmax=vmax)
             axes[r, c].set_title(name, fontsize=9); axes[r, c].axis("off")
     plt.tight_layout()
     plt.savefig(str(out_path), dpi=dpi, bbox_inches="tight")

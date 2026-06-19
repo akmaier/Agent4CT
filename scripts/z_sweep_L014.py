@@ -1,3 +1,4 @@
+#!/usr/bin/env python -u
 """Fine z-sweep on L014 fulldose to find the optimal slab anchor.
 
 For each z_offset in [-6, +6] mm (1-mm steps), reconstruct a 5-mm slab
@@ -125,8 +126,10 @@ def main() -> int:
     )
     proj = PyronnFanBeamProjector(geom).to("cuda")
 
-    # Sweep z_offset in {-6, -5, ..., +6} mm  (1-mm slices, ±2 slab → 5-mm thick)
-    offsets = list(range(-6, 7))
+    # Sweep z_offset in 1-mm steps around the +3.5 mm anchor.
+    # Keeping the sweep narrow (-2 to +7) keeps each ablation under
+    # the 25-minute SLURM time limit.
+    offsets = list(range(-2, 8))
     SLAB_HALF = 2
     dr = 0.05
 
@@ -173,7 +176,8 @@ def main() -> int:
         print(f"[z-sweep] z_off={z_off:+3d}  source_z={z_center_source:6.2f}  patient_z={patient_z:7.2f}  "
               f"truth_bracket=({z_lo:6.1f},{z_hi:6.1f}) w_lo={w_lo:.3f}  "
               f"SSIM={ssim:.4f}  PSNR={psnr:.2f}dB  RMSE={rmse:.5f}  "
-              f"body_row truth={bc_truth:6.2f}  fbp={bc_fbp:6.2f}  Δrow={bc_fbp-bc_truth:+5.2f}")
+              f"body_row truth={bc_truth:6.2f}  fbp={bc_fbp:6.2f}  Δrow={bc_fbp-bc_truth:+5.2f}",
+              flush=True)
 
         rows.append({
             "z_off": z_off, "source_z": z_center_source, "patient_z": patient_z,

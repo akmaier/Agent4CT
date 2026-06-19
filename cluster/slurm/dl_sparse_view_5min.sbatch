@@ -4,8 +4,9 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:q8000:1     # pin 48 GB; RTX 5000 / 16 GB OOMs at val_n=100 + BF
+#SBATCH --exclude=lme171,lme222,lme223,lme49,lme50,lme51,lme52  # bad-driver + slow-GPU nodes
 #SBATCH --mem=24G
-#SBATCH --time=00:08:00            # 5-min iteration + ~3 min slack
+#SBATCH --time=00:10:00            # was 8 min; iter-28 onward sits at 7:32 train, +30s val — too tight
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
 # One DL-Sparse-View iteration. Runs the (agent-edited) solver, writes

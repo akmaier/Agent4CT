@@ -1,0 +1,14 @@
+{
+  "train_n": 200,
+  "val_n": 4,
+  "batch_size": 1,
+  "grad_clip": 1.0,
+  "seed": 42,
+  "warm_start": true,
+  "pretrain_epochs": 3,
+  "n_iter": 400,
+  "outer_wall_s": 1500,
+  "lr": 0.0003,
+  "unet_c": 16,
+  "rationale": "iter-4 ONE-KNOB: per-scan Adam lr 1e-3->3e-4. unet_c RESET 32->16 (back to the 0.9508 baseline; iter-3's c=32 did NOT help -> +capacity is not the lever); n_iter held at 400, all other knobs at iter-1/2 baseline. FAILURE MODE: across iters 1-3 neither optimization budget (n_iter 400->800: SSIM 0.9501->0.9508 PSNR 37.53->38.21, marginal) NOR capacity (unet_c 16->32: SSIM 0.9508->0.9502, PSNR 38.21->36.90, NO gain) moved the 0.9508 plateau. So the lever is NOT optimization budget or model size -- it is the REGULARIZATION / operating-point of the per-image self-supervised fit. HYPOTHESIS (per-scan-overfit-anchor): mirrors the demo_dl n2i sibling -- per-image U-Net N2I has NO early-stop in the per-scan loop, so each single scan can OVERFIT its own (GT-free, angular-subset) measurements; on demo, more steps made it WORSE and the FIX was lowering the per-scan lr to stay near the warm-start init. Dropping lr 1e-3->3e-4 anchors each per-scan Adam fit near the GT-free warm-start initialisation (solver shares cfg['lr'] for both the warm-start pre-pass and the per-scan fit, ddssl_ldct-free solver lines 122 & 239), trading raw fit for regularization and should lift val above 0.9508. Wall: identical step count to iter-1 (unet_c=16, n_iter=400, val_n=4) which ran ~13.5 min; outer_wall_s=1500 caps it <=15 min. grad_clip=1.0 mandatory (2304-view FBP adjoint overflows otherwise). DO NOT revert to amortized; per-image N2I rewrite (commit 1f4c3394)."
+}
