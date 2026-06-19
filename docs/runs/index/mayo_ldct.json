@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T13:02:46Z",
+ "updated": "2026-06-19T13:11:38Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
