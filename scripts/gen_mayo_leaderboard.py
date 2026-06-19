@@ -189,7 +189,9 @@ def main() -> int:
                 md, flags=re.S)
     LB.write_text(md)
     if rows:
-        sync_summaries(rows[0][2], rows[0][1], rows[0][0], max_it, rows[0][9])
+        n_above = sum(1 for r in rows if r[0] > 0)
+        sync_summaries(rows[0][2], rows[0][1], rows[0][0], max_it, rows[0][9],
+                       n_above, len(rows) - n_above)
         print(f"[leaderboard] {len(rows)} solvers; champion {rows[0][2]} "
               f"SSIM {rows[0][1]:.4f} (hr {rows[0][0]:.4f})")
     return 0
@@ -208,7 +210,8 @@ def _sub_line(path: Path, pattern: str, new_line: str) -> None:
         print(f"[sync] WARN: Mayo row pattern not found in {path}")
 
 
-def sync_summaries(name: str, ss: float, hr: float, max_it: int, img: str) -> None:
+def sync_summaries(name: str, ss: float, hr: float, max_it: int, img: str,
+                   n_above: int = None, n_below: int = None) -> None:
     """Keep the Mayo champion row in the homepage / landing summaries in lockstep
     with the auto-generated canonical board (single source of truth = run data).
     README.md = GitHub repo front page; docs/index.md = Pages site front page;
@@ -228,6 +231,12 @@ def sync_summaries(name: str, ss: float, hr: float, max_it: int, img: str) -> No
               f"| **Mayo-LDCT** (real helical, Wagner split) | {name} "
               f"(live {RUNID}, iter-{max_it}/20) | **{hr:.4f}** | "
               f"[![Mayo champion]({img})](mayo_ldct.html) |")
+    # cross-dataset count row (above/below baseline, all 19 solvers — not a top-N)
+    if n_above is not None:
+        _sub_line(REPO / "docs" / "leaderboards" / "index.md",
+                  r"^\| \*\*Mayo-LDCT\*\* \| \d.*$",
+                  f"| **Mayo-LDCT** | {n_above} | {n_below} | {n_above + n_below} "
+                  f"| **live `{RUNID}`** |")
 
 
 if __name__ == "__main__":
