@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T13:30:20Z",
+ "updated": "2026-06-19T13:43:12Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
@@ -23,7 +23,7 @@
      0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/valtest_showcase.png",
    "test_image": null
   },
   {
@@ -45,7 +45,7 @@
      0.276
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/valtest_showcase.png",
    "test_image": null
   },
   {
