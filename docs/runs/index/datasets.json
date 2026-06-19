@@ -1,6 +1,6 @@
 {
  "schema_version": 2,
- "updated": "2026-06-19T13:50:26Z",
+ "updated": "2026-06-19T14:02:56Z",
  "datasets": [
   {
    "challenge": "demo_dl",
@@ -23,11 +23,11 @@
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
-   "n_runs": 5,
-   "n_iterations": 5,
-   "champion_slug": "mayo-ldct-claude-agentic-itnet-v3-search-20260619-01",
-   "champion_score": 0.895903,
-   "thumbnail": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0001/comparison.png"
+   "n_runs": 8,
+   "n_iterations": 7,
+   "champion_slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
+   "champion_score": 0.919181,
+   "thumbnail": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0001/comparison.png"
   }
  ]
 }
