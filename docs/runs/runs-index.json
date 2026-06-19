@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T01:23:54Z",
+  "updated": "2026-06-19T01:30:37Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -313,7 +313,7 @@
       "challenge": "breast_ct",
       "started": "2026-06-18T20:56:06Z",
       "status": "running",
-      "n_iterations": 5,
+      "n_iterations": 6,
       "best_score": 0.973246,
       "best_headroom": 0.0,
       "best_iter": 4,
@@ -425,9 +425,9 @@
       "challenge": "demo_dl",
       "started": "2026-06-18T20:23:44Z",
       "status": "running",
-      "n_iterations": 6,
+      "n_iterations": 7,
       "best_score": 0.779571,
-      "best_headroom": 0.333531,
+      "best_headroom": 0.334644,
       "best_iter": 6,
       "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
