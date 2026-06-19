@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-19T21:41:48Z",
+ "updated": "2026-06-19T22:21:51Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -121,6 +121,22 @@
     "rank": null
    },
    {
+    "solver_key": "learned-primal-dual",
+    "solver_name": "Learned Primal-Dual",
+    "run_id": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
+    "best_iter": 3,
+    "params_M": 0.155406,
+    "params_source": "observation",
+    "val_ssim": 0.885114848613739,
+    "headroom": 0.0,
+    "val_psnr": 30.760507583618164,
+    "val_rmse": 0.0014485870487987995,
+    "elapsed_s": 1213.616070985794,
+    "image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0003/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
     "solver_key": "dual-domain-n2i",
     "solver_name": "DD-UNet N2I (per-image)",
     "run_id": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
@@ -149,22 +165,6 @@
     "val_rmse": 0.001385412411764264,
     "elapsed_s": 1100.9423773288727,
     "image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0002/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "learned-primal-dual",
-    "solver_name": "Learned Primal-Dual",
-    "run_id": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
-    "best_iter": 2,
-    "params_M": 0.155406,
-    "params_source": "observation",
-    "val_ssim": 0.8636346459388733,
-    "headroom": 0.0,
-    "val_psnr": 28.966350555419922,
-    "val_rmse": 0.0017809531418606639,
-    "elapsed_s": 1079.3138217926025,
-    "image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0002/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -670,18 +670,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
-   "best_iter": 2,
+   "n_iterations": 3,
+   "best_iter": 3,
    "best_headroom": 0.0,
-   "best_ssim": 0.8636346459388733,
-   "best_score": 0.8636346459388733,
-   "started": "2026-06-19T17:52:54Z",
+   "best_ssim": 0.885114848613739,
+   "best_score": 0.885114848613739,
+   "started": "2026-06-19T22:12:44Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
-   "agent": "learned_primal_dual-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T17:52:54Z",
+   "agent": "learned_primal_dual-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-19T22:12:44Z",
    "curve": [
     [
      1,
@@ -690,9 +690,13 @@
     [
      2,
      null
+    ],
+    [
+     3,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
