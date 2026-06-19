@@ -71,6 +71,25 @@ ssh lme-bastion 'cd /cluster/maier/Agent4CT && sbatch \
 > hints about solver *behavior*, **NOT** as validated results — re-establish
 > everything under the corrected metric.
 
+### iter-1 findings under the CORRECTED metric (`search-20260619-01`, live)
+These are validated under the corrected 214-slice / 321px-FOV metric. iter-2+
+subagents MUST apply them:
+- **hammernik_2017 iter-1 "0.0" was a CUDA OOM, NOT divergence.** SLURM err log:
+  `torch.cuda.OutOfMemoryError` in `_rho_prime` (RBF-bump loop) at 72 s, `batch_size=4`
+  on a 16 GB RTX 5000. **Fix for its iter-2:** `batch_size=2` + `vn_checkpoint=true`
+  (gradient-checkpoint each unrolled step) + `grad_clip=1.0` + `vn_dc_norm=true`,
+  exactly like the hammernik_vn iter-1 config that ran fine.
+- **itnet v1 (0.441) and v2 (0.455) are stuck far below itnet_v3 (0.896).** The
+  *pretrain-denoiser-then-DC* path under-converges in the 20-min budget; v3's
+  END-TO-END unrolled training is what works. itnet/itnet_v2 iter-2 should move
+  toward end-to-end training or accept they are budget-limited.
+- **dual_domain_bilateral_supervised: raw SSIM 0.919 (highest) but hr only 0.028.**
+  Not a bug — SSIM rewards the bilateral filter's smoothing; the ranked headroom
+  metric (calibrated, RMSE-sensitive) does not credit it. Rank by hr.
+- **iter-1 headroom leaderboard:** dual_domain_supervised 0.276 > itnet_v3 0.268 >
+  uswin 0.173 > tv_iterative 0.133 > wu_2015_trainable 0.051 > dd_bilat_sup 0.028 >
+  {LPD, itnet, itnet_v2} 0.000. (ram/naf/hammernik_vn iter-1 pending.)
+
 ---
 
 ## N2I solvers are PER-IMAGE self-supervised (2026-06-18 fix — do NOT revert)
