@@ -85,6 +85,27 @@ function currentDataset() {
   return new URLSearchParams(location.search).get("dataset");
 }
 
+// ---------- series labelling: solver + optimization scheme --------------
+// The overview chart overlays one line per run. Label each by SOLVER and the
+// OPTIMIZATION SCHEME it was produced with (agentic autoresearch vs TPE search),
+// not the run-id (which is identical across a dataset and thus useless).
+function schemeOf(r) {
+  if (r.scheme) return r.scheme;                       // explicit index field, if present
+  const s = String(r.slug || "");
+  if (s.includes("claude-agentic")) return "agentic";
+  if (s.includes("calibrated-tpe")) return "TPE";
+  if (s.includes("-fair-")) return "fair-baseline";
+  return "";                                            // early / ad-hoc runs: no clean scheme
+}
+function solverOf(r) {
+  return r.solver || r.name || String(r.slug || "").replace(/-search-\d.*$/, "");
+}
+function seriesLabel(r) {
+  const sc = schemeOf(r);
+  const solver = solverOf(r);
+  return sc ? `${solver} · ${sc}` : solver;
+}
+
 // ---------- overview chart (from precomputed curves) --------------------
 
 let _overviewChart = null;
@@ -105,7 +126,7 @@ function renderOverviewChart(runs) {
     const curve = (r.curve || []).filter(p => p[1] != null);
     if (curve.length === 0) return;
     datasets.push({
-      label: r.short_id || r.slug,
+      label: seriesLabel(r),
       data: curve.map(p => ({ x: p[0], y: p[1] })),
       borderColor: colourForRun(r.slug), backgroundColor: colourForRun(r.slug) + "33",
       tension: 0.15, pointRadius: 1.5, borderWidth: 2, spanGaps: true,
@@ -132,10 +153,13 @@ function renderOverviewChart(runs) {
       },
       plugins: {
         legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 10 } } },
-        tooltip: { callbacks: {
-          title: (it) => `iter ${it[0].parsed.x}`,
-          label: (it) => `${it.dataset.label}: ${it.parsed.y.toFixed(3)}`,
-        } },
+        tooltip: {
+          itemSort: (a, b) => b.parsed.y - a.parsed.y,   // best (highest headroom) at top
+          callbacks: {
+            title: (it) => (it.length ? `iter ${it[0].parsed.x}` : ""),
+            label: (it) => `${it.dataset.label}: ${it.parsed.y.toFixed(3)}`,
+          },
+        },
       },
     },
   });
