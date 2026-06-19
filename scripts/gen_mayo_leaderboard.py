@@ -159,14 +159,27 @@ def main() -> int:
         res = f"../runs/{d.name}/results.tsv"
         rows.append((hr, ss, name, var, params, psnr, rmse, tsec, res, img))
 
-    rows.sort(key=lambda r: (-r[1], -r[0]))   # by SSIM (r[1]), hr tiebreak
+    # Rank by HEADROOM (hr) — the canonical "fraction of the FBP→oracle gap
+    # closed" metric, so the actual champion sits at #1. SSIM (shown alongside)
+    # is the tiebreak and is also what selects the best iter within a run.
+    rows.sort(key=lambda r: (-r[0], -r[1]))
     out = ["| Rank | Solver | Best iter | params (M) | SSIM | hr | PSNR (dB) | RMSE | time (s) | Source | Comparison |",
            "|---:|---|---|---:|---:|---:|---:|---:|---:|---|---|"]
     for i, (hr, ss, name, var, params, psnr, rmse, tsec, res, img) in enumerate(rows, 1):
         b = "**" if i == 1 else ""
         out.append(f"| {i} | {b}{name}{b} | {var} | {params} | {ss:.4f} | {hr:.4f} | "
                    f"{psnr} | {rmse} | {tsec} | [results]({res}) | [![{name}]({img})]({img}) |")
-    table = "\n".join(out)
+    if rows:
+        c = rows[0]
+        max_it = max((int(re.match(r"iter-(\d+)", r[3]).group(1)) for r in rows
+                      if re.match(r"iter-(\d+)", r[3])), default=0)
+        summary = (f"**🟢 LIVE — `{RUNID}` in progress** ({len(rows)} solvers onboarded, "
+                   f"iters up to {max_it}/20). **Current champion by headroom: "
+                   f"{c[2]} — hr {c[0]:.4f}, SSIM {c[1]:.4f}** ({c[3].split(' (')[0]}). "
+                   f"Ranked by headroom; updated every wave.\n")
+        table = summary + "\n".join(out)
+    else:
+        table = "\n".join(out)
 
     md = LB.read_text()
     if "<!-- AGENTIC_TABLE_START -->" not in md:
