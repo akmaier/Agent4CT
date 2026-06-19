@@ -2,8 +2,52 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T14:10:10Z",
+ "updated": "2026-06-19T14:22:35Z",
  "runs": [
+  {
+   "slug": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
+   "short_id": "20260619-01",
+   "name": "wu-2015-trainable",
+   "challenge": "mayo_ldct",
+   "started": "2026-06-19T14:07:54Z",
+   "status": "running",
+   "n_iterations": 1,
+   "best_score": 0.837031,
+   "best_headroom": 0.0508002,
+   "best_iter": 1,
+   "agent": "wu_2015_trainable-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "curve": [
+    [
+     1,
+     0.0508
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-tv-iterative-search-20260619-01",
+   "short_id": "20260619-01",
+   "name": "tv-iterative",
+   "challenge": "mayo_ldct",
+   "started": "2026-06-19T13:47:00Z",
+   "status": "running",
+   "n_iterations": 1,
+   "best_score": 0.922979,
+   "best_headroom": 0.132941,
+   "best_iter": 1,
+   "agent": "tv_iterative-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "curve": [
+    [
+     1,
+     0.1329
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
    "short_id": "20260619-01",
