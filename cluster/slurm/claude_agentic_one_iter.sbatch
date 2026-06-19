@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=lme49,lme53,lme170,lme171
+#SBATCH --exclude=lme49,lme52,lme53,lme170,lme171
 #SBATCH --mem=24G
 #SBATCH --time=00:30:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out

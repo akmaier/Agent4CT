@@ -1,6 +1,6 @@
 {
  "schema_version": 2,
- "updated": "2026-06-19T07:30:44Z",
+ "updated": "2026-06-19T07:54:02Z",
  "datasets": [
   {
    "challenge": "demo_dl",
@@ -15,7 +15,7 @@
    "challenge": "breast_ct",
    "label": "Breast-CT",
    "n_runs": 25,
-   "n_iterations": 394,
+   "n_iterations": 396,
    "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
    "champion_score": 0.999577,
    "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"
