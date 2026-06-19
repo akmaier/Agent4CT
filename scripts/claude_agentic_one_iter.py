@@ -137,6 +137,36 @@ def utc_now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+# Challenge derived from the SLUG prefix — NOT hardcoded "dl_sparse_view". Mirrors
+# scripts/registry_lib.challenge_from_slug (kept inline so this cluster-side
+# recorder has no extra import dependency). First matching prefix wins.
+_PREFIX_TO_CHALLENGE = [
+    ("mayo-ldct", "mayo_ldct"), ("breast-ct", "breast_ct"),
+    ("dl-sparse-view", "dl_sparse_view"), ("dl-spectral", "dl_spectral"),
+    ("ct-mar", "ct_mar"), ("truect", "truect"),
+    ("demo-dl", "demo_dl"), ("demo-", "demo_dl"),
+]
+
+
+def challenge_from_slug(slug: str, fallback: str = "dl_sparse_view") -> str:
+    for prefix, ch in _PREFIX_TO_CHALLENGE:
+        if (slug or "").startswith(prefix):
+            return ch
+    return fallback
+
+
+def git_head_sha() -> str:
+    """Short HEAD sha for the commit column (was written empty). Empty on failure
+    (e.g. detached/no-git checkout) — never raises."""
+    import subprocess
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"], cwd=REPO, text=True,
+            stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return ""
+
+
 def main() -> int:
     slug    = os.environ["SLUG"]
     iter_n  = int(os.environ["ITER_N"])
@@ -145,6 +175,15 @@ def main() -> int:
     if solver_key not in SOLVER_MAP:
         raise ValueError(f"unknown solver {solver_key!r}; choices: {list(SOLVER_MAP)}")
     solver_path, env_var = SOLVER_MAP[solver_key]
+
+    # Provenance from the slug + env (was hardcoded to the breast-CT bring-up
+    # values). AGENT / MODEL / TRAIN_N override the defaults so Mayo/demo runs
+    # carry the right identity in observation.json + results.tsv.
+    challenge = challenge_from_slug(slug)
+    agent = os.environ.get("AGENT", f"{solver_key}-claude-agentic")
+    model = os.environ.get("MODEL", "claude-opus-4-8-1m")
+    train_n = int(os.environ.get("TRAIN_N", "400"))
+    head_sha = git_head_sha()
 
     # Per-iter working dir (raw solver output goes here).
     iter_dir = RUNS_BASE / f"{slug}-iter-{iter_n:04d}"
@@ -159,20 +198,23 @@ def main() -> int:
     manifest_path = dash_slug / "manifest.json"
     if not manifest_path.exists():
         manifest = {
-            "slug": slug, "challenge": "dl_sparse_view",
+            "slug": slug, "challenge": challenge,
             "slug_prefix": "-".join(slug.split("-")[:-2]),
             "started": utc_now_iso(),
-            "agent": f"{solver_key}-claude-agentic-breast-ct",
-            "model": "claude-opus-4.7-1m",
+            "agent": agent,
+            "model": model,
             "status": "running",
             "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints.",
         }
         manifest_path.write_text(json.dumps(manifest, indent=2))
 
-    # results.tsv header on first iter.
+    # results.tsv header on first iter. New trailing columns (psnr/rmse/elapsed_s/
+    # params_M) make the tsv self-sufficient for the leaderboard without the
+    # observation.json round-trip; the registry builder still prefers the obs.
     tsv_path = dash_slug / "results.tsv"
     if not tsv_path.exists():
-        tsv_path.write_text("iter\tcommit\tval_score\theadroom\tstatus\tchange_class\tagent\tmodel\trationale\n")
+        tsv_path.write_text("iter\tcommit\tval_score\theadroom\tstatus\tchange_class\t"
+                            "agent\tmodel\tval_psnr\tval_rmse\telapsed_s\tparams_M\trationale\n")
 
     # Run the solver with the chosen config.
     cfg = json.loads(cfg_json.read_text())
@@ -206,7 +248,8 @@ def main() -> int:
         "ts": utc_now_iso(),
         "run_id": slug,
         "iter": iter_n,
-        "challenge": "dl_sparse_view",
+        "challenge": challenge,
+        "commit": head_sha,
         "change_class": "architecture",
         "rationale": rationale,
         "val_score":   result.get("val_score"),
@@ -217,10 +260,10 @@ def main() -> int:
         "kept":        (result.get("headroom") or 0.0) > 0,
         "status":      "keep" if (result.get("headroom") or 0.0) > 0 else "discard",
         "params_M":    result.get("params_M"),
-        "train_n":     400,
+        "train_n":     train_n,
         "val_n":       result.get("val_n", 100),
-        "agent":       f"{solver_key}-claude-agentic-breast-ct",
-        "model":       "claude-opus-4.7-1m",
+        "agent":       agent,
+        "model":       model,
         "advice_for_others": rationale,
         "comparison_image": f"runs/{slug}/iterations/iter-{iter_n:04d}/comparison.png",
         "elapsed_s": elapsed,
@@ -228,14 +271,20 @@ def main() -> int:
     }
     (dash_iter / "observation.json").write_text(json.dumps(obs, indent=2))
 
-    # Append results.tsv row.
-    val = obs["val_score"] if obs["val_score"] is not None else ""
-    val_s = f"{val:.6g}" if isinstance(val, (int, float)) else ""
-    hr_s  = f"{obs['headroom']:.6g}" if isinstance(obs["headroom"], (int, float)) else ""
+    # Append results.tsv row (with the git SHA in the commit column + the
+    # psnr/rmse/elapsed_s/params_M metrics in their new trailing columns).
+    def _g(x, fmt="{:.6g}"):
+        return fmt.format(x) if isinstance(x, (int, float)) else ""
+    val_s = _g(obs["val_score"])
+    hr_s  = _g(obs["headroom"])
+    psnr_s = _g(obs["val_psnr"])
+    rmse_s = _g(obs["val_rmse"], "{:.6e}")
+    elapsed_s = _g(obs["elapsed_s"], "{:.1f}")
+    params_s = _g(obs["params_M"])
     with tsv_path.open("a") as f:
         f.write(
-            f"{iter_n}\t\t{val_s}\t{hr_s}\t{obs['status']}\t{obs['change_class']}\t"
-            f"{obs['agent']}\t{obs['model']}\t{rationale}\n"
+            f"{iter_n}\t{head_sha}\t{val_s}\t{hr_s}\t{obs['status']}\t{obs['change_class']}\t"
+            f"{obs['agent']}\t{obs['model']}\t{psnr_s}\t{rmse_s}\t{elapsed_s}\t{params_s}\t{rationale}\n"
         )
 
     print(f"[agentic] iter {iter_n} done  ssim={val_s}  hr={hr_s}  elapsed={elapsed:.1f}s", flush=True)
