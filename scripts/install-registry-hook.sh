@@ -4,16 +4,28 @@
 #
 #   bash scripts/install-registry-hook.sh
 #
-# It symlinks .git/hooks/pre-commit -> ../../scripts/pre-commit-registry-gate.sh
-# (so the hook tracks the committed script). Re-run any time; it is idempotent.
-# Uninstall with: rm .git/hooks/pre-commit
+# It symlinks the repo's pre-commit hook -> scripts/pre-commit-registry-gate.sh
+# (so the hook always tracks the committed script). Idempotent; re-run any time.
+# Uninstall with:  rm "$(git rev-parse --git-common-dir)/hooks/pre-commit"
+#
+# NOTE on git worktrees: git consults hooks in the COMMON git dir (the main
+# checkout's .git/hooks), not the per-worktree git dir — so we install there via
+# `git rev-parse --git-common-dir`. An absolute symlink target keeps it resolving
+# regardless of how deep the worktree lives.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-GIT_DIR="$(git rev-parse --git-dir)"
-HOOKS="$GIT_DIR/hooks"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+COMMON_GIT_DIR="$(git rev-parse --git-common-dir)"
+# git-common-dir may be relative to the worktree; normalise to absolute.
+case "$COMMON_GIT_DIR" in
+  /*) : ;;
+  *) COMMON_GIT_DIR="$(cd "$COMMON_GIT_DIR" && pwd)" ;;
+esac
+HOOKS="$COMMON_GIT_DIR/hooks"
 mkdir -p "$HOOKS"
 TARGET="$HOOKS/pre-commit"
+SRC="$REPO_ROOT/scripts/pre-commit-registry-gate.sh"
 
 if [[ -e "$TARGET" && ! -L "$TARGET" ]]; then
   echo "install-registry-hook: $TARGET already exists and is not our symlink." >&2
@@ -21,9 +33,10 @@ if [[ -e "$TARGET" && ! -L "$TARGET" ]]; then
   exit 1
 fi
 
-# Relative symlink from .git/hooks/ back to the tracked script.
-ln -sf "../../scripts/pre-commit-registry-gate.sh" "$TARGET"
-chmod +x scripts/pre-commit-registry-gate.sh
-echo "install-registry-hook: installed $TARGET -> scripts/pre-commit-registry-gate.sh"
+chmod +x "$SRC"
+ln -sf "$SRC" "$TARGET"
+echo "install-registry-hook: installed"
+echo "  $TARGET"
+echo "  -> $SRC"
 echo "  The registry staleness gate now runs before every commit that touches"
 echo "  docs/runs/ or the registry scripts. Bypass once with: git commit --no-verify"
