@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-19T21:21:42Z",
+ "updated": "2026-06-19T21:41:48Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -28,15 +28,15 @@
     "solver_key": "uswin",
     "solver_name": "U-Swin",
     "run_id": "mayo-ldct-claude-agentic-uswin-search-20260619-01",
-    "best_iter": 2,
+    "best_iter": 3,
     "params_M": 3.954049,
     "params_source": "observation",
-    "val_ssim": 0.9140965342521667,
-    "headroom": 0.3220626790327846,
-    "val_psnr": 37.45397186279297,
-    "val_rmse": 0.0006703033577650785,
-    "elapsed_s": 737.722907781601,
-    "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0002/comparison.png",
+    "val_ssim": 0.9244434237480164,
+    "headroom": 0.3531956774396291,
+    "val_psnr": 37.8623046875,
+    "val_rmse": 0.0006395209347829223,
+    "elapsed_s": 1085.8696365356445,
+    "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0003/comparison.png",
     "excluded_reason": null,
     "rank": 2
    },
@@ -44,15 +44,15 @@
     "solver_key": "itnet-v3",
     "solver_name": "ITNet v3",
     "run_id": "mayo-ldct-claude-agentic-itnet-v3-search-20260619-01",
-    "best_iter": 2,
+    "best_iter": 3,
     "params_M": 3.698994,
     "params_source": "observation",
-    "val_ssim": 0.9085336327552795,
-    "headroom": 0.3100535522094304,
-    "val_psnr": 37.301456451416016,
-    "val_rmse": 0.0006821772549301386,
-    "elapsed_s": 1010.068532705307,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0002/comparison.png",
+    "val_ssim": 0.9047728180885315,
+    "headroom": 0.31228215678718296,
+    "val_psnr": 37.329559326171875,
+    "val_rmse": 0.0006799737457185984,
+    "elapsed_s": 1072.9422481060028,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0003/comparison.png",
     "excluded_reason": null,
     "rank": 3
    },
@@ -635,18 +635,18 @@
    "name": "ITNet v3",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
-   "best_iter": 2,
-   "best_headroom": 0.3100535522094304,
-   "best_ssim": 0.9085336327552795,
-   "best_score": 0.9085336327552795,
-   "started": "2026-06-19T16:43:14Z",
+   "n_iterations": 3,
+   "best_iter": 3,
+   "best_headroom": 0.31228215678718296,
+   "best_ssim": 0.9047728180885315,
+   "best_score": 0.9047728180885315,
+   "started": "2026-06-19T21:33:28Z",
    "status": "ranked",
    "params_M": 3.698994,
    "excluded_reason": null,
-   "agent": "itnet_v3-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T16:43:14Z",
+   "agent": "itnet_v3-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-19T21:33:28Z",
    "curve": [
     [
      1,
@@ -655,9 +655,13 @@
     [
      2,
      0.3101
+    ],
+    [
+     3,
+     0.3123
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
@@ -852,18 +856,18 @@
    "name": "U-Swin",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
-   "best_iter": 2,
-   "best_headroom": 0.3220626790327846,
-   "best_ssim": 0.9140965342521667,
-   "best_score": 0.9140965342521667,
-   "started": "2026-06-19T17:59:13Z",
+   "n_iterations": 3,
+   "best_iter": 3,
+   "best_headroom": 0.3531956774396291,
+   "best_ssim": 0.9244434237480164,
+   "best_score": 0.9244434237480164,
+   "started": "2026-06-19T21:33:07Z",
    "status": "ranked",
    "params_M": 3.954049,
    "excluded_reason": null,
-   "agent": "uswin-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T17:59:13Z",
+   "agent": "uswin-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-19T21:33:07Z",
    "curve": [
     [
      1,
@@ -872,9 +876,13 @@
     [
      2,
      0.3221
+    ],
+    [
+     3,
+     0.3532
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {

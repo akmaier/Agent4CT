@@ -1,13 +1,13 @@
 {
  "schema_version": 3,
- "updated": "2026-06-19T21:21:42Z",
+ "updated": "2026-06-19T21:41:48Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
    "campaign": "search-20260619-01",
    "n_runs": 19,
-   "n_iterations": 39,
+   "n_iterations": 41,
    "n_solvers": 19,
    "champion_slug": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
    "champion_name": "DD-UNet supervised L2",
