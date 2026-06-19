@@ -275,7 +275,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         "baseline_rmse": baseline_rmse, "headroom": headroom,
         "calibration": metrics["calibration"],
         "fg_threshold": metrics["fg_threshold"],
-        "params_total": params_total, "train_n": cfg["train_n"],
+        "params_M": params_total / 1e6, "params_total": params_total, "train_n": cfg["train_n"],
         "val_n": cfg["val_n"], "train_time_s": train_time,
         "config": cfg,
         "training_scheme": "supervised_l2_full_views_128",

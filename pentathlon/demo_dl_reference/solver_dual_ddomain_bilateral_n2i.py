@@ -377,7 +377,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         "baseline_rmse": baseline_rmse, "headroom": headroom,
         "calibration": metrics["calibration"],
         "fg_threshold": metrics["fg_threshold"],
-        "params_total": params_total,
+        "params_M": params_total / 1e6, "params_total": params_total,
         "train_n": cfg["train_n"] if warm_start else 0,
         "val_n": int(pred.shape[0]), "train_time_s": train_time,
         "pretrain_time_s": pretrain_time,

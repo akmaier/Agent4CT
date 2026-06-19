@@ -84,6 +84,23 @@ def fmt_time(t) -> str:
     return f"{t:.0f}" if isinstance(t, (int, float)) else "—"
 
 
+# Authoritative param-count backstop for runs whose config is no longer on disk.
+_SP = REPO / "docs" / "leaderboards" / "solver_params.json"
+SOLVER_PARAMS = {k: v for k, v in json.loads(_SP.read_text()).items()
+                 if not k.startswith("_")} if _SP.exists() else {}
+
+
+def trainable_from_cfg(dash: str, cfg: dict):
+    """Verified trainable-param formulas for the families that historically did
+    not emit params_M. bilateral = 3*(proj_n_bf+img_n_bf) (3 per BF, default 1/1);
+    wu_2015_trainable = wu_n_bands + 2 + 2*wu_n_outer. Returns None otherwise."""
+    if dash in ("dual-domain-bilateral-supervised", "dual-domain-bilateral-n2i"):
+        return 3 * (int(cfg.get("proj_n_bf", 1)) + int(cfg.get("img_n_bf", 1)))
+    if dash == "wu-2015-trainable":
+        return int(cfg.get("wu_n_bands", 0)) + 2 + 2 * int(cfg.get("wu_n_outer", 0))
+    return None
+
+
 def best_row(slug_dir: Path):
     tsv = slug_dir / "results.tsv"
     if not tsv.exists():
@@ -121,7 +138,14 @@ def main() -> int:
         obs = d / "iterations" / f"iter-{it:04d}" / "observation.json"
         if obs.exists():
             o = json.loads(obs.read_text())
-            params = fmt_params(o.get("params_M"))
+            pm = o.get("params_M")
+            if pm is not None:
+                params = fmt_params(pm)
+            else:                                  # solver omitted params_M: recompute
+                cnt = trainable_from_cfg(dash, o.get("cfg_full") or {})
+                if cnt is None:
+                    cnt = SOLVER_PARAMS.get(d.name)
+                params = str(cnt) if cnt is not None else "—"
             psnr = fmt_psnr(o.get("val_psnr"))
             rmse = fmt_rmse(o.get("val_rmse"))
             tsec = fmt_time(o.get("elapsed_s"))

@@ -28,6 +28,13 @@ BOARDS = [REPO / "docs" / "leaderboards" / "breast_ct.md",
 NEW_HEADERS = ["PSNR (dB)", "RMSE", "time (s)"]
 NEW_SEPS = ["---:", "---:", "---:"]
 
+# Authoritative trainable-param counts for rows whose run config is no longer on
+# disk (TPE runs that recorded params_M=0/rounded, or pruned dirs). Built by
+# instantiating the real model + counting; see docs/leaderboards/solver_params.json.
+_SP = REPO / "docs" / "leaderboards" / "solver_params.json"
+SOLVER_PARAMS = {k: v for k, v in json.loads(_SP.read_text()).items()
+                 if not k.startswith("_")} if _SP.exists() else {}
+
 
 def cells_of(line: str) -> list[str]:
     return [c.strip() for c in line.strip().strip("|").split("|")]
@@ -63,30 +70,31 @@ def metrics_for_row(line: str):
 
 def process(md: str):
     out, lines = [], md.splitlines()
-    hr_idx = None            # active table's hr column index, or None
-    expect_sep = False
-    n_rows = n_resolved = 0
+    hr_idx = params_idx = None    # active table's hr / params column indices
+    already = expect_sep = False  # already has the PSNR/RMSE/time columns?
+    n_rows = n_resolved = n_params = 0
     for line in lines:
         s = line.strip()
         if not (s.startswith("|") and s.endswith("|")):
-            hr_idx, expect_sep = None, False
+            hr_idx = params_idx = None
+            already = expect_sep = False
             out.append(line)
             continue
         cells = cells_of(line)
         # header row of a fresh table?
         if hr_idx is None:
             if "hr" in cells and ("Solver" in cells or "SSIM" in cells):
-                if "PSNR (dB)" in cells:          # already migrated
-                    out.append(line)
-                    continue
                 hr_idx = cells.index("hr")
-                cells[hr_idx + 1:hr_idx + 1] = NEW_HEADERS
-                expect_sep = True
+                params_idx = cells.index("params (M)") if "params (M)" in cells else None
+                already = "PSNR (dB)" in cells       # idempotent: don't re-add columns
+                if not already:
+                    cells[hr_idx + 1:hr_idx + 1] = NEW_HEADERS
+                    expect_sep = True
                 out.append(render(cells))
             else:
-                out.append(line)                  # a table we don't touch
+                out.append(line)                     # a table we don't touch
             continue
-        # inside a target table
+        # separator row (only when we just added headers)
         if expect_sep and is_sep(cells):
             cells[hr_idx + 1:hr_idx + 1] = NEW_SEPS
             expect_sep = False
@@ -94,22 +102,31 @@ def process(md: str):
             continue
         # data row
         n_rows += 1
-        psnr, rmse, tsec = metrics_for_row(line)
-        if psnr != "—":
-            n_resolved += 1
-        cells[hr_idx + 1:hr_idx + 1] = [psnr, rmse, tsec]
+        # 1) authoritative trainable-param count (overrides rounded "0.000")
+        if params_idx is not None:
+            mslug = re.search(r"runs/([^/)\s]+)/", line)
+            if mslug and mslug.group(1) in SOLVER_PARAMS:
+                cells[params_idx] = str(SOLVER_PARAMS[mslug.group(1)])
+                n_params += 1
+        # 2) add PSNR/RMSE/time (skip if the table already has them)
+        if not already:
+            psnr, rmse, tsec = metrics_for_row(line)
+            if psnr != "—":
+                n_resolved += 1
+            cells[hr_idx + 1:hr_idx + 1] = [psnr, rmse, tsec]
         out.append(render(cells))
-    return "\n".join(out) + ("\n" if md.endswith("\n") else ""), n_rows, n_resolved
+    return ("\n".join(out) + ("\n" if md.endswith("\n") else ""),
+            n_rows, n_resolved, n_params)
 
 
 def main() -> int:
     for board in BOARDS:
         md = board.read_text()
-        new, n_rows, n_resolved = process(md)
+        new, n_rows, n_resolved, n_params = process(md)
         board.write_text(new)
         print(f"[backfill] {board.name}: {n_rows} data rows, "
-              f"{n_resolved} resolved from observation.json, "
-              f"{n_rows - n_resolved} left as '—'")
+              f"{n_resolved} PSNR/RMSE/time resolved, "
+              f"{n_params} param-counts set from solver_params.json")
     return 0
 
 

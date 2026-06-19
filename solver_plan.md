@@ -307,6 +307,25 @@ e.g. `breast-ct-claude-agentic-learned-primal-dual-search-20260522-01`.
 **Outputs each iter writes**: the same paths the previous agent reads,
 plus a new `solver.py` snapshot if the code was edited.
 
+> **Parameter-count reporting (REQUIRED for the leaderboard / paper).**
+> Every solver's `main()` result dict **MUST** include
+> `"params_M": params_total / 1e6` where
+> `params_total = sum(p.numel() for p in model.parameters() if p.requires_grad)`
+> (use total, not trainable, for frozen/pretrained models — and mark them
+> `(frozen)`). The harness records this into `observation.json` and the
+> leaderboards show it in the `params (M)` column (rendered as an integer
+> count for sub-0.001 M solvers). Three solvers historically computed
+> `params_total` but forgot to emit `params_M`
+> (`solver_dual_ddomain_bilateral_{supervised,n2i}.py`,
+> `solver_wu_2015_trainable.py`) — fixed 2026-06-19; do not regress this.
+> Verified trainable-param formulas for the low-parameter families:
+> **bilateral** = `3 × (proj_n_bf + img_n_bf)` (3 per `TrainableBilateralFilter2d`;
+> default `proj_n_bf=img_n_bf=1` → 6); **wu_2015_trainable** =
+> `wu_n_bands + 2 + 2·wu_n_outer`. The Mayo generator
+> (`scripts/gen_mayo_leaderboard.py`) recomputes these live from `cfg_full`;
+> authoritative counts for runs whose config was pruned live in
+> `docs/leaderboards/solver_params.json`.
+
 ---
 
 ## Step 3 — TPE hyperparameter refinement
