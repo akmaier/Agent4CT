@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T02:10:34Z",
+  "updated": "2026-06-19T02:26:13Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1113,7 +1113,7 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-18T19:15:13Z",
       "status": "running",
-      "n_iterations": 11,
+      "n_iterations": 12,
       "best_score": 0.96941,
       "best_headroom": 0.454109,
       "best_iter": 11,
@@ -1257,7 +1257,7 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-15T05:20:03Z",
       "status": "running",
-      "n_iterations": 11,
+      "n_iterations": 12,
       "best_score": 0.913488,
       "best_headroom": 0.0783341,
       "best_iter": 11,
