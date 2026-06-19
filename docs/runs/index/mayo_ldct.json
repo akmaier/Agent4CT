@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-19T22:21:51Z",
+ "updated": "2026-06-19T22:41:34Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -542,18 +542,18 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
+   "n_iterations": 3,
    "best_iter": 1,
    "best_headroom": 0.0,
    "best_ssim": 0.805282473564148,
    "best_score": 0.805282473564148,
-   "started": "2026-06-19T18:53:26Z",
+   "started": "2026-06-19T22:32:04Z",
    "status": "excluded",
    "params_M": 0.012165,
    "excluded_reason": "discard",
-   "agent": "hammernik_vn-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T18:53:26Z",
+   "agent": "hammernik_vn-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-19T22:32:04Z",
    "curve": [
     [
      1,
@@ -561,6 +561,10 @@
     ],
     [
      2,
+     null
+    ],
+    [
+     3,
      null
     ]
    ],
