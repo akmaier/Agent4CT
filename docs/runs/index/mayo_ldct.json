@@ -1,288 +1,419 @@
 {
- "schema_version": 2,
+ "schema_version": 3,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T19:42:33Z",
+ "campaign": "search-20260619-01",
+ "updated": "2026-06-19T19:50:36Z",
+ "leaderboard": {
+  "ranking_metric": "headroom",
+  "tiebreak": "val_ssim",
+  "rows": [
+   {
+    "solver_key": "dual-domain-supervised",
+    "solver_name": "DD-UNet supervised L2",
+    "run_id": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
+    "best_iter": 2,
+    "params_M": 0.465762,
+    "params_source": "observation",
+    "val_ssim": 0.9097616076469421,
+    "headroom": 0.3389846144100809,
+    "val_psnr": 37.67353439331055,
+    "val_rmse": 0.0006535719730891287,
+    "elapsed_s": 893.0574941635132,
+    "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
+    "excluded_reason": null,
+    "rank": 1
+   },
+   {
+    "solver_key": "uswin",
+    "solver_name": "U-Swin",
+    "run_id": "mayo-ldct-claude-agentic-uswin-search-20260619-01",
+    "best_iter": 2,
+    "params_M": 3.954049,
+    "params_source": "observation",
+    "val_ssim": 0.9140965342521667,
+    "headroom": 0.3220626790327846,
+    "val_psnr": 37.45397186279297,
+    "val_rmse": 0.0006703033577650785,
+    "elapsed_s": 737.722907781601,
+    "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0002/comparison.png",
+    "excluded_reason": null,
+    "rank": 2
+   },
+   {
+    "solver_key": "itnet-v3",
+    "solver_name": "ITNet v3",
+    "run_id": "mayo-ldct-claude-agentic-itnet-v3-search-20260619-01",
+    "best_iter": 2,
+    "params_M": 3.698994,
+    "params_source": "observation",
+    "val_ssim": 0.9085336327552795,
+    "headroom": 0.3100535522094304,
+    "val_psnr": 37.301456451416016,
+    "val_rmse": 0.0006821772549301386,
+    "elapsed_s": 1010.068532705307,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0002/comparison.png",
+    "excluded_reason": null,
+    "rank": 3
+   },
+   {
+    "solver_key": "tv-iterative",
+    "solver_name": "TV-iterative",
+    "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 0.0,
+    "params_source": "observation",
+    "val_ssim": 0.922979474067688,
+    "headroom": 0.13294083141974522,
+    "val_psnr": 35.31679153442383,
+    "val_rmse": 0.0008572955848649144,
+    "elapsed_s": 918.2307095527649,
+    "image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": null,
+    "rank": 4
+   },
+   {
+    "solver_key": "wu-2015-trainable",
+    "solver_name": "Wu 2015 trainable",
+    "run_id": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 8e-06,
+    "params_source": "trainable_from_cfg",
+    "val_ssim": 0.8370307087898254,
+    "headroom": 0.05080024541966299,
+    "val_psnr": 34.530609130859375,
+    "val_rmse": 0.0009385112207382917,
+    "elapsed_s": 335.352641582489,
+    "image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": null,
+    "rank": 5
+   },
+   {
+    "solver_key": "dual-domain-bilateral-supervised",
+    "solver_name": "DD-BF supervised L2",
+    "run_id": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
+    "best_iter": 2,
+    "params_M": 1.2e-05,
+    "params_source": "observation",
+    "val_ssim": 0.9191550016403198,
+    "headroom": 0.02823715470493071,
+    "val_psnr": 34.32655715942383,
+    "val_rmse": 0.0009608202381059527,
+    "elapsed_s": 449.6247591972351,
+    "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
+    "excluded_reason": null,
+    "rank": 6
+   },
+   {
+    "solver_key": "dual-domain-bilateral-n2i",
+    "solver_name": "DD-BF N2I (per-image)",
+    "run_id": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 6e-06,
+    "params_source": "trainable_from_cfg",
+    "val_ssim": 0.9247666001319885,
+    "headroom": 0.0,
+    "val_psnr": 34.03321838378906,
+    "val_rmse": 0.0009938230505213141,
+    "elapsed_s": 940.4376707077026,
+    "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "learned-primal-dual",
+    "solver_name": "Learned Primal-Dual",
+    "run_id": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
+    "best_iter": 2,
+    "params_M": 0.155406,
+    "params_source": "observation",
+    "val_ssim": 0.8636346459388733,
+    "headroom": 0.0,
+    "val_psnr": 28.966350555419922,
+    "val_rmse": 0.0017809531418606639,
+    "elapsed_s": 1079.3138217926025,
+    "image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0002/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "dual-domain-n2i",
+    "solver_name": "DD-UNet N2I (per-image)",
+    "run_id": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 0.465762,
+    "params_source": "observation",
+    "val_ssim": 0.8621627688407898,
+    "headroom": 0.0,
+    "val_psnr": 33.066654205322266,
+    "val_rmse": 0.0011108038015663624,
+    "elapsed_s": 971.9877800941467,
+    "image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "ram",
+    "solver_name": "RAM (zero-shot)",
+    "run_id": "mayo-ldct-claude-agentic-ram-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 35.618953,
+    "params_source": "observation",
+    "val_ssim": 0.8611049652099609,
+    "headroom": 0.0,
+    "val_psnr": 31.212270736694336,
+    "val_rmse": 0.001375170424580574,
+    "elapsed_s": 1117.7390825748444,
+    "image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "hammernik-vn",
+    "solver_name": "Hammernik VN (MRI port)",
+    "run_id": "mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 0.012165,
+    "params_source": "observation",
+    "val_ssim": 0.805282473564148,
+    "headroom": 0.0,
+    "val_psnr": 32.40127182006836,
+    "val_rmse": 0.0011992406798526645,
+    "elapsed_s": 1295.666550397873,
+    "image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "hammernik-2017",
+    "solver_name": "Hammernik VN (2017)",
+    "run_id": "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01",
+    "best_iter": 2,
+    "params_M": 0.012165,
+    "params_source": "observation",
+    "val_ssim": 0.8012295961380005,
+    "headroom": 0.0,
+    "val_psnr": 33.91232681274414,
+    "val_rmse": 0.0010077519109472632,
+    "elapsed_s": 887.0713901519775,
+    "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0002/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "r2gaussian",
+    "solver_name": "R2-Gaussian",
+    "run_id": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 0.003072,
+    "params_source": "observation",
+    "val_ssim": 0.738335132598877,
+    "headroom": 0.0,
+    "val_psnr": 24.124773025512695,
+    "val_rmse": 0.0031097924802452326,
+    "elapsed_s": 1122.4329528808594,
+    "image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "itnet",
+    "solver_name": "ITNet v1",
+    "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
+    "best_iter": 2,
+    "params_M": 0.232881,
+    "params_source": "observation",
+    "val_ssim": 0.5927114486694336,
+    "headroom": 0.0,
+    "val_psnr": 24.77454948425293,
+    "val_rmse": 0.0028856429271399975,
+    "elapsed_s": 387.4427556991577,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0002/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "itnet-v2",
+    "solver_name": "ITNet v2",
+    "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
+    "best_iter": 2,
+    "params_M": 0.232882,
+    "params_source": "observation",
+    "val_ssim": 0.5888043642044067,
+    "headroom": 0.0,
+    "val_psnr": 24.642578125,
+    "val_rmse": 0.002929821377620101,
+    "elapsed_s": 345.1916151046753,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0002/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "naf",
+    "solver_name": "NAF",
+    "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 0.037633,
+    "params_source": "observation",
+    "val_ssim": 0.4728808104991913,
+    "headroom": 0.0,
+    "val_psnr": 18.55237579345703,
+    "val_rmse": 0.005906785372644663,
+    "elapsed_s": 1097.1683852672577,
+    "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "diff-recon-dcstep-constrained",
+    "solver_name": "Diffusion (constrained DPS+DC)",
+    "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 8.594211,
+    "params_source": "observation",
+    "val_ssim": 0.3936541676521301,
+    "headroom": 0.0,
+    "val_psnr": 14.306011199951172,
+    "val_rmse": 0.009630956687033176,
+    "elapsed_s": 1018.9639804363251,
+    "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "diff-recon-dcstep-unconstrained",
+    "solver_name": "Diffusion (unconstrained DPS)",
+    "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 8.594211,
+    "params_source": "observation",
+    "val_ssim": 0.3688327968120575,
+    "headroom": 0.0,
+    "val_psnr": 10.54642105102539,
+    "val_rmse": 0.014847350306808949,
+    "elapsed_s": 868.6510360240936,
+    "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
+    "solver_key": "tv-iterative-supervised",
+    "solver_name": "TV-iterative (unrolled)",
+    "run_id": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
+    "best_iter": 1,
+    "params_M": 2e-05,
+    "params_source": "observation",
+    "val_ssim": 0.2855411767959595,
+    "headroom": 0.0,
+    "val_psnr": 1.8706777095794678,
+    "val_rmse": 0.04031216353178024,
+    "elapsed_s": 321.54847264289856,
+    "image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   }
+  ]
+ },
  "runs": [
   {
-   "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "diff-recon-dcstep-unconstrained-mayo-v4",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T16:11:53Z",
-   "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.368833,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 1,
-   "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.0
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0001/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "dual-domain-n2i",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T15:32:56Z",
-   "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.862163,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 1,
-   "agent": "dual_domain_n2i-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.0
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "dual-domain-bilateral-n2i",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T15:32:23Z",
-   "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.924767,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 1,
-   "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.0
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
-   "test_image": null
-  },
-  {
    "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "diff-recon-dcstep-constrained-mayo-v4",
+   "solver_key": "diff-recon-dcstep-constrained",
+   "name": "Diffusion (constrained DPS+DC)",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T15:15:23Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 1,
-   "best_score": 0.393654,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
    "best_iter": 1,
+   "best_headroom": 0.0,
+   "best_ssim": 0.3936541676521301,
+   "best_score": 0.3936541676521301,
+   "started": "2026-06-19T15:32:22Z",
+   "status": "excluded",
+   "params_M": 8.594211,
+   "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T15:32:22Z",
    "curve": [
     [
      1,
-     0.0
+     null
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0001/comparison.png",
    "test_image": null
   },
   {
-   "slug": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "r2gaussian",
+   "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
+   "solver_key": "diff-recon-dcstep-unconstrained",
+   "name": "Diffusion (unconstrained DPS)",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T15:13:56Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 1,
-   "best_score": 0.738335,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
    "best_iter": 1,
-   "agent": "r2gaussian-claude-agentic-breast-ct",
+   "best_headroom": 0.0,
+   "best_ssim": 0.3688327968120575,
+   "best_score": 0.3688327968120575,
+   "started": "2026-06-19T16:26:22Z",
+   "status": "excluded",
+   "params_M": 8.594211,
+   "excluded_reason": "discard",
+   "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T16:26:22Z",
    "curve": [
     [
      1,
-     0.0
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0001/comparison.png",
    "test_image": null
   },
   {
-   "slug": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "tv-iterative-supervised",
+   "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01",
+   "solver_key": "dual-domain-bilateral-n2i",
+   "name": "DD-BF N2I (per-image)",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T14:44:49Z",
-   "status": "running",
-   "n_iterations": 2,
-   "best_score": 0.285541,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 1,
-   "agent": "tv_iterative_supervised-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/valtest_showcase.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "hammernik-vn",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T14:29:37Z",
-   "status": "running",
-   "n_iterations": 2,
-   "best_score": 0.805282,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 1,
-   "agent": "hammernik_vn-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/valtest_showcase.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-naf-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "naf",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T14:25:19Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 1,
-   "best_score": 0.472881,
+   "best_iter": 1,
    "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 1,
-   "agent": "naf-claude-agentic-breast-ct",
+   "best_ssim": 0.9247666001319885,
+   "best_score": 0.9247666001319885,
+   "started": "2026-06-19T15:48:03Z",
+   "status": "excluded",
+   "params_M": 6e-06,
+   "excluded_reason": "discard",
+   "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T15:48:03Z",
    "curve": [
     [
      1,
-     0.0
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0001/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "wu-2015-trainable",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T14:07:54Z",
-   "status": "running",
-   "n_iterations": 2,
-   "best_score": 0.838996,
-   "best_headroom": 0.0508002,
-   "rank_headroom": 0.0508002,
-   "best_iter": 2,
-   "agent": "wu_2015_trainable-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.0508
-    ],
-    [
-     2,
-     0.0508
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/valtest_showcase.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-ram-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "ram",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T14:06:38Z",
-   "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.861105,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 1,
-   "agent": "ram_zeroshot-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.0
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0001/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-tv-iterative-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "tv-iterative",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T13:47:00Z",
-   "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.922979,
-   "best_headroom": 0.132941,
-   "rank_headroom": 0.132941,
-   "best_iter": 1,
-   "agent": "tv_iterative-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.1329
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
    "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "dual-domain-bilateral-supervised",
+   "solver_key": "dual-domain-bilateral-supervised",
+   "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T13:45:55Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 2,
-   "best_score": 0.919181,
-   "best_headroom": 0.0282372,
-   "rank_headroom": 0.0282372,
-   "best_iter": 1,
+   "best_iter": 2,
+   "best_headroom": 0.02823715470493071,
+   "best_ssim": 0.9191550016403198,
+   "best_score": 0.9191550016403198,
+   "started": "2026-06-19T18:06:55Z",
+   "status": "ranked",
+   "params_M": 1.2e-05,
+   "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T18:06:55Z",
    "curve": [
     [
      1,
@@ -293,100 +424,54 @@
      0.0282
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/valtest_showcase.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
    "test_image": null
   },
   {
-   "slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "itnet-v2",
+   "slug": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
+   "solver_key": "dual-domain-n2i",
+   "name": "DD-UNet N2I (per-image)",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T13:45:43Z",
-   "status": "running",
-   "n_iterations": 2,
-   "best_score": 0.588804,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 2,
-   "agent": "itnet_v2-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     1,
-     0.0
-    ],
-    [
-     2,
-     0.0
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/valtest_showcase.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "hammernik-2017",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T13:45:37Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 1,
-   "best_score": 0.80123,
+   "best_iter": 1,
    "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 2,
-   "agent": "hammernik_2017-claude-agentic-breast-ct",
+   "best_ssim": 0.8621627688407898,
+   "best_score": 0.8621627688407898,
+   "started": "2026-06-19T15:49:08Z",
+   "status": "excluded",
+   "params_M": 0.465762,
+   "excluded_reason": "discard",
+   "agent": "dual_domain_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
-   "curve": [
-    [
-     2,
-     0.0
-    ]
-   ],
-   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0002/comparison.png",
-   "test_image": null
-  },
-  {
-   "slug": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "itnet",
-   "challenge": "mayo_ldct",
-   "started": "2026-06-19T13:04:56Z",
-   "status": "running",
-   "n_iterations": 2,
-   "best_score": 0.592711,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
-   "best_iter": 2,
-   "agent": "itnet-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T15:49:08Z",
    "curve": [
     [
      1,
-     0.0
-    ],
-    [
-     2,
-     0.0
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/valtest_showcase.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
    "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "dual-domain-supervised",
+   "solver_key": "dual-domain-supervised",
+   "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T13:03:13Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 2,
-   "best_score": 0.909762,
-   "best_headroom": 0.338985,
-   "rank_headroom": 0.338985,
    "best_iter": 2,
+   "best_headroom": 0.3389846144100809,
+   "best_ssim": 0.9097616076469421,
+   "best_score": 0.9097616076469421,
+   "started": "2026-06-19T16:49:47Z",
+   "status": "ranked",
+   "params_M": 0.465762,
+   "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T16:49:47Z",
    "curve": [
     [
      1,
@@ -397,50 +482,151 @@
      0.339
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/valtest_showcase.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
    "test_image": null
   },
   {
-   "slug": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "learned-primal-dual",
+   "slug": "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01",
+   "solver_key": "hammernik-2017",
+   "name": "Hammernik VN (2017)",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T12:38:54Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 2,
-   "best_score": 0.863635,
-   "best_headroom": 0.0,
-   "rank_headroom": null,
    "best_iter": 2,
-   "agent": "learned_primal_dual-claude-agentic-breast-ct",
+   "best_headroom": 0.0,
+   "best_ssim": 0.8012295961380005,
+   "best_score": 0.8012295961380005,
+   "started": "2026-06-19T16:58:11Z",
+   "status": "excluded",
+   "params_M": 0.012165,
+   "excluded_reason": "discard",
+   "agent": "hammernik_2017-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T16:58:11Z",
    "curve": [
     [
      1,
-     0.0
+     null
     ],
     [
      2,
-     0.0
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/valtest_showcase.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0002/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01",
+   "solver_key": "hammernik-vn",
+   "name": "Hammernik VN (MRI port)",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 2,
+   "best_iter": 1,
+   "best_headroom": 0.0,
+   "best_ssim": 0.805282473564148,
+   "best_score": 0.805282473564148,
+   "started": "2026-06-19T18:53:26Z",
+   "status": "excluded",
+   "params_M": 0.012165,
+   "excluded_reason": "discard",
+   "agent": "hammernik_vn-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T18:53:26Z",
+   "curve": [
+    [
+     1,
+     null
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
+   "solver_key": "itnet",
+   "name": "ITNet v1",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 2,
+   "best_iter": 2,
+   "best_headroom": 0.0,
+   "best_ssim": 0.5927114486694336,
+   "best_score": 0.5927114486694336,
+   "started": "2026-06-19T17:59:51Z",
+   "status": "excluded",
+   "params_M": 0.232881,
+   "excluded_reason": "discard",
+   "agent": "itnet-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T17:59:51Z",
+   "curve": [
+    [
+     1,
+     null
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0002/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
+   "solver_key": "itnet-v2",
+   "name": "ITNet v2",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 2,
+   "best_iter": 2,
+   "best_headroom": 0.0,
+   "best_ssim": 0.5888043642044067,
+   "best_score": 0.5888043642044067,
+   "started": "2026-06-19T18:30:40Z",
+   "status": "excluded",
+   "params_M": 0.232882,
+   "excluded_reason": "discard",
+   "agent": "itnet_v2-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T18:30:40Z",
+   "curve": [
+    [
+     1,
+     null
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0002/comparison.png",
    "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-itnet-v3-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "itnet-v3",
+   "solver_key": "itnet-v3",
+   "name": "ITNet v3",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T12:27:31Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 2,
-   "best_score": 0.908534,
-   "best_headroom": 0.310054,
-   "rank_headroom": 0.310054,
    "best_iter": 2,
+   "best_headroom": 0.3100535522094304,
+   "best_ssim": 0.9085336327552795,
+   "best_score": 0.9085336327552795,
+   "started": "2026-06-19T16:43:14Z",
+   "status": "ranked",
+   "params_M": 3.698994,
+   "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T16:43:14Z",
    "curve": [
     [
      1,
@@ -451,23 +637,197 @@
      0.3101
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/valtest_showcase.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0002/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
+   "solver_key": "learned-primal-dual",
+   "name": "Learned Primal-Dual",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 2,
+   "best_iter": 2,
+   "best_headroom": 0.0,
+   "best_ssim": 0.8636346459388733,
+   "best_score": 0.8636346459388733,
+   "started": "2026-06-19T17:52:54Z",
+   "status": "excluded",
+   "params_M": 0.155406,
+   "excluded_reason": "discard",
+   "agent": "learned_primal_dual-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T17:52:54Z",
+   "curve": [
+    [
+     1,
+     null
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0002/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-naf-search-20260619-01",
+   "solver_key": "naf",
+   "name": "NAF",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 1,
+   "best_iter": 1,
+   "best_headroom": 0.0,
+   "best_ssim": 0.4728808104991913,
+   "best_score": 0.4728808104991913,
+   "started": "2026-06-19T14:43:36Z",
+   "status": "excluded",
+   "params_M": 0.037633,
+   "excluded_reason": "discard",
+   "agent": "naf-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T14:43:36Z",
+   "curve": [
+    [
+     1,
+     null
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01",
+   "solver_key": "r2gaussian",
+   "name": "R2-Gaussian",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 1,
+   "best_iter": 1,
+   "best_headroom": 0.0,
+   "best_ssim": 0.738335132598877,
+   "best_score": 0.738335132598877,
+   "started": "2026-06-19T15:32:39Z",
+   "status": "excluded",
+   "params_M": 0.003072,
+   "excluded_reason": "discard",
+   "agent": "r2gaussian-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T15:32:39Z",
+   "curve": [
+    [
+     1,
+     null
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-ram-search-20260619-01",
+   "solver_key": "ram",
+   "name": "RAM (zero-shot)",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 1,
+   "best_iter": 1,
+   "best_headroom": 0.0,
+   "best_ssim": 0.8611049652099609,
+   "best_score": 0.8611049652099609,
+   "started": "2026-06-19T14:25:15Z",
+   "status": "excluded",
+   "params_M": 35.618953,
+   "excluded_reason": "discard",
+   "agent": "ram_zeroshot-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T14:25:15Z",
+   "curve": [
+    [
+     1,
+     null
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-tv-iterative-search-20260619-01",
+   "solver_key": "tv-iterative",
+   "name": "TV-iterative",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 1,
+   "best_iter": 1,
+   "best_headroom": 0.13294083141974522,
+   "best_ssim": 0.922979474067688,
+   "best_score": 0.922979474067688,
+   "started": "2026-06-19T14:02:18Z",
+   "status": "ranked",
+   "params_M": 0.0,
+   "excluded_reason": null,
+   "agent": "tv_iterative-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T14:02:18Z",
+   "curve": [
+    [
+     1,
+     0.1329
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
+   "solver_key": "tv-iterative-supervised",
+   "name": "TV-iterative (unrolled)",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 2,
+   "best_iter": 1,
+   "best_headroom": 0.0,
+   "best_ssim": 0.2855411767959595,
+   "best_score": 0.2855411767959595,
+   "started": "2026-06-19T19:09:41Z",
+   "status": "excluded",
+   "params_M": 2e-05,
+   "excluded_reason": "discard",
+   "agent": "tv_iterative_supervised-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T19:09:41Z",
+   "curve": [
+    [
+     1,
+     null
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0001/comparison.png",
    "test_image": null
   },
   {
    "slug": "mayo-ldct-claude-agentic-uswin-search-20260619-01",
-   "short_id": "20260619-01",
-   "name": "uswin",
+   "solver_key": "uswin",
+   "name": "U-Swin",
    "challenge": "mayo_ldct",
-   "started": "2026-06-19T12:10:01Z",
-   "status": "running",
+   "campaign": "search-20260619-01",
    "n_iterations": 2,
-   "best_score": 0.914097,
-   "best_headroom": 0.322063,
-   "rank_headroom": 0.322063,
    "best_iter": 2,
+   "best_headroom": 0.3220626790327846,
+   "best_ssim": 0.9140965342521667,
+   "best_score": 0.9140965342521667,
+   "started": "2026-06-19T17:59:13Z",
+   "status": "ranked",
+   "params_M": 3.954049,
+   "excluded_reason": null,
    "agent": "uswin-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T17:59:13Z",
    "curve": [
     [
      1,
@@ -478,7 +838,38 @@
      0.3221
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/valtest_showcase.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0002/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
+   "solver_key": "wu-2015-trainable",
+   "name": "Wu 2015 trainable",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260619-01",
+   "n_iterations": 2,
+   "best_iter": 1,
+   "best_headroom": 0.05080024541966299,
+   "best_ssim": 0.8370307087898254,
+   "best_score": 0.8370307087898254,
+   "started": "2026-06-19T18:35:21Z",
+   "status": "ranked",
+   "params_M": 8e-06,
+   "excluded_reason": null,
+   "agent": "wu_2015_trainable-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "ts": "2026-06-19T18:35:21Z",
+   "curve": [
+    [
+     1,
+     0.0508
+    ],
+    [
+     2,
+     0.0508
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0001/comparison.png",
    "test_image": null
   }
  ]
