@@ -35,8 +35,10 @@ fi
 
 # --- 1. rsync ONLY the allowlisted run-ids (one rsync per run-id, no glob) -----
 if [[ "${NO_RSYNC:-0}" != "1" ]]; then
-  # Read run_ids + purge from the allowlist (python keeps this robust vs jq absence).
-  mapfile -t RUN_IDS < <(python3 - "$ALLOWLIST" <<'PY'
+  # Read run_ids from the allowlist (python keeps this robust vs jq absence).
+  # while-read (not mapfile) so this works on macOS's bash 3.2.
+  RUN_IDS=()
+  while IFS= read -r _rid; do [ -n "$_rid" ] && RUN_IDS+=("$_rid"); done < <(python3 - "$ALLOWLIST" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1]))
 ids = []
