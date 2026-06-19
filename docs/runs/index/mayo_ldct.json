@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T19:15:41Z",
+ "updated": "2026-06-19T20:16:56Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
@@ -33,19 +33,23 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-19T15:32:56Z",
    "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.862163,
+   "n_iterations": 2,
+   "best_score": 0.868096,
    "best_headroom": 0.0,
-   "best_iter": 1,
+   "best_iter": 2,
    "agent": "dual_domain_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
     [
      1,
      0.0
+    ],
+    [
+     2,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/valtest_showcase.png",
    "test_image": null
   },
   {
@@ -173,19 +177,23 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-19T14:25:19Z",
    "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.472881,
+   "n_iterations": 2,
+   "best_score": 0.494323,
    "best_headroom": 0.0,
-   "best_iter": 1,
+   "best_iter": 2,
    "agent": "naf-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
     [
      1,
      0.0
+    ],
+    [
+     2,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0002/comparison.png",
    "test_image": null
   },
   {
@@ -221,19 +229,23 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-19T14:06:38Z",
    "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.861105,
+   "n_iterations": 2,
+   "best_score": 0.864398,
    "best_headroom": 0.0,
-   "best_iter": 1,
+   "best_iter": 2,
    "agent": "ram_zeroshot-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
     [
      1,
      0.0
+    ],
+    [
+     2,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0002/comparison.png",
    "test_image": null
   },
   {
@@ -243,19 +255,23 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-19T13:47:00Z",
    "status": "running",
-   "n_iterations": 1,
-   "best_score": 0.922979,
-   "best_headroom": 0.132941,
-   "best_iter": 1,
+   "n_iterations": 2,
+   "best_score": 0.923844,
+   "best_headroom": 0.205364,
+   "best_iter": 2,
    "agent": "tv_iterative-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
     [
      1,
      0.1329
+    ],
+    [
+     2,
+     0.2054
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/valtest_showcase.png",
    "test_image": null
   },
   {

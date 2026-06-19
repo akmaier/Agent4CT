@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "breast_ct",
  "label": "Breast-CT",
- "updated": "2026-06-19T19:15:41Z",
+ "updated": "2026-06-19T20:16:56Z",
  "runs": [
   {
    "slug": "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
