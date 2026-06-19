@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T18:02:31Z",
+ "updated": "2026-06-19T18:22:40Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
@@ -253,9 +253,9 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-19T13:45:55Z",
    "status": "running",
-   "n_iterations": 1,
+   "n_iterations": 2,
    "best_score": 0.919181,
-   "best_headroom": 0.0279841,
+   "best_headroom": 0.0282372,
    "best_iter": 1,
    "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
@@ -263,9 +263,13 @@
     [
      1,
      0.028
+    ],
+    [
+     2,
+     0.0282
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/valtest_showcase.png",
    "test_image": null
   },
   {
