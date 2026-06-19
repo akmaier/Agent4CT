@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-claude-agentic-r2gaussian-search",
+  "started": "2026-06-19T15:13:56Z",
+  "agent": "r2gaussian-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T15:30:13Z",
+  "updated": "2026-06-19T15:43:09Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -963,6 +963,22 @@
       "test_image": null
     },
     {
+      "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
+      "short_id": "20260619-01",
+      "name": "diff-recon-dcstep-constrained-mayo-v4",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-19T15:15:23Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.393654,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
       "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
       "short_id": "20260619-01",
       "name": "dual-domain-bilateral-supervised",
@@ -1104,6 +1120,22 @@
       "agent": "naf-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01",
+      "short_id": "20260619-01",
+      "name": "r2gaussian",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-19T15:13:56Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.738335,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "r2gaussian-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0001/comparison.png",
       "test_image": null
     },
     {
