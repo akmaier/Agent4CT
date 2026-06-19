@@ -1,12 +1,12 @@
 {
  "schema_version": 2,
- "updated": "2026-06-19T15:10:56Z",
+ "updated": "2026-06-19T15:17:13Z",
  "datasets": [
   {
    "challenge": "demo_dl",
    "label": "Demo-DL",
    "n_runs": 35,
-   "n_iterations": 627,
+   "n_iterations": 628,
    "champion_slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
    "champion_score": 0.961275,
    "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
