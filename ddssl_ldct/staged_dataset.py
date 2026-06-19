@@ -472,6 +472,13 @@ def load_val_split(kind: str, split: str, n: int, *, device,
                 sel = sorted(picks)
                 print(f"[staged] mayo stratified subset: {n_eff}/{n_truth} across "
                       f"{len(order)} ps-groups {order}", flush=True)
+            else:   # single ps-group (val = L277): evenly-space across the FULL
+                    # volume, NOT the first-n boundary slices (top-of-volume,
+                    # near-empty -> unrepresentative metric + repeated figure rows).
+                sel = sorted(set(np.linspace(0, n_truth - 1, n_eff)
+                                 .round().astype(int).tolist()))
+                print(f"[staged] mayo val evenly-spaced: {len(sel)}/{n_truth} "
+                      f"across the volume (was first-{n_eff} boundary)", flush=True)
         truth = f[tkey][sel][...]
         ps_arr = f["ps"][sel][...] if "ps" in f else None   # per-slice recon ps (canonical)
     with h5py.File(sino_path, "r") as f:

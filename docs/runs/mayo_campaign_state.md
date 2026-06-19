@@ -1,12 +1,77 @@
-# Mayo-LDCT agentic campaign — live state & resume handoff
+# Mayo-LDCT agentic campaign — RESET 2026-06-19 — START HERE
 
-**Run-id (NEVER widen the glob):** `search-20260614-01`
-**Mandate:** every one of the **19 solvers** reaches **iter-20** of genuine
-six-box agentic autoresearch (read prior result+image → name failure mode →
-change ONE knob → named hypothesis → dispatch). The "2×hr=0 → STOP" rule is
-**retired** — do not bail capped/structural-negative solvers; drive them to 20
-with genuine ablations (capacity / data / loss / seed / grad_clip probes that
-document *why* the ceiling holds).
+> 🛑 **The previous campaign (`search-20260614-01`, 19 solvers) was DISCARDED and
+> purged on 2026-06-19.** It was scored on an **invalid validation metric**, so the
+> dashboard, leaderboard, and the search trajectory itself were all built on a bad
+> signal. **Start a FRESH search from iter-1** under the corrected protocol below.
+>
+> **What was wrong (all three fixed in code now):**
+> 1. Val scored the FIRST `val_n` (4–30) slices of L277 — top-of-volume boundary
+>    slices, near-empty / near-identical — not representative anatomy.
+> 2. The metric used the **256px Sidky inscribed-circle FOV** instead of the
+>    detector-geometry measurement FOV (237.54 mm → **321 px** for L277), discarding
+>    the valid 256→321 px annulus (commit `5ced1ec9`).
+> 3. Figures rendered **upside-down** (default imshow origin) and repeated the same
+>    boundary slice.
+
+## Corrected protocol for the NEW search (`search-20260619-01`)
+
+**Run-id (NEVER widen the glob):** `search-20260619-01`
+**Slug:** `mayo-ldct-claude-agentic-<solver-dash>-search-20260619-01`
+**Mandate:** drive all **19 solvers** from **iter-1 → iter-20** of genuine six-box
+autoresearch. "2×hr=0 → STOP" is retired; document *why* a ceiling holds.
+
+1. **Val metric (default now — do NOT revert):** score **ALL 214 L277 slices**
+   (Wagner val patient), evenly-spaced across the volume if `val_n<214`, with the
+   **detector-geometry FOV mask (321 px)**. Implemented in `evaluate_calibrated`
+   (gated on `AGENT4CT_DATASET=mayo_ldct_2d`) + `staged_dataset.py`. **No test
+   patients in the scored metric** (Wagner split — test leakage forbidden).
+2. **HARD 20-minute compute budget** per iter for **train + val-score**. Size
+   epochs / n_iter / per-image steps to fit. `mayo_agentic_iter.sbatch
+   --time=00:30:00` (20-min budget + headroom). **No per-solver exceptions** (LPD
+   too — the old 5h `--time` override is gone). See solver_plan.md.
+3. **The val FIGURE is OUTSIDE the budget.** Per-iter `comparison.png` is cheap
+   (renders the already-scored recon). The 6-patient leaderboard montage is a
+   SEPARATE unbudgeted job: `mayo_showcase.sbatch` → `make_test_showcase.py`
+   (covers all 19 solvers; L277-central + 5 test centrals, full-512, row-flipped).
+   Test patients appear ONLY in the figure (presentation-only, no leakage).
+4. **Figures:** display full-512 UNMASKED + row-flipped (Mayo truth is stored
+   z-flipped). `make_4panel` picks evenly-spaced rows (never first-n).
+5. **Subagents: Opus 4.8.** Every Agent-tool spawn + Workflow `agent()` uses
+   `model:"opus"`. Never downgrade.
+6. **CT-vision caveat:** do NOT draw conclusions from CT pixels (vision is
+   unreliable on CT/sinogram imagery). The metric (val_ssim/headroom on the
+   214-slice, geometry-FOV-masked L277) is the source of truth.
+
+### The 19 solvers (SOLVER key → slug-dash)
+**10 trainers** (get a valtest montage): `uswin`, `itnet`, `itnet_v2`, `itnet_v3`,
+`dual_domain_supervised`, `dual_domain_bilateral_supervised`, `learned_primal_dual`,
+`hammernik_2017`, `hammernik_vn`, `wu_2015_trainable`.
+**9 inference / per-image:** `naf`, `ram_zeroshot`(→`ram`), `r2gaussian`,
+`tv_iterative`, `tv_iterative_supervised`, `dual_domain_n2i` (PER-IMAGE),
+`dual_domain_bilateral_n2i` (PER-IMAGE),
+`diffusion_recon_dcstep_constrained_mayo_v4`(→`diff-recon-dcstep-constrained-mayo-v4`),
+`diffusion_recon_dcstep_unconstrained_mayo_v4`(→`diff-recon-dcstep-unconstrained-mayo-v4`).
+N2I are PER-IMAGE (section below — do NOT revert to amortized).
+
+### Dispatch recipe (env `ITER`; `AGENT4CT_DATASET=mayo_ldct_2d` hard-wired in sbatch)
+```
+ssh lme-bastion 'cd /cluster/maier/Agent4CT && sbatch \
+  --export=ALL,SOLVER=<key>,SLUG=mayo-ldct-claude-agentic-<dash>-search-20260619-01,ITER=<n>,CFG_JSON=/cluster/maier/Agent4CT/agentic_cfgs/<cfg>.json \
+  cluster/slurm/mayo_agentic_iter.sbatch'
+```
+
+### Ready-to-run loop-tick — paste into `/loop` in the NEW session
+```
+20m Mayo-LDCT agentic campaign tick (run-id search-20260619-01; NEVER widen the glob). GOAL: drive all 19 solvers from iter-1 to iter-20 under the CORRECTED protocol (val = ALL 214 L277 slices + 321px detector-geometry FOV; HARD 20-min train+score budget; val figure OUTSIDE the budget; figures full-512 unmasked + row-flipped). Each tick: (1) ensure README.md + solver_plan.md Step 2 + docs/runs/mayo_campaign_state.md are read this turn; (2) check the 4-slot QOS queue (ssh lme-bastion 'squeue -u maier') + each solver's max iter + best SSIM from docs/runs/mayo-ldct-claude-agentic-*-search-20260619-01/results.tsv; (3) PUBLISH newly-completed iters — targeted per-slug rsync ONLY the campaign dirs (NEVER blanket rsync docs/runs — it re-bloats the index), python3 scripts/rebuild_runs_index.py, git commit + push only if the run count stays sane; (4) for each TRAINER solver (uswin/itnet/itnet_v2/itnet_v3/dual_domain_supervised/dual_domain_bilateral_supervised/learned_primal_dual/hammernik_2017/hammernik_vn/wu_2015_trainable) with a NEW iter, regen its valtest montage via mayo_showcase.sbatch (SEPARATE job — NOT in the 20-min budget); (5) for EVERY free QOS slot, spawn ONE general-purpose subagent (model: opus — Opus 4.8, never a cheaper tier) to set up the next iter for the most-behind solver not yet at iter-20 and not running — the subagent reads README + solver_plan.md + this file + the solver's results.tsv, does the six-box (NUMBERS not CT pixels), SIZES the config so train+score fits the 20-min budget, and dispatches via mayo_agentic_iter.sbatch (env ITER, AGENT4CT_DATASET=mayo_ldct_2d hard-wired); the hard-wired config is staged_canonical data, v3 mayo_ldct_fitted geometry, per-sample-ps, bg_target="truth", val=ALL 214 L277 slices, metric=321px geometry FOV (DEFAULT — do not pass fov=False); NEVER edit shared ddssl_ldct/ modules; dual_domain_n2i / dual_domain_bilateral_n2i stay PER-IMAGE (warm-start pre-pass + per-scan fit; NEVER revert to amortized); (6) when all 19 solvers reach iter-20, STOP the loop (CronDelete) + final dashboard publish. Report one line: solvers-at-20/19, jobs running, figures published this tick.
+```
+
+> **NOTE:** the per-solver knob insights further down this file are from the
+> DISCARDED `search-20260614-01` run (boundary-slice metric). Treat them as loose
+> hints about solver *behavior*, **NOT** as validated results — re-establish
+> everything under the corrected metric.
+
+---
 
 ## N2I solvers are PER-IMAGE self-supervised (2026-06-18 fix — do NOT revert)
 

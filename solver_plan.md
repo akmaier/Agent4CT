@@ -156,9 +156,11 @@ for proposing every iter after iter 1 based on what was observed.
 > all six boxes below before dispatching iter-N, you are doing
 > something other than autoresearch.**
 >
-> 1. ☐ Have you READ the previous iter's `observation.json`,
->    `comparison.png`, AND `results.tsv`? (Not just the JSON — open
->    the image. Visual diagnosis is the highest-bandwidth signal.)
+> 1. ☐ Have you READ the previous iter's `observation.json` AND
+>    `results.tsv` (the NUMBERS — val_ssim, headroom, the per-iter
+>    trend)? **Do NOT draw conclusions from the CT pixels** — the vision
+>    module is unreliable on CT/sinogram imagery (README caveat). The
+>    figure is a coarse sanity check only; the metric is the source of truth.
 > 2. ☐ Can you name the SPECIFIC failure mode you observed
 >    ("smoothing", "ringing", "OOM", "loss landscape too sharp",
 >    "val curve plateaued", "kept memorising the train subset")?
@@ -167,8 +169,9 @@ for proposing every iter after iter 1 based on what was observed.
 > 4. ☐ Have you NAMED THE HYPOTHESIS in the commit message and the
 >    config's `rationale` field? Format: "if I do X, I expect Y
 >    because Z."
-> 5. ☐ Is the per-iter wall budget appropriate (see table below)?
->    iter-1 may take 30–60 min; **iter-2+ MUST be ≤ 15 min**.
+> 5. ☐ Does the iteration fit the **HARD 20-MINUTE compute budget**
+>    (train + val-score; the val FIGURE renders after and does NOT
+>    count)? Size epochs / n_iter / per-image steps to fit. NO exceptions.
 > 6. ☐ Will you DISPATCH iter-(N+1) yourself when iter-N lands,
 >    without returning control to the user? (User comes back only on
 >    plateau / iter-15 / demonstrated architectural ceiling.)
@@ -181,7 +184,8 @@ for proposing every iter after iter 1 based on what was observed.
 > | Date | Anti-pattern | Why it's not autoresearch |
 > |---|---|---|
 > | 2026-06-02 | Dispatched one `*_agentic_iter1.sbatch` and called it "the agentic round" | Single dispatch is an ablation. Loop = dispatch → review → propose → repeat. |
-> | 2026-06-03 | Mayo iter-2 dispatched with 4 h wall (same config as iter-1) | At 4 h/iter on 4 slots, ~6 iters/day per solver = slow grid search, not autoresearch. iter-2+ MUST be 5–15 min. |
+> | 2026-06-03 | Mayo iter-2 dispatched with 4 h wall (same config as iter-1) | At 4 h/iter on 4 slots, ~6 iters/day per solver = slow grid search, not autoresearch. Every iter MUST fit the 20-min budget. |
+> | 2026-06-19 | `search-20260614-01` scored val on the FIRST `val_n` boundary slices of L277 under the 256px Sidky FOV mask | The whole 19-solver search + leaderboard were driven by an unrepresentative, mis-masked metric → ALL discarded + redone. Val now scores ALL 214 L277 slices with the 321px geometry FOV. |
 > | 2026-05-20 | "Best hr" reported as the best of two iters in a sweep | A two-point sweep isn't autoresearch either; it's a comparison. Need ≥ 5 hypothesis-driven iters to plateau. |
 
 ### The loop (Claude's per-iter responsibility)
@@ -236,26 +240,37 @@ stop condition is met. A single dispatch + "I'll report when it
 lands" is NOT autoresearch — it is an ablation. Autoresearch is the
 WHOLE chain of dispatch → review → propose → dispatch.
 
-### Per-iter wall budget — 5–15 minutes (NOT hours)
+### Per-iter compute budget — HARD 20 minutes (train + score)
 
-Karpathy's original autoresearch loop fits one iter in **5 minutes**
-on purpose: the LLM must run many iters to be in the loop. Each iter
-tests ONE hypothesis; full convergence is for Step 3 TPE.
+Each iteration has a **HARD 20-minute compute budget** for solver
+**train + val-score**. The driving agent MUST size epochs / n_iter /
+per-image steps so train+score fits ≤ 20 min. `mayo_agentic_iter.sbatch`
+sets `--time=00:30:00` (20-min budget + headroom for the figure + I/O);
+a runaway is killed at 30 min. **No per-solver exceptions** (the old LPD
+5h `--time` override is gone — LPD fits 20 min too, with fewer unrolled
+iters / epochs).
 
-| Phase | Wall budget | Purpose | Typical config |
-|---|---|---|---|
-| **iter-1** (feasibility) | 30–60 min | "Does this solver work on this dataset at all?" Seed from cross-dataset champion, full epochs / val_n. | epochs=10, val_n=20, train_n=400 |
-| **iter-2..N** (hypothesis) | **5–15 min** | Single targeted knob change. Need SIGNAL not CONVERGENCE — if the change moves SSIM beyond val-noise, keep; else discard. | epochs=1–3, val_n=5–10, train_n=100 |
+**The val FIGURE is NOT part of the 20-min budget.** The per-iter
+`comparison.png` renders the already-computed val recon (cheap, after
+scoring). The heavy 6-patient leaderboard montage is a SEPARATE,
+unbudgeted job (`mayo_showcase.sbatch` → `make_test_showcase.py`).
 
-For Mayo specifically (2304 angles, 18× bigger sino than DL-Sparse-
-View): expect iter-2+ walls to be 10–15 min even at the tight config
-above. If a solver's per-epoch wall is so high that 1 epoch on
-train_n=100 still takes > 20 min, the solver is too expensive for
-the iterative protocol — file the verdict and move on.
+**Val metric (2026-06-19 corrected — do NOT revert):** score **ALL 214
+L277 slices** (the Wagner val patient), evenly-spaced across the volume
+if you pass a smaller `val_n`, with the **detector-geometry FOV mask
+(237.54 mm → 321 px for L277)** — NOT the first-N boundary slices and NOT
+the 256px Sidky inscribed circle. This is the default in
+`evaluate_calibrated` (gated on `AGENT4CT_DATASET=mayo_ldct_2d`) +
+`staged_dataset.py`. Figures display full-512 unmasked + row-flipped
+(Mayo truth is stored z-flipped vs radiological-upright).
 
-Anti-pattern: dispatching iter-2 at the same full config as iter-1.
-That gives you ~6 iters/day per solver, which is what slow grid
-search looks like — not autoresearch.
+| Phase | Budget | Typical config |
+|---|---|---|
+| **iter-1** (feasibility) | ≤ 20 min | "Does this solver run on Mayo at all?" Seed from a cross-dataset champion; val_n=214 if it fits, else a representative subset. |
+| **iter-2..N** (hypothesis) | ≤ 20 min | Single knob change. SIGNAL not CONVERGENCE. Size train/steps to fit. |
+
+Anti-pattern: dispatching iter-2 at the same full config as iter-1, or
+exceeding 20 min "just this once."
 
 ### Per-iter dispatch
 

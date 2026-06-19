@@ -6,24 +6,27 @@
 #SBATCH --gres=gpu:1
 #SBATCH --exclude=lme49,lme50,lme51,lme52,lme53,lme170,lme171,lme221
 #SBATCH --mem=32G
-#SBATCH --time=01:00:00
+#SBATCH --time=00:30:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
 
-# Generic Mayo agentic iter dispatcher — for iter-2+ in the autoresearch
-# loop. Use mayo_first_iter.sbatch for iter-1 (full feasibility config,
-# 30-60 min wall). This one uses the SHORT (5-15 min) budget required
-# by solver_plan.md Step 2 for iter-2+ hypothesis tests.
+# Generic Mayo agentic iter dispatcher (autoresearch loop).
+#
+# BUDGET (2026-06-19 reset — see README + solver_plan.md): each iteration has a
+# HARD 20-MINUTE COMPUTE BUDGET for train + val-score. The driving agent MUST
+# size the config (epochs / n_iter / per-image steps) so train+score fits
+# <= 20 min. The val metric scores ALL 214 L277 slices with the detector-
+# geometry FOV (321px). Per-image solvers set outer_wall_s=1200 as a backstop.
+# The val FIGURE is rendered AFTER scoring and is NOT part of the 20-min budget;
+# the heavy 6-patient leaderboard montage is a SEPARATE job (mayo_showcase.sbatch).
+# --time below = 20-min budget + headroom for the figure + I/O. NO per-solver
+# exceptions (the old LPD 5h --time override is gone — LPD must fit 20 min too).
 #
 # Required exported variables:
 #   SOLVER    — solver key from claude_agentic_one_iter.py:SOLVER_MAP
 #   SLUG      — autoresearch slug (e.g. mayo-ldct-claude-agentic-lpd-search-…)
-#   ITER      — iter number (≥2)
+#   ITER      — iter number
 #   CFG_JSON  — path to the per-iter config JSON Claude wrote
-#
-# Typical iter-2+ wall: 5-15 minutes. If your iter is taking longer
-# than 30 minutes, your config is too rich for an autoresearch
-# hypothesis test — drop val_n / epochs / train_n further.
 #
 # Example:
 #   sbatch --export=ALL,SOLVER=learned_primal_dual,\

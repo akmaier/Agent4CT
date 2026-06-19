@@ -2,10 +2,18 @@
 
 📊 **Live dashboard & docs:** <https://akmaier.github.io/Agent4CT/>
 
-🟢 **Active rebuild:** the **Mayo-LDCT** leaderboard (real helical data, Wagner
-split) is being rebuilt on the LME cluster — 19 solvers driven to the iter-20
-hard stop. Per-dataset progress is on the
-[dashboard](https://akmaier.github.io/Agent4CT/dashboard.html).
+🛑 **Mayo-LDCT was RESET on 2026-06-19 — read before running anything Mayo.**
+The prior campaign (`search-20260614-01`) was **discarded and purged**: the
+validation metric scored unrepresentative top-of-volume **boundary slices** of
+L277 under the **wrong (256px Sidky) FOV mask**, and figures rendered
+**upside-down** — so the dashboard, leaderboard, and the whole search trajectory
+were built on a bad signal. The corrected protocol (val = **all 214 L277 slices**
++ **detector-geometry FOV 321px**, a **hard 20-min per-iter budget** with the
+figure excluded, orientation fix) and a **ready-to-run loop-tick template** live
+in [`docs/runs/mayo_campaign_state.md`](docs/runs/mayo_campaign_state.md) —
+**START THERE** to launch the fresh `search-20260619-01`. The breast-CT / demo-DL
+per-image N2I search (`search-20260618-01`) is unaffected and still finishing to
+iter-20.
 
 📋 **Working on this repo?** → start at [`solver_plan.md`](solver_plan.md)
 **before** touching any solver. It's the canonical recipe for adapting
@@ -54,15 +62,18 @@ inline.
 |---|---|---:|---:|---|
 | **Breast-CT** (128-view sparse) | Learned Primal-Dual (I=8, hidden=96, 1.49 M) | 0.9996 | **0.9062** | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | ITNet v3 (3.7 M) | 0.9178 | 0.4676 | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
-| **Mayo-LDCT** (Wagner split, real helical) | _rebuilding (2026-06-14) — see below_ | — | — | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | _RESET 2026-06-19 — see below_ | — | — | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
 
-Mayo-LDCT is **being rebuilt from scratch (2026-06-14).** All prior
-agentic/TPE results were discarded: they were scored with the `bg→0`
-calibration bug (see [`docs/findings.md`](docs/findings.md) 2026-06-13)
-and predate the fully hard-wired v3 geometry + truncation-corrected FBP
-path. The rebuild starts from a clean **HD vs LD FBP baseline over every
-truth slice** of all 10 Wagner patients (the headroom-scoring endpoints),
-after which solvers are re-run on the corrected path. See the
+Mayo-LDCT was **RESET on 2026-06-19** (the second reset). The 2026-06-14
+rebuild (`search-20260614-01`, 19 solvers) was **discarded and purged**: its
+validation metric scored the first `val_n` top-of-volume **boundary slices** of
+L277 under the wrong **256px Sidky FOV mask**, and figures rendered
+**upside-down**, so the search trajectory + leaderboard were built on a bad
+signal. The corrected protocol (val = **all 214 L277 slices** + **321px
+detector-geometry FOV**, a **hard 20-min per-iter budget** with the figure
+excluded, orientation fix) + a ready-to-run loop-tick are in
+[`docs/runs/mayo_campaign_state.md`](docs/runs/mayo_campaign_state.md). The fresh
+`search-20260619-01` starts from a clean **HD vs LD FBP baseline**. See the
 [Mayo-LDCT leaderboard](docs/leaderboards/mayo_ldct.md) for status.
 
 [![Breast-CT champion (LPD)](docs/runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](docs/leaderboards/breast_ct.md)

@@ -1,6 +1,6 @@
 {
  "schema_version": 2,
- "updated": "2026-06-19T05:10:24Z",
+ "updated": "2026-06-19T06:10:44Z",
  "datasets": [
   {
    "challenge": "demo_dl",
@@ -19,15 +19,6 @@
    "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
    "champion_score": 0.999577,
    "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"
-  },
-  {
-   "challenge": "mayo_ldct",
-   "label": "Mayo-LDCT",
-   "n_runs": 19,
-   "n_iterations": 258,
-   "champion_slug": "mayo-ldct-claude-agentic-uswin-search-20260614-01",
-   "champion_score": 0.974148,
-   "thumbnail": "runs/mayo-ldct-claude-agentic-uswin-search-20260614-01/valtest_showcase.png"
   }
  ]
 }

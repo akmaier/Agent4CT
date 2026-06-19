@@ -55,7 +55,7 @@ def fov_mask(size: int, *, radius_pix: float | None = None,
 #   (SOD=595.362, SDD=1086.803, n_det=736, det_spacing=1.285044).
 # Wagner val patient L277 has ps=0.73979 -> 321 px. Used as the metric FOV for
 # mayo_ldct_2d (instead of the 256px Sidky inscribed circle, which is too small
-# and discards the valid 256->321px annulus) when AGENT4CT_FOV_GEOMETRY=1.
+# and discards the valid 256->321px annulus). Default for mayo_ldct_2d.
 # Display stays full-512 unmasked (make_4panel renders its own view).
 MAYO_LDCT_FOV_MM = 237.54
 MAYO_LDCT_VAL_PS = 0.73979
@@ -234,11 +234,10 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
     if isinstance(fov, bool):
         if fov:
             import os
-            # Mayo (AGENT4CT_FOV_GEOMETRY=1): detector-geometry FOV (321px for
-            # L277). Every other dataset (and the live campaign, which does NOT set
-            # the flag) keeps the 256px Sidky inscribed circle (radius_pix=None).
-            _geom = (os.environ.get("AGENT4CT_DATASET") == "mayo_ldct_2d"
-                     and os.environ.get("AGENT4CT_FOV_GEOMETRY") == "1")
+            # Mayo: detector-geometry measurement FOV (321px for L277, per commit
+            # 5ced1ec9) is the DEFAULT. Every other dataset keeps the 256px Sidky
+            # inscribed circle (radius_pix=None).
+            _geom = os.environ.get("AGENT4CT_DATASET") == "mayo_ldct_2d"
             mask_2d = fov_mask(truth.shape[-1],
                                radius_pix=(MAYO_LDCT_VAL_FOV_PX if _geom else None),
                                device=pred_cal.device, dtype=pred_cal.dtype)
@@ -357,6 +356,11 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
         return ps, ss, rm
 
     n = min(n_show, truth.shape[0])
+    # Evenly-spaced scenes across the batch (NOT the first n). For Mayo val the
+    # first slices are near-empty top-of-volume boundary slices that look
+    # near-identical; spacing them spans the volume. For the showcase montage
+    # (truth already == the chosen scenes) this is the identity map.
+    _rows = np.linspace(0, truth.shape[0] - 1, n).round().astype(int)
     fig, axes = plt.subplots(n, 4, figsize=(12, 3 * n))
     if n == 1:
         axes = axes[None, :]
@@ -364,7 +368,8 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
     if headroom is not None:
         fig.suptitle(f"{solver_label}   overall headroom = {headroom:.3f}",
                      fontsize=11, y=1.0)
-    for r in range(n):
+    for ar, r in enumerate(_rows):
+        r = int(r)
         gt_t  = truth[r] if truth[r].dim() == 2 else truth[r, 0] if truth[r].dim() == 3 else truth[r].squeeze()
         fb_t  = fbp[r] if fbp[r].dim() == 2 else fbp[r, 0] if fbp[r].dim() == 3 else fbp[r].squeeze()
         rc_t  = recon[r] if recon[r].dim() == 2 else recon[r, 0] if recon[r].dim() == 3 else recon[r].squeeze()
@@ -382,9 +387,9 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
                                                        display_min, display_max, "gray"),
             (diff, "diff (rec - truth)",               -diff_lim,    diff_lim,    "bwr"),
         ]):
-            axes[r, c].imshow(np.flipud(img) if _mayo_flip else img,
-                              cmap=cmap, vmin=vmin, vmax=vmax)
-            axes[r, c].set_title(name, fontsize=9); axes[r, c].axis("off")
+            axes[ar, c].imshow(np.flipud(img) if _mayo_flip else img,
+                               cmap=cmap, vmin=vmin, vmax=vmax)
+            axes[ar, c].set_title(name, fontsize=9); axes[ar, c].axis("off")
     plt.tight_layout()
     plt.savefig(str(out_path), dpi=dpi, bbox_inches="tight")
     plt.close(fig)

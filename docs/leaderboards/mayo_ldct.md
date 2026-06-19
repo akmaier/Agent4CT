@@ -1,10 +1,28 @@
 ---
 title: Mayo-LDCT leaderboard
-description: Real-helical-data leaderboard (Wagner split). REBUILDING 2026-06-14 — all prior results were discarded (scored with the bg→0 calibration bug). See solver_plan.md for methodology.
+description: Real-helical-data leaderboard (Wagner split). REBUILDING 2026-06-19 — all prior results discarded (val scored boundary slices under the wrong FOV mask; figures upside-down). See README + solver_plan.md.
 ---
 
 # Mayo-LDCT leaderboard (Wagner split)
 
+> 🛑 **2026-06-19 — SECOND full reset (`search-20260614-01` discarded).**
+> The entire 2026-06-14 rebuild (`search-20260614-01`, 19 solvers) was scored on
+> an **invalid validation metric** and has been discarded (runs purged):
+> - **Val scored the first `val_n` (4–30) slices of L277** — the top-of-volume
+>   boundary slices (near-empty, near-identical), not representative anatomy.
+> - **Wrong FOV mask** — the 256px Sidky inscribed circle instead of the
+>   detector-geometry measurement FOV (237.54 mm → 321 px), discarding the valid
+>   256→321 px annulus (commit `5ced1ec9`).
+> - **Figures rendered upside-down** and repeated the same boundary slice.
+>
+> The whole search trajectory was driven by this bad signal, so the dashboard,
+> leaderboard, and search are being **redone from scratch** with the corrected
+> metric (all 214 L277 slices + geometry FOV), a real **20-min per-iteration
+> budget** (val figure excluded), and the orientation fix. New run-id:
+> **`search-20260619-01`**. See [README](../../README.md) +
+> [`solver_plan.md`](../../solver_plan.md) + [`mayo_campaign_state.md`](../runs/mayo_campaign_state.md)
+> for the corrected protocol.
+>
 > 🧹 **2026-06-14 — leaderboard reset. Starting over.**
 > Every Mayo result produced before this date has been **discarded** and
 > the dashboard run directories removed. Two compounding problems made the
