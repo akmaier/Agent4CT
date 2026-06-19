@@ -201,11 +201,43 @@ def build_leaderboard(ch_lines: list[dict]) -> dict:
     return {"ranking_metric": "headroom", "tiebreak": "val_ssim", "rows": rows}
 
 
+# Views that carry an "updated" wall-clock field (with the json.dump indent they
+# were written with) — restored to the prior timestamp on an unchanged build so
+# the output is byte-stable (publish.sh idempotency). registry.jsonl / scratch
+# carry no build stamp and are already stable.
+_TIMESTAMPED_VIEWS = {
+    "datasets.json": 1, "leaderboard.json": 1,
+    "mayo_ldct.json": 1, "breast_ct.json": 1, "demo_dl.json": 1,
+}
+
+
+def _restore_timestamps(prior_built_at: str) -> None:
+    for name, indent in _TIMESTAMPED_VIEWS.items():
+        p = IDX / name
+        if not p.exists():
+            continue
+        obj = json.loads(p.read_text())
+        if isinstance(obj, dict) and "updated" in obj:
+            obj["updated"] = prior_built_at
+            p.write_text(json.dumps(obj, indent=indent, allow_nan=False))
+
+
 def main() -> int:
     allow = R.load_json(ALLOWLIST)
     backstop = _load_backstop()
     IDX.mkdir(parents=True, exist_ok=True)
     SCR.mkdir(parents=True, exist_ok=True)
+
+    # Capture the prior build's content_hash + timestamp so the output stays
+    # BYTE-STABLE when nothing substantive changed (publish.sh idempotency: a
+    # re-run with no new data must be a no-op commit, not a timestamp churn).
+    meta_p = IDX / "registry.meta.json"
+    prior_meta = R.load_json(meta_p) if meta_p.exists() else {}
+    prior_hash = prior_meta.get("content_hash")
+    prior_built_at = prior_meta.get("built_at")
+    # ONE timestamp for the whole build (every view `updated` + meta `built_at`
+    # share it) so restore-on-unchanged-content is byte-exact.
+    build_ts = R.utc_now_iso()
 
     lines = build_registry_lines(allow, backstop)
 
@@ -270,7 +302,7 @@ def main() -> int:
             "schema_version": R.SCHEMA_VERSION, "challenge": ch,
             "label": R.DATASET_LABELS.get(ch, ch),
             "campaign": ds_meta.get("campaign"),
-            "updated": R.utc_now_iso(),
+            "updated": build_ts,
             "leaderboard": lb,
             "runs": runs_view,
         }, indent=1, allow_nan=False))
@@ -295,13 +327,13 @@ def main() -> int:
         })
 
     (IDX / "leaderboard.json").write_text(json.dumps({
-        "schema_version": R.SCHEMA_VERSION, "updated": R.utc_now_iso(),
+        "schema_version": R.SCHEMA_VERSION, "updated": build_ts,
         "ranking_metric": "headroom", "tiebreak": "val_ssim",
         "datasets": leaderboards,
     }, indent=1, allow_nan=False))
 
     (IDX / "datasets.json").write_text(json.dumps({
-        "schema_version": R.SCHEMA_VERSION, "updated": R.utc_now_iso(),
+        "schema_version": R.SCHEMA_VERSION, "updated": build_ts,
         "datasets": datasets_summary,
     }, indent=1, allow_nan=False))
 
@@ -329,10 +361,26 @@ def main() -> int:
     # recomputes it from a fresh build and fails if it differs).
     content_hash = compute_content_hash()
     allow_sha = hashlib.sha1(ALLOWLIST.read_bytes()).hexdigest()
+
+    # Byte-stability: if the substantive content is identical to the prior build,
+    # reuse the prior build-provenance stamps everywhere (views' `updated`, meta's
+    # `built_at` AND `builder_git_sha`) so the files are byte-for-byte unchanged
+    # and publish.sh commits nothing. content_hash already excludes the volatile
+    # keys, so an unchanged hash == an unchanged registry — only the build stamps
+    # (incl. the HEAD sha, which advances on every commit) would otherwise churn.
+    unchanged = (prior_hash == content_hash and prior_built_at)
+    if unchanged:
+        _restore_timestamps(prior_built_at)
+        built_at = prior_built_at
+        builder_sha = prior_meta.get("builder_git_sha", _git_sha())
+    else:
+        built_at = build_ts
+        builder_sha = _git_sha()
+
     (IDX / "registry.meta.json").write_text(json.dumps({
         "schema_version": R.SCHEMA_VERSION,
-        "builder_git_sha": _git_sha(),
-        "built_at": R.utc_now_iso(),
+        "builder_git_sha": builder_sha,
+        "built_at": built_at,
         "content_hash": content_hash,
         "allowlist_sha": allow_sha,
         "n_runs": sum(d["n_runs"] for d in datasets_summary),
