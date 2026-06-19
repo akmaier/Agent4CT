@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T14:30:08Z",
+ "updated": "2026-06-19T14:42:26Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
@@ -24,6 +24,28 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-ram-search-20260619-01",
+   "short_id": "20260619-01",
+   "name": "ram",
+   "challenge": "mayo_ldct",
+   "started": "2026-06-19T14:06:38Z",
+   "status": "running",
+   "n_iterations": 1,
+   "best_score": 0.861105,
+   "best_headroom": 0.0,
+   "best_iter": 1,
+   "agent": "ram_zeroshot-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "curve": [
+    [
+     1,
+     0.0
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0001/comparison.png",
    "test_image": null
   },
   {

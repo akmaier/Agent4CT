@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T14:30:08Z",
+  "updated": "2026-06-19T14:42:26Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1072,6 +1072,22 @@
       "agent": "learned_primal_dual-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-ram-search-20260619-01",
+      "short_id": "20260619-01",
+      "name": "ram",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-19T14:06:38Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.861105,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "ram_zeroshot-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0001/comparison.png",
       "test_image": null
     },
     {

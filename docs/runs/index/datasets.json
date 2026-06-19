@@ -1,6 +1,6 @@
 {
  "schema_version": 2,
- "updated": "2026-06-19T14:30:08Z",
+ "updated": "2026-06-19T14:42:26Z",
  "datasets": [
   {
    "challenge": "demo_dl",
@@ -23,8 +23,8 @@
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
-   "n_runs": 10,
-   "n_iterations": 9,
+   "n_runs": 11,
+   "n_iterations": 10,
    "champion_slug": "mayo-ldct-claude-agentic-tv-iterative-search-20260619-01",
    "champion_score": 0.922979,
    "thumbnail": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0001/comparison.png"
