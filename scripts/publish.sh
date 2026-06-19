@@ -56,7 +56,9 @@ PY
     # Per-run-id rsync. --relative keeps the slug dir; trailing path is exact, so
     # NO blanket docs/runs glob can re-bloat the index. Missing remote dirs are
     # tolerated (a run may not have produced output yet).
-    rsync -e ssh -a --mkpath \
+    # mkdir -p (portable) replaces rsync --mkpath, which macOS's openrsync lacks.
+    mkdir -p "docs/runs/${rid}"
+    rsync -e ssh -a \
       "${CLUSTER_HOST}:${CLUSTER_RUNS}/${rid}/" "docs/runs/${rid}/" \
       2>/dev/null || echo "  (skip ${rid}: not on cluster yet)"
   done
