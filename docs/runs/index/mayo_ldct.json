@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T01:30:36Z",
+ "updated": "2026-06-19T01:43:49Z",
  "runs": [
   {
    "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260614-01",
@@ -135,10 +135,10 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-18T19:15:13Z",
    "status": "running",
-   "n_iterations": 10,
-   "best_score": 0.964759,
-   "best_headroom": 0.410202,
-   "best_iter": 6,
+   "n_iterations": 11,
+   "best_score": 0.96941,
+   "best_headroom": 0.454109,
+   "best_iter": 11,
    "agent": "itnet_v2-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
@@ -181,6 +181,10 @@
     [
      10,
      0.4102
+    ],
+    [
+     11,
+     0.4541
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260614-01/valtest_showcase.png",
@@ -507,7 +511,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-15T11:32:53Z",
    "status": "running",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_score": 0.952816,
    "best_headroom": 0.196991,
    "best_iter": 6,
@@ -557,9 +561,13 @@
     [
      11,
      0.197
+    ],
+    [
+     12,
+     0.197
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0011/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0012/comparison.png",
    "test_image": null
   },
   {
@@ -569,7 +577,7 @@
    "challenge": "mayo_ldct",
    "started": "2026-06-15T11:13:09Z",
    "status": "running",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_score": 0.939324,
    "best_headroom": 0.0,
    "best_iter": 10,
@@ -619,9 +627,13 @@
     [
      11,
      0.0
+    ],
+    [
+     12,
+     0.0
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0011/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260614-01/iterations/iter-0012/comparison.png",
    "test_image": null
   },
   {

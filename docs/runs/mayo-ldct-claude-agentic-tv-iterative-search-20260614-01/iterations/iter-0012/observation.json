@@ -1,0 +1,30 @@
+{
+  "ts": "2026-06-19T01:27:29Z",
+  "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260614-01",
+  "iter": 12,
+  "challenge": "dl_sparse_view",
+  "change_class": "architecture",
+  "rationale": "tv_iterative-claude-agentic: val_n=20, seed=42, rationale=iter-12 (toward 20): tv_decay 0.01->0.0 at clip=0.08 optimum (best 0.9528 hr0.20; lambda/lr/iters all bracketed worse on both sides, clip>=0.08 saturated. Default decay shrinks GD step ~3x by iter200 (1/(1+0.01*200)=0.33x); constant step keeps GD converging the data term through all 200 iters without the lr=0.02 overshoot seen in iter-9), tv_clip_max=0.08, tv_decay=0.0",
+  "val_score": 0.9453984498977661,
+  "headroom": 0.12419842428241668,
+  "val_ssim": 0.9453984498977661,
+  "val_psnr": 37.4665412902832,
+  "val_rmse": 0.0006693338509649038,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 20,
+  "agent": "tv_iterative-claude-agentic-breast-ct",
+  "model": "claude-opus-4.7-1m",
+  "advice_for_others": "tv_iterative-claude-agentic: val_n=20, seed=42, rationale=iter-12 (toward 20): tv_decay 0.01->0.0 at clip=0.08 optimum (best 0.9528 hr0.20; lambda/lr/iters all bracketed worse on both sides, clip>=0.08 saturated. Default decay shrinks GD step ~3x by iter200 (1/(1+0.01*200)=0.33x); constant step keeps GD converging the data term through all 200 iters without the lr=0.02 overshoot seen in iter-9), tv_clip_max=0.08, tv_decay=0.0",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260614-01/iterations/iter-0012/comparison.png",
+  "elapsed_s": 151.45364356040955,
+  "cfg_full": {
+    "val_n": 20,
+    "seed": 42,
+    "rationale": "iter-12 (toward 20): tv_decay 0.01->0.0 at clip=0.08 optimum (best 0.9528 hr0.20; lambda/lr/iters all bracketed worse on both sides, clip>=0.08 saturated. Default decay shrinks GD step ~3x by iter200 (1/(1+0.01*200)=0.33x); constant step keeps GD converging the data term through all 200 iters without the lr=0.02 overshoot seen in iter-9)",
+    "tv_clip_max": 0.08,
+    "tv_decay": 0.0
+  }
+}
