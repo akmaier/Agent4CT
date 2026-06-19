@@ -21,17 +21,6 @@ earlier uncalibrated runs (slug prefix `demo-dl-*`, `dl-sparse-view-*`)
 are kept at the bottom for historical context and **are not directly
 comparable**.
 
-## Top-5 visual comparison
-
-The top five calibrated rows (best `hr`) render their per-iteration
-comparison panel below.
-
-| 1 — DD-UNet supervised | 2 — Learned Primal-Dual | 3 — ITNet v3 |
-|---|---|---|
-| [![DD-UNet sup comparison](../runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png)](../runs/demo-intensity-calibrated-tpe-dual-domain-supervised-search-20260601-01/iterations/iter-0015/comparison.png) | [![LPD comparison](../runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png)](../runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png) | [![ITNet v3 comparison](../runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png)](../runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png) |
-| **4 — USwin** | **5 — RAM zero-shot** | |
-| [![USwin comparison](../runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png)](../runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png) | [![RAM zero-shot comparison](../runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png)](../runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png) | |
-
 ## Calibrated leaderboard (canonical)
 
 Slug prefix `demo-intensity-calibrated-tpe-*`. Sorted by `hr`; one row

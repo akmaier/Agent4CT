@@ -15,17 +15,6 @@ prediction.
 **Baseline FBP**: SSIM = 0.957, PSNR = 39.74 dB, `hr = 0`.
 `hr = max(0, 1 − rmse / baseline_rmse)`.
 
-## Top-5 visual comparison
-
-The top five calibrated rows (best `hr`) render their per-iteration
-comparison panel below.
-
-| 1 — LPD | 2 — DD-UNet supervised L2 | 3 — LPD (agentic seed) |
-|---|---|---|
-| [![LPD comparison](../runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](../runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png) | [![DD-UNet sup comparison](../runs/breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01/iterations/iter-0019/comparison.png)](../runs/breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01/iterations/iter-0019/comparison.png) | [![LPD seed comparison](../runs/breast-ct-claude-agentic-learned-primal-dual-search-20260522-01/iterations/iter-0003/comparison.png)](../runs/breast-ct-claude-agentic-learned-primal-dual-search-20260522-01/iterations/iter-0003/comparison.png) |
-| **4 — ITNet v3** | **5 — USwin** | |
-| [![ITNet v3 comparison](../runs/breast-ct-calibrated-tpe-itnet-v3-search-20260521-01/iterations/iter-0018/comparison.png)](../runs/breast-ct-calibrated-tpe-itnet-v3-search-20260521-01/iterations/iter-0018/comparison.png) | [![USwin comparison](../runs/breast-ct-calibrated-tpe-uswin-search-20260521-01/iterations/iter-0018/comparison.png)](../runs/breast-ct-calibrated-tpe-uswin-search-20260521-01/iterations/iter-0018/comparison.png) | |
-
 ## Calibrated leaderboard (canonical)
 
 Slug prefixes `breast-ct-calibrated-tpe-*` (TPE Bayesian search) and

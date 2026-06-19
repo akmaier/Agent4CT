@@ -317,8 +317,9 @@ then `rebuild_runs_index.py` — sanity-check the count stays ~78 before commit
 (`git checkout -- docs/runs` if it jumped). Breast/demo N2I (search-20260618-01)
 publish the same way, per-slug.
 
-When the top-3 (itnet/uswin/itnet_v2) all reach iter-20, do ONE comprehensive
-publish: regenerate test-showcase figures (`make_test_showcase.py`, idempotent —
-`SHOWCASE_FORCE=1` to refresh changed best-iters) then
-`bash scripts/publish_mayo_wave.sh "<msg>"`. Current published leaderboard still
-shows USwin champion — **stale**, itnet 0.9726 is the real champion.
+Publish newly-completed iters EVERY tick (per-slug rsync + `rebuild_runs_index.py`
++ `gen_mayo_leaderboard.py` + commit) — there is no "champion early-publish"
+trigger and no hard-coded champion: the champion is whatever the generated
+register/leaderboard reports for the current run-id. When ALL 19 solvers reach
+iter-20, regenerate test-showcase figures (`make_test_showcase.py`, idempotent —
+`SHOWCASE_FORCE=1` to refresh changed best-iters) and do the final publish.
