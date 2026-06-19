@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "breast_ct",
  "label": "Breast-CT",
- "updated": "2026-06-19T08:50:37Z",
+ "updated": "2026-06-19T09:10:41Z",
  "runs": [
   {
    "slug": "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
@@ -11,10 +11,10 @@
    "challenge": "breast_ct",
    "started": "2026-06-18T20:56:06Z",
    "status": "running",
-   "n_iterations": 16,
-   "best_score": 0.974834,
+   "n_iterations": 17,
+   "best_score": 0.974843,
    "best_headroom": 0.0,
-   "best_iter": 16,
+   "best_iter": 17,
    "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
@@ -81,9 +81,13 @@
     [
      16,
      0.0
+    ],
+    [
+     17,
+     0.0
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0016/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0017/comparison.png",
    "test_image": null
   },
   {
@@ -93,10 +97,10 @@
    "challenge": "breast_ct",
    "started": "2026-06-18T20:17:45Z",
    "status": "running",
-   "n_iterations": 16,
-   "best_score": 0.960905,
+   "n_iterations": 17,
+   "best_score": 0.961226,
    "best_headroom": 0.0,
-   "best_iter": 9,
+   "best_iter": 17,
    "agent": "dual_domain_n2i-claude-agentic-breast-ct",
    "model": "claude-opus-4.7-1m",
    "curve": [
@@ -163,9 +167,13 @@
     [
      16,
      0.0
+    ],
+    [
+     17,
+     0.0
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-dual-domain-n2i-search-20260618-01/iterations/iter-0009/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-dual-domain-n2i-search-20260618-01/iterations/iter-0017/comparison.png",
    "test_image": null
   },
   {
