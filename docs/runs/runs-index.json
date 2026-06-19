@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T15:43:09Z",
+  "updated": "2026-06-19T16:03:12Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -979,6 +979,22 @@
       "test_image": null
     },
     {
+      "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01",
+      "short_id": "20260619-01",
+      "name": "dual-domain-bilateral-n2i",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-19T15:32:23Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.924767,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
       "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
       "short_id": "20260619-01",
       "name": "dual-domain-bilateral-supervised",
@@ -992,6 +1008,22 @@
       "agent": "dual_domain_bilateral_supervised-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
       "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0001/comparison.png",
+      "test_image": null
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
+      "short_id": "20260619-01",
+      "name": "dual-domain-n2i",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-19T15:32:56Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.862163,
+      "best_headroom": 0.0,
+      "best_iter": 1,
+      "agent": "dual_domain_n2i-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
       "test_image": null
     },
     {

@@ -2,8 +2,52 @@
  "schema_version": 2,
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
- "updated": "2026-06-19T15:43:09Z",
+ "updated": "2026-06-19T16:03:12Z",
  "runs": [
+  {
+   "slug": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
+   "short_id": "20260619-01",
+   "name": "dual-domain-n2i",
+   "challenge": "mayo_ldct",
+   "started": "2026-06-19T15:32:56Z",
+   "status": "running",
+   "n_iterations": 1,
+   "best_score": 0.862163,
+   "best_headroom": 0.0,
+   "best_iter": 1,
+   "agent": "dual_domain_n2i-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "curve": [
+    [
+     1,
+     0.0
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01",
+   "short_id": "20260619-01",
+   "name": "dual-domain-bilateral-n2i",
+   "challenge": "mayo_ldct",
+   "started": "2026-06-19T15:32:23Z",
+   "status": "running",
+   "n_iterations": 1,
+   "best_score": 0.924767,
+   "best_headroom": 0.0,
+   "best_iter": 1,
+   "agent": "dual_domain_bilateral_n2i-claude-agentic-breast-ct",
+   "model": "claude-opus-4.7-1m",
+   "curve": [
+    [
+     1,
+     0.0
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0001/comparison.png",
+   "test_image": null
+  },
   {
    "slug": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
    "short_id": "20260619-01",
