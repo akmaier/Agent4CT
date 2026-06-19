@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T12:31:10Z",
+  "updated": "2026-06-19T12:42:59Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -960,6 +960,22 @@
       "agent": "wu-search-tpe-calibrated",
       "model": "optuna-tpe",
       "val_image": "runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/iterations/iter-0014/comparison.png",
+      "test_image": null
+    },
+    {
+      "slug": "mayo-ldct-claude-agentic-itnet-v3-search-20260619-01",
+      "short_id": "20260619-01",
+      "name": "itnet-v3",
+      "challenge": "mayo_ldct",
+      "started": "2026-06-19T12:27:31Z",
+      "status": "running",
+      "n_iterations": 1,
+      "best_score": 0.895903,
+      "best_headroom": 0.268409,
+      "best_iter": 1,
+      "agent": "itnet_v3-claude-agentic-breast-ct",
+      "model": "claude-opus-4.7-1m",
+      "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0001/comparison.png",
       "test_image": null
     },
     {
