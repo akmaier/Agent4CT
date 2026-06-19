@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-06-19T02:31:12Z",
+  "updated": "2026-06-19T02:43:35Z",
   "runs": [
     {
       "slug": "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
@@ -1161,13 +1161,13 @@
       "challenge": "mayo_ldct",
       "started": "2026-06-15T12:22:35Z",
       "status": "running",
-      "n_iterations": 11,
+      "n_iterations": 12,
       "best_score": 0.911204,
       "best_headroom": 0.0,
       "best_iter": 11,
       "agent": "naf-claude-agentic-breast-ct",
       "model": "claude-opus-4.7-1m",
-      "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0011/comparison.png",
+      "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260614-01/iterations/iter-0012/comparison.png",
       "test_image": null
     },
     {
