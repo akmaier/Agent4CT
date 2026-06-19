@@ -2,7 +2,7 @@
  "schema_version": 2,
  "challenge": "demo_dl",
  "label": "Demo-DL",
- "updated": "2026-06-19T03:30:52Z",
+ "updated": "2026-06-19T03:43:57Z",
  "runs": [
   {
    "slug": "demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
