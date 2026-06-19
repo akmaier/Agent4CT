@@ -1,15 +1,16 @@
 {
  "schema_version": 2,
- "updated": "2026-06-19T19:15:41Z",
+ "updated": "2026-06-19T19:42:33Z",
  "datasets": [
   {
    "challenge": "demo_dl",
    "label": "Demo-DL",
    "n_runs": 35,
    "n_iterations": 629,
-   "champion_slug": "demo-intensity-calibrated-tpe-lpd-search-20260527-01",
-   "champion_score": 0.961275,
-   "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
+   "champion_slug": "demo-dl-itnet-v3-search-20260516-02",
+   "champion_score": 0.821517,
+   "champion_ssim": 0.723799,
+   "thumbnail": "runs/demo-dl-itnet-v3-search-20260516-02/iterations/iter-0003/comparison.png"
   },
   {
    "challenge": "breast_ct",
@@ -17,7 +18,8 @@
    "n_runs": 25,
    "n_iterations": 410,
    "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
-   "champion_score": 0.999577,
+   "champion_score": 0.906241,
+   "champion_ssim": 0.999577,
    "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"
   },
   {
@@ -25,9 +27,10 @@
    "label": "Mayo-LDCT",
    "n_runs": 19,
    "n_iterations": 29,
-   "champion_slug": "mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01",
-   "champion_score": 0.924767,
-   "thumbnail": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0001/comparison.png"
+   "champion_slug": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
+   "champion_score": 0.338985,
+   "champion_ssim": 0.909762,
+   "thumbnail": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/valtest_showcase.png"
   }
  ]
 }

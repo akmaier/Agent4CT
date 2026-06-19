@@ -104,6 +104,22 @@ def summarize_run(run_dir: Path) -> dict:
     finite = lambda xs: [x for x in xs if math.isfinite(x)]
     best_score = max(finite(r["val_score"] for r in rows), default=None)
     best_hr = max(finite(r["headroom"] for r in rows), default=None)
+    # rank_headroom drives the CHAMPION pick (datasets.json). Unlike best_hr it
+    # excludes discarded rows and non-positive / non-finite headroom — a
+    # below-baseline solver (status=discard / hr<=0) must NEVER be crowned. This
+    # is the ONE canonical ranking (headroom, val_ssim tiebreak) that the
+    # leaderboard uses too, so the dashboard and the board agree on the winner.
+    # (Phase 0 of the result-register refactor — result_register_refactor_plan.md §6.)
+    # val_score >= 0.1 sanity floor: the legacy uncalibrated `demo-dl-*` runs
+    # report a DIFFERENT scoring rule (val_score is a negative loss, headroom
+    # ~0.99) and are not comparable to the calibrated SSIM convention — without
+    # the floor a hallucinated near-1.0 headroom from an uncalibrated DDPM run
+    # crowns demo_dl. Phase 1's allowlist (CURRENT_RUNIDS.json) supersedes this.
+    rankable = [r for r in rows
+                if (r["status"] or "").strip().lower() != "discard"
+                and math.isfinite(r["headroom"]) and r["headroom"] > 0
+                and math.isfinite(r["val_score"]) and r["val_score"] >= 0.1]
+    rank_headroom = max((r["headroom"] for r in rankable), default=None)
 
     # Compact running-best-headroom curve for the overview chart: [[iter, best], …]
     curve, run = [], -math.inf
@@ -148,7 +164,8 @@ def summarize_run(run_dir: Path) -> dict:
         "started": manifest.get("started"),
         "status": manifest.get("status", "running"),
         "n_iterations": len(rows), "best_score": best_score,
-        "best_headroom": best_hr, "best_iter": best_iter,
+        "best_headroom": best_hr, "rank_headroom": rank_headroom,
+        "best_iter": best_iter,
         "agent": manifest.get("agent"), "model": manifest.get("model"),
         "curve": curve, "val_image": val_image, "test_image": test_image,
     }
@@ -201,11 +218,21 @@ def main() -> int:
             {"schema_version": 2, "challenge": ch,
              "label": DATASET_LABELS.get(ch, ch), "updated": utc_now_iso(),
              "runs": rs}, indent=1, allow_nan=False))
-        champ = max(rs, key=lambda r: (r["best_score"] if r["best_score"] is not None else -1))
+        # Champion = single canonical ranking: headroom (val_ssim tiebreak),
+        # excluding discard/non-finite/hr<=0 (those have rank_headroom=None ->
+        # sort last). Agrees with the leaderboard's rank-1 by construction, so
+        # the dashboard never crowns a below-baseline hr=0 solver again (R1 fix).
+        champ = max(rs, key=lambda r: (
+            r["rank_headroom"] if r["rank_headroom"] is not None else -math.inf,
+            r["best_score"] if r["best_score"] is not None else -math.inf))
+        # champion_score is the headroom that won it (None if no run cleared
+        # baseline); champion_ssim keeps the SSIM visible alongside.
         datasets.append({
             "challenge": ch, "label": DATASET_LABELS.get(ch, ch),
             "n_runs": len(rs), "n_iterations": sum(r["n_iterations"] for r in rs),
-            "champion_slug": champ["slug"], "champion_score": champ["best_score"],
+            "champion_slug": champ["slug"],
+            "champion_score": champ["rank_headroom"],
+            "champion_ssim": champ["best_score"],
             "thumbnail": champ.get("val_image"),
         })
     datasets.sort(key=lambda d: -d["n_runs"])
