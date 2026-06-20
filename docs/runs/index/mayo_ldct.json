@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T11:41:41Z",
+ "updated": "2026-06-20T12:01:23Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -12,15 +12,15 @@
     "solver_key": "dual-domain-supervised",
     "solver_name": "DD-UNet supervised L2",
     "run_id": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
-    "best_iter": 5,
+    "best_iter": 6,
     "params_M": 0.465762,
     "params_source": "observation",
-    "val_ssim": 0.9230557680130005,
-    "headroom": 0.39940507749310716,
-    "val_psnr": 38.50613021850586,
-    "val_rmse": 0.0005938318790867925,
-    "elapsed_s": 1082.133173942566,
-    "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0005/comparison.png",
+    "val_ssim": 0.9326096177101135,
+    "headroom": 0.4157936454392316,
+    "val_psnr": 38.746437072753906,
+    "val_rmse": 0.0005776278558187187,
+    "elapsed_s": 1171.993374824524,
+    "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
     "excluded_reason": null,
     "rank": 1
    },
@@ -536,18 +536,18 @@
    "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
-   "best_iter": 5,
-   "best_headroom": 0.39940507749310716,
-   "best_ssim": 0.9230557680130005,
-   "best_score": 0.9230557680130005,
-   "started": "2026-06-20T07:03:35Z",
+   "n_iterations": 6,
+   "best_iter": 6,
+   "best_headroom": 0.4157936454392316,
+   "best_ssim": 0.9326096177101135,
+   "best_score": 0.9326096177101135,
+   "started": "2026-06-20T11:45:28Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T07:03:35Z",
+   "ts": "2026-06-20T11:45:28Z",
    "curve": [
     [
      1,
@@ -568,9 +568,13 @@
     [
      5,
      0.3994
+    ],
+    [
+     6,
+     0.4158
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0005/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
    "test_image": null
   },
   {

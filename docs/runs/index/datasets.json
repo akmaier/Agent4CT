@@ -1,20 +1,20 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T11:41:41Z",
+ "updated": "2026-06-20T12:01:23Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
    "campaign": "search-20260619-01",
    "n_runs": 19,
-   "n_iterations": 97,
+   "n_iterations": 98,
    "n_solvers": 19,
    "champion_slug": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
    "champion_name": "DD-UNet supervised L2",
-   "champion_headroom": 0.39940507749310716,
-   "champion_ssim": 0.9230557680130005,
-   "champion_score": 0.39940507749310716,
-   "thumbnail": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0005/comparison.png"
+   "champion_headroom": 0.4157936454392316,
+   "champion_ssim": 0.9326096177101135,
+   "champion_score": 0.4157936454392316,
+   "thumbnail": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0006/comparison.png"
   },
   {
    "challenge": "breast_ct",
