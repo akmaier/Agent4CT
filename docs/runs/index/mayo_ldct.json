@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T18:42:04Z",
+ "updated": "2026-06-20T19:01:30Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -967,18 +967,18 @@
    "name": "RAM (zero-shot)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 5,
    "best_headroom": 0.0,
    "best_ssim": 0.9070974588394165,
    "best_score": 0.9070974588394165,
-   "started": "2026-06-20T10:17:23Z",
+   "started": "2026-06-20T18:46:30Z",
    "status": "excluded",
    "params_M": 35.618953,
    "excluded_reason": "discard",
    "agent": "ram_zeroshot-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T10:17:23Z",
+   "ts": "2026-06-20T18:46:30Z",
    "curve": [
     [
      1,
@@ -998,6 +998,10 @@
     ],
     [
      5,
+     null
+    ],
+    [
+     6,
      null
     ]
    ],
