@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T19:01:30Z",
+ "updated": "2026-06-20T19:21:29Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -185,6 +185,22 @@
     "rank": null
    },
    {
+    "solver_key": "diff-recon-dcstep-unconstrained",
+    "solver_name": "Diffusion (unconstrained DPS)",
+    "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
+    "best_iter": 6,
+    "params_M": 8.594211,
+    "params_source": "observation",
+    "val_ssim": 0.8241006731987,
+    "headroom": 0.0,
+    "val_psnr": 27.14543914794922,
+    "val_rmse": 0.0021963324397802353,
+    "elapsed_s": 961.5929045677185,
+    "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0006/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
     "solver_key": "tv-iterative-supervised",
     "solver_name": "TV-iterative (unrolled)",
     "run_id": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
@@ -295,22 +311,6 @@
     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0006/comparison.png",
     "excluded_reason": "discard",
     "rank": null
-   },
-   {
-    "solver_key": "diff-recon-dcstep-unconstrained",
-    "solver_name": "Diffusion (unconstrained DPS)",
-    "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
-    "best_iter": 2,
-    "params_M": 8.594211,
-    "params_source": "observation",
-    "val_ssim": 0.39601171016693115,
-    "headroom": 0.0,
-    "val_psnr": 11.246393203735352,
-    "val_rmse": 0.013697785325348377,
-    "elapsed_s": 868.3285479545593,
-    "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0002/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
    }
   ]
  },
@@ -368,18 +368,18 @@
    "name": "Diffusion (unconstrained DPS)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
-   "best_iter": 2,
+   "n_iterations": 6,
+   "best_iter": 6,
    "best_headroom": 0.0,
-   "best_ssim": 0.39601171016693115,
-   "best_score": 0.39601171016693115,
-   "started": "2026-06-20T11:25:56Z",
+   "best_ssim": 0.8241006731987,
+   "best_score": 0.8241006731987,
+   "started": "2026-06-20T19:02:33Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T11:25:56Z",
+   "ts": "2026-06-20T19:02:33Z",
    "curve": [
     [
      1,
@@ -400,9 +400,13 @@
     [
      5,
      null
+    ],
+    [
+     6,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0006/comparison.png",
    "test_image": null
   },
   {
@@ -411,18 +415,18 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 1,
    "best_headroom": 0.0,
    "best_ssim": 0.9247666001319885,
    "best_score": 0.9247666001319885,
-   "started": "2026-06-20T08:59:25Z",
+   "started": "2026-06-20T19:19:54Z",
    "status": "excluded",
    "params_M": 6e-06,
    "excluded_reason": "discard",
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T08:59:25Z",
+   "ts": "2026-06-20T19:19:54Z",
    "curve": [
     [
      1,
@@ -442,6 +446,10 @@
     ],
     [
      5,
+     null
+    ],
+    [
+     6,
      null
     ]
    ],
@@ -732,18 +740,18 @@
    "name": "ITNet v2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 5,
    "best_headroom": 0.0,
    "best_ssim": 0.7294201254844666,
    "best_score": 0.7294201254844666,
-   "started": "2026-06-20T08:19:45Z",
+   "started": "2026-06-20T19:17:20Z",
    "status": "excluded",
    "params_M": 0.232882,
    "excluded_reason": "discard",
    "agent": "itnet_v2-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T08:19:45Z",
+   "ts": "2026-06-20T19:17:20Z",
    "curve": [
     [
      1,
@@ -763,6 +771,10 @@
     ],
     [
      5,
+     null
+    ],
+    [
+     6,
      null
     ]
    ],

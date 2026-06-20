@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T19:01:30Z",
+ "updated": "2026-06-20T19:21:29Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -185,6 +185,22 @@
      "rank": null
     },
     {
+     "solver_key": "diff-recon-dcstep-unconstrained",
+     "solver_name": "Diffusion (unconstrained DPS)",
+     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
+     "best_iter": 6,
+     "params_M": 8.594211,
+     "params_source": "observation",
+     "val_ssim": 0.8241006731987,
+     "headroom": 0.0,
+     "val_psnr": 27.14543914794922,
+     "val_rmse": 0.0021963324397802353,
+     "elapsed_s": 961.5929045677185,
+     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0006/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
      "solver_key": "tv-iterative-supervised",
      "solver_name": "TV-iterative (unrolled)",
      "run_id": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
@@ -293,22 +309,6 @@
      "val_rmse": 0.003399426816031337,
      "elapsed_s": 1101.424320936203,
      "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0006/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
-     "solver_key": "diff-recon-dcstep-unconstrained",
-     "solver_name": "Diffusion (unconstrained DPS)",
-     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
-     "best_iter": 2,
-     "params_M": 8.594211,
-     "params_source": "observation",
-     "val_ssim": 0.39601171016693115,
-     "headroom": 0.0,
-     "val_psnr": 11.246393203735352,
-     "val_rmse": 0.013697785325348377,
-     "elapsed_s": 868.3285479545593,
-     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0002/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     }
