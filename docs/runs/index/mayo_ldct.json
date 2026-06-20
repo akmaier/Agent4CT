@@ -3,11 +3,27 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T21:01:43Z",
+ "updated": "2026-06-20T21:21:46Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
   "rows": [
+   {
+    "solver_key": "itnet-v2",
+    "solver_name": "ITNet v2",
+    "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
+    "best_iter": 7,
+    "params_M": 0.232882,
+    "params_source": "observation",
+    "val_ssim": 0.9413688778877258,
+    "headroom": 0.4187275784047181,
+    "val_psnr": 38.7901725769043,
+    "val_rmse": 0.0005747269606217742,
+    "elapsed_s": 1308.602224111557,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0007/comparison.png",
+    "excluded_reason": null,
+    "rank": 1
+   },
    {
     "solver_key": "dual-domain-supervised",
     "solver_name": "DD-UNet supervised L2",
@@ -22,7 +38,7 @@
     "elapsed_s": 1171.993374824524,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
     "excluded_reason": null,
-    "rank": 1
+    "rank": 2
    },
    {
     "solver_key": "uswin",
@@ -38,7 +54,7 @@
     "elapsed_s": 1034.2799799442291,
     "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0007/comparison.png",
     "excluded_reason": null,
-    "rank": 2
+    "rank": 3
    },
    {
     "solver_key": "itnet",
@@ -54,7 +70,7 @@
     "elapsed_s": 1008.8892087936401,
     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0007/comparison.png",
     "excluded_reason": null,
-    "rank": 3
+    "rank": 4
    },
    {
     "solver_key": "itnet-v3",
@@ -70,7 +86,7 @@
     "elapsed_s": 1139.0871605873108,
     "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0007/comparison.png",
     "excluded_reason": null,
-    "rank": 4
+    "rank": 5
    },
    {
     "solver_key": "tv-iterative",
@@ -86,7 +102,7 @@
     "elapsed_s": 1227.3971643447876,
     "image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0004/comparison.png",
     "excluded_reason": null,
-    "rank": 5
+    "rank": 6
    },
    {
     "solver_key": "dual-domain-n2i",
@@ -102,7 +118,7 @@
     "elapsed_s": 1235.541589975357,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0004/comparison.png",
     "excluded_reason": null,
-    "rank": 6
+    "rank": 7
    },
    {
     "solver_key": "wu-2015-trainable",
@@ -118,7 +134,7 @@
     "elapsed_s": 334.80385518074036,
     "image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0006/comparison.png",
     "excluded_reason": null,
-    "rank": 7
+    "rank": 8
    },
    {
     "solver_key": "hammernik-2017",
@@ -134,7 +150,7 @@
     "elapsed_s": 679.4136145114899,
     "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0007/comparison.png",
     "excluded_reason": null,
-    "rank": 8
+    "rank": 9
    },
    {
     "solver_key": "dual-domain-bilateral-supervised",
@@ -150,7 +166,7 @@
     "elapsed_s": 449.6247591972351,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
     "excluded_reason": null,
-    "rank": 9
+    "rank": 10
    },
    {
     "solver_key": "dual-domain-bilateral-n2i",
@@ -325,22 +341,6 @@
     "val_rmse": 0.0044568381272256374,
     "elapsed_s": 1131.4668130874634,
     "image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0006/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "itnet-v2",
-    "solver_name": "ITNet v2",
-    "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
-    "best_iter": 5,
-    "params_M": 0.232882,
-    "params_source": "observation",
-    "val_ssim": 0.7294201254844666,
-    "headroom": 0.0,
-    "val_psnr": 26.870935440063477,
-    "val_rmse": 0.0022668528836220503,
-    "elapsed_s": 1410.641746520996,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0005/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -885,18 +885,18 @@
    "name": "ITNet v2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 6,
-   "best_iter": 5,
-   "best_headroom": 0.0,
-   "best_ssim": 0.7294201254844666,
-   "best_score": 0.7294201254844666,
-   "started": "2026-06-20T19:17:20Z",
-   "status": "excluded",
+   "n_iterations": 7,
+   "best_iter": 7,
+   "best_headroom": 0.4187275784047181,
+   "best_ssim": 0.9413688778877258,
+   "best_score": 0.9413688778877258,
+   "started": "2026-06-20T21:11:42Z",
+   "status": "ranked",
    "params_M": 0.232882,
-   "excluded_reason": "discard",
+   "excluded_reason": null,
    "agent": "itnet_v2-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T19:17:20Z",
+   "ts": "2026-06-20T21:11:42Z",
    "curve": [
     [
      1,
@@ -921,9 +921,13 @@
     [
      6,
      null
+    ],
+    [
+     7,
+     0.4187
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0005/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0007/comparison.png",
    "test_image": null
   },
   {
@@ -983,18 +987,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 6,
+   "n_iterations": 7,
    "best_iter": 4,
    "best_headroom": 0.0,
    "best_ssim": 0.8980332016944885,
    "best_score": 0.8980332016944885,
-   "started": "2026-06-20T12:04:07Z",
+   "started": "2026-06-20T21:18:43Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T12:04:07Z",
+   "ts": "2026-06-20T21:18:43Z",
    "curve": [
     [
      1,
@@ -1018,6 +1022,10 @@
     ],
     [
      6,
+     null
+    ],
+    [
+     7,
      null
     ]
    ],
