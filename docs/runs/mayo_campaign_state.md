@@ -96,6 +96,26 @@ subagents MUST apply them:
   uswin 0.173 > tv_iterative 0.133 > wu_2015_trainable 0.051 > dd_bilat_sup 0.028 >
   {LPD, itnet, itnet_v2} 0.000. (ram/naf/hammernik_vn iter-1 pending.)
 
+### DATA-COVERAGE is a LIVE LEVER for the END-TO-END trainers (CONFIRMED iter-5, 2026-06-20)
+The supervised/end-to-end trainers (`uswin`, `itnet_v3`, `dual_domain_supervised`,
+`learned_primal_dual`) load a **FIXED stratified train subset ONCE** via
+`load_val_split(split='train', n=train_n)` and merely **reshuffle that same subset
+every epoch** (`torch.randperm(train_n)`) — they do **NOT** use
+`RotatingSubsetDataset`. So `train_n=200` means the net only ever sees **35 % of the
+579-slice train pool** (3 ps-groups across the 4 train patients: 154 @0.66192,
+98 @0.73979, 327 @0.77873). **`train_n` IS load-bearing, NOT inert.** Once the
+per-iter epochs + capacity levers plateau, the next lever is **raise `train_n`**
+(trade epochs DOWN to hold the HARD 20-min wall; optionally keep grad-step parity
+`train_n × epochs` constant to isolate *data coverage* from *extra optimization*).
+**CONFIRMED:** `uswin` train_n 200→480 lifted hr **0.3532 → 0.3829** (+0.0297, NEW
+Mayo champion); `itnet_v3` train_n 200→400 lifted hr **0.3123 → 0.3288** (+0.0165).
+Both reverted to their iter-3 BEST config first (NOT the regressed iter-4
+capacity-trade). Apply this lever to the OTHER trainers (`hammernik_vn`,
+`wu_2015_trainable`, `dual_domain_bilateral_supervised`, `itnet`, `itnet_v2`,
+`hammernik_2017`) once their epoch/capacity levers plateau — it is the strongest
+untried axis for the trained leaders. (Does NOT apply to the per-image / inference
+solvers: ram/tv/naf/r2g/N2I/diffusion have no amortized train set.)
+
 ---
 
 ## N2I solvers are PER-IMAGE self-supervised (2026-06-18 fix — do NOT revert)

@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T07:02:20Z",
+ "updated": "2026-06-20T07:16:20Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -8,6 +8,22 @@
    "ranking_metric": "headroom",
    "tiebreak": "val_ssim",
    "rows": [
+    {
+     "solver_key": "dual-domain-supervised",
+     "solver_name": "DD-UNet supervised L2",
+     "run_id": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
+     "best_iter": 5,
+     "params_M": 0.465762,
+     "params_source": "observation",
+     "val_ssim": 0.9230557680130005,
+     "headroom": 0.39940507749310716,
+     "val_psnr": 38.50613021850586,
+     "val_rmse": 0.0005938318790867925,
+     "elapsed_s": 1082.133173942566,
+     "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0005/comparison.png",
+     "excluded_reason": null,
+     "rank": 1
+    },
     {
      "solver_key": "uswin",
      "solver_name": "U-Swin",
@@ -21,22 +37,6 @@
      "val_rmse": 0.0006101786275394261,
      "elapsed_s": 1154.7162854671478,
      "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0005/comparison.png",
-     "excluded_reason": null,
-     "rank": 1
-    },
-    {
-     "solver_key": "dual-domain-supervised",
-     "solver_name": "DD-UNet supervised L2",
-     "run_id": "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
-     "best_iter": 3,
-     "params_M": 0.465762,
-     "params_source": "observation",
-     "val_ssim": 0.9181913733482361,
-     "headroom": 0.3653571024466965,
-     "val_psnr": 38.02717590332031,
-     "val_rmse": 0.0006274964543990791,
-     "elapsed_s": 1151.400770187378,
-     "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0003/comparison.png",
      "excluded_reason": null,
      "rank": 2
     },
