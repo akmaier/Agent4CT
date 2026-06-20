@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T07:41:58Z",
+ "updated": "2026-06-20T08:01:57Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -188,15 +188,15 @@
     "solver_key": "hammernik-vn",
     "solver_name": "Hammernik VN (MRI port)",
     "run_id": "mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01",
-    "best_iter": 1,
+    "best_iter": 5,
     "params_M": 0.012165,
     "params_source": "observation",
-    "val_ssim": 0.805282473564148,
+    "val_ssim": 0.8088628649711609,
     "headroom": 0.0,
-    "val_psnr": 32.40127182006836,
-    "val_rmse": 0.0011992406798526645,
-    "elapsed_s": 1295.666550397873,
-    "image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0001/comparison.png",
+    "val_psnr": 32.45353698730469,
+    "val_rmse": 0.0011920464457944036,
+    "elapsed_s": 1393.173616886139,
+    "image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0005/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -602,18 +602,18 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 4,
-   "best_iter": 1,
+   "n_iterations": 5,
+   "best_iter": 5,
    "best_headroom": 0.0,
-   "best_ssim": 0.805282473564148,
-   "best_score": 0.805282473564148,
-   "started": "2026-06-20T04:06:25Z",
+   "best_ssim": 0.8088628649711609,
+   "best_score": 0.8088628649711609,
+   "started": "2026-06-20T07:42:05Z",
    "status": "excluded",
    "params_M": 0.012165,
    "excluded_reason": "discard",
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T04:06:25Z",
+   "ts": "2026-06-20T07:42:05Z",
    "curve": [
     [
      1,
@@ -630,9 +630,13 @@
     [
      4,
      null
+    ],
+    [
+     5,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0005/comparison.png",
    "test_image": null
   },
   {
