@@ -64,6 +64,16 @@ CONFIG = {
     "recon_dcstep_n_cg":   5,        # CG inner iterations per DC-step
     "recon_dcstep_warmup": 5,        # skip the first N reverse steps (too noisy for projection)
     "recon_dcstep_relax":  0.5,      # 0=no relax, 1=full hard projection
+    # ---- DC-step SOLVER select (audit fix, 2026-06-20) ---------------------
+    # "legacy" = the ORIGINAL (buggy) path: dc_step_cg() is mislabeled
+    #            steepest-descent, and the re-injection forms x0 from a STALE
+    #            eps then re-noises with a FRESH randn. DEFAULT — preserved
+    #            byte-for-byte for reproducibility of all existing cfgs.
+    # "cg"     = the CORRECTED path ported from solver_fast_recon.py: a genuine
+    #            Fletcher-Reeves CG solve on the normal equations AᵀA x = Aᵀy,
+    #            plus a DETERMINISTIC re-embed that reuses the CURRENT step's
+    #            eps_pred (no stale eps, no fresh randn).
+    "recon_dc_solver":     "legacy",
 }
 
 
@@ -100,10 +110,46 @@ def dc_step_cg(x0_mu, sino, proj, n_cg, relax):
     return relax * x + (1.0 - relax) * x0_mu
 
 
+def cg_data_consistency(x0_img, sino, proj, n_cg, relax):
+    """CORRECTED DC solver (audit fix, ported verbatim in spirit from
+    ``solver_fast_recon.cg_data_consistency``). REAL conjugate-gradient solve
+    of ``min_x ||A x - y||^2`` warm-started at ``x0_img`` (image domain, μ
+    units). ``relax`` blends the CG solution with the warm start: 1 = full
+    project, 0 = no change.
+
+    Normal-equation CG on ``A^T A x = A^T y`` (A^T = back_project). Maintains a
+    residual ``r`` (in image domain = A^T(y - A x)), a conjugate direction
+    ``p``, and the Fletcher-Reeves ``beta`` — this is genuine CG, NOT the
+    steepest-descent that ``dc_step_cg`` (the legacy path) mislabels as CG.
+    Runs under no_grad (a hard projection, not part of the DPS graph).
+    """
+    with torch.no_grad():
+        x = x0_img.clone()
+        # r0 = A^T (y - A x)
+        r = proj.back_project(sino - proj.forward_project(x))
+        p = r.clone()
+        rs_old = (r * r).sum(dim=(1, 2, 3), keepdim=True)
+        for _ in range(n_cg):
+            Ap = proj.forward_project(p)                 # A p           (B,1,A,D)
+            AtAp = proj.back_project(Ap)                 # A^T A p       (B,1,H,W)
+            denom = (p * AtAp).sum(dim=(1, 2, 3), keepdim=True).clamp(min=1e-12)
+            alpha = rs_old / denom
+            x = x + alpha * p
+            r = r - alpha * AtAp
+            rs_new = (r * r).sum(dim=(1, 2, 3), keepdim=True)
+            # Stop early on numerically-converged residual to avoid NaNs.
+            if float(rs_new.sqrt().max()) < 1e-12:
+                break
+            beta = rs_new / rs_old.clamp(min=1e-12)
+            p = r + beta * p
+            rs_old = rs_new
+        return relax * x + (1.0 - relax) * x0_img
+
+
 def sample_guided(model, sched, proj, sino, fbp_init, *, mode, n_steps,
                   eta, init_kind, out_scale, device, eta_clamp,
                   dcstep_every=0, dcstep_n_cg=5, dcstep_warmup=5,
-                  dcstep_relax=0.5):
+                  dcstep_relax=0.5, dc_solver="legacy"):
     T = sched.T
     times = torch.linspace(T, 1, n_steps + 1).long().tolist()
     fbp_norm = (fbp_init / out_scale).clamp(0.0, 1.0)
@@ -159,19 +205,37 @@ def sample_guided(model, sched, proj, sino, fbp_init, *, mode, n_steps,
                     and k >= dcstep_warmup
                     and (k - dcstep_warmup) % dcstep_every == 0
                     and t_next > 0):
-                # Move to t_next noise level: form x̂₀ from current x
                 ab_next = sched.alpha_bar[t_next]
-                # Convert current x → predicted clean image in mu units
-                # (use the just-computed eps as the noise estimate)
-                x0_est = x0_from_eps(x, eps.detach(), ab_next).clamp(0.0, 1.0) * out_scale
-                # Hard project via CG against the sinogram
-                x0_proj = dc_step_cg(x0_est, sino, proj,
-                                      n_cg=dcstep_n_cg, relax=dcstep_relax)
-                # Re-noise back to the t_next level so the DDIM trajectory
-                # can resume.
-                x0_proj_norm = (x0_proj / out_scale).clamp(0.0, 1.0)
-                noise = torch.randn_like(x0_proj_norm)
-                x = ab_next.sqrt() * x0_proj_norm + (1 - ab_next).sqrt() * noise
+                if dc_solver == "cg":
+                    # ----- CORRECTED DC-step (audit fix) ----------------------
+                    # Form x0 from the CURRENT step's eps (x0_hat, computed at
+                    # t_now above) — NOT a stale eps re-evaluated at the wrong
+                    # alpha_bar. Project it onto the data manifold with a REAL
+                    # CG solve, then re-embed at t_next DETERMINISTICALLY by
+                    # reusing the SAME noise direction implied by the current
+                    # eps (eps-prediction => the noise at level t IS eps_pred).
+                    # No stale eps, NO fresh randn.
+                    x0_cur_mu = x0_hat.detach().clamp(0.0, 1.0) * out_scale
+                    x0_proj = cg_data_consistency(x0_cur_mu, sino, proj,
+                                                  n_cg=dcstep_n_cg,
+                                                  relax=dcstep_relax)
+                    x0_proj_norm = (x0_proj / out_scale).clamp(0.0, 1.0)
+                    x = (ab_next.sqrt() * x0_proj_norm
+                         + (1 - ab_next).sqrt() * eps.detach())
+                else:
+                    # ----- LEGACY DC-step (preserved byte-for-byte) -----------
+                    # Move to t_next noise level: form x̂₀ from current x
+                    # Convert current x → predicted clean image in mu units
+                    # (use the just-computed eps as the noise estimate)
+                    x0_est = x0_from_eps(x, eps.detach(), ab_next).clamp(0.0, 1.0) * out_scale
+                    # Hard project via CG against the sinogram
+                    x0_proj = dc_step_cg(x0_est, sino, proj,
+                                          n_cg=dcstep_n_cg, relax=dcstep_relax)
+                    # Re-noise back to the t_next level so the DDIM trajectory
+                    # can resume.
+                    x0_proj_norm = (x0_proj / out_scale).clamp(0.0, 1.0)
+                    noise = torch.randn_like(x0_proj_norm)
+                    x = ab_next.sqrt() * x0_proj_norm + (1 - ab_next).sqrt() * noise
     # Final denorm + clamp; only here do we crop to display range.
     return (x.detach() * out_scale).clamp(0.0, out_scale)
 
@@ -300,7 +364,8 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                                 dcstep_every=cfg.get("recon_dcstep_every", 0),
                                 dcstep_n_cg=cfg.get("recon_dcstep_n_cg", 5),
                                 dcstep_warmup=cfg.get("recon_dcstep_warmup", 5),
-                                dcstep_relax=cfg.get("recon_dcstep_relax", 0.5))
+                                dcstep_relax=cfg.get("recon_dcstep_relax", 0.5),
+                                dc_solver=cfg.get("recon_dc_solver", "legacy"))
         preds.append(pred_i)
         if (i + 1) % 5 == 0:
             print(f"[sample] {i+1}/{cfg['val_n']}  elapsed={time.time()-t0:.1f}s",

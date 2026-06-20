@@ -46,6 +46,20 @@ CONFIG = {
     # Outer wall (s) for the whole val_n loop; per_scene = outer / val_n.
     "naf_outer_wall_s": 2400,  # 40 min (was 600 s)
     "naf_per_scene_s": None,   # optional override
+    # --- Coordinate encoder selector (audit fix A, 2026-06-20) -----------
+    # "fourier" (DEFAULT) = the original Fourier PosEnc -> vanilla MLP path.
+    #   Reproduces the OLD behavior bit-for-bit so concurrent jobs / old cfgs
+    #   are unaffected.
+    # "hash"    = the paper's Instant-NGP multi-resolution HASH grid encoder
+    #   feeding a SMALL MLP, per the NAF reference chest_50.yaml. The hash
+    #   levels are config-gated by the naf_hash_* keys below.
+    "naf_encoding": "fourier",
+    # Instant-NGP hash-grid hyper-params (only used when naf_encoding="hash").
+    "naf_hash_levels": 16,        # n resolution levels
+    "naf_hash_feat_dim": 2,       # features per level (level_dim)
+    "naf_hash_log2_size": 19,     # log2 hashmap size per level
+    "naf_hash_base_res": 16,      # coarsest grid resolution
+    "naf_hash_max_res": 512,      # finest grid resolution (geometric growth)
 }
 
 
@@ -72,6 +86,78 @@ class PosEnc(nn.Module):
         return torch.cat([x, xs.sin().flatten(-2), xs.cos().flatten(-2)], dim=-1)
 
 
+class HashEncoding(nn.Module):
+    """Pure-torch 2-D multi-resolution hash encoding (Instant-NGP / NAF).
+
+    The headline NAF contribution: instead of a Fourier feature map into a big
+    MLP, hash a coordinate into ``n_levels`` learnable feature tables at
+    geometrically-growing grid resolutions, bilinearly interpolate the per-level
+    features, and concat. A SMALL MLP then maps the (n_levels * feat_dim)-vector
+    to attenuation. Reference: Müller et al. 2022 (Instant-NGP); NAF
+    chest_50.yaml uses n_levels=16, level_dim=2, log2_hashmap_size=19,
+    base_resolution=16. No tiny-cuda-nn dependency — all torch.
+
+    Trainable params: n_levels tables, each (2**log2_size, feat_dim). Hashing is
+    the standard spatial hash  h = (x*pi_1) XOR (y*pi_2)  mod hashmap_size, with
+    primes (1, 2654435761). Input coords are 2-D in [0, 1]^2.
+    """
+
+    PRIMES = (1, 2654435761)
+
+    def __init__(self, n_levels=16, feat_dim=2, log2_hashmap_size=19,
+                 base_res=16, max_res=512):
+        super().__init__()
+        self.n_levels = int(n_levels)
+        self.feat_dim = int(feat_dim)
+        self.hashmap_size = 1 << int(log2_hashmap_size)
+        # Per-level resolution: geometric growth base_res -> max_res.
+        if self.n_levels > 1:
+            b = math.exp((math.log(max_res) - math.log(base_res)) /
+                         (self.n_levels - 1))
+        else:
+            b = 1.0
+        res = [int(round(base_res * (b ** L))) for L in range(self.n_levels)]
+        self.register_buffer("resolutions",
+                             torch.tensor(res, dtype=torch.long), persistent=False)
+        # One learnable feature table per level. Standard Instant-NGP init:
+        # small uniform so the encoded field starts ~flat.
+        self.tables = nn.ParameterList([
+            nn.Parameter(torch.empty(self.hashmap_size, self.feat_dim)
+                         .uniform_(-1e-4, 1e-4))
+            for _ in range(self.n_levels)
+        ])
+        self.out_dim = self.n_levels * self.feat_dim
+
+    def _hash(self, ix, iy):
+        # ix, iy: integer grid coords (long). Standard spatial hash.
+        h = (ix * self.PRIMES[0]) ^ (iy * self.PRIMES[1])
+        return (h % self.hashmap_size).long()
+
+    def forward(self, x):                       # x: (N, 2) in [0, 1]
+        # Bilinear-interpolate hashed features at each resolution level.
+        feats = []
+        for L in range(self.n_levels):
+            res = int(self.resolutions[L].item())
+            # Scale to [0, res-1]; corner indices + interpolation weights.
+            xs = x.clamp(0.0, 1.0) * (res - 1)
+            x0 = torch.floor(xs).long()
+            x1 = x0 + 1
+            w = xs - x0.float()                 # (N, 2) in [0,1]
+            x0 = x0.clamp(0, res - 1); x1 = x1.clamp(0, res - 1)
+            ix0, iy0 = x0[:, 0], x0[:, 1]
+            ix1, iy1 = x1[:, 0], x1[:, 1]
+            wx, wy = w[:, 0:1], w[:, 1:2]
+            t = self.tables[L]
+            c00 = t[self._hash(ix0, iy0)]
+            c10 = t[self._hash(ix1, iy0)]
+            c01 = t[self._hash(ix0, iy1)]
+            c11 = t[self._hash(ix1, iy1)]
+            c0 = c00 * (1 - wx) + c10 * wx
+            c1 = c01 * (1 - wx) + c11 * wx
+            feats.append(c0 * (1 - wy) + c1 * wy)
+        return torch.cat(feats, dim=-1)         # (N, n_levels*feat_dim)
+
+
 class NAF(nn.Module):
     """Coordinate MLP → linear attenuation. Two debug fixes vs v1:
 
@@ -86,11 +172,24 @@ class NAF(nn.Module):
     """
 
     def __init__(self, n_freqs=10, hidden=128, layers=4, out_scale=0.05,
-                 init_mu=0.005):
+                 init_mu=0.005, encoding="fourier", hash_cfg=None):
         super().__init__()
-        self.pe = PosEnc(n_freqs)
         self.out_scale = out_scale
-        in_dim = 2 + 2 * 2 * n_freqs
+        self.encoding = encoding
+        if encoding == "hash":
+            # Instant-NGP multi-res hash grid -> SMALL MLP (paper's headline
+            # encoder). Coords arrive in [-1,1]; HashEncoding maps to [0,1].
+            hc = hash_cfg or {}
+            self.pe = HashEncoding(
+                n_levels=hc.get("n_levels", 16),
+                feat_dim=hc.get("feat_dim", 2),
+                log2_hashmap_size=hc.get("log2_hashmap_size", 19),
+                base_res=hc.get("base_res", 16),
+                max_res=hc.get("max_res", 512))
+            in_dim = self.pe.out_dim
+        else:
+            self.pe = PosEnc(n_freqs)
+            in_dim = 2 + 2 * 2 * n_freqs
         m = [nn.Linear(in_dim, hidden), nn.ReLU(inplace=True)]
         for _ in range(layers - 2):
             m += [nn.Linear(hidden, hidden), nn.ReLU(inplace=True)]
@@ -103,8 +202,11 @@ class NAF(nn.Module):
             m[-1].bias.fill_(b0)
         self.mlp = nn.Sequential(*m)
 
-    def forward(self, coords):                  # coords: (N, 2)
-        h = self.mlp(self.pe(coords)).squeeze(-1)
+    def forward(self, coords):                  # coords: (N, 2) in [-1, 1]
+        # Hash encoder expects coords in [0,1]; Fourier expects [-1,1].
+        enc = self.pe((coords + 1.0) * 0.5 if self.encoding == "hash"
+                      else coords)
+        h = self.mlp(enc).squeeze(-1)
         return torch.sigmoid(h) * self.out_scale
 
 
@@ -123,6 +225,25 @@ def _tv(img):
     return dx + dy
 
 
+def _build_naf(cfg):
+    """Construct a NAF model honoring the cfg encoder selector.
+
+    DEFAULT (naf_encoding absent / "fourier") reproduces the OLD model exactly.
+    When "hash", swap in the Instant-NGP hash-grid encoder + small MLP.
+    """
+    encoding = cfg.get("naf_encoding", "fourier")
+    hash_cfg = {
+        "n_levels": cfg.get("naf_hash_levels", 16),
+        "feat_dim": cfg.get("naf_hash_feat_dim", 2),
+        "log2_hashmap_size": cfg.get("naf_hash_log2_size", 19),
+        "base_res": cfg.get("naf_hash_base_res", 16),
+        "max_res": cfg.get("naf_hash_max_res", 512),
+    }
+    return NAF(cfg["naf_n_freqs"], cfg["naf_hidden"], cfg["naf_layers"],
+               out_scale=cfg["naf_n_clip"], init_mu=0.005,
+               encoding=encoding, hash_cfg=hash_cfg)
+
+
 def fit_one_scene(noisy_sino, geom, cfg, device, t_limit=None):
     """One NAF optimisation against one sinogram. Returns (H, W) μ image.
 
@@ -131,8 +252,7 @@ def fit_one_scene(noisy_sino, geom, cfg, device, t_limit=None):
     """
     H = W = cfg["image_size"]
     proj = PyronnFanBeamProjector(geom).to(device)
-    model = NAF(cfg["naf_n_freqs"], cfg["naf_hidden"], cfg["naf_layers"],
-                out_scale=cfg["naf_n_clip"], init_mu=0.005).to(device)
+    model = _build_naf(cfg).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=cfg["naf_lr"])
     coords = _coord_grid(H, W, device)
     t0 = time.time()
@@ -233,10 +353,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     val_psnr, val_ssim, val_rmse = metrics["val_psnr"], metrics["val_ssim"], metrics["val_rmse"]
     baseline_psnr, baseline_rmse = metrics["baseline_psnr"], metrics["baseline_rmse"]
     headroom = metrics["headroom"]
-    params_M = sum(p.numel() for p in NAF(cfg["naf_n_freqs"],
-                                            cfg["naf_hidden"],
-                                            cfg["naf_layers"])
-                    .parameters()) / 1e6
+    params_M = sum(p.numel() for p in _build_naf(cfg).parameters()) / 1e6
 
     result = {
         "val_score": val_ssim, "val_psnr": val_psnr, "val_ssim": val_ssim,
