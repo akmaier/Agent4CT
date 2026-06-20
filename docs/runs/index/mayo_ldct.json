@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-19T23:41:38Z",
+ "updated": "2026-06-20T00:01:29Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -515,18 +515,18 @@
    "name": "Hammernik VN (2017)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
+   "n_iterations": 3,
    "best_iter": 2,
    "best_headroom": 0.0,
    "best_ssim": 0.8012295961380005,
    "best_score": 0.8012295961380005,
-   "started": "2026-06-19T16:58:11Z",
+   "started": "2026-06-19T23:52:02Z",
    "status": "excluded",
    "params_M": 0.012165,
    "excluded_reason": "discard",
-   "agent": "hammernik_2017-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T16:58:11Z",
+   "agent": "hammernik_2017-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-19T23:52:02Z",
    "curve": [
     [
      1,
@@ -534,6 +534,10 @@
     ],
     [
      2,
+     null
+    ],
+    [
+     3,
      null
     ]
    ],
