@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T03:21:15Z",
+ "updated": "2026-06-20T03:41:33Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -137,6 +137,22 @@
     "rank": null
    },
    {
+    "solver_key": "learned-primal-dual",
+    "solver_name": "Learned Primal-Dual",
+    "run_id": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
+    "best_iter": 4,
+    "params_M": 0.155406,
+    "params_source": "observation",
+    "val_ssim": 0.8980332016944885,
+    "headroom": 0.0,
+    "val_psnr": 30.960514068603516,
+    "val_rmse": 0.0014156122924759984,
+    "elapsed_s": 1100.7295565605164,
+    "image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0004/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
     "solver_key": "ram",
     "solver_name": "RAM (zero-shot)",
     "run_id": "mayo-ldct-claude-agentic-ram-search-20260619-01",
@@ -149,22 +165,6 @@
     "val_rmse": 0.0013180517125874758,
     "elapsed_s": 934.6010890007019,
     "image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0003/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "learned-primal-dual",
-    "solver_name": "Learned Primal-Dual",
-    "run_id": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
-    "best_iter": 3,
-    "params_M": 0.155406,
-    "params_source": "observation",
-    "val_ssim": 0.885114848613739,
-    "headroom": 0.0,
-    "val_psnr": 30.760507583618164,
-    "val_rmse": 0.0014485870487987995,
-    "elapsed_s": 1213.616070985794,
-    "image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0003/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -391,18 +391,18 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 3,
+   "n_iterations": 4,
    "best_iter": 1,
    "best_headroom": 0.0,
    "best_ssim": 0.9247666001319885,
    "best_score": 0.9247666001319885,
-   "started": "2026-06-20T01:21:30Z",
+   "started": "2026-06-20T03:28:17Z",
    "status": "excluded",
    "params_M": 6e-06,
    "excluded_reason": "discard",
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T01:21:30Z",
+   "ts": "2026-06-20T03:28:17Z",
    "curve": [
     [
      1,
@@ -414,6 +414,10 @@
     ],
     [
      3,
+     null
+    ],
+    [
+     4,
      null
     ]
    ],
@@ -461,18 +465,18 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 4,
+   "n_iterations": 5,
    "best_iter": 4,
    "best_headroom": 0.19761010181430883,
    "best_ssim": 0.9277111291885376,
    "best_score": 0.9277111291885376,
-   "started": "2026-06-20T02:54:50Z",
+   "started": "2026-06-20T03:28:15Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T02:54:50Z",
+   "ts": "2026-06-20T03:28:15Z",
    "curve": [
     [
      1,
@@ -488,6 +492,10 @@
     ],
     [
      4,
+     0.1976
+    ],
+    [
+     5,
      0.1976
     ]
    ],
@@ -718,18 +726,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 3,
-   "best_iter": 3,
+   "n_iterations": 4,
+   "best_iter": 4,
    "best_headroom": 0.0,
-   "best_ssim": 0.885114848613739,
-   "best_score": 0.885114848613739,
-   "started": "2026-06-19T22:12:44Z",
+   "best_ssim": 0.8980332016944885,
+   "best_score": 0.8980332016944885,
+   "started": "2026-06-20T03:25:31Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-19T22:12:44Z",
+   "ts": "2026-06-20T03:25:31Z",
    "curve": [
     [
      1,
@@ -742,9 +750,13 @@
     [
      3,
      null
+    ],
+    [
+     4,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0003/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0004/comparison.png",
    "test_image": null
   },
   {
