@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T08:41:31Z",
+ "updated": "2026-06-20T09:01:16Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -399,18 +399,18 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 4,
+   "n_iterations": 5,
    "best_iter": 1,
    "best_headroom": 0.0,
    "best_ssim": 0.9247666001319885,
    "best_score": 0.9247666001319885,
-   "started": "2026-06-20T03:28:17Z",
+   "started": "2026-06-20T08:59:25Z",
    "status": "excluded",
    "params_M": 6e-06,
    "excluded_reason": "discard",
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T03:28:17Z",
+   "ts": "2026-06-20T08:59:25Z",
    "curve": [
     [
      1,
@@ -426,6 +426,10 @@
     ],
     [
      4,
+     null
+    ],
+    [
+     5,
      null
     ]
    ],
