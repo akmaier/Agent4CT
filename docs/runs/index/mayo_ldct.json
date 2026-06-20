@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T20:01:40Z",
+ "updated": "2026-06-20T20:22:38Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -1308,18 +1308,18 @@
    "name": "Wu 2015 trainable",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 6,
+   "n_iterations": 7,
    "best_iter": 6,
    "best_headroom": 0.09657953703471489,
    "best_ssim": 0.8232346177101135,
    "best_score": 0.8232346177101135,
-   "started": "2026-06-20T19:50:16Z",
+   "started": "2026-06-20T20:13:23Z",
    "status": "ranked",
    "params_M": 8e-06,
    "excluded_reason": null,
    "agent": "wu_2015_trainable-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T19:50:16Z",
+   "ts": "2026-06-20T20:13:23Z",
    "curve": [
     [
      1,
@@ -1343,6 +1343,10 @@
     ],
     [
      6,
+     0.0966
+    ],
+    [
+     7,
      0.0966
     ]
    ],
