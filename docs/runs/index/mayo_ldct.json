@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T03:01:28Z",
+ "updated": "2026-06-20T03:21:15Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -679,18 +679,18 @@
    "name": "ITNet v3",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 3,
+   "n_iterations": 4,
    "best_iter": 3,
    "best_headroom": 0.31228215678718296,
    "best_ssim": 0.9047728180885315,
    "best_score": 0.9047728180885315,
-   "started": "2026-06-19T21:33:28Z",
+   "started": "2026-06-20T03:07:09Z",
    "status": "ranked",
    "params_M": 3.698994,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-19T21:33:28Z",
+   "ts": "2026-06-20T03:07:09Z",
    "curve": [
     [
      1,
@@ -702,6 +702,10 @@
     ],
     [
      3,
+     0.3123
+    ],
+    [
+     4,
      0.3123
     ]
    ],
