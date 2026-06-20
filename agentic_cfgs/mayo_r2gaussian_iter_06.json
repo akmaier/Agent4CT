@@ -1,0 +1,19 @@
+{
+  "val_n": 214,
+  "gs_n_gaussians": 512,
+  "gs_n_iter": 150,
+  "gs_lr_pos": 5e-3,
+  "gs_lr_scale": 1e-2,
+  "gs_lr_amp": 1e-2,
+  "gs_lr_rot": 1e-2,
+  "gs_amp_init": 0.01,
+  "gs_scale_init": 0.04,
+  "gs_tv_weight": 1e-4,
+  "gs_n_clip": 0.05,
+  "gs_render": "raster",
+  "gs_init_from_fbp": true,
+  "gs_amp_init_max": 0.05,
+  "gs_ssim_weight": 0.1,
+  "gs_outer_wall_s": 1080,
+  "rationale": "iter-6 (search-20260619-01) PAPER-FIDELITY AUDIT FOLLOW-UP. The directive (a) was to implement the paper's radiative splat-to-detector renderer + Eq.7 rectification. FEASIBILITY VERDICT (in solver FAITHFUL_SPLAT_VERDICT): NOT a tractable net-positive iter here. (i) Rectification is a NO-OP for our forward model -- our solver rasterises the Gaussian mixture into a mu-image then applies PYRO-NN's EXACT discrete X-ray transform (unbiased line integral, no per-Gaussian normalization to omit); Zha's bias only arises in the splat-AND-SUM path, so raster-then-project ALREADY IS the unbiased operator the rectification recovers. (ii) A true 2D fan-beam splatter does NOT reuse PYRO-NN (which exposes only image<->sino on a fixed grid, no per-Gaussian detector-footprint primitive) and needs a custom differentiable EWA kernel -- hundreds of lines, far over the ~150-line one-iter bar. (iii) DECISIVE: the binding constraint is COMPUTE, not fidelity -- iters 1-5 (all hr=0, SSIM 0.68-0.74, all BELOW the 0.808 LD-FBP baseline) show the raster forward already costs ~0.282 s/Adam-step and only 10-64 of 214 slices complete in the 20-min wall; a per-Gaussian-per-view splatter is MORE expensive, so a faithful renderer would cover FEWER scenes and score WORSE. R2Gaussian is regime-bounded on dense 2304-view Mayo (hr~0 regardless); its real payoff is the 128-view SPARSE benchmarks. So I SCAFFOLDED gs_render=splat (config-gated, default raster, raises NotImplementedError) + wrote the verdict, and as the ACTUAL iter-6 take the directive's queued CHEAP in-budget lever (the iter+2 fix (b)): enable gs_init_from_fbp=True (was disabled) + add an SSIM loss term (gs_ssim_weight=0.1; benchmark is SSIM-scored). ONE COMPOUND LEVER from iter-1 BEST base (n_iter=150 / 512 Gaussians -- the config that produced the run-best SSIM 0.7383). FAILURE MODE iters 1-5: cold uniform-init Gaussians spend the scarce ~26 completed-scene budget refining a per-scene recon that lands BELOW its 0.808 FBP init, so the 214-average is dragged down by sub-FBP completed scenes. HYPOTHESIS (falsifiable in NUMBERS): FBP warm-start (positions sampled proportional to fbp^2, amp seeded from FBP intensity) + an SSIM pull toward the FBP structure makes the ~26 completed scenes land AT/ABOVE their FBP init instead of below it, so the 214-avg rises toward the 0.808 FBP baseline (from iter-1 0.7383). PREDICTION: SSIM in (0.74, 0.81), hr most likely still 0 (regime-bounded: even matching FBP yields hr=0, and beating dense-Mayo FBP per-scene in 150 Adam steps is implausible). FALSIFIER: if SSIM <= 0.7383 (no lift over iter-1 best), warm-start+SSIM does not rescue the per-scene quality and the dense-Mayo structural ceiling stands -- file the negative result. BUDGET: gs_init_from_fbp adds ~0 per-step cost (init only); the SSIM term adds one cheap conv-SSIM per step vs the dominating 2304-view projection, so per-step stays ~0.282 s and coverage ~26/214 (same as iter-1); gs_outer_wall_s=1080 self-truncates before the SLURM kill, figure excluded, --time=00:30:00 has headroom. val_n stays 214 per mandate; staged_canonical/v3/per-sample-ps(single-val-ps probe)/bg_target=truth/321px-FOV-default all hard-wired. TRAJECTORY: iter-1 0.7383 (cold, 26/214, BEST) -> iter-6 = warm FBP-init + SSIM at the SAME quality/coverage point, the fidelity-clean test of whether warm-start lifts the dense-Mayo ceiling."
+}

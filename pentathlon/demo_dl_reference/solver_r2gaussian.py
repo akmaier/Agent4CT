@@ -30,7 +30,7 @@ from ddssl_ldct.geometry import FanBeamGeometry
 from ddssl_ldct.pyronn_projector import PyronnFanBeamProjector
 from ddssl_ldct.phantoms import random_ellipses_phantom
 from ddssl_ldct.simulate import simulate_low_dose
-from ddssl_ldct.metrics import psnr, ssim, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
+from ddssl_ldct.metrics import psnr, ssim as ssim_metric, evaluate_calibrated, make_4panel_comparison, supervised_recon_loss, negativity_penalty
 from challenges.demo_dl.geometry import DEFAULTS as DEMO_DL_DEFAULTS
 
 
@@ -60,6 +60,25 @@ CONFIG = {
     # at each Gaussian's position (clamped to gs_amp_init_max), so the
     # warm start matches the truth scale on iter 0.
     "gs_amp_init_max": 0.05,
+    # ---- paper-fidelity audit follow-up (2026-06-20, config-gated) --------
+    # gs_render selects the forward model. DEFAULT "raster" reproduces the
+    # EXACT prior behavior (rasterise the Gaussian mixture into an (H,W) mu
+    # image, then forward-project through PYRO-NN's exact discrete X-ray
+    # transform). "splat" is a SCAFFOLD for the paper's titular radiative
+    # splat-to-detector renderer with rectification (Zha 2024, Eq.7); see the
+    # feasibility verdict in the FAITHFUL_SPLAT_VERDICT docstring below — it is
+    # NOT a tractable net-positive iter in this repo (compute-bound, and the
+    # rectification is a no-op for our unbiased raster-then-project operator).
+    # The scaffold raises NotImplementedError so no job can silently run a
+    # broken renderer; the gate exists so a faithful kernel can be dropped in
+    # later without touching the call sites.
+    "gs_render": "raster",
+    # SSIM term in the per-scene loss (the benchmark is SSIM-scored). 0.0
+    # DEFAULT reproduces the OLD MSE+TV+neg loss exactly. When >0 and an FBP
+    # warm-start target is available, adds gs_ssim_weight*(1-SSIM(mu, fbp))
+    # so the per-scene fit is nudged toward the structural prior the metric
+    # rewards. Cheap, in-budget, no renderer change.
+    "gs_ssim_weight": 0.0,
 }
 
 
@@ -171,6 +190,73 @@ def _tv(img):
            (img[..., :, 1:] - img[..., :, :-1]).abs().mean()
 
 
+# ---------------------------------------------------------------------------
+# FAITHFUL SPLAT-TO-DETECTOR RENDERING — feasibility verdict (2026-06-20)
+# ---------------------------------------------------------------------------
+FAITHFUL_SPLAT_VERDICT = """
+Paper-fidelity audit follow-up: should this solver implement Zha 2024's
+radiative splat-to-detector renderer + rectification (mu_i = sqrt(2*pi*
+|Sigma_tilde_i| / |Sigma_hat_i|), Eq.7) in place of the current raster-then-
+PYRO-NN-project forward (GS2D.forward)?
+
+VERDICT: NO — not a tractable net-positive iter in this repo. Three reasons:
+
+(1) The rectification is a NO-OP for our forward model. Zha's bias arises only
+    in the splat-AND-SUM path: when you project each Gaussian's 2D footprint to
+    the detector and sum them, the standard 3DGS projection learns "integrated
+    density in the image plane" rather than the true 3D density, so each
+    primitive needs the determinant-ratio rectification factor to make
+    forward-projection equal the line integral. Our solver does NOT splat: it
+    rasterises the full Gaussian mixture into an (H,W) mu-image and applies
+    PYRO-NN's exact discrete X-ray transform (an unbiased line integral with no
+    per-Gaussian normalization to omit). So "raster-then-project" already IS the
+    unbiased operator the rectification is designed to recover; adding the term
+    changes nothing on our path.
+
+(2) A true 2D fan-beam splatter would NOT reuse PYRO-NN and is large. PYRO-NN
+    exposes only image->sinogram (forward_project) and sinogram->image
+    (back_project) on a fixed grid; there is no per-Gaussian detector-footprint
+    primitive. A faithful renderer needs, per Gaussian per view: project the
+    center through the fan geometry to the detector, propagate the 2x2 covariance
+    through the projection Jacobian (the EWA step), evaluate the analytic 1D
+    footprint over the affected detector channels, accumulate, all
+    differentiably. That is a custom CUDA/autograd kernel (hundreds of lines +
+    gradient-correctness validation), far beyond a ~150-line one-iter bar.
+
+(3) DECISIVE: the binding constraint here is COMPUTE, not fidelity. The
+    search-20260619-01 results.tsv (iters 1-5, ALL hr=0, SSIM 0.68-0.74, all
+    BELOW the 0.808 LD-FBP baseline) shows the raster-then-project forward
+    already costs ~0.282 s/Adam-step and only 10-64 of the 214 L277 slices ever
+    complete in the hard 20-min wall. A per-Gaussian-per-view splatter is MORE
+    expensive than the single fused PYRO-NN call, so a "faithful" renderer would
+    cover EVEN FEWER scenes and score WORSE. It cannot improve hr on dense
+    2304-view Mayo (regime-bounded: LD-FBP is near-complete at 2304 views).
+
+Faithful splatting's real payoff is the 128-view SPARSE benchmarks (breast_ct /
+demo_dl), where the X-ray transform is under-determined and a primitive-based
+prior helps — and where a per-scene fit has compute budget per scene. It is NOT
+the right lever for the 214-slice dense-Mayo protocol. The gs_render="splat"
+gate below is left as a scaffold so a future faithful kernel can drop in without
+touching call sites; it raises NotImplementedError today.
+"""
+
+
+def _splat_to_detector(model: "GS2D", geom, cfg, device):
+    """SCAFFOLD for the paper's radiative splat-to-detector renderer + Eq.7
+    rectification. NOT implemented — see FAITHFUL_SPLAT_VERDICT above for why a
+    faithful 2D fan-beam splatter is (a) a no-op rectification on our unbiased
+    raster-then-project operator, (b) a large custom differentiable kernel
+    outside PYRO-NN, and (c) more expensive than the already compute-bound
+    raster path, so net-negative on dense-Mayo. Left config-gated so a future
+    faithful kernel can replace this body without touching the call sites.
+    """
+    raise NotImplementedError(
+        "gs_render='splat' (radiative splat-to-detector + Eq.7 rectification) "
+        "is a scaffold only; see FAITHFUL_SPLAT_VERDICT in solver_r2gaussian.py. "
+        "Use gs_render='raster' (default) — the unbiased PYRO-NN X-ray transform."
+    )
+
+
 def fit_one_scene(noisy_sino, geom, cfg, device, fbp_init: torch.Tensor | None = None):
     proj = PyronnFanBeamProjector(geom).to(device)
     init_fbp = fbp_init if cfg.get("gs_init_from_fbp", False) else None
@@ -178,6 +264,20 @@ def fit_one_scene(noisy_sino, geom, cfg, device, fbp_init: torch.Tensor | None =
                  cfg["gs_amp_init"], cfg["gs_scale_init"],
                  init_fbp=init_fbp,
                  amp_init_max=cfg.get("gs_amp_init_max", 0.05)).to(device)
+    render = cfg.get("gs_render", "raster")
+    if render not in ("raster", "splat"):
+        raise ValueError(f"unknown gs_render {render!r}; expected 'raster' or 'splat'")
+    if render == "splat":
+        # Config-gated faithful splat-to-detector path (scaffold; raises).
+        _splat_to_detector(model, geom, cfg, device)
+    # SSIM term: structural prior toward the FBP warm-start (the benchmark is
+    # SSIM-scored). Only active when gs_ssim_weight>0 AND an FBP target exists;
+    # default weight 0.0 reproduces the old MSE+TV+neg loss exactly.
+    ssim_w = float(cfg.get("gs_ssim_weight", 0.0))
+    ssim_target = None
+    if ssim_w > 0.0 and fbp_init is not None:
+        ssim_target = fbp_init.detach().clamp(0.0, cfg["gs_n_clip"]).view(1, 1, *fbp_init.shape)
+        ssim_dr = float(ssim_target.amax() - ssim_target.amin())
     opt = torch.optim.Adam([
         {"params": [model.pos],       "lr": cfg["gs_lr_pos"]},
         {"params": [model.log_scale], "lr": cfg["gs_lr_scale"]},
@@ -188,6 +288,8 @@ def fit_one_scene(noisy_sino, geom, cfg, device, fbp_init: torch.Tensor | None =
         mu = model().clamp(0.0, cfg["gs_n_clip"]).unsqueeze(0).unsqueeze(0)
         sino_pred = proj.forward_project(mu)
         loss = F.mse_loss(sino_pred, noisy_sino) + cfg["gs_tv_weight"] * _tv(mu) + 1.0 * negativity_penalty(mu)
+        if ssim_target is not None and ssim_dr > 0:
+            loss = loss + ssim_w * (1.0 - ssim_metric(mu, ssim_target, data_range=ssim_dr))
         opt.zero_grad(); loss.backward(); opt.step()
     with torch.no_grad():
         mu = model().clamp(0.0, cfg["gs_n_clip"]).unsqueeze(0).unsqueeze(0)
