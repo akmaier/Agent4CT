@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T08:01:57Z",
+ "updated": "2026-06-20T08:21:34Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -105,6 +105,22 @@
      "rank": 6
     },
     {
+     "solver_key": "hammernik-2017",
+     "solver_name": "Hammernik VN (2017)",
+     "run_id": "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01",
+     "best_iter": 5,
+     "params_M": 0.012165,
+     "params_source": "observation",
+     "val_ssim": 0.8114137649536133,
+     "headroom": 0.03185840166146903,
+     "val_psnr": 34.358985900878906,
+     "val_rmse": 0.0009572397684678435,
+     "elapsed_s": 1166.49223279953,
+     "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0005/comparison.png",
+     "excluded_reason": null,
+     "rank": 7
+    },
+    {
      "solver_key": "dual-domain-bilateral-supervised",
      "solver_name": "DD-BF supervised L2",
      "run_id": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
@@ -118,7 +134,7 @@
      "elapsed_s": 449.6247591972351,
      "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
      "excluded_reason": null,
-     "rank": 7
+     "rank": 8
     },
     {
      "solver_key": "dual-domain-bilateral-n2i",
@@ -201,22 +217,6 @@
      "rank": null
     },
     {
-     "solver_key": "hammernik-2017",
-     "solver_name": "Hammernik VN (2017)",
-     "run_id": "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01",
-     "best_iter": 2,
-     "params_M": 0.012165,
-     "params_source": "observation",
-     "val_ssim": 0.8012295961380005,
-     "headroom": 0.0,
-     "val_psnr": 33.91232681274414,
-     "val_rmse": 0.0010077519109472632,
-     "elapsed_s": 887.0713901519775,
-     "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0002/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
      "solver_key": "r2gaussian",
      "solver_name": "R2-Gaussian",
      "run_id": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01",
@@ -236,15 +236,15 @@
      "solver_key": "itnet-v2",
      "solver_name": "ITNet v2",
      "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
-     "best_iter": 4,
+     "best_iter": 5,
      "params_M": 0.232882,
      "params_source": "observation",
-     "val_ssim": 0.7039393782615662,
+     "val_ssim": 0.7294201254844666,
      "headroom": 0.0,
-     "val_psnr": 25.441226959228516,
-     "val_rmse": 0.002672444563359022,
-     "elapsed_s": 1236.9064383506775,
-     "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0004/comparison.png",
+     "val_psnr": 26.870935440063477,
+     "val_rmse": 0.0022668528836220503,
+     "elapsed_s": 1410.641746520996,
+     "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0005/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
