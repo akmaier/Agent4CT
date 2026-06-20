@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T10:41:09Z",
+ "updated": "2026-06-20T11:01:46Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -265,6 +265,22 @@
     "rank": null
    },
    {
+    "solver_key": "diff-recon-dcstep-constrained",
+    "solver_name": "Diffusion (constrained DPS+DC)",
+    "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
+    "best_iter": 5,
+    "params_M": 8.594211,
+    "params_source": "observation",
+    "val_ssim": 0.6647486686706543,
+    "headroom": 0.0,
+    "val_psnr": 22.687419891357422,
+    "val_rmse": 0.0036694337613880634,
+    "elapsed_s": 987.9529273509979,
+    "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0005/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
     "solver_key": "naf",
     "solver_name": "NAF",
     "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
@@ -277,22 +293,6 @@
     "val_rmse": 0.0048434133641421795,
     "elapsed_s": 1095.5368268489838,
     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0004/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "diff-recon-dcstep-constrained",
-    "solver_name": "Diffusion (constrained DPS+DC)",
-    "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
-    "best_iter": 4,
-    "params_M": 8.594211,
-    "params_source": "observation",
-    "val_ssim": 0.4784381091594696,
-    "headroom": 0.0,
-    "val_psnr": 16.89340591430664,
-    "val_rmse": 0.007149895653128624,
-    "elapsed_s": 1162.5183386802673,
-    "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0004/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -321,18 +321,18 @@
    "name": "Diffusion (constrained DPS+DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 4,
-   "best_iter": 4,
+   "n_iterations": 5,
+   "best_iter": 5,
    "best_headroom": 0.0,
-   "best_ssim": 0.4784381091594696,
-   "best_score": 0.4784381091594696,
-   "started": "2026-06-20T06:00:16Z",
+   "best_ssim": 0.6647486686706543,
+   "best_score": 0.6647486686706543,
+   "started": "2026-06-20T10:50:42Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T06:00:16Z",
+   "ts": "2026-06-20T10:50:42Z",
    "curve": [
     [
      1,
@@ -349,9 +349,13 @@
     [
      4,
      null
+    ],
+    [
+     5,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0004/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0005/comparison.png",
    "test_image": null
   },
   {
@@ -880,18 +884,18 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 4,
+   "n_iterations": 5,
    "best_iter": 1,
    "best_headroom": 0.0,
    "best_ssim": 0.738335132598877,
    "best_score": 0.738335132598877,
-   "started": "2026-06-20T05:32:38Z",
+   "started": "2026-06-20T10:59:52Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T05:32:38Z",
+   "ts": "2026-06-20T10:59:52Z",
    "curve": [
     [
      1,
@@ -907,6 +911,10 @@
     ],
     [
      4,
+     null
+    ],
+    [
+     5,
      null
     ]
    ],

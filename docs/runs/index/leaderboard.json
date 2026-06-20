@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T10:41:09Z",
+ "updated": "2026-06-20T11:01:46Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -265,6 +265,22 @@
      "rank": null
     },
     {
+     "solver_key": "diff-recon-dcstep-constrained",
+     "solver_name": "Diffusion (constrained DPS+DC)",
+     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
+     "best_iter": 5,
+     "params_M": 8.594211,
+     "params_source": "observation",
+     "val_ssim": 0.6647486686706543,
+     "headroom": 0.0,
+     "val_psnr": 22.687419891357422,
+     "val_rmse": 0.0036694337613880634,
+     "elapsed_s": 987.9529273509979,
+     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0005/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
      "solver_key": "naf",
      "solver_name": "NAF",
      "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
@@ -277,22 +293,6 @@
      "val_rmse": 0.0048434133641421795,
      "elapsed_s": 1095.5368268489838,
      "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0004/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
-     "solver_key": "diff-recon-dcstep-constrained",
-     "solver_name": "Diffusion (constrained DPS+DC)",
-     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
-     "best_iter": 4,
-     "params_M": 8.594211,
-     "params_source": "observation",
-     "val_ssim": 0.4784381091594696,
-     "headroom": 0.0,
-     "val_psnr": 16.89340591430664,
-     "val_rmse": 0.007149895653128624,
-     "elapsed_s": 1162.5183386802673,
-     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0004/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
