@@ -116,6 +116,55 @@ capacity-trade). Apply this lever to the OTHER trainers (`hammernik_vn`,
 untried axis for the trained leaders. (Does NOT apply to the per-image / inference
 solvers: ram/tv/naf/r2g/N2I/diffusion have no amortized train set.)
 
+### AUTHORIZED CODE FIXES — paper-fidelity audit follow-up (user-directed 2026-06-20)
+The NAF / R2Gaussian / diffusion-recon audit (workflow `wf_8cdb355c`, verified
+against code + papers) found concrete implementation gaps. **The user has
+AUTHORIZED editing these specific solver files** — a deliberate, scoped exception
+to the "never edit solver files" rule — for their NEXT iteration(s).
+**Safety contract for the subagent doing the edit:** (1) CONFIG-GATE every new code
+path behind a new cfg flag whose DEFAULT reproduces the OLD behavior, so concurrent
+jobs and old cfgs are unaffected; (2) edit on the laptop, `python3 -m py_compile`,
+then `scp` the file to `/cluster/maier/Agent4CT/...` (cluster is an rsync'd COPY);
+(3) do NOT edit while a job of that solver is actively importing it. **Per the audit
+these fixes make the impls FAITHFUL but will NOT clear hr>0 on DENSE Mayo
+(regime-bounded — LD-FBP is near-complete at 2304 views); their real payoff is the
+128-view SPARSE benchmarks. The Mayo iter validates the fix runs + does not regress.**
+
+- **NAF — NEXT iter = fix (A): add the Instant-NGP HASH encoding.** Replace the
+  Fourier `PosEnc` (`solver_naf.py:64-72`) with a multi-resolution hash grid (~16
+  levels, level_dim 2, log2_hashmap_size 19, base_resolution 16) feeding a SMALL MLP
+  (num_layers 4, hidden 32), per the reference `chest_50.yaml`. Config-gate
+  `naf_encoding` ("fourier" default | "hash"); the iter sets "hash". (B) under-budget
+  (more steps/scene) is **DEFERRED until after the TPE run** — do NOT touch the wall now.
+- **R2Gaussian — NEXT iter = investigate (a) actual splatting.** Investigate
+  implementing the paper's radiative splat-to-detector rendering + rectification
+  (`μ_i = sqrt(2π|Σ̃|/|Σ̂|)`, Eq.7) in place of the current rasterize-image-then-
+  PYRO-NN-project path (`GS2D.forward`). Config-gate `gs_render` ("raster" | "splat").
+  If a full splat renderer is too big for one iter, scaffold it + report feasibility.
+- **R2Gaussian — iter +2 = investigate (b) FBP warm-start.** Enable the
+  already-implemented-but-DISABLED init `gs_init_from_fbp=True` (currently False) +
+  add an SSIM term to the loss (benchmark is SSIM-scored). Cheap in-budget lever.
+  (B) under-budget (`gs_n_iter`↑) **DEFERRED until after TPE.**
+- **Diffusion — NEXT iters = fix (A) and (B).**
+  - **(A) DC-step bug** (`solver_diffusion_recon.py:83-100 dc_step_cg` + re-injection
+    `162-174`): replace the mislabeled steepest-descent "CG" with a real CG/ADMM
+    proximal solve, and the stale-eps + fresh-`randn` re-noise with a DDS-style
+    DETERMINISTIC posterior-mean re-insertion that re-evaluates the score at the
+    projected iterate. Config-gate `recon_dc_solver` ("legacy" | "cg"). One file fix
+    serves BOTH the constrained + unconstrained variants.
+  - **(B) prior + NFE:** raise `recon_sample_steps` (finer DDIM grid, trade val_n
+    down to hold budget) AND retrain the prior with EMA on the FULL train pool.
+    **VERIFIED 2026-06-20: the v4 priors are UNDER-trained — `ddpm_mayo_constrained_v4`
+    = 50 train slices, `ddpm_mayo_unconstrained_v4` = 200 — vs the ~579-slice full
+    train pool, with NO EMA. BOTH train on the "train" split ONLY (load_val_split
+    "train"); val (L277, 10 slices) is a spectator eps-loss metric and the SAVED model
+    is the final epoch (not best-val), so val never selects/trains the weights; test
+    is never loaded → NO val/test GT leakage in either checkpoint.** So the B fix
+    includes a DDPM **v5** retrain: full train pool + EMA + select by a DPS-recon
+    metric (not eps-loss). "unconstrained" is a misnomer inherited from the demo-dl
+    PHANTOM regime (unlimited fresh synthetic = upper bound); for real Mayo it merely
+    means 200 train slices vs 50.
+
 ---
 
 ## N2I solvers are PER-IMAGE self-supervised (2026-06-18 fix — do NOT revert)
