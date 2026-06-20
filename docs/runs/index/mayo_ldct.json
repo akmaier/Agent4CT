@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T13:37:15Z",
+ "updated": "2026-06-20T16:10:00Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -493,18 +493,18 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 4,
    "best_headroom": 0.19761010181430883,
    "best_ssim": 0.9277111291885376,
    "best_score": 0.9277111291885376,
-   "started": "2026-06-20T03:28:15Z",
+   "started": "2026-06-20T14:31:37Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T03:28:15Z",
+   "ts": "2026-06-20T14:31:37Z",
    "curve": [
     [
      1,
@@ -524,6 +524,10 @@
     ],
     [
      5,
+     0.1976
+    ],
+    [
+     6,
      0.1976
     ]
    ],
@@ -994,18 +998,18 @@
    "name": "TV-iterative",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 4,
    "best_headroom": 0.20854684219988984,
    "best_ssim": 0.9266639351844788,
    "best_score": 0.9266639351844788,
-   "started": "2026-06-20T06:06:10Z",
+   "started": "2026-06-20T13:50:16Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "tv_iterative-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T06:06:10Z",
+   "ts": "2026-06-20T13:50:16Z",
    "curve": [
     [
      1,
@@ -1025,6 +1029,10 @@
     ],
     [
      5,
+     0.2085
+    ],
+    [
+     6,
      0.2085
     ]
    ],
@@ -1080,18 +1088,18 @@
    "name": "U-Swin",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 7,
    "best_headroom": 0.4149526203706091,
    "best_ssim": 0.9379975199699402,
    "best_score": 0.9379975199699402,
-   "started": "2026-06-20T13:12:38Z",
+   "started": "2026-06-20T14:11:34Z",
    "status": "ranked",
    "params_M": 3.954049,
    "excluded_reason": null,
    "agent": "uswin-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T13:12:38Z",
+   "ts": "2026-06-20T14:11:34Z",
    "curve": [
     [
      1,
@@ -1119,6 +1127,10 @@
     ],
     [
      7,
+     0.415
+    ],
+    [
+     8,
      0.415
     ]
    ],
