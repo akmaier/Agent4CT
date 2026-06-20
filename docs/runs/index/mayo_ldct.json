@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T12:21:22Z",
+ "updated": "2026-06-20T13:01:47Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -536,18 +536,18 @@
    "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 6,
+   "n_iterations": 7,
    "best_iter": 6,
    "best_headroom": 0.4157936454392316,
    "best_ssim": 0.9326096177101135,
    "best_score": 0.9326096177101135,
-   "started": "2026-06-20T11:45:28Z",
+   "started": "2026-06-20T12:58:24Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T11:45:28Z",
+   "ts": "2026-06-20T12:58:24Z",
    "curve": [
     [
      1,
@@ -571,6 +571,10 @@
     ],
     [
      6,
+     0.4158
+    ],
+    [
+     7,
      0.4158
     ]
    ],
