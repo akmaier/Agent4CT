@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T19:21:29Z",
+ "updated": "2026-06-20T19:48:49Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -41,6 +41,22 @@
      "rank": 2
     },
     {
+     "solver_key": "itnet",
+     "solver_name": "ITNet v1",
+     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
+     "best_iter": 6,
+     "params_M": 0.232881,
+     "params_source": "observation",
+     "val_ssim": 0.9332138299942017,
+     "headroom": 0.3752140975723305,
+     "val_psnr": 38.163143157958984,
+     "val_rmse": 0.0006177504546940327,
+     "elapsed_s": 1281.384080171585,
+     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0006/comparison.png",
+     "excluded_reason": null,
+     "rank": 3
+    },
+    {
      "solver_key": "itnet-v3",
      "solver_name": "ITNet v3",
      "run_id": "mayo-ldct-claude-agentic-itnet-v3-search-20260619-01",
@@ -54,7 +70,7 @@
      "elapsed_s": 1139.0871605873108,
      "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0007/comparison.png",
      "excluded_reason": null,
-     "rank": 3
+     "rank": 4
     },
     {
      "solver_key": "tv-iterative",
@@ -70,7 +86,7 @@
      "elapsed_s": 1227.3971643447876,
      "image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0004/comparison.png",
      "excluded_reason": null,
-     "rank": 4
+     "rank": 5
     },
     {
      "solver_key": "dual-domain-n2i",
@@ -86,7 +102,7 @@
      "elapsed_s": 1235.541589975357,
      "image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0004/comparison.png",
      "excluded_reason": null,
-     "rank": 5
+     "rank": 6
     },
     {
      "solver_key": "wu-2015-trainable",
@@ -102,7 +118,7 @@
      "elapsed_s": 335.352641582489,
      "image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0001/comparison.png",
      "excluded_reason": null,
-     "rank": 6
+     "rank": 7
     },
     {
      "solver_key": "hammernik-2017",
@@ -118,7 +134,7 @@
      "elapsed_s": 679.4136145114899,
      "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0007/comparison.png",
      "excluded_reason": null,
-     "rank": 7
+     "rank": 8
     },
     {
      "solver_key": "dual-domain-bilateral-supervised",
@@ -134,7 +150,7 @@
      "elapsed_s": 449.6247591972351,
      "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
      "excluded_reason": null,
-     "rank": 8
+     "rank": 9
     },
     {
      "solver_key": "dual-domain-bilateral-n2i",
@@ -181,6 +197,54 @@
      "val_rmse": 0.0014156122924759984,
      "elapsed_s": 1100.7295565605164,
      "image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0004/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
+     "solver_key": "fastdiff-flow-pixel-constrained",
+     "solver_name": "Fast-diffusion flow (pixel, constrained DC)",
+     "run_id": "mayo-ldct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260620-01",
+     "best_iter": 1,
+     "params_M": 3.822787,
+     "params_source": "observation",
+     "val_ssim": 0.86153644323349,
+     "headroom": 0.0,
+     "val_psnr": 31.03342056274414,
+     "val_rmse": 0.0014037799555808306,
+     "elapsed_s": 491.62865591049194,
+     "image": "runs/mayo-ldct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260620-01/iterations/iter-0001/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
+     "solver_key": "fastdiff-wdm-wavelet-unconstrained",
+     "solver_name": "Fast-diffusion WDM (wavelet, unconstrained)",
+     "run_id": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01",
+     "best_iter": 1,
+     "params_M": 3.824908,
+     "params_source": "observation",
+     "val_ssim": 0.8553543090820312,
+     "headroom": 0.0,
+     "val_psnr": 30.31890106201172,
+     "val_rmse": 0.0015241404762491584,
+     "elapsed_s": 415.9023678302765,
+     "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01/iterations/iter-0001/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
+     "solver_key": "fastdiff-wdm-wavelet-constrained",
+     "solver_name": "Fast-diffusion WDM (wavelet, constrained DC)",
+     "run_id": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01",
+     "best_iter": 1,
+     "params_M": 3.824908,
+     "params_source": "observation",
+     "val_ssim": 0.8522337675094604,
+     "headroom": 0.0,
+     "val_psnr": 30.509254455566406,
+     "val_rmse": 0.0014911019243299961,
+     "elapsed_s": 415.45695781707764,
+     "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01/iterations/iter-0001/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
@@ -277,22 +341,6 @@
      "val_rmse": 0.0022668528836220503,
      "elapsed_s": 1410.641746520996,
      "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0005/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
-     "solver_key": "itnet",
-     "solver_name": "ITNet v1",
-     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
-     "best_iter": 4,
-     "params_M": 0.232881,
-     "params_source": "observation",
-     "val_ssim": 0.7021881937980652,
-     "headroom": 0.0,
-     "val_psnr": 25.426061630249023,
-     "val_rmse": 0.002677114913240075,
-     "elapsed_s": 1156.9373896121979,
-     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0004/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },

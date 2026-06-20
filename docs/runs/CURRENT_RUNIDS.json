@@ -1,12 +1,12 @@
 {
   "schema_version": 3,
   "_note": "The SINGLE allowlist for the result register. build_registry.py walks ONLY the run-ids listed under datasets[].run_ids; everything else on disk is ignored (legacy / different-scoring-convention runs, purged campaigns). A campaign reset edits THIS ONE FILE. publish.sh rsyncs exactly these run-ids (never a blanket docs/runs glob).",
-  "updated": "2026-06-19T19:45:16Z",
+  "updated": "2026-06-20T18:00:00Z",
   "datasets": {
     "mayo_ldct": {
       "label": "Mayo-LDCT",
       "campaign": "search-20260619-01",
-      "note": "Live agentic campaign (corrected protocol: 214 L277 slices, 321px detector-geometry FOV, 20-min budget). The 19-solver inventory.",
+      "note": "Live agentic campaign (corrected protocol: 214 L277 slices, 321px detector-geometry FOV, 20-min budget). The 22-solver inventory (19 trainers + 3 fast-diffusion per-image recons, all below-baseline hr 0).",
       "run_ids": [
         "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
         "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
@@ -14,6 +14,9 @@
         "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
         "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
         "mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01",
+        "mayo-ldct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260620-01",
+        "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01",
+        "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01",
         "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01",
         "mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01",
         "mayo-ldct-claude-agentic-itnet-search-20260619-01",

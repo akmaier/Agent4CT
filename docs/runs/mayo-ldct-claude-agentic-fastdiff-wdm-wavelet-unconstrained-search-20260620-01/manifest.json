@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01",
+  "challenge": "dl_sparse_view",
+  "slug_prefix": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search",
+  "started": "2026-06-20T17:45:00Z",
+  "agent": "fastdiff-recon-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "stopped",
+  "notes": "Fast-diffusion per-image few-step DC-guided recon (solver_fast_recon.py); single inference iter, evaluated on all 214 L277 slices under the calibrated metric."
+}
