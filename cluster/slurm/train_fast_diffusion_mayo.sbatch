@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=lme49,lme53,lme50,lme51,lme52,lme170
+#SBATCH --exclude=lme49,lme50,lme51,lme52,lme53,lme170,lme171,lme221
 #SBATCH --mem=40G
 #SBATCH --time=12:00:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
@@ -61,7 +61,7 @@ FD_N_VAL="${FD_N_VAL:-100}"
 FD_EMA_DECAY="${FD_EMA_DECAY:-0.999}"
 FD_WALL_S="${FD_WALL_S:-36000}"
 
-nvidia-smi -L
+nvidia-smi -L || true   # non-fatal: a driver/NVML hiccup must not abort under `set -e`
 
 # ---- assemble the config -------------------------------------------------
 # If FD_CONFIG (or FAST_DIFFUSION_CONFIG_PATH) is provided, use it verbatim;
