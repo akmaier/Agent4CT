@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T01:21:29Z",
+ "updated": "2026-06-20T01:41:32Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -233,6 +233,22 @@
      "rank": null
     },
     {
+     "solver_key": "itnet",
+     "solver_name": "ITNet v1",
+     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
+     "best_iter": 3,
+     "params_M": 0.232881,
+     "params_source": "observation",
+     "val_ssim": 0.6430301666259766,
+     "headroom": 0.0,
+     "val_psnr": 24.666824340820312,
+     "val_rmse": 0.002921653911471367,
+     "elapsed_s": 858.8537518978119,
+     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0003/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
      "solver_key": "itnet-v2",
      "solver_name": "ITNet v2",
      "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
@@ -249,34 +265,18 @@
      "rank": null
     },
     {
-     "solver_key": "itnet",
-     "solver_name": "ITNet v1",
-     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
-     "best_iter": 2,
-     "params_M": 0.232881,
-     "params_source": "observation",
-     "val_ssim": 0.5927114486694336,
-     "headroom": 0.0,
-     "val_psnr": 24.77454948425293,
-     "val_rmse": 0.0028856429271399975,
-     "elapsed_s": 387.4427556991577,
-     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0002/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
      "solver_key": "naf",
      "solver_name": "NAF",
      "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
-     "best_iter": 2,
-     "params_M": 0.010625,
+     "best_iter": 3,
+     "params_M": 0.006465,
      "params_source": "observation",
-     "val_ssim": 0.49432283639907837,
+     "val_ssim": 0.5452292561531067,
      "headroom": 0.0,
-     "val_psnr": 18.61992073059082,
-     "val_rmse": 0.005861030425876379,
-     "elapsed_s": 1099.865614414215,
-     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0002/comparison.png",
+     "val_psnr": 19.23780632019043,
+     "val_rmse": 0.005458580330014229,
+     "elapsed_s": 1094.6382701396942,
+     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0003/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
