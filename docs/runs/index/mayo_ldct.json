@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T00:21:41Z",
+ "updated": "2026-06-20T01:01:38Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -73,6 +73,22 @@
     "rank": 4
    },
    {
+    "solver_key": "dual-domain-n2i",
+    "solver_name": "DD-UNet N2I (per-image)",
+    "run_id": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
+    "best_iter": 3,
+    "params_M": 0.465762,
+    "params_source": "observation",
+    "val_ssim": 0.9184581637382507,
+    "headroom": 0.15056939033747796,
+    "val_psnr": 35.49520492553711,
+    "val_rmse": 0.0008398655336350203,
+    "elapsed_s": 1088.0279767513275,
+    "image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0003/comparison.png",
+    "excluded_reason": null,
+    "rank": 5
+   },
+   {
     "solver_key": "wu-2015-trainable",
     "solver_name": "Wu 2015 trainable",
     "run_id": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
@@ -86,7 +102,7 @@
     "elapsed_s": 335.352641582489,
     "image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0001/comparison.png",
     "excluded_reason": null,
-    "rank": 5
+    "rank": 6
    },
    {
     "solver_key": "dual-domain-bilateral-supervised",
@@ -102,7 +118,7 @@
     "elapsed_s": 449.6247591972351,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
     "excluded_reason": null,
-    "rank": 6
+    "rank": 7
    },
    {
     "solver_key": "dual-domain-bilateral-n2i",
@@ -121,6 +137,22 @@
     "rank": null
    },
    {
+    "solver_key": "ram",
+    "solver_name": "RAM (zero-shot)",
+    "run_id": "mayo-ldct-claude-agentic-ram-search-20260619-01",
+    "best_iter": 3,
+    "params_M": 35.618953,
+    "params_source": "observation",
+    "val_ssim": 0.8967949151992798,
+    "headroom": 0.0,
+    "val_psnr": 31.580751419067383,
+    "val_rmse": 0.0013180517125874758,
+    "elapsed_s": 934.6010890007019,
+    "image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0003/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
     "solver_key": "learned-primal-dual",
     "solver_name": "Learned Primal-Dual",
     "run_id": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
@@ -133,38 +165,6 @@
     "val_rmse": 0.0014485870487987995,
     "elapsed_s": 1213.616070985794,
     "image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0003/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "dual-domain-n2i",
-    "solver_name": "DD-UNet N2I (per-image)",
-    "run_id": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
-    "best_iter": 2,
-    "params_M": 0.465762,
-    "params_source": "observation",
-    "val_ssim": 0.8680964112281799,
-    "headroom": 0.0,
-    "val_psnr": 32.430538177490234,
-    "val_rmse": 0.0011952073546126485,
-    "elapsed_s": 1112.276607990265,
-    "image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0002/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "ram",
-    "solver_name": "RAM (zero-shot)",
-    "run_id": "mayo-ldct-claude-agentic-ram-search-20260619-01",
-    "best_iter": 2,
-    "params_M": 35.618953,
-    "params_source": "observation",
-    "val_ssim": 0.8643978238105774,
-    "headroom": 0.0,
-    "val_psnr": 31.1478214263916,
-    "val_rmse": 0.001385412411764264,
-    "elapsed_s": 1100.9423773288727,
-    "image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0002/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -217,6 +217,22 @@
     "rank": null
    },
    {
+    "solver_key": "itnet-v2",
+    "solver_name": "ITNet v2",
+    "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
+    "best_iter": 3,
+    "params_M": 0.232882,
+    "params_source": "observation",
+    "val_ssim": 0.623026967048645,
+    "headroom": 0.0,
+    "val_psnr": 24.506614685058594,
+    "val_rmse": 0.002976043149828911,
+    "elapsed_s": 744.1192758083344,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0003/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
     "solver_key": "itnet",
     "solver_name": "ITNet v1",
     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
@@ -229,22 +245,6 @@
     "val_rmse": 0.0028856429271399975,
     "elapsed_s": 387.4427556991577,
     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0002/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "itnet-v2",
-    "solver_name": "ITNet v2",
-    "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
-    "best_iter": 2,
-    "params_M": 0.232882,
-    "params_source": "observation",
-    "val_ssim": 0.5888043642044067,
-    "headroom": 0.0,
-    "val_psnr": 24.642578125,
-    "val_rmse": 0.002929821377620101,
-    "elapsed_s": 345.1916151046753,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0002/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -449,18 +449,18 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
-   "best_iter": 2,
-   "best_headroom": 0.0,
-   "best_ssim": 0.8680964112281799,
-   "best_score": 0.8680964112281799,
-   "started": "2026-06-19T19:59:28Z",
-   "status": "excluded",
+   "n_iterations": 3,
+   "best_iter": 3,
+   "best_headroom": 0.15056939033747796,
+   "best_ssim": 0.9184581637382507,
+   "best_score": 0.9184581637382507,
+   "started": "2026-06-20T00:45:57Z",
+   "status": "ranked",
    "params_M": 0.465762,
-   "excluded_reason": "discard",
-   "agent": "dual_domain_n2i-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T19:59:28Z",
+   "excluded_reason": null,
+   "agent": "dual_domain_n2i-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-20T00:45:57Z",
    "curve": [
     [
      1,
@@ -469,9 +469,13 @@
     [
      2,
      null
+    ],
+    [
+     3,
+     0.1506
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
@@ -616,18 +620,18 @@
    "name": "ITNet v2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
-   "best_iter": 2,
+   "n_iterations": 3,
+   "best_iter": 3,
    "best_headroom": 0.0,
-   "best_ssim": 0.5888043642044067,
-   "best_score": 0.5888043642044067,
-   "started": "2026-06-19T18:30:40Z",
+   "best_ssim": 0.623026967048645,
+   "best_score": 0.623026967048645,
+   "started": "2026-06-20T00:56:46Z",
    "status": "excluded",
    "params_M": 0.232882,
    "excluded_reason": "discard",
-   "agent": "itnet_v2-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T18:30:40Z",
+   "agent": "itnet_v2-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-20T00:56:46Z",
    "curve": [
     [
      1,
@@ -636,9 +640,13 @@
     [
      2,
      null
+    ],
+    [
+     3,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
@@ -779,18 +787,18 @@
    "name": "RAM (zero-shot)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 2,
-   "best_iter": 2,
+   "n_iterations": 3,
+   "best_iter": 3,
    "best_headroom": 0.0,
-   "best_ssim": 0.8643978238105774,
-   "best_score": 0.8643978238105774,
-   "started": "2026-06-19T19:58:16Z",
+   "best_ssim": 0.8967949151992798,
+   "best_score": 0.8967949151992798,
+   "started": "2026-06-20T00:44:20Z",
    "status": "excluded",
    "params_M": 35.618953,
    "excluded_reason": "discard",
-   "agent": "ram_zeroshot-claude-agentic-breast-ct",
-   "model": "claude-opus-4.7-1m",
-   "ts": "2026-06-19T19:58:16Z",
+   "agent": "ram_zeroshot-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-20T00:44:20Z",
    "curve": [
     [
      1,
@@ -799,9 +807,13 @@
     [
      2,
      null
+    ],
+    [
+     3,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
