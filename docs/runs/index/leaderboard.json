@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T00:01:29Z",
+ "updated": "2026-06-20T00:21:41Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
