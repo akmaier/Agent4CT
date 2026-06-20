@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T10:21:41Z",
+ "updated": "2026-06-20T10:41:09Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -837,18 +837,18 @@
    "name": "NAF",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 4,
+   "n_iterations": 5,
    "best_iter": 4,
    "best_headroom": 0.0,
    "best_ssim": 0.5629324913024902,
    "best_score": 0.5629324913024902,
-   "started": "2026-06-20T04:04:15Z",
+   "started": "2026-06-20T10:30:34Z",
    "status": "excluded",
    "params_M": 0.006465,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T04:04:15Z",
+   "ts": "2026-06-20T10:30:34Z",
    "curve": [
     [
      1,
@@ -864,6 +864,10 @@
     ],
     [
      4,
+     null
+    ],
+    [
+     5,
      null
     ]
    ],
@@ -1001,18 +1005,18 @@
    "name": "TV-iterative (unrolled)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 4,
+   "n_iterations": 5,
    "best_iter": 3,
    "best_headroom": 0.0,
    "best_ssim": 0.8137280941009521,
    "best_score": 0.8137280941009521,
-   "started": "2026-06-20T02:31:04Z",
+   "started": "2026-06-20T10:33:37Z",
    "status": "excluded",
    "params_M": 6e-05,
    "excluded_reason": "discard",
    "agent": "tv_iterative_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T02:31:04Z",
+   "ts": "2026-06-20T10:33:37Z",
    "curve": [
     [
      1,
@@ -1028,6 +1032,10 @@
     ],
     [
      4,
+     null
+    ],
+    [
+     5,
      null
     ]
    ],
