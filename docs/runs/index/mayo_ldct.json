@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T12:01:23Z",
+ "updated": "2026-06-20T12:21:22Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -28,15 +28,15 @@
     "solver_key": "uswin",
     "solver_name": "U-Swin",
     "run_id": "mayo-ldct-claude-agentic-uswin-search-20260619-01",
-    "best_iter": 5,
+    "best_iter": 6,
     "params_M": 3.954049,
     "params_source": "observation",
-    "val_ssim": 0.9216899275779724,
-    "headroom": 0.3828721588912174,
-    "val_psnr": 38.270259857177734,
-    "val_rmse": 0.0006101786275394261,
-    "elapsed_s": 1154.7162854671478,
-    "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0005/comparison.png",
+    "val_ssim": 0.9387279748916626,
+    "headroom": 0.40977483534782566,
+    "val_psnr": 38.65740966796875,
+    "val_rmse": 0.0005835788906551898,
+    "elapsed_s": 1029.5418138504028,
+    "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0006/comparison.png",
     "excluded_reason": null,
     "rank": 2
    },
@@ -763,18 +763,18 @@
    "name": "ITNet v3",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 5,
    "best_headroom": 0.3288419203723635,
    "best_ssim": 0.9157627820968628,
    "best_score": 0.9157627820968628,
-   "started": "2026-06-20T06:42:53Z",
+   "started": "2026-06-20T12:16:27Z",
    "status": "ranked",
    "params_M": 3.698994,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T06:42:53Z",
+   "ts": "2026-06-20T12:16:27Z",
    "curve": [
     [
      1,
@@ -795,6 +795,10 @@
     [
      5,
      0.3288
+    ],
+    [
+     6,
+     0.3288
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0005/comparison.png",
@@ -806,18 +810,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 4,
    "best_headroom": 0.0,
    "best_ssim": 0.8980332016944885,
    "best_score": 0.8980332016944885,
-   "started": "2026-06-20T07:02:15Z",
+   "started": "2026-06-20T12:04:07Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T07:02:15Z",
+   "ts": "2026-06-20T12:04:07Z",
    "curve": [
     [
      1,
@@ -837,6 +841,10 @@
     ],
     [
      5,
+     null
+    ],
+    [
+     6,
      null
     ]
    ],
@@ -1064,18 +1072,18 @@
    "name": "U-Swin",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 5,
-   "best_iter": 5,
-   "best_headroom": 0.3828721588912174,
-   "best_ssim": 0.9216899275779724,
-   "best_score": 0.9216899275779724,
-   "started": "2026-06-20T06:45:32Z",
+   "n_iterations": 6,
+   "best_iter": 6,
+   "best_headroom": 0.40977483534782566,
+   "best_ssim": 0.9387279748916626,
+   "best_score": 0.9387279748916626,
+   "started": "2026-06-20T12:01:12Z",
    "status": "ranked",
    "params_M": 3.954049,
    "excluded_reason": null,
    "agent": "uswin-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T06:45:32Z",
+   "ts": "2026-06-20T12:01:12Z",
    "curve": [
     [
      1,
@@ -1096,9 +1104,13 @@
     [
      5,
      0.3829
+    ],
+    [
+     6,
+     0.4098
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0005/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0006/comparison.png",
    "test_image": null
   },
   {
