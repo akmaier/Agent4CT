@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-20T03:41:33Z",
+ "updated": "2026-06-20T04:01:18Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -60,15 +60,15 @@
     "solver_key": "tv-iterative",
     "solver_name": "TV-iterative",
     "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260619-01",
-    "best_iter": 2,
+    "best_iter": 4,
     "params_M": 0.0,
     "params_source": "observation",
-    "val_ssim": 0.923843502998352,
-    "headroom": 0.20536406330376733,
-    "val_psnr": 36.07440185546875,
-    "val_rmse": 0.0007856878801248968,
-    "elapsed_s": 928.5240631103516,
-    "image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0002/comparison.png",
+    "val_ssim": 0.9266639351844788,
+    "headroom": 0.20854684219988984,
+    "val_psnr": 36.10926055908203,
+    "val_rmse": 0.0007825409411452711,
+    "elapsed_s": 1227.3971643447876,
+    "image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0004/comparison.png",
     "excluded_reason": null,
     "rank": 4
    },
@@ -430,18 +430,18 @@
    "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 3,
+   "n_iterations": 4,
    "best_iter": 2,
    "best_headroom": 0.02823715470493071,
    "best_ssim": 0.9191550016403198,
    "best_score": 0.9191550016403198,
-   "started": "2026-06-19T23:37:05Z",
+   "started": "2026-06-20T03:55:22Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-19T23:37:05Z",
+   "ts": "2026-06-20T03:55:22Z",
    "curve": [
     [
      1,
@@ -453,6 +453,10 @@
     ],
     [
      3,
+     0.0282
+    ],
+    [
+     4,
      0.0282
     ]
    ],
@@ -870,18 +874,18 @@
    "name": "TV-iterative",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 3,
-   "best_iter": 2,
-   "best_headroom": 0.20536406330376733,
-   "best_ssim": 0.923843502998352,
-   "best_score": 0.923843502998352,
-   "started": "2026-06-20T00:16:29Z",
+   "n_iterations": 4,
+   "best_iter": 4,
+   "best_headroom": 0.20854684219988984,
+   "best_ssim": 0.9266639351844788,
+   "best_score": 0.9266639351844788,
+   "started": "2026-06-20T03:45:59Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "tv_iterative-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T00:16:29Z",
+   "ts": "2026-06-20T03:45:59Z",
    "curve": [
     [
      1,
@@ -894,9 +898,13 @@
     [
      3,
      0.2054
+    ],
+    [
+     4,
+     0.2085
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0002/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0004/comparison.png",
    "test_image": null
   },
   {
