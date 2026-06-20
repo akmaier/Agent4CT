@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-20T16:10:00Z",
+ "updated": "2026-06-20T18:02:27Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -217,6 +217,22 @@
      "rank": null
     },
     {
+     "solver_key": "diff-recon-dcstep-constrained",
+     "solver_name": "Diffusion (constrained DPS+DC)",
+     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
+     "best_iter": 6,
+     "params_M": 8.594211,
+     "params_source": "observation",
+     "val_ssim": 0.7872974276542664,
+     "headroom": 0.0,
+     "val_psnr": 27.47490692138672,
+     "val_rmse": 0.0021145830396562815,
+     "elapsed_s": 963.5043616294861,
+     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0006/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
      "solver_key": "r2gaussian",
      "solver_name": "R2-Gaussian",
      "run_id": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01",
@@ -265,34 +281,18 @@
      "rank": null
     },
     {
-     "solver_key": "diff-recon-dcstep-constrained",
-     "solver_name": "Diffusion (constrained DPS+DC)",
-     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
-     "best_iter": 5,
-     "params_M": 8.594211,
-     "params_source": "observation",
-     "val_ssim": 0.6647486686706543,
-     "headroom": 0.0,
-     "val_psnr": 22.687419891357422,
-     "val_rmse": 0.0036694337613880634,
-     "elapsed_s": 987.9529273509979,
-     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0005/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
      "solver_key": "naf",
      "solver_name": "NAF",
      "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
-     "best_iter": 4,
-     "params_M": 0.006465,
+     "best_iter": 6,
+     "params_M": 16.779361,
      "params_source": "observation",
-     "val_ssim": 0.5629324913024902,
+     "val_ssim": 0.6714652180671692,
      "headroom": 0.0,
-     "val_psnr": 20.276371002197266,
-     "val_rmse": 0.0048434133641421795,
-     "elapsed_s": 1095.5368268489838,
-     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0004/comparison.png",
+     "val_psnr": 23.351287841796875,
+     "val_rmse": 0.003399426816031337,
+     "elapsed_s": 1101.424320936203,
+     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0006/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
