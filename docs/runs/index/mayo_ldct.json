@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T14:32:29Z",
+ "updated": "2026-06-21T14:52:30Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -550,18 +550,18 @@
    "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 2,
    "best_headroom": 0.02823715470493071,
    "best_ssim": 0.9191550016403198,
    "best_score": 0.9191550016403198,
-   "started": "2026-06-21T12:22:24Z",
+   "started": "2026-06-21T14:40:59Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T12:22:24Z",
+   "ts": "2026-06-21T14:40:59Z",
    "curve": [
     [
      1,
@@ -593,6 +593,10 @@
     ],
     [
      8,
+     0.0282
+    ],
+    [
+     9,
      0.0282
     ]
    ],
@@ -1126,18 +1130,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 4,
    "best_headroom": 0.0,
    "best_ssim": 0.8980332016944885,
    "best_score": 0.8980332016944885,
-   "started": "2026-06-21T11:57:32Z",
+   "started": "2026-06-21T14:46:29Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T11:57:32Z",
+   "ts": "2026-06-21T14:46:29Z",
    "curve": [
     [
      1,
@@ -1169,6 +1173,10 @@
     ],
     [
      8,
+     null
+    ],
+    [
+     9,
      null
     ]
    ],
@@ -1346,18 +1354,18 @@
    "name": "TV-iterative",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 4,
    "best_headroom": 0.20854684219988984,
    "best_ssim": 0.9266639351844788,
    "best_score": 0.9266639351844788,
-   "started": "2026-06-21T11:29:15Z",
+   "started": "2026-06-21T14:33:40Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "tv_iterative-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T11:29:15Z",
+   "ts": "2026-06-21T14:33:40Z",
    "curve": [
     [
      1,
@@ -1389,6 +1397,10 @@
     ],
     [
      8,
+     0.2085
+    ],
+    [
+     9,
      0.2085
     ]
    ],
