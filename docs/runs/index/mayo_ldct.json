@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T12:52:51Z",
+ "updated": "2026-06-21T13:12:26Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -988,18 +988,18 @@
    "name": "ITNet v2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 8,
    "best_headroom": 0.43017090010875747,
    "best_ssim": 0.9427012801170349,
    "best_score": 0.9427012801170349,
-   "started": "2026-06-21T10:46:47Z",
+   "started": "2026-06-21T13:09:51Z",
    "status": "ranked",
    "params_M": 0.232882,
    "excluded_reason": null,
    "agent": "itnet_v2-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T10:46:47Z",
+   "ts": "2026-06-21T13:09:51Z",
    "curve": [
     [
      1,
@@ -1031,6 +1031,10 @@
     ],
     [
      8,
+     0.4302
+    ],
+    [
+     9,
      0.4302
     ]
    ],
@@ -1263,18 +1267,18 @@
    "name": "RAM (zero-shot)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 5,
    "best_headroom": 0.0,
    "best_ssim": 0.9070974588394165,
    "best_score": 0.9070974588394165,
-   "started": "2026-06-21T08:35:11Z",
+   "started": "2026-06-21T12:56:17Z",
    "status": "excluded",
    "params_M": 35.618953,
    "excluded_reason": "discard",
    "agent": "ram_zeroshot-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T08:35:11Z",
+   "ts": "2026-06-21T12:56:17Z",
    "curve": [
     [
      1,
@@ -1302,6 +1306,10 @@
     ],
     [
      7,
+     null
+    ],
+    [
+     8,
      null
     ]
    ],
