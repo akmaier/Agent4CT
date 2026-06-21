@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T12:32:17Z",
+ "updated": "2026-06-21T12:52:51Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -348,15 +348,15 @@
     "solver_key": "r2gaussian",
     "solver_name": "R2-Gaussian",
     "run_id": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01",
-    "best_iter": 7,
+    "best_iter": 8,
     "params_M": 0.003072,
     "params_source": "observation",
-    "val_ssim": 0.7641072869300842,
+    "val_ssim": 0.7695540189743042,
     "headroom": 0.0,
-    "val_psnr": 21.22144889831543,
-    "val_rmse": 0.0043440768495202065,
-    "elapsed_s": 1125.6061568260193,
-    "image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0007/comparison.png",
+    "val_psnr": 20.88967514038086,
+    "val_rmse": 0.004513217601925135,
+    "elapsed_s": 1125.329074382782,
+    "image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0008/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -364,15 +364,15 @@
     "solver_key": "naf",
     "solver_name": "NAF",
     "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
-    "best_iter": 6,
-    "params_M": 16.779361,
+    "best_iter": 8,
+    "params_M": 33.557601,
     "params_source": "observation",
-    "val_ssim": 0.6714652180671692,
+    "val_ssim": 0.6950908303260803,
     "headroom": 0.0,
-    "val_psnr": 23.351287841796875,
-    "val_rmse": 0.003399426816031337,
-    "elapsed_s": 1101.424320936203,
-    "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0006/comparison.png",
+    "val_psnr": 23.37104606628418,
+    "val_rmse": 0.003391702426597476,
+    "elapsed_s": 1098.4405908584595,
+    "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0008/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    }
@@ -1153,18 +1153,18 @@
    "name": "NAF",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
-   "best_iter": 6,
+   "n_iterations": 8,
+   "best_iter": 8,
    "best_headroom": 0.0,
-   "best_ssim": 0.6714652180671692,
-   "best_score": 0.6714652180671692,
-   "started": "2026-06-20T22:23:10Z",
+   "best_ssim": 0.6950908303260803,
+   "best_score": 0.6950908303260803,
+   "started": "2026-06-21T12:32:38Z",
    "status": "excluded",
-   "params_M": 16.779361,
+   "params_M": 33.557601,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T22:23:10Z",
+   "ts": "2026-06-21T12:32:38Z",
    "curve": [
     [
      1,
@@ -1193,9 +1193,13 @@
     [
      7,
      null
+    ],
+    [
+     8,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0006/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0008/comparison.png",
    "test_image": null
   },
   {
@@ -1204,18 +1208,18 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
-   "best_iter": 7,
+   "n_iterations": 8,
+   "best_iter": 8,
    "best_headroom": 0.0,
-   "best_ssim": 0.7641072869300842,
-   "best_score": 0.7641072869300842,
-   "started": "2026-06-20T21:30:28Z",
+   "best_ssim": 0.7695540189743042,
+   "best_score": 0.7695540189743042,
+   "started": "2026-06-21T12:32:59Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T21:30:28Z",
+   "ts": "2026-06-21T12:32:59Z",
    "curve": [
     [
      1,
@@ -1244,9 +1248,13 @@
     [
      7,
      null
+    ],
+    [
+     8,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0007/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0008/comparison.png",
    "test_image": null
   },
   {
@@ -1361,18 +1369,18 @@
    "name": "TV-iterative (unrolled)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 7,
    "best_headroom": 0.0,
    "best_ssim": 0.8192296624183655,
    "best_score": 0.8192296624183655,
-   "started": "2026-06-21T08:32:31Z",
+   "started": "2026-06-21T12:35:51Z",
    "status": "excluded",
    "params_M": 2e-06,
    "excluded_reason": "discard",
    "agent": "tv_iterative_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T08:32:31Z",
+   "ts": "2026-06-21T12:35:51Z",
    "curve": [
     [
      1,
@@ -1400,6 +1408,10 @@
     ],
     [
      7,
+     null
+    ],
+    [
+     8,
      null
     ]
    ],
