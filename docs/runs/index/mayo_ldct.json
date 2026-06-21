@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T10:53:13Z",
+ "updated": "2026-06-21T11:32:48Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -589,18 +589,18 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 4,
    "best_headroom": 0.19761010181430883,
    "best_ssim": 0.9277111291885376,
    "best_score": 0.9277111291885376,
-   "started": "2026-06-20T21:31:22Z",
+   "started": "2026-06-21T11:28:18Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T21:31:22Z",
+   "ts": "2026-06-21T11:28:18Z",
    "curve": [
     [
      1,
@@ -628,6 +628,10 @@
     ],
     [
      7,
+     0.1976
+    ],
+    [
+     8,
      0.1976
     ]
    ],
@@ -803,18 +807,18 @@
    "name": "Hammernik VN (2017)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 7,
    "best_headroom": 0.03745864194761772,
    "best_ssim": 0.8169611692428589,
    "best_score": 0.8169611692428589,
-   "started": "2026-06-20T10:12:16Z",
+   "started": "2026-06-21T11:16:32Z",
    "status": "ranked",
    "params_M": 0.012165,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T10:12:16Z",
+   "ts": "2026-06-21T11:16:32Z",
    "curve": [
     [
      1,
@@ -842,6 +846,10 @@
     ],
     [
      7,
+     0.0375
+    ],
+    [
+     8,
      0.0375
     ]
    ],
@@ -1278,18 +1286,18 @@
    "name": "TV-iterative",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 4,
    "best_headroom": 0.20854684219988984,
    "best_ssim": 0.9266639351844788,
    "best_score": 0.9266639351844788,
-   "started": "2026-06-20T20:59:53Z",
+   "started": "2026-06-21T11:29:15Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "tv_iterative-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T20:59:53Z",
+   "ts": "2026-06-21T11:29:15Z",
    "curve": [
     [
      1,
@@ -1317,6 +1325,10 @@
     ],
     [
      7,
+     0.2085
+    ],
+    [
+     8,
      0.2085
     ]
    ],
@@ -1435,18 +1447,18 @@
    "name": "Wu 2015 trainable",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 6,
    "best_headroom": 0.09657953703471489,
    "best_ssim": 0.8232346177101135,
    "best_score": 0.8232346177101135,
-   "started": "2026-06-20T20:13:23Z",
+   "started": "2026-06-21T11:22:47Z",
    "status": "ranked",
    "params_M": 8e-06,
    "excluded_reason": null,
    "agent": "wu_2015_trainable-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T20:13:23Z",
+   "ts": "2026-06-21T11:22:47Z",
    "curve": [
     [
      1,
@@ -1474,6 +1486,10 @@
     ],
     [
      7,
+     0.0966
+    ],
+    [
+     8,
      0.0966
     ]
    ],
