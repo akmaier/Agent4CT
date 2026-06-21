@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T08:16:23Z",
+ "updated": "2026-06-21T10:22:58Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -332,15 +332,15 @@
     "solver_key": "tv-iterative-supervised",
     "solver_name": "TV-iterative (unrolled)",
     "run_id": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
-    "best_iter": 6,
+    "best_iter": 7,
     "params_M": 2e-06,
     "params_source": "observation",
-    "val_ssim": 0.8185387253761292,
+    "val_ssim": 0.8192296624183655,
     "headroom": 0.0,
-    "val_psnr": 33.4583625793457,
-    "val_rmse": 0.0010618221713230014,
-    "elapsed_s": 911.5378065109253,
-    "image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
+    "val_psnr": 33.59728240966797,
+    "val_rmse": 0.0010449752444401383,
+    "elapsed_s": 260.7095446586609,
+    "image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0007/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -538,18 +538,18 @@
    "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 6,
+   "n_iterations": 7,
    "best_iter": 2,
    "best_headroom": 0.02823715470493071,
    "best_ssim": 0.9191550016403198,
    "best_score": 0.9191550016403198,
-   "started": "2026-06-20T20:27:12Z",
+   "started": "2026-06-21T08:26:48Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T20:27:12Z",
+   "ts": "2026-06-21T08:26:48Z",
    "curve": [
     [
      1,
@@ -573,6 +573,10 @@
     ],
     [
      6,
+     0.0282
+    ],
+    [
+     7,
      0.0282
     ]
    ],
@@ -636,18 +640,18 @@
    "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 6,
    "best_headroom": 0.4157936454392316,
    "best_ssim": 0.9326096177101135,
    "best_score": 0.9326096177101135,
-   "started": "2026-06-20T12:58:24Z",
+   "started": "2026-06-21T08:43:21Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T12:58:24Z",
+   "ts": "2026-06-21T08:43:21Z",
    "curve": [
     [
      1,
@@ -675,6 +679,10 @@
     ],
     [
      7,
+     0.4158
+    ],
+    [
+     8,
      0.4158
     ]
    ],
@@ -1203,18 +1211,18 @@
    "name": "RAM (zero-shot)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 6,
+   "n_iterations": 7,
    "best_iter": 5,
    "best_headroom": 0.0,
    "best_ssim": 0.9070974588394165,
    "best_score": 0.9070974588394165,
-   "started": "2026-06-20T18:46:30Z",
+   "started": "2026-06-21T08:35:11Z",
    "status": "excluded",
    "params_M": 35.618953,
    "excluded_reason": "discard",
    "agent": "ram_zeroshot-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T18:46:30Z",
+   "ts": "2026-06-21T08:35:11Z",
    "curve": [
     [
      1,
@@ -1238,6 +1246,10 @@
     ],
     [
      6,
+     null
+    ],
+    [
+     7,
      null
     ]
    ],
@@ -1301,18 +1313,18 @@
    "name": "TV-iterative (unrolled)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 6,
-   "best_iter": 6,
+   "n_iterations": 7,
+   "best_iter": 7,
    "best_headroom": 0.0,
-   "best_ssim": 0.8185387253761292,
-   "best_score": 0.8185387253761292,
-   "started": "2026-06-20T20:44:00Z",
+   "best_ssim": 0.8192296624183655,
+   "best_score": 0.8192296624183655,
+   "started": "2026-06-21T08:32:31Z",
    "status": "excluded",
    "params_M": 2e-06,
    "excluded_reason": "discard",
    "agent": "tv_iterative_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T20:44:00Z",
+   "ts": "2026-06-21T08:32:31Z",
    "curve": [
     [
      1,
@@ -1337,9 +1349,13 @@
     [
      6,
      null
+    ],
+    [
+     7,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0007/comparison.png",
    "test_image": null
   },
   {
