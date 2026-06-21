@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T16:32:14Z",
+ "updated": "2026-06-21T16:52:46Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -76,15 +76,15 @@
     "solver_key": "itnet-v3",
     "solver_name": "ITNet v3",
     "run_id": "mayo-ldct-claude-agentic-itnet-v3-search-20260619-01",
-    "best_iter": 9,
+    "best_iter": 10,
     "params_M": 3.698994,
     "params_source": "observation",
-    "val_ssim": 0.9218540191650391,
-    "headroom": 0.36081211726029994,
-    "val_psnr": 37.96519470214844,
-    "val_rmse": 0.0006319902604445815,
-    "elapsed_s": 924.3315908908844,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0009/comparison.png",
+    "val_ssim": 0.9298551678657532,
+    "headroom": 0.3623476385304162,
+    "val_psnr": 37.986083984375,
+    "val_rmse": 0.0006304720300249755,
+    "elapsed_s": 957.4222090244293,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0010/comparison.png",
     "excluded_reason": null,
     "rank": 5
    },
@@ -680,18 +680,18 @@
    "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_iter": 9,
    "best_headroom": 0.421712493290226,
    "best_ssim": 0.932457447052002,
    "best_score": 0.932457447052002,
-   "started": "2026-06-21T13:33:13Z",
+   "started": "2026-06-21T16:33:10Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T13:33:13Z",
+   "ts": "2026-06-21T16:33:10Z",
    "curve": [
     [
      1,
@@ -727,6 +727,10 @@
     ],
     [
      9,
+     0.4217
+    ],
+    [
+     10,
      0.4217
     ]
    ],
@@ -1091,18 +1095,18 @@
    "name": "ITNet v3",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 9,
-   "best_iter": 9,
-   "best_headroom": 0.36081211726029994,
-   "best_ssim": 0.9218540191650391,
-   "best_score": 0.9218540191650391,
-   "started": "2026-06-21T14:04:06Z",
+   "n_iterations": 10,
+   "best_iter": 10,
+   "best_headroom": 0.3623476385304162,
+   "best_ssim": 0.9298551678657532,
+   "best_score": 0.9298551678657532,
+   "started": "2026-06-21T16:49:25Z",
    "status": "ranked",
    "params_M": 3.698994,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T14:04:06Z",
+   "ts": "2026-06-21T16:49:25Z",
    "curve": [
     [
      1,
@@ -1139,9 +1143,13 @@
     [
      9,
      0.3608
+    ],
+    [
+     10,
+     0.3623
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0009/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0010/comparison.png",
    "test_image": null
   },
   {
