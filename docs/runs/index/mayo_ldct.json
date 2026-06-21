@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T22:12:13Z",
+ "updated": "2026-06-21T22:52:11Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -12,15 +12,15 @@
     "solver_key": "itnet",
     "solver_name": "ITNet v1",
     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
-    "best_iter": 11,
+    "best_iter": 12,
     "params_M": 0.232881,
     "params_source": "observation",
-    "val_ssim": 0.9448974132537842,
-    "headroom": 0.4363067449080188,
-    "val_psnr": 39.056907653808594,
-    "val_rmse": 0.0005573457456193864,
-    "elapsed_s": 966.9007816314697,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0011/comparison.png",
+    "val_ssim": 0.9443771243095398,
+    "headroom": 0.4364123587238602,
+    "val_psnr": 39.058536529541016,
+    "val_rmse": 0.0005572413210757077,
+    "elapsed_s": 1025.1035618782043,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0012/comparison.png",
     "excluded_reason": null,
     "rank": 1
    },
@@ -28,15 +28,15 @@
     "solver_key": "itnet-v2",
     "solver_name": "ITNet v2",
     "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
-    "best_iter": 11,
+    "best_iter": 12,
     "params_M": 0.232882,
     "params_source": "observation",
-    "val_ssim": 0.9436903595924377,
-    "headroom": 0.43185300911657987,
-    "val_psnr": 38.98855209350586,
-    "val_rmse": 0.000561749329790473,
-    "elapsed_s": 1025.1199624538422,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0011/comparison.png",
+    "val_ssim": 0.9435687065124512,
+    "headroom": 0.4346333487456505,
+    "val_psnr": 39.03116226196289,
+    "val_rmse": 0.0005590002983808517,
+    "elapsed_s": 1098.0780036449432,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0012/comparison.png",
     "excluded_reason": null,
     "rank": 2
    },
@@ -1029,18 +1029,18 @@
    "name": "ITNet v1",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
-   "best_iter": 11,
-   "best_headroom": 0.4363067449080188,
-   "best_ssim": 0.9448974132537842,
-   "best_score": 0.9448974132537842,
-   "started": "2026-06-21T19:29:07Z",
+   "n_iterations": 12,
+   "best_iter": 12,
+   "best_headroom": 0.4364123587238602,
+   "best_ssim": 0.9443771243095398,
+   "best_score": 0.9443771243095398,
+   "started": "2026-06-21T22:35:52Z",
    "status": "ranked",
    "params_M": 0.232881,
    "excluded_reason": null,
    "agent": "itnet-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T19:29:07Z",
+   "ts": "2026-06-21T22:35:52Z",
    "curve": [
     [
      1,
@@ -1085,9 +1085,13 @@
     [
      11,
      0.4363
+    ],
+    [
+     12,
+     0.4364
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0011/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0012/comparison.png",
    "test_image": null
   },
   {
@@ -1096,18 +1100,18 @@
    "name": "ITNet v2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
-   "best_iter": 11,
-   "best_headroom": 0.43185300911657987,
-   "best_ssim": 0.9436903595924377,
-   "best_score": 0.9436903595924377,
-   "started": "2026-06-21T19:30:30Z",
+   "n_iterations": 12,
+   "best_iter": 12,
+   "best_headroom": 0.4346333487456505,
+   "best_ssim": 0.9435687065124512,
+   "best_score": 0.9435687065124512,
+   "started": "2026-06-21T22:34:49Z",
    "status": "ranked",
    "params_M": 0.232882,
    "excluded_reason": null,
    "agent": "itnet_v2-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T19:30:30Z",
+   "ts": "2026-06-21T22:34:49Z",
    "curve": [
     [
      1,
@@ -1152,9 +1156,13 @@
     [
      11,
      0.4319
+    ],
+    [
+     12,
+     0.4346
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0011/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0012/comparison.png",
    "test_image": null
   },
   {
