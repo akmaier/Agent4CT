@@ -1,20 +1,20 @@
 {
  "schema_version": 3,
- "updated": "2026-06-21T19:12:31Z",
+ "updated": "2026-06-21T19:32:34Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
    "campaign": "search-20260619-01",
    "n_runs": 23,
-   "n_iterations": 193,
+   "n_iterations": 195,
    "n_solvers": 23,
    "champion_slug": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
    "champion_name": "ITNet v1",
-   "champion_headroom": 0.43439574709529627,
-   "champion_ssim": 0.9447472095489502,
-   "champion_score": 0.43439574709529627,
-   "thumbnail": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0009/comparison.png"
+   "champion_headroom": 0.4363067449080188,
+   "champion_ssim": 0.9448974132537842,
+   "champion_score": 0.4363067449080188,
+   "thumbnail": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0011/comparison.png"
   },
   {
    "challenge": "breast_ct",
