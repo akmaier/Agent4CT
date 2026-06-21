@@ -1,13 +1,13 @@
 {
  "schema_version": 3,
- "updated": "2026-06-21T19:53:00Z",
+ "updated": "2026-06-21T20:32:55Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
    "campaign": "search-20260619-01",
    "n_runs": 23,
-   "n_iterations": 199,
+   "n_iterations": 202,
    "n_solvers": 23,
    "champion_slug": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
    "champion_name": "ITNet v1",
