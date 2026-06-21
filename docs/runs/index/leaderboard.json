@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-21T13:12:26Z",
+ "updated": "2026-06-21T13:32:37Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -8,6 +8,22 @@
    "ranking_metric": "headroom",
    "tiebreak": "val_ssim",
    "rows": [
+    {
+     "solver_key": "itnet",
+     "solver_name": "ITNet v1",
+     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
+     "best_iter": 9,
+     "params_M": 0.232881,
+     "params_source": "observation",
+     "val_ssim": 0.9447472095489502,
+     "headroom": 0.43439574709529627,
+     "val_psnr": 39.02751159667969,
+     "val_rmse": 0.0005592352245002985,
+     "elapsed_s": 980.3550531864166,
+     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0009/comparison.png",
+     "excluded_reason": null,
+     "rank": 1
+    },
     {
      "solver_key": "itnet-v2",
      "solver_name": "ITNet v2",
@@ -22,7 +38,7 @@
      "elapsed_s": 1219.7033276557922,
      "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0008/comparison.png",
      "excluded_reason": null,
-     "rank": 1
+     "rank": 2
     },
     {
      "solver_key": "dual-domain-supervised",
@@ -38,7 +54,7 @@
      "elapsed_s": 1171.993374824524,
      "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
      "excluded_reason": null,
-     "rank": 2
+     "rank": 3
     },
     {
      "solver_key": "uswin",
@@ -53,22 +69,6 @@
      "val_rmse": 0.0005784594104625285,
      "elapsed_s": 1034.2799799442291,
      "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0007/comparison.png",
-     "excluded_reason": null,
-     "rank": 3
-    },
-    {
-     "solver_key": "itnet",
-     "solver_name": "ITNet v1",
-     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
-     "best_iter": 8,
-     "params_M": 0.232881,
-     "params_source": "observation",
-     "val_ssim": 0.9408048987388611,
-     "headroom": 0.41433465591972507,
-     "val_psnr": 38.724769592285156,
-     "val_rmse": 0.0005790704162791371,
-     "elapsed_s": 1162.1393015384674,
-     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0008/comparison.png",
      "excluded_reason": null,
      "rank": 4
     },

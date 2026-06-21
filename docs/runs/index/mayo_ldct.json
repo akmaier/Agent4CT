@@ -3,11 +3,27 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T13:12:26Z",
+ "updated": "2026-06-21T13:32:37Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
   "rows": [
+   {
+    "solver_key": "itnet",
+    "solver_name": "ITNet v1",
+    "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
+    "best_iter": 9,
+    "params_M": 0.232881,
+    "params_source": "observation",
+    "val_ssim": 0.9447472095489502,
+    "headroom": 0.43439574709529627,
+    "val_psnr": 39.02751159667969,
+    "val_rmse": 0.0005592352245002985,
+    "elapsed_s": 980.3550531864166,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0009/comparison.png",
+    "excluded_reason": null,
+    "rank": 1
+   },
    {
     "solver_key": "itnet-v2",
     "solver_name": "ITNet v2",
@@ -22,7 +38,7 @@
     "elapsed_s": 1219.7033276557922,
     "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0008/comparison.png",
     "excluded_reason": null,
-    "rank": 1
+    "rank": 2
    },
    {
     "solver_key": "dual-domain-supervised",
@@ -38,7 +54,7 @@
     "elapsed_s": 1171.993374824524,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
     "excluded_reason": null,
-    "rank": 2
+    "rank": 3
    },
    {
     "solver_key": "uswin",
@@ -53,22 +69,6 @@
     "val_rmse": 0.0005784594104625285,
     "elapsed_s": 1034.2799799442291,
     "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0007/comparison.png",
-    "excluded_reason": null,
-    "rank": 3
-   },
-   {
-    "solver_key": "itnet",
-    "solver_name": "ITNet v1",
-    "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
-    "best_iter": 8,
-    "params_M": 0.232881,
-    "params_source": "observation",
-    "val_ssim": 0.9408048987388611,
-    "headroom": 0.41433465591972507,
-    "val_psnr": 38.724769592285156,
-    "val_rmse": 0.0005790704162791371,
-    "elapsed_s": 1162.1393015384674,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0008/comparison.png",
     "excluded_reason": null,
     "rank": 4
    },
@@ -933,18 +933,18 @@
    "name": "ITNet v1",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
-   "best_iter": 8,
-   "best_headroom": 0.41433465591972507,
-   "best_ssim": 0.9408048987388611,
-   "best_score": 0.9408048987388611,
-   "started": "2026-06-21T10:44:13Z",
+   "n_iterations": 9,
+   "best_iter": 9,
+   "best_headroom": 0.43439574709529627,
+   "best_ssim": 0.9447472095489502,
+   "best_score": 0.9447472095489502,
+   "started": "2026-06-21T13:21:43Z",
    "status": "ranked",
    "params_M": 0.232881,
    "excluded_reason": null,
    "agent": "itnet-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T10:44:13Z",
+   "ts": "2026-06-21T13:21:43Z",
    "curve": [
     [
      1,
@@ -977,9 +977,13 @@
     [
      8,
      0.4143
+    ],
+    [
+     9,
+     0.4344
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0008/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0009/comparison.png",
    "test_image": null
   },
   {
@@ -1432,18 +1436,18 @@
    "name": "U-Swin",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 7,
    "best_headroom": 0.4149526203706091,
    "best_ssim": 0.9379975199699402,
    "best_score": 0.9379975199699402,
-   "started": "2026-06-20T14:11:34Z",
+   "started": "2026-06-21T13:13:26Z",
    "status": "ranked",
    "params_M": 3.954049,
    "excluded_reason": null,
    "agent": "uswin-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T14:11:34Z",
+   "ts": "2026-06-21T13:13:26Z",
    "curve": [
     [
      1,
@@ -1475,6 +1479,10 @@
     ],
     [
      8,
+     0.415
+    ],
+    [
+     9,
      0.415
     ]
    ],
