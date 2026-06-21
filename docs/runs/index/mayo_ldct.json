@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T17:32:48Z",
+ "updated": "2026-06-21T17:52:37Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -156,15 +156,15 @@
     "solver_key": "hammernik-2017",
     "solver_name": "Hammernik VN (2017)",
     "run_id": "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01",
-    "best_iter": 9,
+    "best_iter": 10,
     "params_M": 0.012165,
     "params_source": "observation",
-    "val_ssim": 0.8181400299072266,
-    "headroom": 0.03920615616692258,
-    "val_psnr": 34.4251594543457,
-    "val_rmse": 0.0009499747538939118,
-    "elapsed_s": 729.8319215774536,
-    "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0009/comparison.png",
+    "val_ssim": 0.8215878009796143,
+    "headroom": 0.07027027599821833,
+    "val_psnr": 34.71063232421875,
+    "val_rmse": 0.0009192604338750243,
+    "elapsed_s": 713.2006025314331,
+    "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0010/comparison.png",
     "excluded_reason": null,
     "rank": 10
    },
@@ -562,18 +562,18 @@
    "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_iter": 2,
    "best_headroom": 0.02823715470493071,
    "best_ssim": 0.9191550016403198,
    "best_score": 0.9191550016403198,
-   "started": "2026-06-21T14:40:59Z",
+   "started": "2026-06-21T17:41:33Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T14:40:59Z",
+   "ts": "2026-06-21T17:41:33Z",
    "curve": [
     [
      1,
@@ -609,6 +609,10 @@
     ],
     [
      9,
+     0.0282
+    ],
+    [
+     10,
      0.0282
     ]
    ],
@@ -851,18 +855,18 @@
    "name": "Hammernik VN (2017)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 9,
-   "best_iter": 9,
-   "best_headroom": 0.03920615616692258,
-   "best_ssim": 0.8181400299072266,
-   "best_score": 0.8181400299072266,
-   "started": "2026-06-21T14:29:57Z",
+   "n_iterations": 10,
+   "best_iter": 10,
+   "best_headroom": 0.07027027599821833,
+   "best_ssim": 0.8215878009796143,
+   "best_score": 0.8215878009796143,
+   "started": "2026-06-21T17:45:31Z",
    "status": "ranked",
    "params_M": 0.012165,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T14:29:57Z",
+   "ts": "2026-06-21T17:45:31Z",
    "curve": [
     [
      1,
@@ -899,9 +903,13 @@
     [
      9,
      0.0392
+    ],
+    [
+     10,
+     0.0703
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0009/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0010/comparison.png",
    "test_image": null
   },
   {
@@ -1461,18 +1469,18 @@
    "name": "TV-iterative (unrolled)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_iter": 7,
    "best_headroom": 0.0,
    "best_ssim": 0.8192296624183655,
    "best_score": 0.8192296624183655,
-   "started": "2026-06-21T15:14:35Z",
+   "started": "2026-06-21T17:45:51Z",
    "status": "excluded",
    "params_M": 2e-06,
    "excluded_reason": "discard",
    "agent": "tv_iterative_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T15:14:35Z",
+   "ts": "2026-06-21T17:45:51Z",
    "curve": [
     [
      1,
@@ -1508,6 +1516,10 @@
     ],
     [
      9,
+     null
+    ],
+    [
+     10,
      null
     ]
    ],
