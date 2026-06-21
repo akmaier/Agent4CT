@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T13:52:39Z",
+ "updated": "2026-06-21T14:12:36Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -76,15 +76,15 @@
     "solver_key": "itnet-v3",
     "solver_name": "ITNet v3",
     "run_id": "mayo-ldct-claude-agentic-itnet-v3-search-20260619-01",
-    "best_iter": 7,
+    "best_iter": 9,
     "params_M": 3.698994,
     "params_source": "observation",
-    "val_ssim": 0.9152405261993408,
-    "headroom": 0.33660659630690737,
-    "val_psnr": 37.64234161376953,
-    "val_rmse": 0.0006559232133440673,
-    "elapsed_s": 1139.0871605873108,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0007/comparison.png",
+    "val_ssim": 0.9218540191650391,
+    "headroom": 0.36081211726029994,
+    "val_psnr": 37.96519470214844,
+    "val_rmse": 0.0006319902604445815,
+    "elapsed_s": 924.3315908908844,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0009/comparison.png",
     "excluded_reason": null,
     "rank": 5
    },
@@ -605,18 +605,18 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 4,
    "best_headroom": 0.19761010181430883,
    "best_ssim": 0.9277111291885376,
    "best_score": 0.9277111291885376,
-   "started": "2026-06-21T11:28:18Z",
+   "started": "2026-06-21T13:54:33Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T11:28:18Z",
+   "ts": "2026-06-21T13:54:33Z",
    "curve": [
     [
      1,
@@ -648,6 +648,10 @@
     ],
     [
      8,
+     0.1976
+    ],
+    [
+     9,
      0.1976
     ]
    ],
@@ -882,18 +886,18 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 7,
    "best_headroom": 0.1540385157220353,
    "best_ssim": 0.8606796860694885,
    "best_score": 0.8606796860694885,
-   "started": "2026-06-21T10:50:03Z",
+   "started": "2026-06-21T13:52:47Z",
    "status": "ranked",
    "params_M": 0.004866,
    "excluded_reason": null,
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T10:50:03Z",
+   "ts": "2026-06-21T13:52:47Z",
    "curve": [
     [
      1,
@@ -925,6 +929,10 @@
     ],
     [
      8,
+     0.154
+    ],
+    [
+     9,
      0.154
     ]
    ],
@@ -1055,18 +1063,18 @@
    "name": "ITNet v3",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
-   "best_iter": 7,
-   "best_headroom": 0.33660659630690737,
-   "best_ssim": 0.9152405261993408,
-   "best_score": 0.9152405261993408,
-   "started": "2026-06-21T10:45:30Z",
+   "n_iterations": 9,
+   "best_iter": 9,
+   "best_headroom": 0.36081211726029994,
+   "best_ssim": 0.9218540191650391,
+   "best_score": 0.9218540191650391,
+   "started": "2026-06-21T14:04:06Z",
    "status": "ranked",
    "params_M": 3.698994,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T10:45:30Z",
+   "ts": "2026-06-21T14:04:06Z",
    "curve": [
     [
      1,
@@ -1099,9 +1107,13 @@
     [
      8,
      0.3366
+    ],
+    [
+     9,
+     0.3608
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0007/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0009/comparison.png",
    "test_image": null
   },
   {
@@ -1499,18 +1511,18 @@
    "name": "Wu 2015 trainable",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 6,
    "best_headroom": 0.09657953703471489,
    "best_ssim": 0.8232346177101135,
    "best_score": 0.8232346177101135,
-   "started": "2026-06-21T11:22:47Z",
+   "started": "2026-06-21T14:01:58Z",
    "status": "ranked",
    "params_M": 8e-06,
    "excluded_reason": null,
    "agent": "wu_2015_trainable-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T11:22:47Z",
+   "ts": "2026-06-21T14:01:58Z",
    "curve": [
     [
      1,
@@ -1542,6 +1554,10 @@
     ],
     [
      8,
+     0.0966
+    ],
+    [
+     9,
      0.0966
     ]
    ],
