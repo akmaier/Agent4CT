@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-21T11:32:48Z",
+ "updated": "2026-06-21T12:12:28Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -233,6 +233,22 @@
      "rank": null
     },
     {
+     "solver_key": "diff-recon-dcstep-unconstrained",
+     "solver_name": "Diffusion (unconstrained DPS)",
+     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
+     "best_iter": 8,
+     "params_M": 8.594211,
+     "params_source": "observation",
+     "val_ssim": 0.8784140348434448,
+     "headroom": 0.0,
+     "val_psnr": 30.59370231628418,
+     "val_rmse": 0.0014766748063266277,
+     "elapsed_s": 1051.567377090454,
+     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0008/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
      "solver_key": "fastdiff-flow-pixel-unconstrained",
      "solver_name": "Fast-diffusion flow (pixel, unconstrained)",
      "run_id": "mayo-ldct-claude-agentic-fastdiff-flow-pixel-unconstrained-search-20260620-01",
@@ -245,22 +261,6 @@
      "val_rmse": 0.0013774968683719635,
      "elapsed_s": 513.6191818714142,
      "image": "runs/mayo-ldct-claude-agentic-fastdiff-flow-pixel-unconstrained-search-20260620-01/iterations/iter-0001/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
-     "solver_key": "diff-recon-dcstep-unconstrained",
-     "solver_name": "Diffusion (unconstrained DPS)",
-     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01",
-     "best_iter": 7,
-     "params_M": 8.594211,
-     "params_source": "observation",
-     "val_ssim": 0.8711403608322144,
-     "headroom": 0.0,
-     "val_psnr": 29.821043014526367,
-     "val_rmse": 0.0016140536172315478,
-     "elapsed_s": 1078.6677799224854,
-     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0007/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
@@ -297,6 +297,22 @@
      "rank": null
     },
     {
+     "solver_key": "diff-recon-dcstep-constrained",
+     "solver_name": "Diffusion (constrained DPS+DC)",
+     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
+     "best_iter": 8,
+     "params_M": 8.594211,
+     "params_source": "observation",
+     "val_ssim": 0.8533481955528259,
+     "headroom": 0.0,
+     "val_psnr": 30.487794876098633,
+     "val_rmse": 0.0014947905438020825,
+     "elapsed_s": 1095.802490234375,
+     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0008/comparison.png",
+     "excluded_reason": "discard",
+     "rank": null
+    },
+    {
      "solver_key": "fastdiff-wdm-wavelet-constrained",
      "solver_name": "Fast-diffusion WDM (wavelet, constrained DC)",
      "run_id": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01",
@@ -309,22 +325,6 @@
      "val_rmse": 0.0014911019243299961,
      "elapsed_s": 415.45695781707764,
      "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01/iterations/iter-0001/comparison.png",
-     "excluded_reason": "discard",
-     "rank": null
-    },
-    {
-     "solver_key": "diff-recon-dcstep-constrained",
-     "solver_name": "Diffusion (constrained DPS+DC)",
-     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
-     "best_iter": 7,
-     "params_M": 8.594211,
-     "params_source": "observation",
-     "val_ssim": 0.8395798206329346,
-     "headroom": 0.0,
-     "val_psnr": 29.527376174926758,
-     "val_rmse": 0.0016695570666342974,
-     "elapsed_s": 1121.6415717601776,
-     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0007/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
