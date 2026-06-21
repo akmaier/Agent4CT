@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T10:22:58Z",
+ "updated": "2026-06-21T10:53:13Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -12,15 +12,15 @@
     "solver_key": "itnet-v2",
     "solver_name": "ITNet v2",
     "run_id": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
-    "best_iter": 7,
+    "best_iter": 8,
     "params_M": 0.232882,
     "params_source": "observation",
-    "val_ssim": 0.9413688778877258,
-    "headroom": 0.4187275784047181,
-    "val_psnr": 38.7901725769043,
-    "val_rmse": 0.0005747269606217742,
-    "elapsed_s": 1308.602224111557,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0007/comparison.png",
+    "val_ssim": 0.9427012801170349,
+    "headroom": 0.43017090010875747,
+    "val_psnr": 38.96287155151367,
+    "val_rmse": 0.0005634124972857535,
+    "elapsed_s": 1219.7033276557922,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0008/comparison.png",
     "excluded_reason": null,
     "rank": 1
    },
@@ -60,15 +60,15 @@
     "solver_key": "itnet",
     "solver_name": "ITNet v1",
     "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
-    "best_iter": 7,
+    "best_iter": 8,
     "params_M": 0.232881,
     "params_source": "observation",
-    "val_ssim": 0.9377476572990417,
-    "headroom": 0.3989564836933799,
-    "val_psnr": 38.4996452331543,
-    "val_rmse": 0.0005942754214629531,
-    "elapsed_s": 1008.8892087936401,
-    "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0007/comparison.png",
+    "val_ssim": 0.9408048987388611,
+    "headroom": 0.41433465591972507,
+    "val_psnr": 38.724769592285156,
+    "val_rmse": 0.0005790704162791371,
+    "elapsed_s": 1162.1393015384674,
+    "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0008/comparison.png",
     "excluded_reason": null,
     "rank": 4
    },
@@ -854,18 +854,18 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 7,
    "best_headroom": 0.1540385157220353,
    "best_ssim": 0.8606796860694885,
    "best_score": 0.8606796860694885,
-   "started": "2026-06-20T21:46:40Z",
+   "started": "2026-06-21T10:50:03Z",
    "status": "ranked",
    "params_M": 0.004866,
    "excluded_reason": null,
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T21:46:40Z",
+   "ts": "2026-06-21T10:50:03Z",
    "curve": [
     [
      1,
@@ -894,6 +894,10 @@
     [
      7,
      0.154
+    ],
+    [
+     8,
+     0.154
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0007/comparison.png",
@@ -905,18 +909,18 @@
    "name": "ITNet v1",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
-   "best_iter": 7,
-   "best_headroom": 0.3989564836933799,
-   "best_ssim": 0.9377476572990417,
-   "best_score": 0.9377476572990417,
-   "started": "2026-06-20T20:30:13Z",
+   "n_iterations": 8,
+   "best_iter": 8,
+   "best_headroom": 0.41433465591972507,
+   "best_ssim": 0.9408048987388611,
+   "best_score": 0.9408048987388611,
+   "started": "2026-06-21T10:44:13Z",
    "status": "ranked",
    "params_M": 0.232881,
    "excluded_reason": null,
    "agent": "itnet-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T20:30:13Z",
+   "ts": "2026-06-21T10:44:13Z",
    "curve": [
     [
      1,
@@ -945,9 +949,13 @@
     [
      7,
      0.399
+    ],
+    [
+     8,
+     0.4143
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0007/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0008/comparison.png",
    "test_image": null
   },
   {
@@ -956,18 +964,18 @@
    "name": "ITNet v2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
-   "best_iter": 7,
-   "best_headroom": 0.4187275784047181,
-   "best_ssim": 0.9413688778877258,
-   "best_score": 0.9413688778877258,
-   "started": "2026-06-20T21:11:42Z",
+   "n_iterations": 8,
+   "best_iter": 8,
+   "best_headroom": 0.43017090010875747,
+   "best_ssim": 0.9427012801170349,
+   "best_score": 0.9427012801170349,
+   "started": "2026-06-21T10:46:47Z",
    "status": "ranked",
    "params_M": 0.232882,
    "excluded_reason": null,
    "agent": "itnet_v2-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T21:11:42Z",
+   "ts": "2026-06-21T10:46:47Z",
    "curve": [
     [
      1,
@@ -996,9 +1004,13 @@
     [
      7,
      0.4187
+    ],
+    [
+     8,
+     0.4302
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0007/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0008/comparison.png",
    "test_image": null
   },
   {
@@ -1007,18 +1019,18 @@
    "name": "ITNet v3",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 7,
    "best_headroom": 0.33660659630690737,
    "best_ssim": 0.9152405261993408,
    "best_score": 0.9152405261993408,
-   "started": "2026-06-20T13:17:24Z",
+   "started": "2026-06-21T10:45:30Z",
    "status": "ranked",
    "params_M": 3.698994,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-20T13:17:24Z",
+   "ts": "2026-06-21T10:45:30Z",
    "curve": [
     [
      1,
@@ -1046,6 +1058,10 @@
     ],
     [
      7,
+     0.3366
+    ],
+    [
+     8,
      0.3366
     ]
    ],
