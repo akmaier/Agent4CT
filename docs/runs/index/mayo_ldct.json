@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-21T12:12:28Z",
+ "updated": "2026-06-21T12:32:17Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -550,18 +550,18 @@
    "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 2,
    "best_headroom": 0.02823715470493071,
    "best_ssim": 0.9191550016403198,
    "best_score": 0.9191550016403198,
-   "started": "2026-06-21T08:26:48Z",
+   "started": "2026-06-21T12:22:24Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T08:26:48Z",
+   "ts": "2026-06-21T12:22:24Z",
    "curve": [
     [
      1,
@@ -589,6 +589,10 @@
     ],
     [
      7,
+     0.0282
+    ],
+    [
+     8,
      0.0282
     ]
    ],
