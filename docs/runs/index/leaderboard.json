@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-21T19:32:34Z",
+ "updated": "2026-06-21T19:53:00Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -300,15 +300,15 @@
      "solver_key": "diff-recon-dcstep-constrained",
      "solver_name": "Diffusion (constrained DPS+DC)",
      "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
-     "best_iter": 8,
+     "best_iter": 10,
      "params_M": 8.594211,
      "params_source": "observation",
-     "val_ssim": 0.8533481955528259,
+     "val_ssim": 0.8533483147621155,
      "headroom": 0.0,
      "val_psnr": 30.487794876098633,
-     "val_rmse": 0.0014947905438020825,
-     "elapsed_s": 1095.802490234375,
-     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0008/comparison.png",
+     "val_rmse": 0.0014947904273867607,
+     "elapsed_s": 1090.4216532707214,
+     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0010/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
