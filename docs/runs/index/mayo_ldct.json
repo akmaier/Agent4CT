@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T17:21:08Z",
+ "updated": "2026-06-22T17:32:45Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -472,18 +472,18 @@
    "name": "Diffusion (unconstrained DPS)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 16,
+   "n_iterations": 17,
    "best_iter": 16,
    "best_headroom": 0.0,
    "best_ssim": 0.8786209225654602,
    "best_score": 0.8786209225654602,
-   "started": "2026-06-22T15:59:10Z",
+   "started": "2026-06-22T17:27:17Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T15:59:10Z",
+   "ts": "2026-06-22T17:27:17Z",
    "curve": [
     [
      1,
@@ -547,6 +547,10 @@
     ],
     [
      16,
+     null
+    ],
+    [
+     17,
      null
     ]
    ],
@@ -1423,18 +1427,18 @@
    "name": "ITNet v3",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 17,
+   "n_iterations": 18,
    "best_iter": 16,
    "best_headroom": 0.36971434936178993,
    "best_ssim": 0.9260949492454529,
    "best_score": 0.9260949492454529,
-   "started": "2026-06-22T16:28:56Z",
+   "started": "2026-06-22T17:25:33Z",
    "status": "ranked",
    "params_M": 3.698994,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T16:28:56Z",
+   "ts": "2026-06-22T17:25:33Z",
    "curve": [
     [
      1,
@@ -1502,6 +1506,10 @@
     ],
     [
      17,
+     0.3697
+    ],
+    [
+     18,
      0.3697
     ]
    ],
@@ -1957,18 +1965,18 @@
    "name": "TV-iterative (unrolled)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 16,
+   "n_iterations": 17,
    "best_iter": 7,
    "best_headroom": 0.0,
    "best_ssim": 0.8192296624183655,
    "best_score": 0.8192296624183655,
-   "started": "2026-06-22T17:03:29Z",
+   "started": "2026-06-22T17:21:42Z",
    "status": "excluded",
    "params_M": 2e-06,
    "excluded_reason": "discard",
    "agent": "tv_iterative_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T17:03:29Z",
+   "ts": "2026-06-22T17:21:42Z",
    "curve": [
     [
      1,
@@ -2032,6 +2040,10 @@
     ],
     [
      16,
+     null
+    ],
+    [
+     17,
      null
     ]
    ],
