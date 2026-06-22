@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T01:32:16Z",
+ "updated": "2026-06-22T01:52:12Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -385,18 +385,18 @@
    "name": "Diffusion (constrained DPS+DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.8533483147621155,
    "best_score": 0.8533483147621155,
-   "started": "2026-06-21T21:51:40Z",
+   "started": "2026-06-22T01:32:31Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T21:51:40Z",
+   "ts": "2026-06-22T01:32:31Z",
    "curve": [
     [
      1,
@@ -440,6 +440,10 @@
     ],
     [
      11,
+     null
+    ],
+    [
+     12,
      null
     ]
    ],
@@ -1057,18 +1061,18 @@
    "name": "ITNet v1",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 12,
+   "n_iterations": 13,
    "best_iter": 12,
    "best_headroom": 0.4364123587238602,
    "best_ssim": 0.9443771243095398,
    "best_score": 0.9443771243095398,
-   "started": "2026-06-21T22:35:52Z",
+   "started": "2026-06-22T01:49:21Z",
    "status": "ranked",
    "params_M": 0.232881,
    "excluded_reason": null,
    "agent": "itnet-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T22:35:52Z",
+   "ts": "2026-06-22T01:49:21Z",
    "curve": [
     [
      1,
@@ -1116,6 +1120,10 @@
     ],
     [
      12,
+     0.4364
+    ],
+    [
+     13,
      0.4364
     ]
    ],
@@ -1408,18 +1416,18 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.7696720957756042,
    "best_score": 0.7696720957756042,
-   "started": "2026-06-21T22:54:31Z",
+   "started": "2026-06-22T01:43:44Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T22:54:31Z",
+   "ts": "2026-06-22T01:43:44Z",
    "curve": [
     [
      1,
@@ -1463,6 +1471,10 @@
     ],
     [
      11,
+     null
+    ],
+    [
+     12,
      null
     ]
    ],
