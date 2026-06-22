@@ -78,6 +78,14 @@ if ! python3 scripts/validate_registry.py; then
 fi
 
 # --- 4. stage + commit ---------------------------------------------------------
+# The registry's SOURCE scripts MUST travel with the views they generated. The
+# build above ran against the WORKING-TREE versions of these files; if a change
+# to one of them is left uncommitted, the committed tree pairs new views with an
+# old script and CI's fresh rebuild drifts from the recorded content_hash (the
+# registry-gate failure mode). Stage them first so the gate's
+# "fresh rebuild == recorded hash" invariant always holds on the remote.
+git add scripts/build_registry.py scripts/validate_registry.py scripts/registry_lib.py \
+        2>/dev/null || true
 git add docs/runs/index docs/runs/scratch docs/runs/CURRENT_RUNIDS.json \
         docs/leaderboards README.md \
         $(git ls-files --modified --others --exclude-standard docs/runs | grep -E '^docs/runs/[^/]+/' || true) \

@@ -122,6 +122,10 @@ DISPLAY_NAMES = {
     "diff-recon-dcstep-constrained-mayo-v4": "Diffusion (constrained DPS+DC)",
     "diff-recon-dcstep-unconstrained": "Diffusion (unconstrained DPS)",
     "diff-recon-dcstep-unconstrained-mayo-v4": "Diffusion (unconstrained DPS)",
+    "fastdiff-flow-pixel-constrained": "Fast-diffusion flow (pixel, constrained DC)",
+    "fastdiff-flow-pixel-unconstrained": "Fast-diffusion flow (pixel, unconstrained)",
+    "fastdiff-wdm-wavelet-constrained": "Fast-diffusion WDM (wavelet, constrained DC)",
+    "fastdiff-wdm-wavelet-unconstrained": "Fast-diffusion WDM (wavelet, unconstrained)",
 }
 
 
