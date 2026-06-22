@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T06:32:10Z",
+ "updated": "2026-06-22T06:52:06Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -460,18 +460,18 @@
    "name": "Diffusion (unconstrained DPS)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 13,
+   "n_iterations": 14,
    "best_iter": 8,
    "best_headroom": 0.0,
    "best_ssim": 0.8784140348434448,
    "best_score": 0.8784140348434448,
-   "started": "2026-06-22T03:56:12Z",
+   "started": "2026-06-22T06:33:01Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T03:56:12Z",
+   "ts": "2026-06-22T06:33:01Z",
    "curve": [
     [
      1,
@@ -523,6 +523,10 @@
     ],
     [
      13,
+     null
+    ],
+    [
+     14,
      null
     ]
    ],
@@ -1741,18 +1745,18 @@
    "name": "TV-iterative (unrolled)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 13,
+   "n_iterations": 14,
    "best_iter": 7,
    "best_headroom": 0.0,
    "best_ssim": 0.8192296624183655,
    "best_score": 0.8192296624183655,
-   "started": "2026-06-22T03:57:07Z",
+   "started": "2026-06-22T06:37:35Z",
    "status": "excluded",
    "params_M": 2e-06,
    "excluded_reason": "discard",
    "agent": "tv_iterative_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T03:57:07Z",
+   "ts": "2026-06-22T06:37:35Z",
    "curve": [
     [
      1,
@@ -1804,6 +1808,10 @@
     ],
     [
      13,
+     null
+    ],
+    [
+     14,
      null
     ]
    ],
