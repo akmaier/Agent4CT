@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T02:32:20Z",
+ "updated": "2026-06-22T02:52:01Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -1574,18 +1574,18 @@
    "name": "TV-iterative",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 12,
+   "n_iterations": 13,
    "best_iter": 4,
    "best_headroom": 0.20854684219988984,
    "best_ssim": 0.9266639351844788,
    "best_score": 0.9266639351844788,
-   "started": "2026-06-21T23:32:56Z",
+   "started": "2026-06-22T02:34:02Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "tv_iterative-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T23:32:56Z",
+   "ts": "2026-06-22T02:34:02Z",
    "curve": [
     [
      1,
@@ -1633,6 +1633,10 @@
     ],
     [
      12,
+     0.2085
+    ],
+    [
+     13,
      0.2085
     ]
    ],
