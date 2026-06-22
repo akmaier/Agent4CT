@@ -1,11 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=mayo-agentic-iter
 #SBATCH --partition=main
+#SBATCH --qos=turbo
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=lme49,lme50,lme51,lme52,lme53,lme170,lme171,lme221
-#SBATCH --mem=32G
+#SBATCH --exclude=lme49,lme50,lme51,lme52,lme53,lme170
+#SBATCH --mem=24G
 #SBATCH --time=00:30:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
 #SBATCH --error=/cluster/maier/Agent4CT/results/slurm/%x-%j.err
