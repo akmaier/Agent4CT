@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T19:33:10Z",
+ "updated": "2026-06-22T19:52:57Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -480,18 +480,18 @@
    "name": "Diffusion (unconstrained DPS)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 16,
    "best_headroom": 0.0,
    "best_ssim": 0.8786209225654602,
    "best_score": 0.8786209225654602,
-   "started": "2026-06-22T19:28:10Z",
+   "started": "2026-06-22T19:48:09Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T19:28:10Z",
+   "ts": "2026-06-22T19:48:09Z",
    "curve": [
     [
      1,
@@ -567,6 +567,10 @@
     ],
     [
      19,
+     null
+    ],
+    [
+     20,
      null
     ]
    ],
@@ -1095,18 +1099,18 @@
    "name": "Hammernik VN (2017)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 16,
    "best_headroom": 0.07027057035110529,
    "best_ssim": 0.8215885162353516,
    "best_score": 0.8215885162353516,
-   "started": "2026-06-22T18:55:33Z",
+   "started": "2026-06-22T19:50:25Z",
    "status": "ranked",
    "params_M": 0.012165,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:55:33Z",
+   "ts": "2026-06-22T19:50:25Z",
    "curve": [
     [
      1,
@@ -1182,6 +1186,10 @@
     ],
     [
      19,
+     0.0703
+    ],
+    [
+     20,
      0.0703
     ]
    ],
@@ -1701,18 +1709,18 @@
    "name": "NAF",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 18,
    "best_headroom": 0.0,
    "best_ssim": 0.7376402616500854,
    "best_score": 0.7376402616500854,
-   "started": "2026-06-22T18:12:46Z",
+   "started": "2026-06-22T19:32:31Z",
    "status": "excluded",
    "params_M": 33.557601,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:12:46Z",
+   "ts": "2026-06-22T19:32:31Z",
    "curve": [
     [
      1,
@@ -1784,6 +1792,10 @@
     ],
     [
      18,
+     null
+    ],
+    [
+     19,
      null
     ]
    ],
