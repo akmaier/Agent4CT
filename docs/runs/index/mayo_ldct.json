@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T17:06:11Z",
+ "updated": "2026-06-22T17:21:08Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -364,15 +364,15 @@
     "solver_key": "naf",
     "solver_name": "NAF",
     "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
-    "best_iter": 15,
+    "best_iter": 16,
     "params_M": 33.557601,
     "params_source": "observation",
-    "val_ssim": 0.6963891386985779,
+    "val_ssim": 0.7375798225402832,
     "headroom": 0.0,
-    "val_psnr": 23.419326782226562,
-    "val_rmse": 0.0033729011192917824,
-    "elapsed_s": 1103.3098998069763,
-    "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0015/comparison.png",
+    "val_psnr": 24.233600616455078,
+    "val_rmse": 0.0030710718128830194,
+    "elapsed_s": 1096.1260395050049,
+    "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0016/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    }
@@ -385,18 +385,18 @@
    "name": "Diffusion (constrained DPS+DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 15,
+   "n_iterations": 16,
    "best_iter": 15,
    "best_headroom": 0.0,
    "best_ssim": 0.853421151638031,
    "best_score": 0.853421151638031,
-   "started": "2026-06-22T16:20:35Z",
+   "started": "2026-06-22T17:14:28Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T16:20:35Z",
+   "ts": "2026-06-22T17:14:28Z",
    "curve": [
     [
      1,
@@ -456,6 +456,10 @@
     ],
     [
      15,
+     null
+    ],
+    [
+     16,
      null
     ]
    ],
@@ -828,18 +832,18 @@
    "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 17,
+   "n_iterations": 18,
    "best_iter": 12,
    "best_headroom": 0.4227768733294738,
    "best_ssim": 0.9333972334861755,
    "best_score": 0.9333972334861755,
-   "started": "2026-06-22T16:27:03Z",
+   "started": "2026-06-22T17:10:01Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T16:27:03Z",
+   "ts": "2026-06-22T17:10:01Z",
    "curve": [
     [
      1,
@@ -907,6 +911,10 @@
     ],
     [
      17,
+     0.4228
+    ],
+    [
+     18,
      0.4228
     ]
    ],
@@ -1593,18 +1601,18 @@
    "name": "NAF",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 15,
-   "best_iter": 15,
+   "n_iterations": 16,
+   "best_iter": 16,
    "best_headroom": 0.0,
-   "best_ssim": 0.6963891386985779,
-   "best_score": 0.6963891386985779,
-   "started": "2026-06-22T16:24:59Z",
+   "best_ssim": 0.7375798225402832,
+   "best_score": 0.7375798225402832,
+   "started": "2026-06-22T17:17:40Z",
    "status": "excluded",
    "params_M": 33.557601,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T16:24:59Z",
+   "ts": "2026-06-22T17:17:40Z",
    "curve": [
     [
      1,
@@ -1665,9 +1673,13 @@
     [
      15,
      null
+    ],
+    [
+     16,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0015/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0016/comparison.png",
    "test_image": null
   },
   {
@@ -1676,18 +1688,18 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 15,
+   "n_iterations": 16,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.7696720957756042,
    "best_score": 0.7696720957756042,
-   "started": "2026-06-22T16:20:51Z",
+   "started": "2026-06-22T17:18:17Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T16:20:51Z",
+   "ts": "2026-06-22T17:18:17Z",
    "curve": [
     [
      1,
@@ -1747,6 +1759,10 @@
     ],
     [
      15,
+     null
+    ],
+    [
+     16,
      null
     ]
    ],
