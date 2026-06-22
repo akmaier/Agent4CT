@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-22T15:12:33Z",
+ "updated": "2026-06-22T15:32:45Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -172,15 +172,15 @@
      "solver_key": "dual-domain-bilateral-supervised",
      "solver_name": "DD-BF supervised L2",
      "run_id": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
-     "best_iter": 2,
+     "best_iter": 16,
      "params_M": 1.2e-05,
      "params_source": "observation",
      "val_ssim": 0.9191550016403198,
-     "headroom": 0.02823715470493071,
+     "headroom": 0.028237213575508013,
      "val_psnr": 34.32655715942383,
-     "val_rmse": 0.0009608202381059527,
-     "elapsed_s": 449.6247591972351,
-     "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
+     "val_rmse": 0.0009608201798982918,
+     "elapsed_s": 385.884165763855,
+     "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0016/comparison.png",
      "excluded_reason": null,
      "rank": 11
     },
