@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T01:52:12Z",
+ "updated": "2026-06-22T02:12:16Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -1136,18 +1136,18 @@
    "name": "ITNet v2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 12,
+   "n_iterations": 13,
    "best_iter": 12,
    "best_headroom": 0.4346333487456505,
    "best_ssim": 0.9435687065124512,
    "best_score": 0.9435687065124512,
-   "started": "2026-06-21T22:34:49Z",
+   "started": "2026-06-22T02:10:09Z",
    "status": "ranked",
    "params_M": 0.232882,
    "excluded_reason": null,
    "agent": "itnet_v2-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T22:34:49Z",
+   "ts": "2026-06-22T02:10:09Z",
    "curve": [
     [
      1,
@@ -1195,6 +1195,10 @@
     ],
     [
      12,
+     0.4346
+    ],
+    [
+     13,
      0.4346
     ]
    ],
@@ -1349,18 +1353,18 @@
    "name": "NAF",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.6956678032875061,
    "best_score": 0.6956678032875061,
-   "started": "2026-06-21T22:53:09Z",
+   "started": "2026-06-22T01:52:10Z",
    "status": "excluded",
    "params_M": 33.557601,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T22:53:09Z",
+   "ts": "2026-06-22T01:52:10Z",
    "curve": [
     [
      1,
@@ -1404,6 +1408,10 @@
     ],
     [
      11,
+     null
+    ],
+    [
+     12,
      null
     ]
    ],
