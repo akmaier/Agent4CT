@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T03:32:11Z",
+ "updated": "2026-06-22T03:52:15Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -527,18 +527,18 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 12,
+   "n_iterations": 13,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.9254710674285889,
    "best_score": 0.9254710674285889,
-   "started": "2026-06-22T00:36:14Z",
+   "started": "2026-06-22T03:39:15Z",
    "status": "excluded",
    "params_M": 1.2e-05,
    "excluded_reason": "discard",
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T00:36:14Z",
+   "ts": "2026-06-22T03:39:15Z",
    "curve": [
     [
      1,
@@ -586,6 +586,10 @@
     ],
     [
      12,
+     null
+    ],
+    [
+     13,
      null
     ]
    ],
@@ -1306,18 +1310,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 12,
+   "n_iterations": 13,
    "best_iter": 4,
    "best_headroom": 0.0,
    "best_ssim": 0.8980332016944885,
    "best_score": 0.8980332016944885,
-   "started": "2026-06-22T00:36:22Z",
+   "started": "2026-06-22T03:51:36Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T00:36:22Z",
+   "ts": "2026-06-22T03:51:36Z",
    "curve": [
     [
      1,
@@ -1365,6 +1369,10 @@
     ],
     [
      12,
+     null
+    ],
+    [
+     13,
      null
     ]
    ],
@@ -1519,18 +1527,18 @@
    "name": "RAM (zero-shot)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 12,
+   "n_iterations": 13,
    "best_iter": 5,
    "best_headroom": 0.0,
    "best_ssim": 0.9070974588394165,
    "best_score": 0.9070974588394165,
-   "started": "2026-06-22T00:36:26Z",
+   "started": "2026-06-22T03:33:38Z",
    "status": "excluded",
    "params_M": 35.618953,
    "excluded_reason": "discard",
    "agent": "ram_zeroshot-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T00:36:26Z",
+   "ts": "2026-06-22T03:33:38Z",
    "curve": [
     [
      1,
@@ -1578,6 +1586,10 @@
     ],
     [
      12,
+     null
+    ],
+    [
+     13,
      null
     ]
    ],
