@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-22T18:12:53Z",
+ "updated": "2026-06-22T18:32:39Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -364,15 +364,15 @@
      "solver_key": "naf",
      "solver_name": "NAF",
      "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
-     "best_iter": 16,
+     "best_iter": 18,
      "params_M": 33.557601,
      "params_source": "observation",
-     "val_ssim": 0.7375798225402832,
+     "val_ssim": 0.7376402616500854,
      "headroom": 0.0,
-     "val_psnr": 24.233600616455078,
-     "val_rmse": 0.0030710718128830194,
-     "elapsed_s": 1096.1260395050049,
-     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0016/comparison.png",
+     "val_psnr": 24.244497299194336,
+     "val_rmse": 0.0030672221910208464,
+     "elapsed_s": 1095.162609577179,
+     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0018/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     }
