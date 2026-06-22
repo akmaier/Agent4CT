@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T08:32:13Z",
+ "updated": "2026-06-22T08:52:21Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -622,18 +622,18 @@
    "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 2,
    "best_headroom": 0.02823715470493071,
    "best_ssim": 0.9191550016403198,
    "best_score": 0.9191550016403198,
-   "started": "2026-06-22T06:05:40Z",
+   "started": "2026-06-22T08:45:20Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T06:05:40Z",
+   "ts": "2026-06-22T08:45:20Z",
    "curve": [
     [
      1,
@@ -690,6 +690,10 @@
     [
      14,
      0.0282
+    ],
+    [
+     15,
+     0.0282
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0002/comparison.png",
@@ -701,18 +705,18 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 4,
    "best_headroom": 0.19761010181430883,
    "best_ssim": 0.9277111291885376,
    "best_score": 0.9277111291885376,
-   "started": "2026-06-22T05:32:09Z",
+   "started": "2026-06-22T08:32:19Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T05:32:09Z",
+   "ts": "2026-06-22T08:32:19Z",
    "curve": [
     [
      1,
@@ -768,6 +772,10 @@
     ],
     [
      14,
+     0.1976
+    ],
+    [
+     15,
      0.1976
     ]
    ],
@@ -971,18 +979,18 @@
    "name": "Hammernik VN (2017)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 12,
    "best_headroom": 0.07027057035110529,
    "best_ssim": 0.8215882182121277,
    "best_score": 0.8215882182121277,
-   "started": "2026-06-22T05:45:10Z",
+   "started": "2026-06-22T08:44:40Z",
    "status": "ranked",
    "params_M": 0.012165,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T05:45:10Z",
+   "ts": "2026-06-22T08:44:40Z",
    "curve": [
     [
      1,
@@ -1038,6 +1046,10 @@
     ],
     [
      14,
+     0.0703
+    ],
+    [
+     15,
      0.0703
     ]
    ],
