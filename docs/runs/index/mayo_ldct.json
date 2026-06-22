@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T19:52:57Z",
+ "updated": "2026-06-22T20:14:14Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -385,18 +385,18 @@
    "name": "Diffusion (constrained DPS+DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 15,
    "best_headroom": 0.0,
    "best_ssim": 0.853421151638031,
    "best_score": 0.853421151638031,
-   "started": "2026-06-22T18:32:21Z",
+   "started": "2026-06-22T20:01:53Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:32:21Z",
+   "ts": "2026-06-22T20:01:53Z",
    "curve": [
     [
      1,
@@ -468,6 +468,10 @@
     ],
     [
      18,
+     null
+    ],
+    [
+     19,
      null
     ]
    ],
@@ -583,18 +587,18 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 14,
    "best_headroom": 0.0,
    "best_ssim": 0.9254806637763977,
    "best_score": 0.9254806637763977,
-   "started": "2026-06-22T19:29:32Z",
+   "started": "2026-06-22T19:52:35Z",
    "status": "excluded",
    "params_M": 1.2e-05,
    "excluded_reason": "discard",
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T19:29:32Z",
+   "ts": "2026-06-22T19:52:35Z",
    "curve": [
     [
      1,
@@ -670,6 +674,10 @@
     ],
     [
      19,
+     null
+    ],
+    [
+     20,
      null
     ]
    ],
@@ -1202,18 +1210,18 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 12,
    "best_headroom": 0.18322413429932882,
    "best_ssim": 0.8658959865570068,
    "best_score": 0.8658959865570068,
-   "started": "2026-06-22T18:46:49Z",
+   "started": "2026-06-22T19:54:16Z",
    "status": "ranked",
    "params_M": 0.004866,
    "excluded_reason": null,
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:46:49Z",
+   "ts": "2026-06-22T19:54:16Z",
    "curve": [
     [
      1,
@@ -1289,6 +1297,10 @@
     ],
     [
      19,
+     0.1832
+    ],
+    [
+     20,
      0.1832
     ]
    ],
@@ -1610,18 +1622,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 16,
    "best_headroom": 0.0,
    "best_ssim": 0.909092366695404,
    "best_score": 0.909092366695404,
-   "started": "2026-06-22T19:29:51Z",
+   "started": "2026-06-22T19:55:43Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T19:29:51Z",
+   "ts": "2026-06-22T19:55:43Z",
    "curve": [
     [
      1,
@@ -1697,6 +1709,10 @@
     ],
     [
      19,
+     null
+    ],
+    [
+     20,
      null
     ]
    ],
@@ -1709,18 +1725,18 @@
    "name": "NAF",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 18,
    "best_headroom": 0.0,
    "best_ssim": 0.7376402616500854,
    "best_score": 0.7376402616500854,
-   "started": "2026-06-22T19:32:31Z",
+   "started": "2026-06-22T20:12:03Z",
    "status": "excluded",
    "params_M": 33.557601,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T19:32:31Z",
+   "ts": "2026-06-22T20:12:03Z",
    "curve": [
     [
      1,
@@ -1796,6 +1812,10 @@
     ],
     [
      19,
+     null
+    ],
+    [
+     20,
      null
     ]
    ],
@@ -1808,18 +1828,18 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.7696720957756042,
    "best_score": 0.7696720957756042,
-   "started": "2026-06-22T19:12:29Z",
+   "started": "2026-06-22T19:58:31Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T19:12:29Z",
+   "ts": "2026-06-22T19:58:31Z",
    "curve": [
     [
      1,
@@ -1895,6 +1915,10 @@
     ],
     [
      19,
+     null
+    ],
+    [
+     20,
      null
     ]
    ],
@@ -1907,18 +1931,18 @@
    "name": "RAM (zero-shot)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 5,
    "best_headroom": 0.0,
    "best_ssim": 0.9070974588394165,
    "best_score": 0.9070974588394165,
-   "started": "2026-06-22T19:10:32Z",
+   "started": "2026-06-22T20:02:48Z",
    "status": "excluded",
    "params_M": 35.618953,
    "excluded_reason": "discard",
    "agent": "ram_zeroshot-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T19:10:32Z",
+   "ts": "2026-06-22T20:02:48Z",
    "curve": [
     [
      1,
@@ -1994,6 +2018,10 @@
     ],
     [
      19,
+     null
+    ],
+    [
+     20,
      null
     ]
    ],
