@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T00:12:08Z",
+ "updated": "2026-06-22T01:12:18Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -519,18 +519,18 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.9254710674285889,
    "best_score": 0.9254710674285889,
-   "started": "2026-06-21T22:06:02Z",
+   "started": "2026-06-22T00:36:14Z",
    "status": "excluded",
    "params_M": 1.2e-05,
    "excluded_reason": "discard",
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T22:06:02Z",
+   "ts": "2026-06-22T00:36:14Z",
    "curve": [
     [
      1,
@@ -575,6 +575,10 @@
     [
      11,
      null
+    ],
+    [
+     12,
+     null
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0010/comparison.png",
@@ -586,18 +590,18 @@
    "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 2,
    "best_headroom": 0.02823715470493071,
    "best_ssim": 0.9191550016403198,
    "best_score": 0.9191550016403198,
-   "started": "2026-06-21T20:57:02Z",
+   "started": "2026-06-22T00:20:20Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T20:57:02Z",
+   "ts": "2026-06-22T00:20:20Z",
    "curve": [
     [
      1,
@@ -641,6 +645,10 @@
     ],
     [
      11,
+     0.0282
+    ],
+    [
+     12,
      0.0282
     ]
    ],
@@ -1258,18 +1266,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 4,
    "best_headroom": 0.0,
    "best_ssim": 0.8980332016944885,
    "best_score": 0.8980332016944885,
-   "started": "2026-06-21T21:06:22Z",
+   "started": "2026-06-22T00:36:22Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T21:06:22Z",
+   "ts": "2026-06-22T00:36:22Z",
    "curve": [
     [
      1,
@@ -1313,6 +1321,10 @@
     ],
     [
      11,
+     null
+    ],
+    [
+     12,
      null
     ]
    ],
@@ -1459,18 +1471,18 @@
    "name": "RAM (zero-shot)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 5,
    "best_headroom": 0.0,
    "best_ssim": 0.9070974588394165,
    "best_score": 0.9070974588394165,
-   "started": "2026-06-21T21:09:00Z",
+   "started": "2026-06-22T00:36:26Z",
    "status": "excluded",
    "params_M": 35.618953,
    "excluded_reason": "discard",
    "agent": "ram_zeroshot-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-21T21:09:00Z",
+   "ts": "2026-06-22T00:36:26Z",
    "curve": [
     [
      1,
@@ -1514,6 +1526,10 @@
     ],
     [
      11,
+     null
+    ],
+    [
+     12,
      null
     ]
    ],
