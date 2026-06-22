@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T20:14:14Z",
+ "updated": "2026-06-22T20:33:40Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -385,18 +385,18 @@
    "name": "Diffusion (constrained DPS+DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 15,
    "best_headroom": 0.0,
    "best_ssim": 0.853421151638031,
    "best_score": 0.853421151638031,
-   "started": "2026-06-22T20:01:53Z",
+   "started": "2026-06-22T20:29:18Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T20:01:53Z",
+   "ts": "2026-06-22T20:29:18Z",
    "curve": [
     [
      1,
@@ -472,6 +472,10 @@
     ],
     [
      19,
+     null
+    ],
+    [
+     20,
      null
     ]
    ],
