@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T16:13:40Z",
+ "updated": "2026-06-22T16:32:16Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -300,15 +300,15 @@
     "solver_key": "diff-recon-dcstep-constrained",
     "solver_name": "Diffusion (constrained DPS+DC)",
     "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01",
-    "best_iter": 10,
+    "best_iter": 15,
     "params_M": 8.594211,
     "params_source": "observation",
-    "val_ssim": 0.8533483147621155,
+    "val_ssim": 0.853421151638031,
     "headroom": 0.0,
-    "val_psnr": 30.487794876098633,
-    "val_rmse": 0.0014947904273867607,
-    "elapsed_s": 1090.4216532707214,
-    "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0010/comparison.png",
+    "val_psnr": 30.496139526367188,
+    "val_rmse": 0.0014933549100533128,
+    "elapsed_s": 820.4260549545288,
+    "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0015/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -364,15 +364,15 @@
     "solver_key": "naf",
     "solver_name": "NAF",
     "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01",
-    "best_iter": 13,
+    "best_iter": 15,
     "params_M": 33.557601,
     "params_source": "observation",
-    "val_ssim": 0.6958579421043396,
+    "val_ssim": 0.6963891386985779,
     "headroom": 0.0,
-    "val_psnr": 23.391124725341797,
-    "val_rmse": 0.003383871167898178,
-    "elapsed_s": 1096.0006265640259,
-    "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0013/comparison.png",
+    "val_psnr": 23.419326782226562,
+    "val_rmse": 0.0033729011192917824,
+    "elapsed_s": 1103.3098998069763,
+    "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0015/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    }
@@ -385,18 +385,18 @@
    "name": "Diffusion (constrained DPS+DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
-   "best_iter": 10,
+   "n_iterations": 15,
+   "best_iter": 15,
    "best_headroom": 0.0,
-   "best_ssim": 0.8533483147621155,
-   "best_score": 0.8533483147621155,
-   "started": "2026-06-22T06:52:12Z",
+   "best_ssim": 0.853421151638031,
+   "best_score": 0.853421151638031,
+   "started": "2026-06-22T16:20:35Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T06:52:12Z",
+   "ts": "2026-06-22T16:20:35Z",
    "curve": [
     [
      1,
@@ -453,9 +453,13 @@
     [
      14,
      null
+    ],
+    [
+     15,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0010/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0015/comparison.png",
    "test_image": null
   },
   {
@@ -816,18 +820,18 @@
    "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 16,
+   "n_iterations": 17,
    "best_iter": 12,
    "best_headroom": 0.4227768733294738,
    "best_ssim": 0.9333972334861755,
    "best_score": 0.9333972334861755,
-   "started": "2026-06-22T15:34:29Z",
+   "started": "2026-06-22T16:27:03Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T15:34:29Z",
+   "ts": "2026-06-22T16:27:03Z",
    "curve": [
     [
      1,
@@ -891,6 +895,10 @@
     ],
     [
      16,
+     0.4228
+    ],
+    [
+     17,
      0.4228
     ]
    ],
@@ -1276,18 +1284,18 @@
    "name": "ITNet v2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 16,
+   "n_iterations": 17,
    "best_iter": 14,
    "best_headroom": 0.4353518641427202,
    "best_ssim": 0.9441940188407898,
    "best_score": 0.9441940188407898,
-   "started": "2026-06-22T15:23:35Z",
+   "started": "2026-06-22T16:15:46Z",
    "status": "ranked",
    "params_M": 0.232882,
    "excluded_reason": null,
    "agent": "itnet_v2-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T15:23:35Z",
+   "ts": "2026-06-22T16:15:46Z",
    "curve": [
     [
      1,
@@ -1352,6 +1360,10 @@
     [
      16,
      0.4354
+    ],
+    [
+     17,
+     0.4354
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0014/comparison.png",
@@ -1363,18 +1375,18 @@
    "name": "ITNet v3",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 16,
+   "n_iterations": 17,
    "best_iter": 16,
    "best_headroom": 0.36971434936178993,
    "best_ssim": 0.9260949492454529,
    "best_score": 0.9260949492454529,
-   "started": "2026-06-22T15:35:56Z",
+   "started": "2026-06-22T16:28:56Z",
    "status": "ranked",
    "params_M": 3.698994,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T15:35:56Z",
+   "ts": "2026-06-22T16:28:56Z",
    "curve": [
     [
      1,
@@ -1438,6 +1450,10 @@
     ],
     [
      16,
+     0.3697
+    ],
+    [
+     17,
      0.3697
     ]
    ],
@@ -1537,18 +1553,18 @@
    "name": "NAF",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
-   "best_iter": 13,
+   "n_iterations": 15,
+   "best_iter": 15,
    "best_headroom": 0.0,
-   "best_ssim": 0.6958579421043396,
-   "best_score": 0.6958579421043396,
-   "started": "2026-06-22T07:10:50Z",
+   "best_ssim": 0.6963891386985779,
+   "best_score": 0.6963891386985779,
+   "started": "2026-06-22T16:24:59Z",
    "status": "excluded",
    "params_M": 33.557601,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T07:10:50Z",
+   "ts": "2026-06-22T16:24:59Z",
    "curve": [
     [
      1,
@@ -1605,9 +1621,13 @@
     [
      14,
      null
+    ],
+    [
+     15,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0013/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0015/comparison.png",
    "test_image": null
   },
   {
@@ -1616,18 +1636,18 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.7696720957756042,
    "best_score": 0.7696720957756042,
-   "started": "2026-06-22T06:51:52Z",
+   "started": "2026-06-22T16:20:51Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T06:51:52Z",
+   "ts": "2026-06-22T16:20:51Z",
    "curve": [
     [
      1,
@@ -1683,6 +1703,10 @@
     ],
     [
      14,
+     null
+    ],
+    [
+     15,
      null
     ]
    ],
@@ -2043,18 +2067,18 @@
    "name": "Wu 2015 trainable",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 16,
+   "n_iterations": 17,
    "best_iter": 10,
    "best_headroom": 0.0966342866716895,
    "best_ssim": 0.8229125738143921,
    "best_score": 0.8229125738143921,
-   "started": "2026-06-22T15:41:17Z",
+   "started": "2026-06-22T16:31:04Z",
    "status": "ranked",
    "params_M": 8e-06,
    "excluded_reason": null,
    "agent": "wu_2015_trainable-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T15:41:17Z",
+   "ts": "2026-06-22T16:31:04Z",
    "curve": [
     [
      1,
@@ -2118,6 +2142,10 @@
     ],
     [
      16,
+     0.0966
+    ],
+    [
+     17,
      0.0966
     ]
    ],
