@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T19:12:55Z",
+ "updated": "2026-06-22T19:33:10Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -480,18 +480,18 @@
    "name": "Diffusion (unconstrained DPS)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 16,
    "best_headroom": 0.0,
    "best_ssim": 0.8786209225654602,
    "best_score": 0.8786209225654602,
-   "started": "2026-06-22T18:11:06Z",
+   "started": "2026-06-22T19:28:10Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:11:06Z",
+   "ts": "2026-06-22T19:28:10Z",
    "curve": [
     [
      1,
@@ -563,6 +563,10 @@
     ],
     [
      18,
+     null
+    ],
+    [
+     19,
      null
     ]
    ],
@@ -575,18 +579,18 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 14,
    "best_headroom": 0.0,
    "best_ssim": 0.9254806637763977,
    "best_score": 0.9254806637763977,
-   "started": "2026-06-22T18:20:09Z",
+   "started": "2026-06-22T19:29:32Z",
    "status": "excluded",
    "params_M": 1.2e-05,
    "excluded_reason": "discard",
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:20:09Z",
+   "ts": "2026-06-22T19:29:32Z",
    "curve": [
     [
      1,
@@ -659,6 +663,10 @@
     [
      18,
      null
+    ],
+    [
+     19,
+     null
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0014/comparison.png",
@@ -670,18 +678,18 @@
    "name": "DD-BF supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 16,
    "best_headroom": 0.028237213575508013,
    "best_ssim": 0.9191550016403198,
    "best_score": 0.9191550016403198,
-   "started": "2026-06-22T18:38:48Z",
+   "started": "2026-06-22T19:16:04Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:38:48Z",
+   "ts": "2026-06-22T19:16:04Z",
    "curve": [
     [
      1,
@@ -758,6 +766,10 @@
     [
      19,
      0.0282
+    ],
+    [
+     20,
+     0.0282
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0016/comparison.png",
@@ -769,18 +781,18 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 4,
    "best_headroom": 0.19761010181430883,
    "best_ssim": 0.9277111291885376,
    "best_score": 0.9277111291885376,
-   "started": "2026-06-22T18:39:18Z",
+   "started": "2026-06-22T19:14:12Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:39:18Z",
+   "ts": "2026-06-22T19:14:12Z",
    "curve": [
     [
      1,
@@ -857,6 +869,10 @@
     [
      19,
      0.1976
+    ],
+    [
+     20,
+     0.1976
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0004/comparison.png",
@@ -868,18 +884,18 @@
    "name": "DD-UNet supervised L2",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 12,
    "best_headroom": 0.4227768733294738,
    "best_ssim": 0.9333972334861755,
    "best_score": 0.9333972334861755,
-   "started": "2026-06-22T18:36:56Z",
+   "started": "2026-06-22T19:14:58Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:36:56Z",
+   "ts": "2026-06-22T19:14:58Z",
    "curve": [
     [
      1,
@@ -955,6 +971,10 @@
     ],
     [
      19,
+     0.4228
+    ],
+    [
+     20,
      0.4228
     ]
    ],
@@ -1582,18 +1602,18 @@
    "name": "Learned Primal-Dual",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 16,
    "best_headroom": 0.0,
    "best_ssim": 0.909092366695404,
    "best_score": 0.909092366695404,
-   "started": "2026-06-22T18:28:16Z",
+   "started": "2026-06-22T19:29:51Z",
    "status": "excluded",
    "params_M": 0.155406,
    "excluded_reason": "discard",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:28:16Z",
+   "ts": "2026-06-22T19:29:51Z",
    "curve": [
     [
      1,
@@ -1665,6 +1685,10 @@
     ],
     [
      18,
+     null
+    ],
+    [
+     19,
      null
     ]
    ],
@@ -1772,18 +1796,18 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.7696720957756042,
    "best_score": 0.7696720957756042,
-   "started": "2026-06-22T18:20:19Z",
+   "started": "2026-06-22T19:12:29Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T18:20:19Z",
+   "ts": "2026-06-22T19:12:29Z",
    "curve": [
     [
      1,
@@ -1855,6 +1879,10 @@
     ],
     [
      18,
+     null
+    ],
+    [
+     19,
      null
     ]
    ],
