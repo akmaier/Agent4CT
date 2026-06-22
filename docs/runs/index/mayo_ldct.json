@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T07:52:08Z",
+ "updated": "2026-06-22T08:32:13Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -1050,18 +1050,18 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 12,
    "best_headroom": 0.18322413429932882,
    "best_ssim": 0.8658959865570068,
    "best_score": 0.8658959865570068,
-   "started": "2026-06-22T05:49:16Z",
+   "started": "2026-06-22T08:26:24Z",
    "status": "ranked",
    "params_M": 0.004866,
    "excluded_reason": null,
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T05:49:16Z",
+   "ts": "2026-06-22T08:26:24Z",
    "curve": [
     [
      1,
@@ -1117,6 +1117,10 @@
     ],
     [
      14,
+     0.1832
+    ],
+    [
+     15,
      0.1832
     ]
    ],
@@ -1694,18 +1698,18 @@
    "name": "TV-iterative",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 4,
    "best_headroom": 0.20854684219988984,
    "best_ssim": 0.9266639351844788,
    "best_score": 0.9266639351844788,
-   "started": "2026-06-22T05:12:57Z",
+   "started": "2026-06-22T08:30:14Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "tv_iterative-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T05:12:57Z",
+   "ts": "2026-06-22T08:30:14Z",
    "curve": [
     [
      1,
@@ -1761,6 +1765,10 @@
     ],
     [
      14,
+     0.2085
+    ],
+    [
+     15,
      0.2085
     ]
    ],
@@ -1935,18 +1943,18 @@
    "name": "Wu 2015 trainable",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 10,
    "best_headroom": 0.0966342866716895,
    "best_ssim": 0.8229125738143921,
    "best_score": 0.8229125738143921,
-   "started": "2026-06-22T05:51:04Z",
+   "started": "2026-06-22T08:13:16Z",
    "status": "ranked",
    "params_M": 8e-06,
    "excluded_reason": null,
    "agent": "wu_2015_trainable-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T05:51:04Z",
+   "ts": "2026-06-22T08:13:16Z",
    "curve": [
     [
      1,
@@ -2002,6 +2010,10 @@
     ],
     [
      14,
+     0.0966
+    ],
+    [
+     15,
      0.0966
     ]
    ],
