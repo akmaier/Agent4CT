@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-22T06:52:06Z",
+ "updated": "2026-06-22T07:12:12Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -385,18 +385,18 @@
    "name": "Diffusion (constrained DPS+DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 13,
+   "n_iterations": 14,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.8533483147621155,
    "best_score": 0.8533483147621155,
-   "started": "2026-06-22T04:11:26Z",
+   "started": "2026-06-22T06:52:12Z",
    "status": "excluded",
    "params_M": 8.594211,
    "excluded_reason": "discard",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T04:11:26Z",
+   "ts": "2026-06-22T06:52:12Z",
    "curve": [
     [
      1,
@@ -448,6 +448,10 @@
     ],
     [
      13,
+     null
+    ],
+    [
+     14,
      null
     ]
    ],
@@ -1121,18 +1125,18 @@
    "name": "ITNet v1",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 14,
    "best_headroom": 0.43835290956643347,
    "best_ssim": 0.9451392292976379,
    "best_score": 0.9451392292976379,
-   "started": "2026-06-22T04:28:33Z",
+   "started": "2026-06-22T07:08:09Z",
    "status": "ranked",
    "params_M": 0.232881,
    "excluded_reason": null,
    "agent": "itnet-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T04:28:33Z",
+   "ts": "2026-06-22T07:08:09Z",
    "curve": [
     [
      1,
@@ -1188,6 +1192,10 @@
     ],
     [
      14,
+     0.4384
+    ],
+    [
+     15,
      0.4384
     ]
    ],
@@ -1437,18 +1445,18 @@
    "name": "NAF",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 13,
+   "n_iterations": 14,
    "best_iter": 13,
    "best_headroom": 0.0,
    "best_ssim": 0.6958579421043396,
    "best_score": 0.6958579421043396,
-   "started": "2026-06-22T04:33:55Z",
+   "started": "2026-06-22T07:10:50Z",
    "status": "excluded",
    "params_M": 33.557601,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T04:33:55Z",
+   "ts": "2026-06-22T07:10:50Z",
    "curve": [
     [
      1,
@@ -1500,6 +1508,10 @@
     ],
     [
      13,
+     null
+    ],
+    [
+     14,
      null
     ]
    ],
@@ -1512,18 +1524,18 @@
    "name": "R2-Gaussian",
    "challenge": "mayo_ldct",
    "campaign": "search-20260619-01",
-   "n_iterations": 13,
+   "n_iterations": 14,
    "best_iter": 10,
    "best_headroom": 0.0,
    "best_ssim": 0.7696720957756042,
    "best_score": 0.7696720957756042,
-   "started": "2026-06-22T04:32:40Z",
+   "started": "2026-06-22T06:51:52Z",
    "status": "excluded",
    "params_M": 0.003072,
    "excluded_reason": "discard",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-22T04:32:40Z",
+   "ts": "2026-06-22T06:51:52Z",
    "curve": [
     [
      1,
@@ -1575,6 +1587,10 @@
     ],
     [
      13,
+     null
+    ],
+    [
+     14,
      null
     ]
    ],
