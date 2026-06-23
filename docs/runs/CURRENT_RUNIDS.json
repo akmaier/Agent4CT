@@ -30,7 +30,9 @@
         "mayo-ldct-claude-agentic-tv-iterative-search-20260619-01",
         "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
         "mayo-ldct-claude-agentic-uswin-search-20260619-01",
-        "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01"
+        "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
+        "mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01",
+        "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01"
       ],
       "exclude_iters": {}
     },

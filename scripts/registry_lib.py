@@ -126,6 +126,8 @@ DISPLAY_NAMES = {
     "fastdiff-flow-pixel-unconstrained": "Fast-diffusion flow (pixel, unconstrained)",
     "fastdiff-wdm-wavelet-constrained": "Fast-diffusion WDM (wavelet, constrained DC)",
     "fastdiff-wdm-wavelet-unconstrained": "Fast-diffusion WDM (wavelet, unconstrained)",
+    "manduca-bilateral": "Manduca proj-bilateral (trainable)",
+    "manhart-pwls-tv": "Manhart PWLS-TV (ray-weighted)",
 }
 
 

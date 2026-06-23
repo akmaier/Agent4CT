@@ -45,6 +45,17 @@ SOLVER_MAP = {
         "pentathlon/demo_dl_reference/solver_dual_ddomain_bilateral_supervised.py", "DD_CONFIG_PATH"),
     "dual_domain_supervised": (
         "pentathlon/demo_dl_reference/solver_dual_ddomain_supervised.py", "DD_CONFIG_PATH"),
+    # Manduca 2009 projection-space bilateral with CT noise model (2026-06-23):
+    # variance-stabilized (N0*exp(-P) -> sqrt) sinogram bilateral so the range
+    # bandwidth is implicitly noise-adaptive; trainable end-to-end on top of the
+    # Wagner DD-BF supervised recipe. Paper: papers/Medical Physics - 2009 - Manduca.
+    "manduca_bilateral": (
+        "pentathlon/demo_dl_reference/solver_manduca_bilateral.py", "DD_CONFIG_PATH"),
+    # Manhart 2013 statistical ray weighting (PWLS) on top of TV-iterative
+    # (2026-06-23): inverse-variance ray weight W=exp(-gamma*p) inserted into the
+    # TV data residual (gamma=0 -> plain TV). Paper: papers/Manhart13-DRW.pdf.
+    "manhart_pwls_tv": (
+        "pentathlon/demo_dl_reference/solver_manhart_pwls_tv.py", "TV_CONFIG_PATH"),
     # End-to-end-trainable Wu 2015 (2026-05-22): per-band scales,
     # sigmoid slope/offset, per-iter soft thresholds + residual blends
     # wrapped as nn.Parameter and trained supervised-L2 vs clean phantom.
