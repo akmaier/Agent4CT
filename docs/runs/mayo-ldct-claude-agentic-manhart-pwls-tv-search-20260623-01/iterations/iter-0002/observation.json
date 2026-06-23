@@ -1,0 +1,29 @@
+{
+  "ts": "2026-06-23T22:15:26Z",
+  "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
+  "iter": 2,
+  "challenge": "mayo_ldct",
+  "commit": "",
+  "change_class": "architecture",
+  "rationale": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-2 EXPLORATORY: headline lever pwls_gamma 1.0->0.5. iter-1 gamma=1.0 hr=0.1335 sits BELOW plain-TV peak hr=0.2085 (same protocol, search-20260619-01) => Manhart full ray-weighting W=exp(-1.0*p) over-downweights high-attenuation rays at this Mayo noise level, blurring the data residual vs plain TV. gamma=0 is exactly plain TV; gamma=0.5 is the midpoint, halving the downweighting to recover the lost data-fidelity while keeping SOME statistical weighting. ONE knob: all else fixed (weight_norm=mean, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01, tv_clip_max=0.05). Maps whether gamma monotonically degrades or has an interior optimum between 0 (plain) and 1 (Manhart). Budget: iter-1 ran 1159.6s<1200s., pwls_gamma=0.5",
+  "val_score": 0.9266843199729919,
+  "headroom": 0.13349368501203374,
+  "val_ssim": 0.9266843199729919,
+  "val_psnr": 35.32232666015625,
+  "val_rmse": 0.000856748956721276,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 214,
+  "agent": "manhart_pwls_tv-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "advice_for_others": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-2 EXPLORATORY: headline lever pwls_gamma 1.0->0.5. iter-1 gamma=1.0 hr=0.1335 sits BELOW plain-TV peak hr=0.2085 (same protocol, search-20260619-01) => Manhart full ray-weighting W=exp(-1.0*p) over-downweights high-attenuation rays at this Mayo noise level, blurring the data residual vs plain TV. gamma=0 is exactly plain TV; gamma=0.5 is the midpoint, halving the downweighting to recover the lost data-fidelity while keeping SOME statistical weighting. ONE knob: all else fixed (weight_norm=mean, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01, tv_clip_max=0.05). Maps whether gamma monotonically degrades or has an interior optimum between 0 (plain) and 1 (Manhart). Budget: iter-1 ran 1159.6s<1200s., pwls_gamma=0.5",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0002/comparison.png",
+  "elapsed_s": 1537.6262321472168,
+  "cfg_full": {
+    "val_n": 214,
+    "rationale": "iter-2 EXPLORATORY: headline lever pwls_gamma 1.0->0.5. iter-1 gamma=1.0 hr=0.1335 sits BELOW plain-TV peak hr=0.2085 (same protocol, search-20260619-01) => Manhart full ray-weighting W=exp(-1.0*p) over-downweights high-attenuation rays at this Mayo noise level, blurring the data residual vs plain TV. gamma=0 is exactly plain TV; gamma=0.5 is the midpoint, halving the downweighting to recover the lost data-fidelity while keeping SOME statistical weighting. ONE knob: all else fixed (weight_norm=mean, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01, tv_clip_max=0.05). Maps whether gamma monotonically degrades or has an interior optimum between 0 (plain) and 1 (Manhart). Budget: iter-1 ran 1159.6s<1200s.",
+    "pwls_gamma": 0.5
+  }
+}
