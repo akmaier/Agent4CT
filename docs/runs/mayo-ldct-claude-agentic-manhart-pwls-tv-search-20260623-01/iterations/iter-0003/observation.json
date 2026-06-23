@@ -1,0 +1,29 @@
+{
+  "ts": "2026-06-23T23:03:10Z",
+  "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
+  "iter": 3,
+  "challenge": "mayo_ldct",
+  "commit": "",
+  "change_class": "architecture",
+  "rationale": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-3 PIVOT after gamma-inert diagnosis. iter-1(g=1.0) and iter-2(g=0.5) gave BIT-IDENTICAL hr=0.13349368501203374/ssim=0.9267/psnr=35.32 to 17 digits. Slurm logs (769099/769168) PROVE gamma reached the recon: W differs (min 0.0001 vs 0.0107, max 3.131 vs 2.367) and data_term differs (0.01696 vs 0.04011). NOT a key-mismatch, NOT unwired. Root cause: data term is ~1000x smaller than the TV term at tv_lambda=0.001 (data~0.04 vs lam*TV~40.7), so BOTH runs converge to the SAME TV-dominated minimum (identical TV trace 114658->40672) and the gamma ray-weight has ZERO measurable effect on the metric. The PWLS variant at hr 0.1335 sits BELOW plain-TVs hr=0.2085 (search-20260619-01) at identical protocol. Pivoting to a confirmed-wired lever: tv_clip_max 0.05->0.08, the historical plain-TV peak setting, to recover/beat that. ONE knob; all else = iter-1 baseline (gamma=1.0 default, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01)., tv_clip_max=0.08",
+  "val_score": 0.9275670647621155,
+  "headroom": 0.20708950105655022,
+  "val_ssim": 0.9275670647621155,
+  "val_psnr": 36.09327697753906,
+  "val_rmse": 0.000783981871791184,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 214,
+  "agent": "manhart_pwls_tv-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "advice_for_others": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-3 PIVOT after gamma-inert diagnosis. iter-1(g=1.0) and iter-2(g=0.5) gave BIT-IDENTICAL hr=0.13349368501203374/ssim=0.9267/psnr=35.32 to 17 digits. Slurm logs (769099/769168) PROVE gamma reached the recon: W differs (min 0.0001 vs 0.0107, max 3.131 vs 2.367) and data_term differs (0.01696 vs 0.04011). NOT a key-mismatch, NOT unwired. Root cause: data term is ~1000x smaller than the TV term at tv_lambda=0.001 (data~0.04 vs lam*TV~40.7), so BOTH runs converge to the SAME TV-dominated minimum (identical TV trace 114658->40672) and the gamma ray-weight has ZERO measurable effect on the metric. The PWLS variant at hr 0.1335 sits BELOW plain-TVs hr=0.2085 (search-20260619-01) at identical protocol. Pivoting to a confirmed-wired lever: tv_clip_max 0.05->0.08, the historical plain-TV peak setting, to recover/beat that. ONE knob; all else = iter-1 baseline (gamma=1.0 default, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01)., tv_clip_max=0.08",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0003/comparison.png",
+  "elapsed_s": 1533.2180457115173,
+  "cfg_full": {
+    "val_n": 214,
+    "rationale": "iter-3 PIVOT after gamma-inert diagnosis. iter-1(g=1.0) and iter-2(g=0.5) gave BIT-IDENTICAL hr=0.13349368501203374/ssim=0.9267/psnr=35.32 to 17 digits. Slurm logs (769099/769168) PROVE gamma reached the recon: W differs (min 0.0001 vs 0.0107, max 3.131 vs 2.367) and data_term differs (0.01696 vs 0.04011). NOT a key-mismatch, NOT unwired. Root cause: data term is ~1000x smaller than the TV term at tv_lambda=0.001 (data~0.04 vs lam*TV~40.7), so BOTH runs converge to the SAME TV-dominated minimum (identical TV trace 114658->40672) and the gamma ray-weight has ZERO measurable effect on the metric. The PWLS variant at hr 0.1335 sits BELOW plain-TVs hr=0.2085 (search-20260619-01) at identical protocol. Pivoting to a confirmed-wired lever: tv_clip_max 0.05->0.08, the historical plain-TV peak setting, to recover/beat that. ONE knob; all else = iter-1 baseline (gamma=1.0 default, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01).",
+    "tv_clip_max": 0.08
+  }
+}

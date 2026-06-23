@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-23T22:56:42Z",
+ "updated": "2026-06-23T23:26:52Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -105,6 +105,22 @@
     "rank": 6
    },
    {
+    "solver_key": "manhart-pwls-tv",
+    "solver_name": "Manhart PWLS-TV (ray-weighted)",
+    "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
+    "best_iter": 3,
+    "params_M": 0.0,
+    "params_source": "observation",
+    "val_ssim": 0.9275670647621155,
+    "headroom": 0.20708950105655022,
+    "val_psnr": 36.09327697753906,
+    "val_rmse": 0.000783981871791184,
+    "elapsed_s": 1533.2180457115173,
+    "image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0003/comparison.png",
+    "excluded_reason": null,
+    "rank": 7
+   },
+   {
     "solver_key": "dual-domain-n2i",
     "solver_name": "DD-UNet N2I (per-image)",
     "run_id": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01",
@@ -118,7 +134,7 @@
     "elapsed_s": 1235.541589975357,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0004/comparison.png",
     "excluded_reason": null,
-    "rank": 7
+    "rank": 8
    },
    {
     "solver_key": "hammernik-vn",
@@ -133,22 +149,6 @@
     "val_rmse": 0.0008075785008259118,
     "elapsed_s": 997.2833263874054,
     "image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0012/comparison.png",
-    "excluded_reason": null,
-    "rank": 8
-   },
-   {
-    "solver_key": "manhart-pwls-tv",
-    "solver_name": "Manhart PWLS-TV (ray-weighted)",
-    "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
-    "best_iter": 1,
-    "params_M": 0.0,
-    "params_source": "observation",
-    "val_ssim": 0.9266843199729919,
-    "headroom": 0.13349368501203374,
-    "val_psnr": 35.32232666015625,
-    "val_rmse": 0.000856748956721276,
-    "elapsed_s": 1159.6251578330994,
-    "image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0001/comparison.png",
     "excluded_reason": null,
     "rank": 9
    },
@@ -249,6 +249,22 @@
     "rank": null
    },
    {
+    "solver_key": "fastdiff-wdm-wavelet-constrained",
+    "solver_name": "Fast-diffusion WDM (wavelet, constrained DC)",
+    "run_id": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01",
+    "best_iter": 4,
+    "params_M": 3.824908,
+    "params_source": "observation",
+    "val_ssim": 0.9145963191986084,
+    "headroom": 0.0,
+    "val_psnr": 32.207801818847656,
+    "val_rmse": 0.0012262527598068118,
+    "elapsed_s": 925.2651040554047,
+    "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01/iterations/iter-0004/comparison.png",
+    "excluded_reason": "discard",
+    "rank": null
+   },
+   {
     "solver_key": "learned-primal-dual",
     "solver_name": "Learned Primal-Dual",
     "run_id": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01",
@@ -268,15 +284,15 @@
     "solver_key": "fastdiff-wdm-wavelet-unconstrained",
     "solver_name": "Fast-diffusion WDM (wavelet, unconstrained)",
     "run_id": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01",
-    "best_iter": 5,
+    "best_iter": 6,
     "params_M": 3.824908,
     "params_source": "observation",
-    "val_ssim": 0.9075472354888916,
+    "val_ssim": 0.9075601100921631,
     "headroom": 0.0,
-    "val_psnr": 32.26128387451172,
-    "val_rmse": 0.0012187251122668386,
-    "elapsed_s": 504.5568816661835,
-    "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01/iterations/iter-0005/comparison.png",
+    "val_psnr": 32.2647819519043,
+    "val_rmse": 0.0012182345381006598,
+    "elapsed_s": 458.93144130706787,
+    "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01/iterations/iter-0006/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -293,22 +309,6 @@
     "val_rmse": 0.001144908252172172,
     "elapsed_s": 985.931366443634,
     "image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0005/comparison.png",
-    "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "fastdiff-wdm-wavelet-constrained",
-    "solver_name": "Fast-diffusion WDM (wavelet, constrained DC)",
-    "run_id": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01",
-    "best_iter": 3,
-    "params_M": 3.824908,
-    "params_source": "observation",
-    "val_ssim": 0.9060426950454712,
-    "headroom": 0.0,
-    "val_psnr": 32.0885009765625,
-    "val_rmse": 0.001243211212567985,
-    "elapsed_s": 675.5670075416565,
-    "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01/iterations/iter-0003/comparison.png",
     "excluded_reason": "discard",
     "rank": null
    },
@@ -1035,18 +1035,18 @@
    "name": "Fast-diffusion flow (pixel, constrained DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260620-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 2,
    "best_headroom": 0.0,
    "best_ssim": 0.8983257412910461,
    "best_score": 0.8983257412910461,
-   "started": "2026-06-23T22:46:10Z",
+   "started": "2026-06-23T23:11:01Z",
    "status": "excluded",
    "params_M": 3.822787,
    "excluded_reason": "discard",
    "agent": "fastdiff_flow_pixel_constrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T22:46:10Z",
+   "ts": "2026-06-23T23:11:01Z",
    "curve": [
     [
      1,
@@ -1066,6 +1066,10 @@
     ],
     [
      5,
+     null
+    ],
+    [
+     6,
      null
     ]
    ],
@@ -1117,18 +1121,18 @@
    "name": "Fast-diffusion WDM (wavelet, constrained DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260620-01",
-   "n_iterations": 3,
-   "best_iter": 3,
+   "n_iterations": 4,
+   "best_iter": 4,
    "best_headroom": 0.0,
-   "best_ssim": 0.9060426950454712,
-   "best_score": 0.9060426950454712,
-   "started": "2026-06-23T21:57:28Z",
+   "best_ssim": 0.9145963191986084,
+   "best_score": 0.9145963191986084,
+   "started": "2026-06-23T23:01:37Z",
    "status": "excluded",
    "params_M": 3.824908,
    "excluded_reason": "discard",
    "agent": "fastdiff_wdm_wavelet_constrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T21:57:28Z",
+   "ts": "2026-06-23T23:01:37Z",
    "curve": [
     [
      1,
@@ -1141,9 +1145,13 @@
     [
      3,
      null
+    ],
+    [
+     4,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01/iterations/iter-0003/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01/iterations/iter-0004/comparison.png",
    "test_image": null
   },
   {
@@ -1152,18 +1160,18 @@
    "name": "Fast-diffusion WDM (wavelet, unconstrained)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260620-01",
-   "n_iterations": 5,
-   "best_iter": 5,
+   "n_iterations": 6,
+   "best_iter": 6,
    "best_headroom": 0.0,
-   "best_ssim": 0.9075472354888916,
-   "best_score": 0.9075472354888916,
-   "started": "2026-06-23T22:36:51Z",
+   "best_ssim": 0.9075601100921631,
+   "best_score": 0.9075601100921631,
+   "started": "2026-06-23T23:10:49Z",
    "status": "excluded",
    "params_M": 3.824908,
    "excluded_reason": "discard",
    "agent": "fastdiff_wdm_wavelet_unconstrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T22:36:51Z",
+   "ts": "2026-06-23T23:10:49Z",
    "curve": [
     [
      1,
@@ -1184,9 +1192,13 @@
     [
      5,
      null
+    ],
+    [
+     6,
+     null
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01/iterations/iter-0005/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01/iterations/iter-0006/comparison.png",
    "test_image": null
   },
   {
@@ -1813,18 +1825,18 @@
    "name": "Manduca proj-bilateral (trainable)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260623-01",
-   "n_iterations": 3,
+   "n_iterations": 4,
    "best_iter": 3,
    "best_headroom": 0.05983075650929026,
    "best_ssim": 0.9242838025093079,
    "best_score": 0.9242838025093079,
-   "started": "2026-06-23T22:37:35Z",
+   "started": "2026-06-23T23:20:05Z",
    "status": "ranked",
    "params_M": 7e-06,
    "excluded_reason": null,
    "agent": "manduca_bilateral-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T22:37:35Z",
+   "ts": "2026-06-23T23:20:05Z",
    "curve": [
     [
      1,
@@ -1837,6 +1849,10 @@
     [
      3,
      0.0598
+    ],
+    [
+     4,
+     0.0598
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01/iterations/iter-0003/comparison.png",
@@ -1848,18 +1864,18 @@
    "name": "Manhart PWLS-TV (ray-weighted)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260623-01",
-   "n_iterations": 2,
-   "best_iter": 1,
-   "best_headroom": 0.13349368501203374,
-   "best_ssim": 0.9266843199729919,
-   "best_score": 0.9266843199729919,
-   "started": "2026-06-23T22:15:26Z",
+   "n_iterations": 3,
+   "best_iter": 3,
+   "best_headroom": 0.20708950105655022,
+   "best_ssim": 0.9275670647621155,
+   "best_score": 0.9275670647621155,
+   "started": "2026-06-23T23:03:10Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "manhart_pwls_tv-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T22:15:26Z",
+   "ts": "2026-06-23T23:03:10Z",
    "curve": [
     [
      1,
@@ -1868,9 +1884,13 @@
     [
      2,
      0.1335
+    ],
+    [
+     3,
+     0.2071
     ]
    ],
-   "val_image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0001/comparison.png",
+   "val_image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0003/comparison.png",
    "test_image": null
   },
   {
