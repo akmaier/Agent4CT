@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	val_psnr	val_rmse	elapsed_s	params_M	rationale
+1		0.926684	0.133494	keep	architecture	manhart_pwls_tv-claude-agentic	claude-opus-4-8-1m	35.3223	8.567490e-04	1159.6	0	manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-1 onboarding: Manhart 2013 PWLS statistical ray weighting W=exp(-gamma*p) on TV-iterative; gamma=1.0 paper baseline.

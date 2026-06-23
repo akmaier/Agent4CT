@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01",
+  "challenge": "mayo_ldct",
+  "slug_prefix": "mayo-ldct-claude-agentic-manduca-bilateral-search",
+  "started": "2026-06-23T20:57:56Z",
+  "agent": "manduca_bilateral-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

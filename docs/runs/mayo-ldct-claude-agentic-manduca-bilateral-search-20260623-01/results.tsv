@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	val_psnr	val_rmse	elapsed_s	params_M	rationale
+1		0.924292	0.0598187	keep	architecture	manduca_bilateral-claude-agentic	claude-opus-4-8-1m	34.6135	9.295943e-04	387.1	7e-06	manduca_bilateral-claude-agentic: val_n=214, rationale=iter-1 onboarding: Manduca 2009 proj-space bilateral w/ CT noise model (N0*exp(-P)->sqrt->bilateral->invert) trainable on DD-BF; paper-faithful defaults.

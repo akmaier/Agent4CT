@@ -1,0 +1,28 @@
+{
+  "ts": "2026-06-23T21:17:16Z",
+  "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
+  "iter": 1,
+  "challenge": "mayo_ldct",
+  "commit": "",
+  "change_class": "architecture",
+  "rationale": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-1 onboarding: Manhart 2013 PWLS statistical ray weighting W=exp(-gamma*p) on TV-iterative; gamma=1.0 paper baseline.",
+  "val_score": 0.9266843199729919,
+  "headroom": 0.13349368501203374,
+  "val_ssim": 0.9266843199729919,
+  "val_psnr": 35.32232666015625,
+  "val_rmse": 0.000856748956721276,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 214,
+  "agent": "manhart_pwls_tv-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "advice_for_others": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-1 onboarding: Manhart 2013 PWLS statistical ray weighting W=exp(-gamma*p) on TV-iterative; gamma=1.0 paper baseline.",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0001/comparison.png",
+  "elapsed_s": 1159.6251578330994,
+  "cfg_full": {
+    "val_n": 214,
+    "rationale": "iter-1 onboarding: Manhart 2013 PWLS statistical ray weighting W=exp(-gamma*p) on TV-iterative; gamma=1.0 paper baseline."
+  }
+}
