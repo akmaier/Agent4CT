@@ -1,0 +1,30 @@
+{
+  "ts": "2026-06-23T23:56:00Z",
+  "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
+  "iter": 4,
+  "challenge": "mayo_ldct",
+  "commit": "",
+  "change_class": "architecture",
+  "rationale": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-4 PWLS-ACTIVATION TEST. iter-3 hr=0.2071/ssim=0.9276 (gamma=1.0, tv_clip_max=0.08, tv_lambda=0.001, tv_iter=200, tv_lr=0.01) was pure TV-tuning: at tv_lambda=0.001 the TV term (lam*TV~40.7) dominates the data term (~0.04) ~1000x, so the PWLS statistical ray-weight W=exp(-gamma*p) is INERT (iter-1 g=1.0 vs iter-2 g=0.5 gave BIT-IDENTICAL results, slurm 769099/769168). DECISIVE LEVER: tv_lambda 0.001->1e-4 (10x drop -> lam*TV~4.07, still ~100x data but the data term now starts to BITE so Manharts gamma weighting can shape the recon; 10x is safer than 100x which risks noise). ONE knob; gamma=1.0 (full Manhart), tv_clip_max=0.08, tv_iter=200, tv_lr=0.01 all kept from iter-3. THESIS: if activating PWLS now BEATS plain-TVs hr=0.2085, that is the novel Manhart contribution on dense Mayo; if it cannot exceed 0.2085, PWLS adds nothing here (clean negative result). Fits hard 20-min (214 slices x 200 iters ~1160s)., tv_clip_max=0.08, tv_lambda=0.0001",
+  "val_score": 0.8473186492919922,
+  "headroom": 0.05920378486006528,
+  "val_ssim": 0.8473186492919922,
+  "val_psnr": 34.607852935791016,
+  "val_rmse": 0.0009302023099735379,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 214,
+  "agent": "manhart_pwls_tv-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "advice_for_others": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-4 PWLS-ACTIVATION TEST. iter-3 hr=0.2071/ssim=0.9276 (gamma=1.0, tv_clip_max=0.08, tv_lambda=0.001, tv_iter=200, tv_lr=0.01) was pure TV-tuning: at tv_lambda=0.001 the TV term (lam*TV~40.7) dominates the data term (~0.04) ~1000x, so the PWLS statistical ray-weight W=exp(-gamma*p) is INERT (iter-1 g=1.0 vs iter-2 g=0.5 gave BIT-IDENTICAL results, slurm 769099/769168). DECISIVE LEVER: tv_lambda 0.001->1e-4 (10x drop -> lam*TV~4.07, still ~100x data but the data term now starts to BITE so Manharts gamma weighting can shape the recon; 10x is safer than 100x which risks noise). ONE knob; gamma=1.0 (full Manhart), tv_clip_max=0.08, tv_iter=200, tv_lr=0.01 all kept from iter-3. THESIS: if activating PWLS now BEATS plain-TVs hr=0.2085, that is the novel Manhart contribution on dense Mayo; if it cannot exceed 0.2085, PWLS adds nothing here (clean negative result). Fits hard 20-min (214 slices x 200 iters ~1160s)., tv_clip_max=0.08, tv_lambda=0.0001",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0004/comparison.png",
+  "elapsed_s": 1132.7507827281952,
+  "cfg_full": {
+    "val_n": 214,
+    "rationale": "iter-4 PWLS-ACTIVATION TEST. iter-3 hr=0.2071/ssim=0.9276 (gamma=1.0, tv_clip_max=0.08, tv_lambda=0.001, tv_iter=200, tv_lr=0.01) was pure TV-tuning: at tv_lambda=0.001 the TV term (lam*TV~40.7) dominates the data term (~0.04) ~1000x, so the PWLS statistical ray-weight W=exp(-gamma*p) is INERT (iter-1 g=1.0 vs iter-2 g=0.5 gave BIT-IDENTICAL results, slurm 769099/769168). DECISIVE LEVER: tv_lambda 0.001->1e-4 (10x drop -> lam*TV~4.07, still ~100x data but the data term now starts to BITE so Manharts gamma weighting can shape the recon; 10x is safer than 100x which risks noise). ONE knob; gamma=1.0 (full Manhart), tv_clip_max=0.08, tv_iter=200, tv_lr=0.01 all kept from iter-3. THESIS: if activating PWLS now BEATS plain-TVs hr=0.2085, that is the novel Manhart contribution on dense Mayo; if it cannot exceed 0.2085, PWLS adds nothing here (clean negative result). Fits hard 20-min (214 slices x 200 iters ~1160s).",
+    "tv_clip_max": 0.08,
+    "tv_lambda": 0.0001
+  }
+}
