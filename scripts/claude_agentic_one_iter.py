@@ -56,6 +56,14 @@ SOLVER_MAP = {
     # TV data residual (gamma=0 -> plain TV). Paper: papers/Manhart13-DRW.pdf.
     "manhart_pwls_tv": (
         "pentathlon/demo_dl_reference/solver_manhart_pwls_tv.py", "TV_CONFIG_PATH"),
+    # Fast few-step diffusion-prior recon (solver_fast_recon.py) — 4 variants
+    # (pixel/wdm-wavelet x constrained/unconstrained) selected by the per-run
+    # cfg fd_recon_ckpt + fd_recon_dc. Onboarded one-shot in search-20260620-01;
+    # joined the generic agentic loop 2026-06-23 (search-20260620-01 continues).
+    "fastdiff_flow_pixel_unconstrained":   ("pentathlon/demo_dl_reference/solver_fast_recon.py", "FAST_RECON_CONFIG_PATH"),
+    "fastdiff_flow_pixel_constrained":     ("pentathlon/demo_dl_reference/solver_fast_recon.py", "FAST_RECON_CONFIG_PATH"),
+    "fastdiff_wdm_wavelet_unconstrained":  ("pentathlon/demo_dl_reference/solver_fast_recon.py", "FAST_RECON_CONFIG_PATH"),
+    "fastdiff_wdm_wavelet_constrained":    ("pentathlon/demo_dl_reference/solver_fast_recon.py", "FAST_RECON_CONFIG_PATH"),
     # End-to-end-trainable Wu 2015 (2026-05-22): per-band scales,
     # sigmoid slope/offset, per-iter soft thresholds + residual blends
     # wrapped as nn.Parameter and trained supervised-L2 vs clean phantom.
