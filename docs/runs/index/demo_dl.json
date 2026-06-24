@@ -3,7 +3,7 @@
  "challenge": "demo_dl",
  "label": "Demo-DL",
  "campaign": "intensity-calibrated+agentic",
- "updated": "2026-06-24T04:25:56Z",
+ "updated": "2026-06-24T04:55:59Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
