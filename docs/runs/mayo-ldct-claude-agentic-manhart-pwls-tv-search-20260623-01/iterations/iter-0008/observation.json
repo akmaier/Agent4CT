@@ -1,0 +1,29 @@
+{
+  "ts": "2026-06-24T02:52:10Z",
+  "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
+  "iter": 8,
+  "challenge": "mayo_ldct",
+  "commit": "",
+  "change_class": "architecture",
+  "rationale": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-8 ceiling confirmation toward iter-20., tv_clip_max=0.1",
+  "val_score": 0.9275660514831543,
+  "headroom": 0.20711240171115575,
+  "val_ssim": 0.9275660514831543,
+  "val_psnr": 36.093528747558594,
+  "val_rmse": 0.0007839592290110886,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 214,
+  "agent": "manhart_pwls_tv-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "advice_for_others": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-8 ceiling confirmation toward iter-20., tv_clip_max=0.1",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0008/comparison.png",
+  "elapsed_s": 1521.1891674995422,
+  "cfg_full": {
+    "val_n": 214,
+    "rationale": "iter-8 ceiling confirmation toward iter-20.",
+    "tv_clip_max": 0.1
+  }
+}
