@@ -1,0 +1,29 @@
+{
+  "ts": "2026-06-24T06:35:56Z",
+  "run_id": "mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01",
+  "iter": 18,
+  "challenge": "mayo_ldct",
+  "commit": "",
+  "change_class": "architecture",
+  "rationale": "manduca_bilateral-claude-agentic: val_n=214, rationale=iter-18 ceiling confirmation toward iter-20., bf_d_w_ratio=0.5",
+  "val_score": 0.9243179559707642,
+  "headroom": 0.060534672003166756,
+  "val_ssim": 0.9243179559707642,
+  "val_psnr": 34.620147705078125,
+  "val_rmse": 0.0009288864093832672,
+  "kept": true,
+  "status": "keep",
+  "params_M": 7e-06,
+  "train_n": 400,
+  "val_n": 214,
+  "agent": "manduca_bilateral-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "advice_for_others": "manduca_bilateral-claude-agentic: val_n=214, rationale=iter-18 ceiling confirmation toward iter-20., bf_d_w_ratio=0.5",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01/iterations/iter-0018/comparison.png",
+  "elapsed_s": 572.182286977768,
+  "cfg_full": {
+    "val_n": 214,
+    "rationale": "iter-18 ceiling confirmation toward iter-20.",
+    "bf_d_w_ratio": 0.5
+  }
+}
