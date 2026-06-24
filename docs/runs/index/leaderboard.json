@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-24T01:57:11Z",
+ "updated": "2026-06-24T02:26:25Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -284,15 +284,15 @@
      "solver_key": "fastdiff-wdm-wavelet-unconstrained",
      "solver_name": "Fast-diffusion WDM (wavelet, unconstrained)",
      "run_id": "mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01",
-     "best_iter": 7,
+     "best_iter": 11,
      "params_M": 3.824908,
      "params_source": "observation",
-     "val_ssim": 0.9075601696968079,
+     "val_ssim": 0.9075602293014526,
      "headroom": 0.0,
      "val_psnr": 32.2647819519043,
-     "val_rmse": 0.0012182347709313035,
-     "elapsed_s": 457.76754212379456,
-     "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01/iterations/iter-0007/comparison.png",
+     "val_rmse": 0.0012182348873466253,
+     "elapsed_s": 516.1623423099518,
+     "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01/iterations/iter-0011/comparison.png",
      "excluded_reason": "discard",
      "rank": null
     },
