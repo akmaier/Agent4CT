@@ -1,0 +1,29 @@
+{
+  "ts": "2026-06-24T01:22:01Z",
+  "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
+  "iter": 5,
+  "challenge": "mayo_ldct",
+  "commit": "",
+  "change_class": "architecture",
+  "rationale": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-5 manhart_pwls_tv LAST TV-tuning probe. CONTEXT: gamma is a CONFIRMED-INERT lever (data term ~1000x below TV term at tv_lambda=0.001 -> iter-1 g=1.0 and iter-2 g=0.5 bit-identical hr=0.13349 to 17 digits); dropping tv_lambda 0.001->1e-4 (iter-4) to activate gamma COLLAPSED hr 0.2071->0.0592 (under-regularized/noisy). So Manhart statistical ray-weighting adds nothing on dense full-view Mayo; the solver is pinned to plain-TV behaviour. iter-3 hr-best 0.2071 (tv_clip_max=0.08, gamma=1.0 inert, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01) sits just BELOW plain-TV peak hr=0.2085. tv_clip_max is the ONLY confirmed-wired lever that moved the needle (0.05->0.08 drove hr 0.1335->0.2071). This probes ONE knob: tv_clip_max 0.08->0.10 (the documented upper bound of the (0.05,0.10) TV search range, monotone-improvement direction, NO extra iterations so same ~1533s compute, fits 20-min budget). HYPOTHESIS: a slightly looser TV clip lets manhart edge to ~0.21 and just past plain-TVs 0.2085; if it does not exceed 0.2085 this CONFIRMS manhart pinned at the plain-TV ceiling and the solver is a closed negative. ONE knob; all else = iter-3 base., tv_clip_max=0.1",
+  "val_score": 0.9275660514831543,
+  "headroom": 0.20711240171115575,
+  "val_ssim": 0.9275660514831543,
+  "val_psnr": 36.093528747558594,
+  "val_rmse": 0.0007839592290110886,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.0,
+  "train_n": 400,
+  "val_n": 214,
+  "agent": "manhart_pwls_tv-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "advice_for_others": "manhart_pwls_tv-claude-agentic: val_n=214, rationale=iter-5 manhart_pwls_tv LAST TV-tuning probe. CONTEXT: gamma is a CONFIRMED-INERT lever (data term ~1000x below TV term at tv_lambda=0.001 -> iter-1 g=1.0 and iter-2 g=0.5 bit-identical hr=0.13349 to 17 digits); dropping tv_lambda 0.001->1e-4 (iter-4) to activate gamma COLLAPSED hr 0.2071->0.0592 (under-regularized/noisy). So Manhart statistical ray-weighting adds nothing on dense full-view Mayo; the solver is pinned to plain-TV behaviour. iter-3 hr-best 0.2071 (tv_clip_max=0.08, gamma=1.0 inert, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01) sits just BELOW plain-TV peak hr=0.2085. tv_clip_max is the ONLY confirmed-wired lever that moved the needle (0.05->0.08 drove hr 0.1335->0.2071). This probes ONE knob: tv_clip_max 0.08->0.10 (the documented upper bound of the (0.05,0.10) TV search range, monotone-improvement direction, NO extra iterations so same ~1533s compute, fits 20-min budget). HYPOTHESIS: a slightly looser TV clip lets manhart edge to ~0.21 and just past plain-TVs 0.2085; if it does not exceed 0.2085 this CONFIRMS manhart pinned at the plain-TV ceiling and the solver is a closed negative. ONE knob; all else = iter-3 base., tv_clip_max=0.1",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0005/comparison.png",
+  "elapsed_s": 1539.3278589248657,
+  "cfg_full": {
+    "val_n": 214,
+    "rationale": "iter-5 manhart_pwls_tv LAST TV-tuning probe. CONTEXT: gamma is a CONFIRMED-INERT lever (data term ~1000x below TV term at tv_lambda=0.001 -> iter-1 g=1.0 and iter-2 g=0.5 bit-identical hr=0.13349 to 17 digits); dropping tv_lambda 0.001->1e-4 (iter-4) to activate gamma COLLAPSED hr 0.2071->0.0592 (under-regularized/noisy). So Manhart statistical ray-weighting adds nothing on dense full-view Mayo; the solver is pinned to plain-TV behaviour. iter-3 hr-best 0.2071 (tv_clip_max=0.08, gamma=1.0 inert, tv_lambda=0.001, tv_iterations=200, tv_lr=0.01) sits just BELOW plain-TV peak hr=0.2085. tv_clip_max is the ONLY confirmed-wired lever that moved the needle (0.05->0.08 drove hr 0.1335->0.2071). This probes ONE knob: tv_clip_max 0.08->0.10 (the documented upper bound of the (0.05,0.10) TV search range, monotone-improvement direction, NO extra iterations so same ~1533s compute, fits 20-min budget). HYPOTHESIS: a slightly looser TV clip lets manhart edge to ~0.21 and just past plain-TVs 0.2085; if it does not exceed 0.2085 this CONFIRMS manhart pinned at the plain-TV ceiling and the solver is a closed negative. ONE knob; all else = iter-3 base.",
+    "tv_clip_max": 0.1
+  }
+}
