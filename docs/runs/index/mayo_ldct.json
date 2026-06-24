@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-24T07:56:09Z",
+ "updated": "2026-06-24T08:25:58Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -2168,18 +2168,18 @@
    "name": "Manhart PWLS-TV (ray-weighted)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260623-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 5,
    "best_headroom": 0.20711240171115575,
    "best_ssim": 0.9275660514831543,
    "best_score": 0.9275660514831543,
-   "started": "2026-06-24T07:51:58Z",
+   "started": "2026-06-24T08:15:32Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "manhart_pwls_tv-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-24T07:51:58Z",
+   "ts": "2026-06-24T08:15:32Z",
    "curve": [
     [
      1,
@@ -2251,6 +2251,10 @@
     ],
     [
      18,
+     0.2071
+    ],
+    [
+     19,
      0.2071
     ]
    ],
