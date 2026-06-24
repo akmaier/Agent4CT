@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-24T07:26:03Z",
+ "updated": "2026-06-24T07:56:09Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -1138,18 +1138,18 @@
    "name": "Fast-diffusion flow (pixel, unconstrained)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260620-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 4,
    "best_headroom": 0.0,
    "best_ssim": 0.9220154285430908,
    "best_score": 0.9220154285430908,
-   "started": "2026-06-24T07:14:01Z",
+   "started": "2026-06-24T07:39:20Z",
    "status": "excluded",
    "params_M": 3.822787,
    "excluded_reason": "discard",
    "agent": "fastdiff_flow_pixel_unconstrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-24T07:14:01Z",
+   "ts": "2026-06-24T07:39:20Z",
    "curve": [
     [
      1,
@@ -1225,6 +1225,10 @@
     ],
     [
      19,
+     null
+    ],
+    [
+     20,
      null
     ]
    ],
@@ -2061,18 +2065,18 @@
    "name": "Manduca proj-bilateral (trainable)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260623-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 15,
    "best_headroom": 0.06054615176575817,
    "best_ssim": 0.9243254065513611,
    "best_score": 0.9243254065513611,
-   "started": "2026-06-24T07:02:13Z",
+   "started": "2026-06-24T07:32:21Z",
    "status": "ranked",
    "params_M": 7e-06,
    "excluded_reason": null,
    "agent": "manduca_bilateral-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-24T07:02:13Z",
+   "ts": "2026-06-24T07:32:21Z",
    "curve": [
     [
      1,
@@ -2149,6 +2153,10 @@
     [
      19,
      0.0605
+    ],
+    [
+     20,
+     0.0605
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01/iterations/iter-0015/comparison.png",
@@ -2160,18 +2168,18 @@
    "name": "Manhart PWLS-TV (ray-weighted)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260623-01",
-   "n_iterations": 17,
+   "n_iterations": 18,
    "best_iter": 5,
    "best_headroom": 0.20711240171115575,
    "best_ssim": 0.9275660514831543,
    "best_score": 0.9275660514831543,
-   "started": "2026-06-24T07:21:37Z",
+   "started": "2026-06-24T07:51:58Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "manhart_pwls_tv-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-24T07:21:37Z",
+   "ts": "2026-06-24T07:51:58Z",
    "curve": [
     [
      1,
@@ -2239,6 +2247,10 @@
     ],
     [
      17,
+     0.2071
+    ],
+    [
+     18,
      0.2071
     ]
    ],
