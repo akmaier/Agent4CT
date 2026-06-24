@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-23T23:57:06Z",
+ "updated": "2026-06-24T00:27:21Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -1035,18 +1035,18 @@
    "name": "Fast-diffusion flow (pixel, constrained DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260620-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 2,
    "best_headroom": 0.0,
    "best_ssim": 0.8983257412910461,
    "best_score": 0.8983257412910461,
-   "started": "2026-06-23T23:42:06Z",
+   "started": "2026-06-24T00:03:56Z",
    "status": "excluded",
    "params_M": 3.822787,
    "excluded_reason": "discard",
    "agent": "fastdiff_flow_pixel_constrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T23:42:06Z",
+   "ts": "2026-06-24T00:03:56Z",
    "curve": [
     [
      1,
@@ -1074,6 +1074,10 @@
     ],
     [
      7,
+     null
+    ],
+    [
+     8,
      null
     ]
    ],
@@ -1086,18 +1090,18 @@
    "name": "Fast-diffusion flow (pixel, unconstrained)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260620-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 4,
    "best_headroom": 0.0,
    "best_ssim": 0.9220154285430908,
    "best_score": 0.9220154285430908,
-   "started": "2026-06-23T23:29:32Z",
+   "started": "2026-06-24T00:16:12Z",
    "status": "excluded",
    "params_M": 3.822787,
    "excluded_reason": "discard",
    "agent": "fastdiff_flow_pixel_unconstrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T23:29:32Z",
+   "ts": "2026-06-24T00:16:12Z",
    "curve": [
     [
      1,
@@ -1117,6 +1121,10 @@
     ],
     [
      5,
+     null
+    ],
+    [
+     6,
      null
     ]
    ],
@@ -1129,18 +1137,18 @@
    "name": "Fast-diffusion WDM (wavelet, constrained DC)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260620-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 5,
    "best_headroom": 0.0,
    "best_ssim": 0.9147250056266785,
    "best_score": 0.9147250056266785,
-   "started": "2026-06-23T23:45:30Z",
+   "started": "2026-06-24T00:18:12Z",
    "status": "excluded",
    "params_M": 3.824908,
    "excluded_reason": "discard",
    "agent": "fastdiff_wdm_wavelet_constrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T23:45:30Z",
+   "ts": "2026-06-24T00:18:12Z",
    "curve": [
     [
      1,
@@ -1161,6 +1169,10 @@
     [
      5,
      null
+    ],
+    [
+     6,
+     null
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01/iterations/iter-0005/comparison.png",
@@ -1172,18 +1184,18 @@
    "name": "Fast-diffusion WDM (wavelet, unconstrained)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260620-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 7,
    "best_headroom": 0.0,
    "best_ssim": 0.9075601696968079,
    "best_score": 0.9075601696968079,
-   "started": "2026-06-23T23:37:11Z",
+   "started": "2026-06-24T00:02:54Z",
    "status": "excluded",
    "params_M": 3.824908,
    "excluded_reason": "discard",
    "agent": "fastdiff_wdm_wavelet_unconstrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T23:37:11Z",
+   "ts": "2026-06-24T00:02:54Z",
    "curve": [
     [
      1,
@@ -1211,6 +1223,10 @@
     ],
     [
      7,
+     null
+    ],
+    [
+     8,
      null
     ]
    ],
@@ -1841,18 +1857,18 @@
    "name": "Manduca proj-bilateral (trainable)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260623-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 3,
    "best_headroom": 0.05983075650929026,
    "best_ssim": 0.9242838025093079,
    "best_score": 0.9242838025093079,
-   "started": "2026-06-23T23:47:45Z",
+   "started": "2026-06-24T00:08:35Z",
    "status": "ranked",
    "params_M": 7e-06,
    "excluded_reason": null,
    "agent": "manduca_bilateral-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-23T23:47:45Z",
+   "ts": "2026-06-24T00:08:35Z",
    "curve": [
     [
      1,
@@ -1872,6 +1888,10 @@
     ],
     [
      5,
+     0.0598
+    ],
+    [
+     6,
      0.0598
     ]
    ],
