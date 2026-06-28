@@ -64,6 +64,11 @@ CONFIG = {
     "ram_use_deepinv_tomo":  False,  # if True: skip PyroNN adapter, use deepinv's
                                      # built-in parallel-beam Tomography operator
                                      # (diagnostic: confirms RAM works at our image size)
+    "ram_allow_gt_leak_diagnostic": False,  # escape hatch for ram_use_deepinv_tomo:
+                                     # that path re-synthesises val sinos from the
+                                     # GROUND-TRUTH phantom (a GT leak that inflates
+                                     # headroom). Refused on scored runs unless this is
+                                     # explicitly True. NEVER set on a campaign config.
 }
 
 
@@ -318,6 +323,20 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     # Load model.
     model = _load_ram(Path(cfg["ram_ckpt_path"]), device)
     if cfg.get("ram_use_deepinv_tomo", False):
+        # HARDENING (ground-truth leak): the diagnostic branch below replaces the
+        # validation sinograms with `physics(val_ph)` — a forward projection of the
+        # GROUND-TRUTH phantom — and feeds them to the model as input. The model
+        # then "reconstructs" an operator applied to the truth, which inflates the
+        # headroom score. main() always returns a SCORED result, so refuse this flag
+        # unless the caller explicitly opts into an offline, non-leaderboard run.
+        if not cfg.get("ram_allow_gt_leak_diagnostic", False):
+            raise RuntimeError(
+                "RAM: ram_use_deepinv_tomo=True forward-projects the ground-truth "
+                "phantom into the model input (GT leak) and is refused on scored "
+                "runs. Unset it (default False) to evaluate on the real low-dose "
+                "sinogram, or set ram_allow_gt_leak_diagnostic=True ONLY for an "
+                "offline, non-leaderboard sanity check (never on a campaign config)."
+            )
         # Diagnostic mode: ignore our PyroNN adapter; use deepinv's own
         # parallel-beam Tomography so we can compare RAM behaviour.
         import deepinv as dinv

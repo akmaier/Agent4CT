@@ -48,8 +48,9 @@ description: Real-helical-data leaderboard (Wagner split). LIVE search-20260619-
 > The rebuild starts from a clean **HD vs LD FBP baseline computed over
 > every truth slice** of all 10 Wagner patients, using the frozen
 > production path (v3 SSR rebin + Powell FBP geometry + `MAYO_LDCT_DET_OFFSET`
-> + `MAYO_LDCT_TRUNCATION` + `bg_target="truth"`). That baseline defines the
-> headroom-scoring endpoints (LD FBP = score 0, HD FBP = score 1) for every
+> + `MAYO_LDCT_TRUNCATION` + `bg_target="truth"`). That LD-FBP is the
+> headroom score-0 anchor (score 1 = exact truth, RMSE = 0; HD-FBP is only the
+> offline oracle reference, not a live scoring endpoint) for every
 > solver added from here on. See [`docs/findings.md`](../findings.md) (2026-06-14).
 
 AAPM 2016 Low-Dose CT Grand Challenge data — helical Siemens SOMATOM
@@ -69,8 +70,16 @@ truth-image slices per patient), not a subsampled subset.
 
 Computed 2026-06-14 (SLURM 763659, `scripts/compare_hd_ld_fbp_allslices.py`)
 over **every** full-dose truth slice of all 10 Wagner patients (**1538 slices**),
-both doses, on the frozen production path. These define the headroom-scoring
-endpoints: **`score = (SSIM − LD_FBP) / (HD_FBP − LD_FBP)`** per split.
+both doses, on the frozen production path. **These HD/LD SSIM numbers are an
+offline _characterisation_ of the FBP→oracle gap — they are NOT the live
+headroom anchors.** The metric actually computed every iteration
+([`evaluate_calibrated`](../../ddssl_ldct/metrics.py)) is **RMSE-based against the
+low-dose FBP**: `hr = max(0, 1 − recon_RMSE / LD_FBP_RMSE)`. The score-0 lower
+anchor is the **LD-FBP** (recomputed per slice from the low-dose sinogram, ~9.89e-4
+RMSE / 34.08 dB on val L277); the score-1 upper anchor is the **exact truth
+(RMSE = 0)** — **not** the HD-FBP. HD-FBP never enters the per-iteration `hr`; the
+SSIM table below only quantifies how far the low-dose FBP sits from the high-dose
+oracle.
 z-registration residual ≤ 0.38 mm for every patient; HD-FBP L277 0.9331
 matches the validated central-slice number (0.9315).
 
@@ -114,8 +123,14 @@ scoring uses and are unaffected.
 > reconstruction + `bg_target="truth"` calibration. The val metric is the
 > **corrected** one — calibrated full-image SSIM scored on **all 214 L277 slices**
 > inside the **321 px detector-geometry FOV** (`train_n=200` stratified across the
-> 4 train patients). The headroom `hr = (SSIM − LD_FBP)/(oracle − LD_FBP)` uses
-> the val row of the baseline table above (LD-FBP 0.8078, HD-FBP oracle 0.9331).
+> 4 train patients). The ranked **headroom is RMSE-based** —
+> `hr = max(0, 1 − recon_RMSE / LD_FBP_RMSE)` (score 0 = the low-dose FBP,
+> recomputed per slice; score 1 = exact truth, RMSE = 0). The HD/LD SSIM table
+> above characterises the FBP→oracle gap but does **not** feed `hr`; HD-FBP is not
+> a scoring anchor. (`val_score` is calibrated SSIM — the search target — so a
+> recon can clear the LD-FBP SSIM yet still score `hr = 0` if its RMSE/PSNR is
+> below the LD-FBP floor; that is exactly why the 4 fast-diffusion solvers sit at
+> hr 0.)
 > Each solver runs under a **hard 20-min train+score budget** (val figure
 > excluded), driving toward the iter-20 hard stop.
 

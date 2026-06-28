@@ -114,8 +114,11 @@ slice subset, before the v3 geometry + truncation FBP path was hard-wired).
 Rebuild plan: [`docs/mayo_rebuild_plan.md`](mayo_rebuild_plan.md).
 
 **New baseline (SLURM 763659, all 1538 truth slices of all 10 Wagner
-patients, frozen production path, `bg_target="truth"`)** — defines the
-headroom endpoints `score = (SSIM − LD_FBP)/(HD_FBP − LD_FBP)` per split:
+patients, frozen production path, `bg_target="truth"`)** — an offline
+characterisation of the FBP→oracle gap. (NB the **live** per-iter headroom is
+RMSE-based vs the low-dose FBP: `hr = max(0, 1 − recon_RMSE / LD_FBP_RMSE)`,
+score 0 = LD-FBP, score 1 = exact truth, RMSE = 0; **HD-FBP is not a scoring
+anchor** — the SSIM table below only quantifies the LD→HD FBP gap):
 
 | split | n | HD-FBP (oracle) SSIM | LD-FBP (baseline) SSIM | gap |
 |---|---:|---:|---:|---:|

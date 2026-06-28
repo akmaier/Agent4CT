@@ -209,7 +209,7 @@ pentathlon = mean(score_c for c in challenges)
 
 | Challenge | Baseline (score 0) | Oracle (score 1) |
 |---|---|---|
-| Mayo LDCT | Low-dose FBP, no denoising | High-dose FBP (clean sinogram) |
+| Mayo LDCT | Low-dose FBP, no denoising | Exact truth (RMSE = 0) [^mayo-hr] |
 | DL-Sparse-View | Sparse-view FBP, no learning | RMSE = 0 against exact truth |
 | TrueCT | Uncorrected FBP | Mono-energetic phantom truth |
 | CT-MAR | Uncorrected FBP (metal in) | Metal-free phantom recon |
@@ -219,6 +219,15 @@ Scores ∈ [0, 1] = "fraction of the gap that was closed". A negative score
 means the solver is worse than doing nothing; > 1 means it beat the oracle
 on that test split (possible for noisy oracles). The Pentathlon score is
 the unweighted mean.
+
+[^mayo-hr]: **Mayo-LDCT live metric.** The per-iteration headroom actually
+computed by [`evaluate_calibrated`](ddssl_ldct/metrics.py) is RMSE-based against
+the low-dose FBP: `hr = max(0, 1 − recon_RMSE / LD_FBP_RMSE)`, so score 0 = the
+low-dose FBP (recomputed per slice from the low-dose sinogram) and score 1 =
+exact truth (RMSE = 0). The **high-dose FBP is _not_ a scoring anchor** — it is
+only the practical oracle ceiling, characterised offline in the
+[Mayo-LDCT leaderboard](docs/leaderboards/mayo_ldct.md). (The other four
+challenges use the conceptual baseline/oracle pairs in the table directly.)
 
 ---
 
