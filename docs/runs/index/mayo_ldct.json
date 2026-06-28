@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-28T15:24:09Z",
+ "updated": "2026-06-28T15:53:32Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -150,12 +150,12 @@
     "elapsed_s": 1227.3971643447876,
     "image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0004/comparison.png",
     "excluded_reason": null,
-    "test_hr_mean": null,
-    "test_hr_std": null,
-    "test_ssim_mean": null,
-    "test_ssim_std": null,
-    "test_psnr_mean": null,
-    "test_psnr_std": null,
+    "test_hr_mean": 0.08125080798940824,
+    "test_hr_std": 0.05198491422900056,
+    "test_ssim_mean": 0.9484809398651123,
+    "test_ssim_std": 0.017231817356724757,
+    "test_psnr_mean": 37.03703994750977,
+    "test_psnr_std": 1.188070431691168,
     "rank": 6
    },
    {
@@ -2624,21 +2624,25 @@
    "name": "Param-efficient (evolved)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260624-01",
-   "n_iterations": 1,
+   "n_iterations": 2,
    "best_iter": 1,
    "best_headroom": 0.08710755548522486,
    "best_ssim": 0.8457950949668884,
    "best_score": 0.8457950949668884,
-   "started": "2026-06-28T15:01:12Z",
+   "started": "2026-06-28T15:41:39Z",
    "status": "ranked",
    "params_M": 0.002798,
    "excluded_reason": null,
    "agent": "param_efficient-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-28T15:01:12Z",
+   "ts": "2026-06-28T15:41:39Z",
    "curve": [
     [
      1,
+     0.0871
+    ],
+    [
+     2,
      0.0871
     ]
    ],
