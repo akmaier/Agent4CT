@@ -1,0 +1,2 @@
+iter	commit	val_score	headroom	status	change_class	agent	model	val_psnr	val_rmse	elapsed_s	params_M	rationale
+1		0.845795	0.0871076	keep	architecture	param_efficient-claude-agentic	claude-opus-4-8-1m	34.8694	9.026128e-04	727.6	0.002798	param_efficient-claude-agentic: val_n=214, rationale=iter-1 SEED: weight-tied prox+DC, reg_type=cnn ~2.8k params, K=5, learnable alpha; clears LD-FBP RMSE floor smoke test

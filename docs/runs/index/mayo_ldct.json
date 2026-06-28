@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-28T14:41:47Z",
+ "updated": "2026-06-28T15:24:09Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -259,6 +259,31 @@
     "rank": 10
    },
    {
+    "solver_key": "param-efficient",
+    "solver_name": "Param-efficient (evolved)",
+    "run_id": "mayo-ldct-claude-agentic-param-efficient-search-20260624-01",
+    "best_iter": 1,
+    "params_M": 0.002798,
+    "params_source": "observation",
+    "val_ssim": 0.8457950949668884,
+    "headroom": 0.08710755548522486,
+    "val_psnr": 34.8693733215332,
+    "val_rmse": 0.0009026127518154681,
+    "val_ssim_std": 0.04283333197236061,
+    "val_psnr_std": 1.5393093824386597,
+    "val_rmse_std": 0.00017940461111720651,
+    "elapsed_s": 727.597859621048,
+    "image": "runs/mayo-ldct-claude-agentic-param-efficient-search-20260624-01/iterations/iter-0001/comparison.png",
+    "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
+    "rank": 11
+   },
+   {
     "solver_key": "hammernik-2017",
     "solver_name": "Hammernik VN (2017)",
     "run_id": "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01",
@@ -281,7 +306,7 @@
     "test_ssim_std": null,
     "test_psnr_mean": null,
     "test_psnr_std": null,
-    "rank": 11
+    "rank": 12
    },
    {
     "solver_key": "manduca-bilateral",
@@ -306,7 +331,7 @@
     "test_ssim_std": null,
     "test_psnr_mean": null,
     "test_psnr_std": null,
-    "rank": 12
+    "rank": 13
    },
    {
     "solver_key": "dual-domain-bilateral-supervised",
@@ -331,7 +356,7 @@
     "test_ssim_std": null,
     "test_psnr_mean": null,
     "test_psnr_std": null,
-    "rank": 13
+    "rank": 14
    },
    {
     "solver_key": "dual-domain-bilateral-n2i",
@@ -2591,6 +2616,33 @@
     ]
    ],
    "val_image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0018/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "mayo-ldct-claude-agentic-param-efficient-search-20260624-01",
+   "solver_key": "param-efficient",
+   "name": "Param-efficient (evolved)",
+   "challenge": "mayo_ldct",
+   "campaign": "search-20260624-01",
+   "n_iterations": 1,
+   "best_iter": 1,
+   "best_headroom": 0.08710755548522486,
+   "best_ssim": 0.8457950949668884,
+   "best_score": 0.8457950949668884,
+   "started": "2026-06-28T15:01:12Z",
+   "status": "ranked",
+   "params_M": 0.002798,
+   "excluded_reason": null,
+   "agent": "param_efficient-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-06-28T15:01:12Z",
+   "curve": [
+    [
+     1,
+     0.0871
+    ]
+   ],
+   "val_image": "runs/mayo-ldct-claude-agentic-param-efficient-search-20260624-01/iterations/iter-0001/comparison.png",
    "test_image": null
   },
   {

@@ -1,0 +1,10 @@
+{
+  "slug": "mayo-ldct-claude-agentic-param-efficient-search-20260624-01",
+  "challenge": "mayo_ldct",
+  "slug_prefix": "mayo-ldct-claude-agentic-param-efficient-search",
+  "started": "2026-06-28T14:49:04Z",
+  "agent": "param_efficient-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

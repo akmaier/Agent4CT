@@ -1,0 +1,31 @@
+{
+  "ts": "2026-06-28T15:01:12Z",
+  "run_id": "mayo-ldct-claude-agentic-param-efficient-search-20260624-01",
+  "iter": 1,
+  "challenge": "mayo_ldct",
+  "commit": "",
+  "change_class": "architecture",
+  "rationale": "param_efficient-claude-agentic: val_n=214, rationale=iter-1 SEED: weight-tied prox+DC, reg_type=cnn ~2.8k params, K=5, learnable alpha; clears LD-FBP RMSE floor smoke test",
+  "val_score": 0.8457950949668884,
+  "headroom": 0.08710755548522486,
+  "val_ssim": 0.8457950949668884,
+  "val_psnr": 34.8693733215332,
+  "val_rmse": 0.0009026127518154681,
+  "val_ssim_std": 0.04283333197236061,
+  "val_psnr_std": 1.5393093824386597,
+  "val_rmse_std": 0.00017940461111720651,
+  "kept": true,
+  "status": "keep",
+  "params_M": 0.002798,
+  "train_n": 400,
+  "val_n": 214,
+  "agent": "param_efficient-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "advice_for_others": "param_efficient-claude-agentic: val_n=214, rationale=iter-1 SEED: weight-tied prox+DC, reg_type=cnn ~2.8k params, K=5, learnable alpha; clears LD-FBP RMSE floor smoke test",
+  "comparison_image": "runs/mayo-ldct-claude-agentic-param-efficient-search-20260624-01/iterations/iter-0001/comparison.png",
+  "elapsed_s": 727.597859621048,
+  "cfg_full": {
+    "val_n": 214,
+    "rationale": "iter-1 SEED: weight-tied prox+DC, reg_type=cnn ~2.8k params, K=5, learnable alpha; clears LD-FBP RMSE floor smoke test"
+  }
+}
