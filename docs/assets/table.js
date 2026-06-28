@@ -39,6 +39,13 @@
     if (pm >= 0.001) return Number(pm).toFixed(3);
     return String(Math.round(pm * 1e6));
   }
+  function fmtMeanStd(mean, std, f) {
+    // "mean ± std" when a finite, non-zero std is present, else just the mean.
+    const m = f(mean);
+    if (std === null || std === undefined ||
+        (typeof std === "number" && !isFinite(std)) || std === 0) return m;
+    return m + " ± " + f(std);
+  }
 
   function _el(tag, attrs, children) {
     const e = document.createElement(tag);
@@ -100,10 +107,10 @@
       tr.appendChild(nameCell);
 
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtParams(r.params_M)]));
-      tr.appendChild(_el("td", { class: "lb-num" }, [fmtSSIM(r.val_ssim)]));
+      tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_ssim, r.val_ssim_std, fmtSSIM)]));
       tr.appendChild(_el("td", { class: "lb-num lb-hr" }, [fmtHr(r.headroom)]));
-      tr.appendChild(_el("td", { class: "lb-num" }, [fmtPSNR(r.val_psnr)]));
-      tr.appendChild(_el("td", { class: "lb-num" }, [fmtRMSE(r.val_rmse)]));
+      tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_psnr, r.val_psnr_std, fmtPSNR)]));
+      tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_rmse, r.val_rmse_std, fmtRMSE)]));
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtTime(r.elapsed_s)]));
 
       const iterCell = _el("td", {}, []);

@@ -43,7 +43,8 @@ SOLVER_PARAMS_BACKSTOP = REPO / "docs" / "leaderboards" / "solver_params.json"
 SCRATCH_CAP = 200
 
 # Fields copied verbatim from observation.json into each registry line's metrics.
-_METRIC_KEYS = ("val_ssim", "headroom", "val_psnr", "val_rmse")
+_METRIC_KEYS = ("val_ssim", "headroom", "val_psnr", "val_rmse",
+                "val_ssim_std", "val_psnr_std", "val_rmse_std")
 
 
 def _git_sha() -> str:
@@ -182,6 +183,9 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
         "headroom": m.get("headroom"),
         "val_psnr": m.get("val_psnr"),
         "val_rmse": m.get("val_rmse"),
+        "val_ssim_std": m.get("val_ssim_std"),
+        "val_psnr_std": m.get("val_psnr_std"),
+        "val_rmse_std": m.get("val_rmse_std"),
         "elapsed_s": best["runtime"].get("elapsed_s"),
         "image": best["images"].get("comparison"),
         "excluded_reason": reason,

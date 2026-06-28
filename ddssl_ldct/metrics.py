@@ -260,12 +260,25 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
     pred_m  = pred_cal * mask_2d if mask_2d is not None else pred_cal
     truth_m = truth    * mask_2d if mask_2d is not None else truth
 
+    # Per-slice dispersion across the N scored slices, reported alongside the
+    # whole-volume means as "mean ± std". Reuses the masked tensors (cheap, no
+    # extra forward passes); std is 0.0 for a single slice.
+    _n = int(pred_m.shape[0])
+    _mse_i = ((pred_m - truth_m) ** 2).mean(dim=(1, 2, 3)).clamp_min(1e-12)   # (N,)
+    _rmse_std = float(_mse_i.sqrt().std().cpu()) if _n > 1 else 0.0
+    _psnr_std = float((10.0 * torch.log10(dr ** 2 / _mse_i)).std().cpu()) if _n > 1 else 0.0
+    _ssim_std = float(ssim(pred_m, truth_m, data_range=dr, reduce=False).std().cpu()) if _n > 1 else 0.0
+
     result = {
         "pred_cal":     pred_cal,            # UNMASKED — for display / figures
         "fov_mask":     mask_2d,
         "val_psnr":     float(psnr(pred_m, truth_m, data_range=dr).cpu()),
         "val_ssim":     float(ssim(pred_m, truth_m, data_range=dr).cpu()),
         "val_rmse":     float(((pred_m - truth_m) ** 2).mean().sqrt().cpu()),
+        "val_psnr_std": _psnr_std,
+        "val_ssim_std": _ssim_std,
+        "val_rmse_std": _rmse_std,
+        "val_n_slices": _n,
         "fg_threshold": float(fg_threshold),
         "calibration":  "intensity_calibrate (two-point linear, bg->0, fg_mean->truth_fg_mean)"
                         + ("; metric FOV-masked, display unmasked" if mask_2d is not None else ""),
@@ -488,7 +501,8 @@ def _gaussian_window(size: int, sigma: float, device, dtype) -> torch.Tensor:
 
 def ssim(pred: torch.Tensor, target: torch.Tensor,
           data_range: float | None = None,
-          window_size: int = 11, sigma: float = 1.5) -> torch.Tensor:
+          window_size: int = 11, sigma: float = 1.5,
+          reduce: bool = True) -> torch.Tensor:
     """SSIM for floating-point images.
 
     Uses the Wang et al. 2004 stabilisers C1 = (0.01·L)², C2 = (0.03·L)²
@@ -517,4 +531,8 @@ def ssim(pred: torch.Tensor, target: torch.Tensor,
     sigma_xy = F.conv2d(pred * target, w, padding=pad) - mu_xy
     num = (2 * mu_xy + C1) * (2 * sigma_xy + C2)
     den = (mu_xx + mu_yy + C1) * (sigma_xx + sigma_yy + C2)
-    return (num / den).mean()
+    smap = num / den
+    # reduce=True -> scalar mean over all windows of all slices (unchanged
+    # default). reduce=False -> per-slice SSIM (N,) by averaging each slice's
+    # window map, for per-slice dispersion (std) reporting.
+    return smap.mean() if reduce else smap.mean(dim=(1, 2, 3))

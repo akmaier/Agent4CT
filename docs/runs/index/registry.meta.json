@@ -1,8 +1,8 @@
 {
  "schema_version": 3,
- "builder_git_sha": "4e2adbc1",
- "built_at": "2026-06-24T08:56:15Z",
- "content_hash": "3e6ec0f446678aae6974df78c5c0283a5c7687d359818421c52c3c3594aa4e84",
+ "builder_git_sha": "1d020323",
+ "built_at": "2026-06-28T14:16:08Z",
+ "content_hash": "f11ad93ab114ed8f50c2448dac0905a0e58b87b423b9a7855543bba945a1009f",
  "allowlist_sha": "21822bc36c1c53737575f4f33bb21a387ee5fe6f",
  "n_runs": 65,
  "n_iterations": 1206
