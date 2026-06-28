@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-28T17:23:15Z",
+ "updated": "2026-06-28T17:53:34Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -250,12 +250,12 @@
     "elapsed_s": 997.2833263874054,
     "image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0012/comparison.png",
     "excluded_reason": null,
-    "test_hr_mean": null,
-    "test_hr_std": null,
-    "test_ssim_mean": null,
-    "test_ssim_std": null,
-    "test_psnr_mean": null,
-    "test_psnr_std": null,
+    "test_hr_mean": 0.1626323439937233,
+    "test_hr_std": 0.01604438956793922,
+    "test_ssim_mean": 0.9209029316902161,
+    "test_ssim_std": 0.02668616249884856,
+    "test_psnr_mean": 37.83256301879883,
+    "test_psnr_std": 1.558064449755626,
     "rank": 10
    },
    {
@@ -300,12 +300,12 @@
     "elapsed_s": 495.03839468955994,
     "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0016/comparison.png",
     "excluded_reason": null,
-    "test_hr_mean": null,
-    "test_hr_std": null,
-    "test_ssim_mean": null,
-    "test_ssim_std": null,
-    "test_psnr_mean": null,
-    "test_psnr_std": null,
+    "test_hr_mean": 0.09161800142840015,
+    "test_hr_std": 0.024057042627058812,
+    "test_ssim_mean": 0.895152235031128,
+    "test_ssim_std": 0.032484142739060855,
+    "test_psnr_mean": 37.126685333251956,
+    "test_psnr_std": 1.6683208997304073,
     "rank": 12
    },
    {
@@ -2624,18 +2624,18 @@
    "name": "Param-efficient (evolved)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260624-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 4,
    "best_headroom": 0.23785449948411708,
    "best_ssim": 0.885933518409729,
    "best_score": 0.885933518409729,
-   "started": "2026-06-28T17:18:12Z",
+   "started": "2026-06-28T17:49:20Z",
    "status": "ranked",
    "params_M": 0.002798,
    "excluded_reason": null,
    "agent": "param_efficient-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-28T17:18:12Z",
+   "ts": "2026-06-28T17:49:20Z",
    "curve": [
     [
      1,
@@ -2655,6 +2655,10 @@
     ],
     [
      5,
+     0.2379
+    ],
+    [
+     6,
      0.2379
     ]
    ],

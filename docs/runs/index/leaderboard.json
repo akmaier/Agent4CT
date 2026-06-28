@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-28T17:23:15Z",
+ "updated": "2026-06-28T17:53:34Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -250,12 +250,12 @@
      "elapsed_s": 997.2833263874054,
      "image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0012/comparison.png",
      "excluded_reason": null,
-     "test_hr_mean": null,
-     "test_hr_std": null,
-     "test_ssim_mean": null,
-     "test_ssim_std": null,
-     "test_psnr_mean": null,
-     "test_psnr_std": null,
+     "test_hr_mean": 0.1626323439937233,
+     "test_hr_std": 0.01604438956793922,
+     "test_ssim_mean": 0.9209029316902161,
+     "test_ssim_std": 0.02668616249884856,
+     "test_psnr_mean": 37.83256301879883,
+     "test_psnr_std": 1.558064449755626,
      "rank": 10
     },
     {
@@ -300,12 +300,12 @@
      "elapsed_s": 495.03839468955994,
      "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0016/comparison.png",
      "excluded_reason": null,
-     "test_hr_mean": null,
-     "test_hr_std": null,
-     "test_ssim_mean": null,
-     "test_ssim_std": null,
-     "test_psnr_mean": null,
-     "test_psnr_std": null,
+     "test_hr_mean": 0.09161800142840015,
+     "test_hr_std": 0.024057042627058812,
+     "test_ssim_mean": 0.895152235031128,
+     "test_ssim_std": 0.032484142739060855,
+     "test_psnr_mean": 37.126685333251956,
+     "test_psnr_std": 1.6683208997304073,
      "rank": 12
     },
     {
