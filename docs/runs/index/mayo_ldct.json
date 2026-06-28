@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-28T19:50:30Z",
+ "updated": "2026-06-28T20:23:05Z",
  "leaderboard": {
   "ranking_metric": "test hr (mean over 5 patients)",
   "tiebreak": "test_ssim",
@@ -250,6 +250,36 @@
     "rank": 8
    },
    {
+    "solver_key": "manhart-pwls-tv",
+    "solver_name": "Manhart PWLS-TV (ray-weighted)",
+    "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
+    "best_iter": 5,
+    "params_M": 0.0,
+    "params_source": "observation",
+    "val_ssim": 0.9275660514831543,
+    "headroom": 0.20711240171115575,
+    "val_psnr": 36.093528747558594,
+    "val_rmse": 0.0007839592290110886,
+    "val_ssim_std": null,
+    "val_psnr_std": null,
+    "val_rmse_std": null,
+    "elapsed_s": 1539.3278589248657,
+    "image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0005/comparison.png",
+    "test_hr_mean": 0.06909021645937388,
+    "test_hr_std": 0.058639060339485516,
+    "test_ssim_mean": 0.9472370147705078,
+    "test_ssim_std": 0.016203095368313693,
+    "test_psnr_mean": 36.925654602050784,
+    "test_psnr_std": 1.1314564262226108,
+    "test_rmse_mean": 0.0007173713180236519,
+    "test_rmse_std": 9.868196363284396e-05,
+    "metric_basis": "test",
+    "rank_metric": 0.06909021645937388,
+    "rank_tiebreak": 0.9472370147705078,
+    "excluded_reason": null,
+    "rank": 9
+   },
+   {
     "solver_key": "wu-2015-trainable",
     "solver_name": "Wu 2015 trainable",
     "run_id": "mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01",
@@ -277,7 +307,7 @@
     "rank_metric": 0.02168466311860697,
     "rank_tiebreak": 0.8473126649856567,
     "excluded_reason": null,
-    "rank": 9
+    "rank": 10
    },
    {
     "solver_key": "manduca-bilateral",
@@ -307,7 +337,7 @@
     "rank_metric": 0.013237272774236475,
     "rank_tiebreak": 0.9360974669456482,
     "excluded_reason": null,
-    "rank": 10
+    "rank": 11
    },
    {
     "solver_key": "dual-domain-n2i",
@@ -337,7 +367,7 @@
     "rank_metric": 0.009879607555565339,
     "rank_tiebreak": 0.9370064616203309,
     "excluded_reason": null,
-    "rank": 11
+    "rank": 12
    },
    {
     "solver_key": "dual-domain-bilateral-supervised",
@@ -367,7 +397,7 @@
     "rank_metric": 0.004514099952731531,
     "rank_tiebreak": 0.9332227826118469,
     "excluded_reason": null,
-    "rank": 12
+    "rank": 13
    },
    {
     "solver_key": "dual-domain-bilateral-n2i",
@@ -667,36 +697,6 @@
     "rank_metric": null,
     "rank_tiebreak": null,
     "excluded_reason": "discard",
-    "rank": null
-   },
-   {
-    "solver_key": "manhart-pwls-tv",
-    "solver_name": "Manhart PWLS-TV (ray-weighted)",
-    "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01",
-    "best_iter": 5,
-    "params_M": 0.0,
-    "params_source": "observation",
-    "val_ssim": 0.9275660514831543,
-    "headroom": 0.20711240171115575,
-    "val_psnr": 36.093528747558594,
-    "val_rmse": 0.0007839592290110886,
-    "val_ssim_std": null,
-    "val_psnr_std": null,
-    "val_rmse_std": null,
-    "elapsed_s": 1539.3278589248657,
-    "image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0005/comparison.png",
-    "test_hr_mean": null,
-    "test_hr_std": null,
-    "test_ssim_mean": null,
-    "test_ssim_std": null,
-    "test_psnr_mean": null,
-    "test_psnr_std": null,
-    "test_rmse_mean": null,
-    "test_rmse_std": null,
-    "metric_basis": "test",
-    "rank_metric": null,
-    "rank_tiebreak": null,
-    "excluded_reason": "pending-test",
     "rank": null
    },
    {
@@ -2555,9 +2555,9 @@
    "best_ssim": 0.9275660514831543,
    "best_score": 0.9275660514831543,
    "started": "2026-06-24T08:45:14Z",
-   "status": "excluded",
+   "status": "ranked",
    "params_M": 0.0,
-   "excluded_reason": "pending-test",
+   "excluded_reason": null,
    "agent": "manhart_pwls_tv-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-24T08:45:14Z",
@@ -2755,18 +2755,18 @@
    "name": "Param-efficient (evolved)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260624-01",
-   "n_iterations": 8,
+   "n_iterations": 9,
    "best_iter": 7,
    "best_headroom": 0.25154114341025713,
    "best_ssim": 0.905828058719635,
    "best_score": 0.905828058719635,
-   "started": "2026-06-28T18:54:14Z",
+   "started": "2026-06-28T20:21:59Z",
    "status": "excluded",
    "params_M": 0.001921,
    "excluded_reason": "pending-test",
    "agent": "param_efficient-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-28T18:54:14Z",
+   "ts": "2026-06-28T20:21:59Z",
    "curve": [
     [
      1,
@@ -2798,6 +2798,10 @@
     ],
     [
      8,
+     0.2515
+    ],
+    [
+     9,
      0.2515
     ]
    ],
