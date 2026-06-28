@@ -1,0 +1,56 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
+  "solver_key": "dual_domain_bilateral_supervised",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.9325296878814697,
+      "psnr": 34.433406829833984,
+      "rmse": 0.000949073291849345,
+      "n_slices": 214,
+      "elapsed_s": 506.2
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.9383928775787354,
+      "psnr": 35.665733337402344,
+      "rmse": 0.000823537353426218,
+      "n_slices": 214,
+      "elapsed_s": 495.2
+    },
+    "L058": {
+      "headroom": 0.02257049976365766,
+      "ssim": 0.9124515652656555,
+      "psnr": 33.73426055908203,
+      "rmse": 0.0010286247124895453,
+      "n_slices": 214,
+      "elapsed_s": 485.7
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.9429488182067871,
+      "psnr": 35.60221862792969,
+      "rmse": 0.000829581986181438,
+      "n_slices": 214,
+      "elapsed_s": 476.8
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.9397909641265869,
+      "psnr": 34.828880310058594,
+      "rmse": 0.0009068304789252579,
+      "n_slices": 214,
+      "elapsed_s": 492.0
+    }
+  },
+  "test_hr_mean": 0.004514099952731531,
+  "test_hr_std": 0.01009383435153629,
+  "test_ssim_mean": 0.9332227826118469,
+  "test_ssim_std": 0.012210553930097318,
+  "test_psnr_mean": 34.85289993286133,
+  "test_psnr_std": 0.8139536388291903,
+  "test_rmse_mean": 0.0009075295645743608,
+  "test_rmse_std": 8.590826700050251e-05
+}
