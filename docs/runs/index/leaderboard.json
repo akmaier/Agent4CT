@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-28T16:53:13Z",
+ "updated": "2026-06-28T17:23:15Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -100,12 +100,12 @@
      "elapsed_s": 1158.4088354110718,
      "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0012/comparison.png",
      "excluded_reason": null,
-     "test_hr_mean": null,
-     "test_hr_std": null,
-     "test_ssim_mean": null,
-     "test_ssim_std": null,
-     "test_psnr_mean": null,
-     "test_psnr_std": null,
+     "test_hr_mean": 0.38847777310522025,
+     "test_hr_std": 0.03505517601342574,
+     "test_ssim_mean": 0.9595066785812378,
+     "test_ssim_std": 0.016557177204012508,
+     "test_psnr_mean": 40.572940826416016,
+     "test_psnr_std": 1.6969020944728117,
      "rank": 4
     },
     {
