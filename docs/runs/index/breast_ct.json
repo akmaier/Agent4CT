@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-06-28T14:16:08Z",
+ "updated": "2026-06-28T14:41:47Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -25,6 +25,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 1
    },
    {
@@ -44,6 +50,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01/iterations/iter-0019/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 2
    },
    {
@@ -63,6 +75,12 @@
     "elapsed_s": 2446.871020555496,
     "image": "runs/breast-ct-claude-agentic-learned-primal-dual-search-20260522-01/iterations/iter-0003/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 3
    },
    {
@@ -82,6 +100,12 @@
     "elapsed_s": 267.06694984436035,
     "image": "runs/breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01/iterations/iter-0003/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 4
    },
    {
@@ -101,6 +125,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-itnet-v3-search-20260521-01/iterations/iter-0018/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 5
    },
    {
@@ -120,6 +150,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-uswin-search-20260521-01/iterations/iter-0018/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 6
    },
    {
@@ -139,6 +175,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-itnet-v2-search-20260521-01/iterations/iter-0013/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 7
    },
    {
@@ -158,6 +200,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01/iterations/iter-0012/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 8
    },
    {
@@ -177,6 +225,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-hammernik-search-20260521-01/iterations/iter-0015/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 9
    },
    {
@@ -196,6 +250,12 @@
     "elapsed_s": 26.64370894432068,
     "image": "runs/breast-ct-claude-agentic-ram-zeroshot-search-20260521-01/iterations/iter-0005/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 10
    },
    {
@@ -215,6 +275,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-ram-zeroshot-v2-search-20260521-01/iterations/iter-0013/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 11
    },
    {
@@ -234,6 +300,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01/iterations/iter-0012/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 12
    },
    {
@@ -253,6 +325,12 @@
     "elapsed_s": 203.29428458213806,
     "image": "runs/breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01/iterations/iter-0003/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 13
    },
    {
@@ -272,6 +350,12 @@
     "elapsed_s": 229.9898979663849,
     "image": "runs/breast-ct-claude-agentic-wu-2015-l2-search-20260522-01/iterations/iter-0002/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 14
    },
    {
@@ -291,6 +375,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-wu-search-20260521-01/iterations/iter-0016/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 15
    },
    {
@@ -310,6 +400,12 @@
     "elapsed_s": 752.266704082489,
     "image": "runs/breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0019/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -329,6 +425,12 @@
     "elapsed_s": 588.8502259254456,
     "image": "runs/breast-ct-claude-agentic-dual-domain-n2i-search-20260618-01/iterations/iter-0017/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -348,6 +450,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01/iterations/iter-0001/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -367,6 +475,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/iterations/iter-0001/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -386,6 +500,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01/iterations/iter-0001/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -405,6 +525,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0001/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -424,6 +550,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-naf-search-20260521-01/iterations/iter-0001/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -443,6 +575,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0002/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -462,6 +600,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-tv-search-20260521-01/iterations/iter-0001/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -481,6 +625,12 @@
     "elapsed_s": null,
     "image": "runs/breast-ct-calibrated-tpe-tv-v2-search-20260521-01/iterations/iter-0001/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    }
   ]

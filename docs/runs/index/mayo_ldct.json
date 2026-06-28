@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-28T14:16:08Z",
+ "updated": "2026-06-28T14:41:47Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -25,6 +25,12 @@
     "elapsed_s": 1055.2608880996704,
     "image": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0016/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 1
    },
    {
@@ -44,6 +50,12 @@
     "elapsed_s": 1096.0018999576569,
     "image": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0014/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 2
    },
    {
@@ -63,6 +75,12 @@
     "elapsed_s": 785.4964761734009,
     "image": "runs/mayo-ldct-claude-agentic-uswin-search-20260619-01/iterations/iter-0018/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 3
    },
    {
@@ -82,6 +100,12 @@
     "elapsed_s": 1158.4088354110718,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-supervised-search-20260619-01/iterations/iter-0012/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 4
    },
    {
@@ -101,6 +125,12 @@
     "elapsed_s": 994.3101770877838,
     "image": "runs/mayo-ldct-claude-agentic-itnet-v3-search-20260619-01/iterations/iter-0019/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 5
    },
    {
@@ -120,6 +150,12 @@
     "elapsed_s": 1227.3971643447876,
     "image": "runs/mayo-ldct-claude-agentic-tv-iterative-search-20260619-01/iterations/iter-0004/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 6
    },
    {
@@ -139,6 +175,12 @@
     "elapsed_s": 1539.3278589248657,
     "image": "runs/mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01/iterations/iter-0005/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 7
    },
    {
@@ -158,6 +200,12 @@
     "elapsed_s": 1235.541589975357,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0004/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 8
    },
    {
@@ -177,6 +225,12 @@
     "elapsed_s": 997.2833263874054,
     "image": "runs/mayo-ldct-claude-agentic-hammernik-vn-search-20260619-01/iterations/iter-0012/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 9
    },
    {
@@ -196,6 +250,12 @@
     "elapsed_s": 351.5129199028015,
     "image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0010/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 10
    },
    {
@@ -215,6 +275,12 @@
     "elapsed_s": 495.03839468955994,
     "image": "runs/mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01/iterations/iter-0016/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 11
    },
    {
@@ -234,6 +300,12 @@
     "elapsed_s": 355.8215289115906,
     "image": "runs/mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01/iterations/iter-0015/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 12
    },
    {
@@ -253,6 +325,12 @@
     "elapsed_s": 385.884165763855,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01/iterations/iter-0016/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 13
    },
    {
@@ -272,6 +350,12 @@
     "elapsed_s": 1129.7408120632172,
     "image": "runs/mayo-ldct-claude-agentic-dual-domain-bilateral-n2i-search-20260619-01/iterations/iter-0014/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -291,6 +375,12 @@
     "elapsed_s": 1150.5949709415436,
     "image": "runs/mayo-ldct-claude-agentic-fastdiff-flow-pixel-unconstrained-search-20260620-01/iterations/iter-0004/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -310,6 +400,12 @@
     "elapsed_s": 707.3523406982422,
     "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260620-01/iterations/iter-0005/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -329,6 +425,12 @@
     "elapsed_s": 931.5463216304779,
     "image": "runs/mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01/iterations/iter-0016/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -348,6 +450,12 @@
     "elapsed_s": 516.1623423099518,
     "image": "runs/mayo-ldct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260620-01/iterations/iter-0011/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -367,6 +475,12 @@
     "elapsed_s": 985.931366443634,
     "image": "runs/mayo-ldct-claude-agentic-ram-search-20260619-01/iterations/iter-0005/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -386,6 +500,12 @@
     "elapsed_s": 1227.4057862758636,
     "image": "runs/mayo-ldct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260620-01/iterations/iter-0002/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -405,6 +525,12 @@
     "elapsed_s": 776.794572353363,
     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01/iterations/iter-0016/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -424,6 +550,12 @@
     "elapsed_s": 820.4260549545288,
     "image": "runs/mayo-ldct-claude-agentic-diff-recon-dcstep-constrained-mayo-v4-search-20260619-01/iterations/iter-0015/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -443,6 +575,12 @@
     "elapsed_s": 260.7095446586609,
     "image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0007/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -462,6 +600,12 @@
     "elapsed_s": 1120.8152675628662,
     "image": "runs/mayo-ldct-claude-agentic-r2gaussian-search-20260619-01/iterations/iter-0010/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    },
    {
@@ -481,6 +625,12 @@
     "elapsed_s": 1095.162609577179,
     "image": "runs/mayo-ldct-claude-agentic-naf-search-20260619-01/iterations/iter-0018/comparison.png",
     "excluded_reason": "discard",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": null
    }
   ]

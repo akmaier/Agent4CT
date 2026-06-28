@@ -402,6 +402,57 @@ def load_val_split(kind: str, split: str, n: int, *, device,
     # verified vs ps transitions (247/457) + counts (L014 154, L056 93, L058 210,
     # L075 137, L123 151 = 745).
     import os as _os
+    # Per-patient TEST scoring override (AGENT4CT_EVAL_PATIENT=Lxxx). Replaces the
+    # Mayo val load (single patient L277) with ONE held-out TEST patient's WHOLE
+    # volume (truth + lowdose sino + per-slice ps), returning the SAME tuple shape
+    # load_val_split returns for val — so an existing solver's main() scores that
+    # test patient with ZERO solver changes (Phase 1B: per-patient test-set std).
+    # Reuses the valtest-showcase per-patient file/index mechanism: the test h5s
+    # are patient-ordered, dataset keys resolved via info.truth_dataset/sino_dataset
+    # (canonical "truth"/"sino_lowdose") with the same in-file fallbacks, the "ps"
+    # array sliced alongside truth. Patient slice ranges are the Wagner test order
+    # the showcase documents (boundaries verified vs ps transitions 247/457 +
+    # counts L014 154, L056 93, L058 210, L075 137, L123 151 = 745). Default
+    # behaviour (env unset) is byte-identical — this block early-returns only when
+    # the env names a known test patient AND the Mayo split is the scored ("val")
+    # set; split=="train" and non-Mayo kinds always fall through untouched.
+    MAYO_TEST_PATIENT_RANGES = {           # (start, stop) into the patient-ordered test h5
+        "L014": (0, 154), "L056": (154, 247), "L058": (247, 457),
+        "L075": (457, 594), "L123": (594, 745),
+    }
+    _eval_patient = _os.environ.get("AGENT4CT_EVAL_PATIENT")
+    if _eval_patient and kind == "mayo_ldct_2d" and split == "val":
+        if _eval_patient not in MAYO_TEST_PATIENT_RANGES:
+            raise ValueError(
+                f"AGENT4CT_EVAL_PATIENT={_eval_patient!r} not a Wagner test patient; "
+                f"choices: {sorted(MAYO_TEST_PATIENT_RANGES)}")
+        sd = info.staged_dir
+        lo, hi = MAYO_TEST_PATIENT_RANGES[_eval_patient]
+        sl = slice(lo, hi)
+        with h5py.File(sd / info.truth_file_tmpl.format(split="test"), "r") as f:
+            tkey = info.truth_dataset if info.truth_dataset in f else "truth"
+            truth = f[tkey][sl][...]
+            ps_arr = f["ps"][sl][...] if "ps" in f else None
+        with h5py.File(sd / info.sino_file_tmpl.format(split="test"), "r") as f:
+            skey = (info.sino_dataset if info.sino_dataset in f
+                    else ("sino" if "sino" in f else list(f.keys())[0]))
+            sino = f[skey][sl][...]
+        truth_t = torch.from_numpy(np.ascontiguousarray(truth)).to(device=device, dtype=torch.float32)
+        sino_t  = torch.from_numpy(np.ascontiguousarray(sino )).to(device=device, dtype=torch.float32)
+        if truth_t.dim() == 3:   # (N, H, W) -> (N, 1, H, W)
+            truth_t = truth_t.unsqueeze(1)
+        if sino_t.dim() == 3:    # (N, A, D) -> (N, 1, A, D)
+            sino_t = sino_t.unsqueeze(1)
+        # Same per-dataset start-angle shift the default path applies (no-op for
+        # mayo_ldct_2d, where sino_angle_shift==0, but kept for parity).
+        if info.sino_angle_shift != 0:
+            sino_t = torch.roll(sino_t, shifts=int(info.sino_angle_shift), dims=-2)
+        print(f"[staged] EVAL_PATIENT={_eval_patient}: whole TEST volume "
+              f"slices[{lo}:{hi}] -> {truth_t.shape[0]} slices (in place of val)",
+              flush=True)
+        if return_ps:
+            return truth_t, sino_t, sino_t, ps_arr
+        return truth_t, sino_t, sino_t
     # Presentation-only VAL+TEST showcase (AGENT4CT_SHOWCASE=valtest): 6 scenes =
     # L277 central (val) + the 5 test-patient centrals, full 512² (NO FOV mask).
     # Gated on the exact value "valtest" + early-return, so the live search metric

@@ -128,6 +128,7 @@ DISPLAY_NAMES = {
     "fastdiff-wdm-wavelet-unconstrained": "Fast-diffusion WDM (wavelet, unconstrained)",
     "manduca-bilateral": "Manduca proj-bilateral (trainable)",
     "manhart-pwls-tv": "Manhart PWLS-TV (ray-weighted)",
+    "param-efficient": "Param-efficient (evolved)",
 }
 
 

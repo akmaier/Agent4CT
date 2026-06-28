@@ -29,6 +29,10 @@ RUNS_BASE = Path(os.environ.get("AGENT4CT_RUNS", "/cluster/maier/Agent4CT/runs")
 SOLVER_MAP = {
     "ram_zeroshot":         ("pentathlon/demo_dl_reference/solver_ram.py",          "RAM_CONFIG_PATH"),
     "tv_iterative":         ("pentathlon/demo_dl_reference/solver_tv_search.py",     "TV_CONFIG_PATH"),
+    # Code-evolving parameter-efficient campaign (search-20260624-01): each iter
+    # REWRITES the architecture (dispatch sets SOLVER_SRC_OVERRIDE to a per-iter
+    # snapshot). solver_param_efficient.py is the canonical/seed path.
+    "param_efficient":      ("pentathlon/demo_dl_reference/solver_param_efficient.py", "PARAM_EFFICIENT_CONFIG_PATH"),
     # Noise2Inverse self-supervised dual-domain variants (file names made
     # explicit 2026-05-22 — see docs/findings.md re: N2I vs supervised L2).
     "dual_domain_n2i":           ("pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py",            "DD_CONFIG_PATH"),
@@ -194,6 +198,12 @@ def main() -> int:
     if solver_key not in SOLVER_MAP:
         raise ValueError(f"unknown solver {solver_key!r}; choices: {list(SOLVER_MAP)}")
     solver_path, env_var = SOLVER_MAP[solver_key]
+    # Code-evolving campaigns rewrite the solver each iteration. SOLVER_SRC_OVERRIDE
+    # points the driver at a per-iter solver source snapshot (so parallel
+    # architecture variants never collide and each iter is reproducible from its
+    # own code); default is the canonical SOLVER_MAP path.
+    _src_override = os.environ.get("SOLVER_SRC_OVERRIDE", "").strip()
+    solver_src = Path(_src_override) if _src_override else (REPO / solver_path)
 
     # Provenance from the slug + env (was hardcoded to the breast-CT bring-up
     # values). AGENT / MODEL / TRAIN_N override the defaults so Mayo/demo runs
@@ -212,6 +222,13 @@ def main() -> int:
     dash_slug = DOCS_RUNS / slug
     dash_iter = dash_slug / "iterations" / f"iter-{iter_n:04d}"
     dash_iter.mkdir(parents=True, exist_ok=True)
+
+    # Snapshot the exact solver source for this iter (provenance; essential for
+    # code-evolving campaigns where the architecture itself changes per iter).
+    try:
+        shutil.copyfile(solver_src, dash_iter / "solver_src.py")
+    except Exception as _e:
+        print(f"[agentic] solver-src snapshot skipped: {_e}", flush=True)
 
     # Make sure the manifest exists; create on first iter.
     manifest_path = dash_slug / "manifest.json"
@@ -241,7 +258,7 @@ def main() -> int:
     os.environ[env_var] = str(cfg_json)
     t0 = time.time()
     import subprocess
-    cmd = [sys.executable, str(REPO / solver_path), str(iter_dir)]
+    cmd = [sys.executable, str(solver_src), str(iter_dir)]
     res = subprocess.run(cmd, env=os.environ.copy())
     if res.returncode != 0:
         print(f"[agentic] solver returned exit code {res.returncode}", flush=True)

@@ -76,6 +76,7 @@
         _el("th", { class: "lb-num" }, ["params (M)"]),
         _el("th", { class: "lb-num" }, ["SSIM"]),
         _el("th", { class: "lb-num" }, ["hr"]),
+        _el("th", { class: "lb-num" }, ["Test hr (n=5)"]),
         _el("th", { class: "lb-num" }, ["PSNR (dB)"]),
         _el("th", { class: "lb-num" }, ["RMSE"]),
         _el("th", { class: "lb-num" }, ["time (s)"]),
@@ -109,6 +110,9 @@
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtParams(r.params_M)]));
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_ssim, r.val_ssim_std, fmtSSIM)]));
       tr.appendChild(_el("td", { class: "lb-num lb-hr" }, [fmtHr(r.headroom)]));
+      // Test hr (n=5): per-patient mean ± std over the 5 held-out Wagner test
+      // patients (Phase 1B). Graceful "—" until docs/runs/<slug>/final.json exists.
+      tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.test_hr_mean, r.test_hr_std, fmtHr)]));
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_psnr, r.val_psnr_std, fmtPSNR)]));
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_rmse, r.val_rmse_std, fmtRMSE)]));
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtTime(r.elapsed_s)]));

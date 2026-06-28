@@ -3,7 +3,7 @@
  "challenge": "demo_dl",
  "label": "Demo-DL",
  "campaign": "intensity-calibrated+agentic",
- "updated": "2026-06-28T14:16:08Z",
+ "updated": "2026-06-28T14:41:47Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -25,6 +25,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 1
    },
    {
@@ -44,6 +50,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-itnet-v3-search-20260520-01/iterations/iter-0009/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 2
    },
    {
@@ -63,6 +75,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-uswin-search-20260520-01/iterations/iter-0011/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 3
    },
    {
@@ -82,6 +100,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-ram-zeroshot-search-20260521-01/iterations/iter-0016/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 4
    },
    {
@@ -101,6 +125,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-itnet-v2-search-20260520-01/iterations/iter-0020/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 5
    },
    {
@@ -120,6 +150,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01/iterations/iter-0017/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 6
    },
    {
@@ -139,6 +175,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01/iterations/iter-0018/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 7
    },
    {
@@ -158,6 +200,12 @@
     "elapsed_s": 345.30518674850464,
     "image": "runs/demo-dl-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01/iterations/iter-0008/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 8
    },
    {
@@ -177,6 +225,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-naf-search-20260521-01/iterations/iter-0019/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 9
    },
    {
@@ -196,6 +250,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-tv-search-20260520-01/iterations/iter-0013/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 10
    },
    {
@@ -215,6 +275,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-hammernik-search-20260520-01/iterations/iter-0006/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 11
    },
    {
@@ -234,6 +300,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-hammernik-vn-search-20260520-01/iterations/iter-0011/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 12
    },
    {
@@ -253,6 +325,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-r2gaussian-search-20260521-01/iterations/iter-0014/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 13
    },
    {
@@ -272,6 +350,12 @@
     "elapsed_s": null,
     "image": "runs/demo-intensity-calibrated-tpe-wu-search-20260521-01/iterations/iter-0018/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 14
    },
    {
@@ -291,6 +375,12 @@
     "elapsed_s": 251.66788482666016,
     "image": "runs/demo-dl-claude-agentic-dual-domain-n2i-search-20260618-01/iterations/iter-0020/comparison.png",
     "excluded_reason": null,
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
     "rank": 15
    }
   ]

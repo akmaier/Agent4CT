@@ -147,6 +147,36 @@ def build_registry_lines(allow: dict, backstop: dict):
     return lines
 
 
+# Phase 1B: per-patient TEST-set aggregates (mean ± std over the 5 held-out
+# Wagner test patients), written by scripts/score_mayo_testset.py to
+# docs/runs/<slug>/final.json. Surfaced on the leaderboard row alongside the
+# val (L277) metrics. Null everywhere until a run's final.json exists, so this
+# is graceful for the whole inventory before the test-set jobs run.
+_TESTSET_KEYS = ("test_hr_mean", "test_hr_std", "test_ssim_mean", "test_ssim_std",
+                 "test_psnr_mean", "test_psnr_std")
+
+
+def _testset_aggregates(slug: str) -> dict:
+    """Read docs/runs/<slug>/final.json and return the test_* aggregate fields
+    (None for each if no final.json yet, or it's malformed / incomplete). The
+    additions are deterministic from committed final.json content, so the
+    registry staleness gate (fresh-rebuild vs committed content_hash) still
+    passes."""
+    out = {k: None for k in _TESTSET_KEYS}
+    fp = DOCS_RUNS / slug / "final.json"
+    if not fp.exists():
+        return out
+    try:
+        obj = R.load_json(fp)
+    except Exception as e:
+        print(f"[registry] skip final.json {fp}: {e}")
+        return out
+    for k in _TESTSET_KEYS:
+        v = obj.get(k)
+        out[k] = v if R.finite(v) else None
+    return out
+
+
 def best_iter_row(slug_lines: list[dict]) -> dict | None:
     """Pick the leaderboard row for ONE run = its best iter by the canonical
     ranking (headroom desc, val_ssim tiebreak) among iters that have a
@@ -172,7 +202,7 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
     best = max(pool, key=lambda l: (hr(l), ss(l)))
     m = best["metrics"]
     reason = R.excluded_reason(best["status"], m.get("headroom"), m.get("val_ssim"))
-    return {
+    row = {
         "solver_key": best["solver_key"],
         "solver_name": best["solver_name"],
         "run_id": best["run_id"],
@@ -190,6 +220,10 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
         "image": best["images"].get("comparison"),
         "excluded_reason": reason,
     }
+    # Phase 1B: fold in the per-patient test-set mean±std (or None if no
+    # final.json yet — graceful for the whole inventory pre-scoring).
+    row.update(_testset_aggregates(best["run_id"]))
+    return row
 
 
 def build_leaderboard(ch_lines: list[dict]) -> dict:
