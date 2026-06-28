@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-06-28T16:23:33Z",
+ "updated": "2026-06-28T16:53:13Z",
  "ranking_metric": "headroom",
  "tiebreak": "val_ssim",
  "datasets": {
@@ -134,6 +134,31 @@
      "rank": 5
     },
     {
+     "solver_key": "param-efficient",
+     "solver_name": "Param-efficient (evolved)",
+     "run_id": "mayo-ldct-claude-agentic-param-efficient-search-20260624-01",
+     "best_iter": 4,
+     "params_M": 0.002798,
+     "params_source": "observation",
+     "val_ssim": 0.885933518409729,
+     "headroom": 0.23785449948411708,
+     "val_psnr": 36.43700408935547,
+     "val_rmse": 0.0007535633048973978,
+     "val_ssim_std": 0.023695021867752075,
+     "val_psnr_std": 1.840527892112732,
+     "val_rmse_std": 0.00017292765551246703,
+     "elapsed_s": 1206.7987740039825,
+     "image": "runs/mayo-ldct-claude-agentic-param-efficient-search-20260624-01/iterations/iter-0004/comparison.png",
+     "excluded_reason": null,
+     "test_hr_mean": null,
+     "test_hr_std": null,
+     "test_ssim_mean": null,
+     "test_ssim_std": null,
+     "test_psnr_mean": null,
+     "test_psnr_std": null,
+     "rank": 6
+    },
+    {
      "solver_key": "tv-iterative",
      "solver_name": "TV-iterative",
      "run_id": "mayo-ldct-claude-agentic-tv-iterative-search-20260619-01",
@@ -156,7 +181,7 @@
      "test_ssim_std": 0.017231817356724757,
      "test_psnr_mean": 37.03703994750977,
      "test_psnr_std": 1.188070431691168,
-     "rank": 6
+     "rank": 7
     },
     {
      "solver_key": "manhart-pwls-tv",
@@ -181,7 +206,7 @@
      "test_ssim_std": null,
      "test_psnr_mean": null,
      "test_psnr_std": null,
-     "rank": 7
+     "rank": 8
     },
     {
      "solver_key": "dual-domain-n2i",
@@ -200,13 +225,13 @@
      "elapsed_s": 1235.541589975357,
      "image": "runs/mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01/iterations/iter-0004/comparison.png",
      "excluded_reason": null,
-     "test_hr_mean": null,
-     "test_hr_std": null,
-     "test_ssim_mean": null,
-     "test_ssim_std": null,
-     "test_psnr_mean": null,
-     "test_psnr_std": null,
-     "rank": 8
+     "test_hr_mean": 0.009879607555565339,
+     "test_hr_std": 0.02209147408526463,
+     "test_ssim_mean": 0.9370064616203309,
+     "test_ssim_std": 0.018785125691136103,
+     "test_psnr_mean": 35.694487762451175,
+     "test_psnr_std": 1.0419195340952465,
+     "rank": 9
     },
     {
      "solver_key": "hammernik-vn",
@@ -231,7 +256,7 @@
      "test_ssim_std": null,
      "test_psnr_mean": null,
      "test_psnr_std": null,
-     "rank": 9
+     "rank": 10
     },
     {
      "solver_key": "wu-2015-trainable",
@@ -249,31 +274,6 @@
      "val_rmse_std": null,
      "elapsed_s": 351.5129199028015,
      "image": "runs/mayo-ldct-claude-agentic-wu-2015-trainable-search-20260619-01/iterations/iter-0010/comparison.png",
-     "excluded_reason": null,
-     "test_hr_mean": null,
-     "test_hr_std": null,
-     "test_ssim_mean": null,
-     "test_ssim_std": null,
-     "test_psnr_mean": null,
-     "test_psnr_std": null,
-     "rank": 10
-    },
-    {
-     "solver_key": "param-efficient",
-     "solver_name": "Param-efficient (evolved)",
-     "run_id": "mayo-ldct-claude-agentic-param-efficient-search-20260624-01",
-     "best_iter": 1,
-     "params_M": 0.002798,
-     "params_source": "observation",
-     "val_ssim": 0.8457950949668884,
-     "headroom": 0.08710755548522486,
-     "val_psnr": 34.8693733215332,
-     "val_rmse": 0.0009026127518154681,
-     "val_ssim_std": 0.04283333197236061,
-     "val_psnr_std": 1.5393093824386597,
-     "val_rmse_std": 0.00017940461111720651,
-     "elapsed_s": 727.597859621048,
-     "image": "runs/mayo-ldct-claude-agentic-param-efficient-search-20260624-01/iterations/iter-0001/comparison.png",
      "excluded_reason": null,
      "test_hr_mean": null,
      "test_hr_std": null,
