@@ -61,30 +61,53 @@
     return e;
   }
 
-  // The canonical column set required on every board (plan §7):
-  // params(M) · SSIM · hr · PSNR(dB) · RMSE · time(s) · image.
-  // imgBase is prefixed to the row.image path (the boards sit one dir below
-  // docs/, so they need "../" to reach docs/runs/...).
+  // The metric columns depend on the board's basis (set by build_registry as
+  // lb.metric_basis, passed via opts.metricBasis):
+  //   "test" (Mayo): hr · SSIM · PSNR · RMSE as mean ± std over the 5 held-out
+  //                  test patients (n=5), and the board is ranked by test hr.
+  //   "val"  (others): the single-patient val (L277) SSIM · hr · PSNR · RMSE,
+  //                  SSIM/PSNR/RMSE carrying the per-slice std.
+  // params(M) · <metrics> · time(s) · best iter · comparison on both.
+  function _metricCols(basis) {
+    if (basis === "test") {
+      return [
+        { label: "hr (n=5)", cls: "lb-num lb-hr",
+          val: function (r) { return fmtMeanStd(r.test_hr_mean, r.test_hr_std, fmtHr); } },
+        { label: "SSIM (n=5)", cls: "lb-num",
+          val: function (r) { return fmtMeanStd(r.test_ssim_mean, r.test_ssim_std, fmtSSIM); } },
+        { label: "PSNR dB (n=5)", cls: "lb-num",
+          val: function (r) { return fmtMeanStd(r.test_psnr_mean, r.test_psnr_std, fmtPSNR); } },
+        { label: "RMSE (n=5)", cls: "lb-num",
+          val: function (r) { return fmtMeanStd(r.test_rmse_mean, r.test_rmse_std, fmtRMSE); } },
+      ];
+    }
+    return [
+      { label: "SSIM", cls: "lb-num",
+        val: function (r) { return fmtMeanStd(r.val_ssim, r.val_ssim_std, fmtSSIM); } },
+      { label: "hr", cls: "lb-num lb-hr",
+        val: function (r) { return fmtHr(r.headroom); } },
+      { label: "PSNR (dB)", cls: "lb-num",
+        val: function (r) { return fmtMeanStd(r.val_psnr, r.val_psnr_std, fmtPSNR); } },
+      { label: "RMSE", cls: "lb-num",
+        val: function (r) { return fmtMeanStd(r.val_rmse, r.val_rmse_std, fmtRMSE); } },
+    ];
+  }
+
   function renderLeaderboardTable(rows, opts) {
     opts = opts || {};
     const imgBase = opts.imgBase || "";
+    const cols = _metricCols(opts.metricBasis || "val");
     const table = _el("table", { class: "lb-table" }, []);
-    const thead = _el("thead", {}, [
-      _el("tr", {}, [
-        _el("th", { class: "lb-rank" }, ["#"]),
-        _el("th", {}, ["Solver"]),
-        _el("th", { class: "lb-num" }, ["params (M)"]),
-        _el("th", { class: "lb-num" }, ["SSIM"]),
-        _el("th", { class: "lb-num" }, ["hr"]),
-        _el("th", { class: "lb-num" }, ["Test hr (n=5)"]),
-        _el("th", { class: "lb-num" }, ["PSNR (dB)"]),
-        _el("th", { class: "lb-num" }, ["RMSE"]),
-        _el("th", { class: "lb-num" }, ["time (s)"]),
-        _el("th", {}, ["best iter"]),
-        _el("th", {}, ["comparison"]),
-      ]),
-    ]);
-    table.appendChild(thead);
+    const headRow = [
+      _el("th", { class: "lb-rank" }, ["#"]),
+      _el("th", {}, ["Solver"]),
+      _el("th", { class: "lb-num" }, ["params (M)"]),
+    ];
+    cols.forEach(function (c) { headRow.push(_el("th", { class: "lb-num" }, [c.label])); });
+    headRow.push(_el("th", { class: "lb-num" }, ["time (s)"]));
+    headRow.push(_el("th", {}, ["best iter"]));
+    headRow.push(_el("th", {}, ["comparison"]));
+    table.appendChild(_el("thead", {}, [_el("tr", {}, headRow)]));
     const tbody = _el("tbody", {}, []);
 
     // EVERY row, in the order given (ranked first, excluded dimmed below). No
@@ -108,13 +131,9 @@
       tr.appendChild(nameCell);
 
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtParams(r.params_M)]));
-      tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_ssim, r.val_ssim_std, fmtSSIM)]));
-      tr.appendChild(_el("td", { class: "lb-num lb-hr" }, [fmtHr(r.headroom)]));
-      // Test hr (n=5): per-patient mean ± std over the 5 held-out Wagner test
-      // patients (Phase 1B). Graceful "—" until docs/runs/<slug>/final.json exists.
-      tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.test_hr_mean, r.test_hr_std, fmtHr)]));
-      tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_psnr, r.val_psnr_std, fmtPSNR)]));
-      tr.appendChild(_el("td", { class: "lb-num" }, [fmtMeanStd(r.val_rmse, r.val_rmse_std, fmtRMSE)]));
+      cols.forEach(function (c) {
+        tr.appendChild(_el("td", { class: c.cls }, [c.val(r)]));
+      });
       tr.appendChild(_el("td", { class: "lb-num" }, [fmtTime(r.elapsed_s)]));
 
       const iterCell = _el("td", {}, []);

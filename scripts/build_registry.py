@@ -15,7 +15,9 @@ docs/runs/CURRENT_RUNIDS.json) and materializes every downstream view:
                           in README.md regenerated in the same run (so the no-JS
                           GitHub front page cannot drift).
 
-Canonical ranking everywhere: headroom desc, val_ssim tiebreak. status=discard /
+Canonical ranking is per-dataset (registry_lib.metric_basis): test datasets (Mayo)
+rank by test_hr_mean (test_ssim tiebreak, n=5 patients), others by val headroom
+(val_ssim tiebreak). status=discard / pending-test (no final.json) /
 non-finite / hr<=0 are EXCLUDED from the rank but still emitted (excluded_reason
 set) so every solver row is rendered — top-N is structurally unexpressible
 (no slicing anywhere). No field from observation.json is dropped.
@@ -153,7 +155,7 @@ def build_registry_lines(allow: dict, backstop: dict):
 # val (L277) metrics. Null everywhere until a run's final.json exists, so this
 # is graceful for the whole inventory before the test-set jobs run.
 _TESTSET_KEYS = ("test_hr_mean", "test_hr_std", "test_ssim_mean", "test_ssim_std",
-                 "test_psnr_mean", "test_psnr_std")
+                 "test_psnr_mean", "test_psnr_std", "test_rmse_mean", "test_rmse_std")
 
 
 def _testset_aggregates(slug: str) -> dict:
@@ -201,7 +203,6 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
     pool = with_img or slug_lines
     best = max(pool, key=lambda l: (hr(l), ss(l)))
     m = best["metrics"]
-    reason = R.excluded_reason(best["status"], m.get("headroom"), m.get("val_ssim"))
     row = {
         "solver_key": best["solver_key"],
         "solver_name": best["solver_name"],
@@ -218,17 +219,33 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
         "val_rmse_std": m.get("val_rmse_std"),
         "elapsed_s": best["runtime"].get("elapsed_s"),
         "image": best["images"].get("comparison"),
-        "excluded_reason": reason,
     }
     # Phase 1B: fold in the per-patient test-set mean±std (or None if no
     # final.json yet — graceful for the whole inventory pre-scoring).
     row.update(_testset_aggregates(best["run_id"]))
+    # Ranking basis: test datasets (Mayo) rank by test_hr_mean (val headroom
+    # fallback while the test-eval drains); others by val headroom. The within-run
+    # best-iter pick above stays val-headroom-based — that is the iter final.json
+    # was scored against.
+    # Ranking basis: test datasets (Mayo) rank by test_hr_mean; runs without a
+    # final.json are pending-test (dimmed, NOT val-fallback-ranked into the test
+    # ordering). Others rank by val headroom. The within-run best-iter pick above
+    # stays val-headroom-based — that is the iter final.json was scored against.
+    ch = R.challenge_from_slug(best["run_id"])
+    has_final = (DOCS_RUNS / best["run_id"] / "final.json").exists()
+    row["metric_basis"] = R.metric_basis(ch)
+    rm, tb, reason = R.rank_fields(row, best["status"], ch, has_final)
+    row["rank_metric"] = rm
+    row["rank_tiebreak"] = tb
+    row["excluded_reason"] = reason
     return row
 
 
-def build_leaderboard(ch_lines: list[dict]) -> dict:
+def build_leaderboard(ch_lines: list[dict], ch: str | None = None) -> dict:
     """All solvers for a dataset -> one ranked board (best iter per RUN).
-    Rankable first (headroom desc, ssim tiebreak), excluded dimmed below."""
+    Rankable first (rank_metric desc, ssim tiebreak), excluded dimmed below.
+    Test-ranked datasets (Mayo) rank by test_hr_mean + show the test mean±std
+    columns; others rank by val headroom + show the val columns."""
     by_run: dict[str, list] = {}
     for l in ch_lines:
         by_run.setdefault(l["run_id"], []).append(l)
@@ -236,7 +253,15 @@ def build_leaderboard(ch_lines: list[dict]) -> dict:
     rows.sort(key=R.rank_sort_key)
     for i, r in enumerate(rows, 1):
         r["rank"] = i if not r["excluded_reason"] else None
-    return {"ranking_metric": "headroom", "tiebreak": "val_ssim", "rows": rows}
+    if ch is None and rows:
+        ch = R.challenge_from_slug(rows[0]["run_id"])
+    basis = R.metric_basis(ch)
+    if basis == "test":
+        ranking_metric, tiebreak = "test hr (mean over 5 patients)", "test_ssim"
+    else:
+        ranking_metric, tiebreak = "headroom", "val_ssim"
+    return {"ranking_metric": ranking_metric, "tiebreak": tiebreak,
+            "metric_basis": basis, "rows": rows}
 
 
 # Views that carry an "updated" wall-clock field (with the json.dump indent they
@@ -292,7 +317,7 @@ def main() -> int:
     datasets_summary = []
     for ch in ("mayo_ldct", "breast_ct", "demo_dl"):
         ch_lines = by_ch.get(ch, [])
-        lb = build_leaderboard(ch_lines)
+        lb = build_leaderboard(ch_lines, ch)
         leaderboards[ch] = lb
         ds_meta = allow["datasets"].get(ch, {})
 
@@ -346,8 +371,17 @@ def main() -> int:
         }, indent=1, allow_nan=False))
 
         # datasets.json champion = leaderboard rank-1 (so the two surfaces are
-        # structurally identical). None if no run cleared baseline.
+        # structurally identical). None if no run cleared baseline. The headline
+        # hr/SSIM follow the board's metric basis: test mean (n=5) for Mayo, val
+        # for the others — so the landing card matches the board it links to.
         rank1 = next((r for r in lb["rows"] if r.get("rank") == 1), None)
+        basis = lb.get("metric_basis", "val")
+        if rank1:
+            champ_hr = rank1.get("rank_metric")
+            champ_ssim = (rank1.get("test_ssim_mean") if basis == "test"
+                          else rank1.get("val_ssim"))
+        else:
+            champ_hr = champ_ssim = None
         datasets_summary.append({
             "challenge": ch, "label": R.DATASET_LABELS.get(ch, ch),
             "campaign": ds_meta.get("campaign"),
@@ -356,17 +390,21 @@ def main() -> int:
             "n_solvers": len(lb["rows"]),
             "champion_slug": rank1["run_id"] if rank1 else None,
             "champion_name": rank1["solver_name"] if rank1 else None,
-            "champion_headroom": rank1["headroom"] if rank1 else None,
-            "champion_ssim": rank1["val_ssim"] if rank1 else None,
+            "champion_headroom": champ_hr,
+            "champion_ssim": champ_ssim,
+            "champion_metric_basis": basis,
             # schema-2 alias: champion_score was the metric the dashboard card
-            # printed. After Phase 0 it is the headroom (the canonical metric).
-            "champion_score": rank1["headroom"] if rank1 else None,
+            # printed — the ranking metric (test hr for Mayo, val headroom else).
+            "champion_score": champ_hr,
             "thumbnail": rank1["image"] if rank1 else None,
         })
 
     (IDX / "leaderboard.json").write_text(json.dumps({
         "schema_version": R.SCHEMA_VERSION, "updated": build_ts,
-        "ranking_metric": "headroom", "tiebreak": "val_ssim",
+        # ranking is per-dataset now (datasets[ch].ranking_metric / metric_basis):
+        # test hr for Mayo, val headroom for breast/demo. leaderboard.js reads the
+        # per-dataset label, not these wrapper keys.
+        "ranking_metric": "per-dataset", "tiebreak": "per-dataset",
         "datasets": leaderboards,
     }, indent=1, allow_nan=False))
 
@@ -496,8 +534,11 @@ def write_readme_block(datasets_summary: list[dict]) -> None:
     for d in sorted(datasets_summary, key=lambda x: order.get(x["challenge"], 9)):
         lab, link = label_link.get(d["challenge"], (d["label"], "#"))
         champ = d.get("champion_name") or "—"
+        # basis tag so a reader never compares a test mean against a val number
+        # under the shared "SSIM | hr" header (Mayo is test-set n=5; others val).
+        basis_tag = " (test, n=5)" if d.get("champion_metric_basis") == "test" else " (val)"
         rows.append(f"| **{lab} | {champ} | {_fmt(d.get('champion_ssim'))} "
-                    f"| **{_fmt(d.get('champion_headroom'))}** | [`{link}`]({link}) |")
+                    f"| **{_fmt(d.get('champion_headroom'))}**{basis_tag} | [`{link}`]({link}) |")
     block = (_BEGIN + "\n"
              + "<!-- AUTO-GENERATED by scripts/build_registry.py — do not edit by hand. -->\n"
              + "\n".join(rows) + "\n" + _END)

@@ -280,8 +280,10 @@ function renderDatasetCard(d) {
     el("span", { class: "label" }, "runs"), el("span", {}, String(d.n_runs))));
   card.appendChild(el("div", { class: "stat" },
     el("span", { class: "label" }, "iterations"), el("span", {}, String(d.n_iterations))));
-  // champion_score is the canonical ranking metric (headroom); SSIM shown beside
-  // it. "—" when no run on this dataset cleared baseline (champion_score null).
+  // champion_score is the board's ranking metric per dataset basis (test_hr_mean,
+  // mean over the 5 test patients, for Mayo; val headroom for breast/demo — set
+  // basis-aware in build_registry); SSIM shown beside it. "—" when no run cleared
+  // baseline (champion_score null).
   card.appendChild(el("div", { class: "stat" },
     el("span", { class: "label" }, "champion hr"), el("span", {}, fmtNum(d.champion_score))));
   if (d.champion_ssim != null)

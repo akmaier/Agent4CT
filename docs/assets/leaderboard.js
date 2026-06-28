@@ -54,18 +54,25 @@
         return;
       }
       var ranked = lb.rows.filter(function (r) { return !r.excluded_reason; }).length;
-      var excluded = lb.rows.length - ranked;
+      // pending-test (no final.json yet) is distinct from below-baseline — don't
+      // lump the two into one "below" count on the test board.
+      var pending = lb.rows.filter(function (r) {
+        return r.excluded_reason === "pending-test"; }).length;
+      var below = lb.rows.length - ranked - pending;
+      var tail = "";
+      if (pending) tail += ", " + pending + " pending test-scoring";
+      if (below) tail += ", " + below + " below baseline";
       var caption = document.createElement("p");
       caption.className = "lb-caption muted";
       caption.innerHTML =
         "<strong>" + lb.rows.length + " solvers</strong> — ranked by <strong>" +
         (lb.ranking_metric || "headroom") + "</strong> (" + (lb.tiebreak || "val_ssim") +
-        " tiebreak). " + ranked + " above baseline" +
-        (excluded ? ", " + excluded + " below (dimmed, not ranked — shown for completeness)" : "") +
-        ". Built from the registry — no hand-typed numbers.";
+        " tiebreak). " + ranked + " above baseline" + tail +
+        " (dimmed rows shown for completeness). Built from the registry — no hand-typed numbers.";
       mount.appendChild(caption);
       mount.appendChild(
-        window.A4CTable.renderLeaderboardTable(lb.rows, { imgBase: base }));
+        window.A4CTable.renderLeaderboardTable(lb.rows,
+          { imgBase: base, metricBasis: lb.metric_basis || "val" }));
     });
   }
 
@@ -91,14 +98,19 @@
       var lb = board[ch];
       if (!lb || !lb.rows) return;
       var r1 = lb.rows.filter(function (r) { return r.rank === 1; })[0];
+      // Headline SSIM/hr follow the board's basis: test mean (n=5) for Mayo, val
+      // otherwise — so the champions row agrees with the board it links to.
+      var isTest = (lb.metric_basis === "test");
+      var ssim = r1 ? (isTest ? r1.test_ssim_mean : r1.val_ssim) : null;
+      var hr = r1 ? (isTest ? r1.test_hr_mean : r1.headroom) : null;
       var tr = document.createElement("tr");
       tr.className = "lb-row";
       var href = linkBase + ch + ".html";
       tr.innerHTML =
         "<td class='lb-solver'>" + (labels[ch] || ch) + "</td>" +
         "<td>" + (r1 ? r1.solver_name : "—") + "</td>" +
-        "<td class='lb-num'>" + window.A4CTable.fmtSSIM(r1 ? r1.val_ssim : null) + "</td>" +
-        "<td class='lb-num lb-hr'>" + window.A4CTable.fmtHr(r1 ? r1.headroom : null) + "</td>" +
+        "<td class='lb-num'>" + window.A4CTable.fmtSSIM(ssim) + "</td>" +
+        "<td class='lb-num lb-hr'>" + window.A4CTable.fmtHr(hr) + "</td>" +
         "<td><a href='" + href + "'>" + ch + "</a></td>";
       tb.appendChild(tr);
     });

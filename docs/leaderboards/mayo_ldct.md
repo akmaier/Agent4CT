@@ -8,8 +8,9 @@ description: Real-helical-data leaderboard (Wagner split). LIVE search-20260619-
 > 🟢 **LIVE — the fresh `search-20260619-01` campaign is running now.** All 19
 > solvers are onboarded and iterating (iter-1 → iter-20) under the corrected
 > metric (all 214 L277 slices + 321 px detector-geometry FOV). **Current
-> standings, including the headroom champion, are in the auto-generated solver
-> table further down** (regenerated every wave, ranked by headroom). The reset
+> standings, including the test-headroom champion, are in the auto-generated
+> solver table further down** (regenerated every wave, ranked by **test-set
+> headroom** — `hr` averaged over the 5 held-out Wagner test patients). The reset
 > notice immediately below is *historical context* for why the prior campaign
 > was discarded — it is not the current status.
 
@@ -136,10 +137,15 @@ scoring uses and are unaffected.
 
 The table below is **rendered live from the registry** (`docs/runs/index/leaderboard.json`,
 built by [`scripts/build_registry.py`](../../scripts/build_registry.py) from each
-iter's immutable `observation.json`). It lists **every** solver in the campaign,
-ranked by **headroom** (SSIM tiebreak); below-baseline / discarded solvers stay
-on the board (dimmed, unranked) so the inventory is always complete — never a
-top-N. **No number on this page is typed by hand**, so nothing can go stale.
+iter's immutable `observation.json` plus each run's `final.json`). It lists
+**every** solver in the campaign, ranked by **test-set headroom** — the per-patient
+`hr` averaged over the 5 held-out Wagner test patients (L014/L056/L058/L075/L123),
+`test_ssim` tiebreak. The `hr`, `SSIM`, `PSNR` and `RMSE` columns are the
+**mean ± std over those 5 patients** (n = 5; the std is the spread *over patients*).
+Below-baseline / discarded solvers stay on the board (dimmed, unranked); a solver
+not yet test-scored shows **pending-test** until its `final.json` lands — so the
+inventory is always complete, never a top-N. **No number on this page is typed by
+hand**, so nothing can go stale.
 Each comparison thumbnail is the solver's own 4-panel val figure at its best iter
 (**GT │ LD-FBP │ recon │ recon − GT diff** on the first L277 slices), regenerated
 at run time so it tracks the metric.

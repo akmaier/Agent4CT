@@ -1,20 +1,21 @@
 {
  "schema_version": 3,
- "updated": "2026-06-28T18:23:12Z",
+ "updated": "2026-06-28T19:50:30Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
    "campaign": "search-20260619-01",
    "n_runs": 26,
-   "n_iterations": 507,
+   "n_iterations": 508,
    "n_solvers": 26,
-   "champion_slug": "mayo-ldct-claude-agentic-itnet-search-20260619-01",
-   "champion_name": "ITNet v1",
-   "champion_headroom": 0.43982402642488283,
-   "champion_ssim": 0.9458968639373779,
-   "champion_score": 0.43982402642488283,
-   "thumbnail": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0016/comparison.png"
+   "champion_slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
+   "champion_name": "ITNet v2",
+   "champion_headroom": 0.4001576431098693,
+   "champion_ssim": 0.9648873686790467,
+   "champion_metric_basis": "test",
+   "champion_score": 0.4001576431098693,
+   "thumbnail": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0014/comparison.png"
   },
   {
    "challenge": "breast_ct",
@@ -27,6 +28,7 @@
    "champion_name": "Learned Primal-Dual",
    "champion_headroom": 0.9062405977538153,
    "champion_ssim": null,
+   "champion_metric_basis": "val",
    "champion_score": 0.9062405977538153,
    "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"
   },
@@ -41,6 +43,7 @@
    "champion_name": "Learned Primal-Dual",
    "champion_headroom": 0.4947240928024762,
    "champion_ssim": null,
+   "champion_metric_basis": "val",
    "champion_score": 0.4947240928024762,
    "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
   }

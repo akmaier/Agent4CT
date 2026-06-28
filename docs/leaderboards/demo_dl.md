@@ -27,9 +27,11 @@ The table below is **rendered live from the registry**
 (`docs/runs/index/leaderboard.json`, built by
 [`scripts/build_registry.py`](../../scripts/build_registry.py) from each iter's
 immutable `observation.json`). It lists **every** solver exercised on the
-calibrated demo-DL substrate, ranked by **headroom** (SSIM tiebreak); any
-below-baseline / discarded solver stays on the board **dimmed and unranked** so
-the inventory is always complete — never a top-N. **No number on this page is
+calibrated demo-DL substrate, ranked by **val headroom** (SSIM tiebreak). Demo-DL
+has **no held-out test set**, so every column is on the val set — SSIM / PSNR /
+RMSE are shown as **mean ± std** over the scored slices. Any below-baseline /
+discarded solver stays on the board **dimmed and unranked** so the inventory is
+always complete — never a top-N. **No number on this page is
 typed by hand.** The pre-2026-06 TPE runs show `—` for PSNR/RMSE/time (only SSIM
 + headroom were recorded then). `params (M)` is trainable parameters in millions.
 

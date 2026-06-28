@@ -21,7 +21,9 @@ The table below is **rendered live from the registry**
 (`docs/runs/index/leaderboard.json`, built by
 [`scripts/build_registry.py`](../../scripts/build_registry.py) from each iter's
 immutable `observation.json`). It lists **every** solver exercised on breast-CT,
-ranked by **headroom** (SSIM tiebreak); the below-baseline / discarded solvers
+ranked by **val headroom** (SSIM tiebreak). Breast-CT has **no held-out test
+set**, so every column is on the val set — SSIM / PSNR / RMSE are shown as
+**mean ± std** over the scored slices. The below-baseline / discarded solvers
 (`hr = 0`, structurally bounded) stay on the board **dimmed and unranked** so the
 full inventory always shows — never a top-N. **No number on this page is typed by
 hand.** TPE runs that predate the PSNR/RMSE/time/params logging show `—` for

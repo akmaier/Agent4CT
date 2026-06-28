@@ -1,0 +1,56 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01",
+  "solver_key": "manduca_bilateral",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.9359495639801025,
+      "psnr": 34.53620529174805,
+      "rmse": 0.0009379071416333318,
+      "n_slices": 214,
+      "elapsed_s": 433.8
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.9415388107299805,
+      "psnr": 35.70111846923828,
+      "rmse": 0.0008201894233934581,
+      "n_slices": 214,
+      "elapsed_s": 453.3
+    },
+    "L058": {
+      "headroom": 0.06618636387118237,
+      "ssim": 0.9184662103652954,
+      "psnr": 34.130767822265625,
+      "rmse": 0.0009827243629842997,
+      "n_slices": 214,
+      "elapsed_s": 458.4
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.9435794353485107,
+      "psnr": 35.30941390991211,
+      "rmse": 0.000858023704495281,
+      "n_slices": 214,
+      "elapsed_s": 427.9
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.9409533143043518,
+      "psnr": 34.66007614135742,
+      "rmse": 0.0009246263070963323,
+      "n_slices": 214,
+      "elapsed_s": 430.8
+    }
+  },
+  "test_hr_mean": 0.013237272774236475,
+  "test_hr_std": 0.029599441759899984,
+  "test_ssim_mean": 0.9360974669456482,
+  "test_ssim_std": 0.010247565696559408,
+  "test_psnr_mean": 34.867516326904294,
+  "test_psnr_std": 0.6296353701260956,
+  "test_rmse_mean": 0.0009046941879205406,
+  "test_rmse_std": 6.501593485556434e-05
+}

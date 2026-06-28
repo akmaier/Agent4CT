@@ -44,6 +44,45 @@ DATASET_LABELS = {
     "ct_mar": "CT-MAR", "truect": "TrueCT",
 }
 
+# ---------------------------------------------------------------------------
+# Ranking + display basis. Datasets WITH a held-out test set rank by and show
+# the per-patient TEST metrics (mean ± std over the 5 Wagner test patients,
+# from docs/runs/<slug>/final.json); datasets without one keep the single-patient
+# val (L277) metrics. Mayo-LDCT is the only test-scored campaign today.
+# ---------------------------------------------------------------------------
+TEST_RANKED_DATASETS = {"mayo_ldct"}
+
+
+def metric_basis(challenge: str | None) -> str:
+    """'test' for datasets ranked/displayed on the held-out test set, else 'val'."""
+    return "test" if challenge in TEST_RANKED_DATASETS else "val"
+
+
+def rank_fields(row: dict, status: str, challenge: str | None,
+                has_final: bool = True):
+    """The (rank_metric, rank_tiebreak, excluded_reason) a row ranks by, honoring
+    the dataset's metric basis. On a TEST-ranked board the metric is the per-patient
+    test headroom (test_hr_mean) — NO val fallback: a run with no final.json yet
+    (`has_final=False`) is 'pending-test' (dimmed below the ranked set, never
+    interleaved by a val number, which would be a different scale), distinct from a
+    run scored-but-failed (final.json present, test_hr null/<=0 -> non-finite /
+    hr<=0). On a val board it is the val headroom. Excluded precedence:
+    discard > pending-test > non-finite > hr<=0."""
+    if metric_basis(challenge) == "test":
+        raw = row.get("test_hr_mean")
+        rm = raw if (isinstance(raw, (int, float)) and math.isfinite(raw)) else None
+        tb = row.get("test_ssim_mean")
+        if (status or "").strip().lower() == "discard":
+            reason = "discard"
+        elif not has_final:
+            reason = "pending-test"                 # no test-eval yet
+        else:
+            reason = excluded_reason(status, rm)     # scored: non-finite / hr<=0 / ok
+        return rm, tb, reason
+    rm = row.get("headroom")
+    rm = rm if (isinstance(rm, (int, float)) and math.isfinite(rm)) else None
+    return rm, row.get("val_ssim"), excluded_reason(status, rm)
+
 
 def challenge_from_slug(slug: str, fallback: str | None = None) -> str | None:
     for prefix, ch in _PREFIX_TO_CHALLENGE:
@@ -175,24 +214,30 @@ def resolve_params_M(key: str, obs: dict, backstop: dict, slug: str):
 # an excluded_reason and sort BELOW all rankable ones (rendered dimmed) — they
 # are never sliced away, so every solver always shows (never top-N).
 # ---------------------------------------------------------------------------
-def excluded_reason(status: str, headroom, val_ssim) -> str | None:
+def excluded_reason(status: str, score) -> str | None:
+    """`score` is the row's ranking metric (val headroom, or test_hr_mean on a
+    test-ranked board). A run is excluded if discarded, or its score is
+    non-finite / <= 0 (below the LD-FBP baseline). The tiebreak does not affect
+    exclusion, so it is not a parameter."""
     st = (status or "").strip().lower()
     if st == "discard":
         return "discard"
-    if headroom is None or not math.isfinite(headroom):
+    if score is None or not math.isfinite(score):
         return "non-finite"
-    if headroom <= 0:
+    if score <= 0:
         return "hr<=0"
     return None
 
 
 def rank_sort_key(row: dict):
-    """Sort rows: rankable first (headroom desc, val_ssim desc), excluded last
-    (still by headroom/ssim so the ordering is stable & meaningful)."""
+    """Sort rows: rankable first (rank_metric desc, tiebreak desc), excluded last
+    (still by the same keys so the ordering is stable & meaningful). build_registry
+    precomputes `rank_metric` (val headroom or test_hr_mean) + `rank_tiebreak`
+    (val_ssim or test_ssim_mean) per the dataset's metric basis."""
     excluded = 1 if row.get("excluded_reason") else 0
-    hr = row.get("headroom")
+    hr = row.get("rank_metric")
     hr = hr if (isinstance(hr, (int, float)) and math.isfinite(hr)) else -math.inf
-    ss = row.get("val_ssim")
+    ss = row.get("rank_tiebreak")
     ss = ss if (isinstance(ss, (int, float)) and math.isfinite(ss)) else -math.inf
     return (excluded, -hr, -ss)
 
