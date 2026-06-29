@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-06-29T09:09:11Z",
+ "updated": "2026-06-29T16:17:34Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",

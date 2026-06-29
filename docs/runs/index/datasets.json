@@ -1,20 +1,20 @@
 {
  "schema_version": 3,
- "updated": "2026-06-29T09:09:11Z",
+ "updated": "2026-06-29T16:17:34Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
    "label": "Mayo-LDCT",
    "campaign": "search-20260619-01",
    "n_runs": 26,
-   "n_iterations": 526,
+   "n_iterations": 530,
    "n_solvers": 26,
    "champion_slug": "mayo-ldct-claude-agentic-itnet-v2-search-20260619-01",
    "champion_name": "ITNet v2",
-   "champion_headroom": 0.4001576431098693,
-   "champion_ssim": 0.9648873686790467,
+   "champion_headroom": 0.4018653066513528,
+   "champion_ssim": 0.9843278050422668,
    "champion_metric_basis": "test",
-   "champion_score": 0.4001576431098693,
+   "champion_score": 0.4018653066513528,
    "thumbnail": "runs/mayo-ldct-claude-agentic-itnet-v2-search-20260619-01/iterations/iter-0014/comparison.png"
   },
   {
