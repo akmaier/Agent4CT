@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-06-29T04:53:05Z",
+ "updated": "2026-06-29T05:23:31Z",
  "leaderboard": {
   "ranking_metric": "test hr (mean over 5 patients)",
   "tiebreak": "test_ssim",
@@ -2755,18 +2755,18 @@
    "name": "Param-efficient (evolved)",
    "challenge": "mayo_ldct",
    "campaign": "search-20260624-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 7,
    "best_headroom": 0.25154114341025713,
    "best_ssim": 0.905828058719635,
    "best_score": 0.905828058719635,
-   "started": "2026-06-29T04:45:46Z",
+   "started": "2026-06-29T05:16:24Z",
    "status": "ranked",
    "params_M": 0.001921,
    "excluded_reason": null,
    "agent": "param_efficient-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-06-29T04:45:46Z",
+   "ts": "2026-06-29T05:16:24Z",
    "curve": [
     [
      1,
@@ -2842,6 +2842,10 @@
     ],
     [
      19,
+     0.2515
+    ],
+    [
+     20,
      0.2515
     ]
    ],
