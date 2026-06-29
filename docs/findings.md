@@ -14,6 +14,68 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-29 — Param-efficient code-evolving campaign COMPLETE: a ~2k-param FoE unrolled solver is the best headroom-per-param method on Mayo, and it is a razor-sharp budget+stability-bound optimum
+
+**Goal** (user): beat the Mayo champion **ITNet v1 (hr 0.4398 @ 233k params)** with
+*far* fewer params — "find a more elegant method" than 1M-param U-Nets. A 20-iter
+**code-evolving** search (each iter rewrites the architecture, not just a config)
+ran on the new solver `param_efficient`
+(`pentathlon/demo_dl_reference/solver_param_efficient.py`), run-id
+`mayo-ldct-claude-agentic-param-efficient-search-20260624-01`. All live numbers
+are in the [Mayo leaderboard](leaderboards/mayo_ldct.md) / registry — this is the
+methodology takeaway so the next agent does not re-run the search.
+
+**The champion design (iter-7, the winner).** Weight-**tied** unrolled
+proximal-gradient + data-consistency: `x_{k+1} = x_k − α·[Rᵀ(Rx_k−g)/‖RᵀR‖ +
+reg(x_k)]`, **K=5** steps, **x₀ = LD-FBP**, the SAME reg + a single learnable
+scalar **α** reused across all steps. `reg` = a **tied Fields-of-Experts / VN
+filter bank** (analysis conv → per-filter RBF activation → tied conv-transpose
+synthesis, **zero-init** RBF so reg≡0 at start), `nf24 / k7 / 31-bump` =
+**1,920 + 1 = 1,921 trainable params**. Trained 16-ep cosine LR (peak 5e-3),
+plain Adam, hard 20-min budget. Result: **val hr 0.2515 (psnr 36.6)** / **test hr
+0.1852 ± 0.0264 (n=5 patients)** — **rank ~6 of 26** on the Mayo test board and
+the **best headroom-per-parameter of any solver** (beats Hammernik-VN 0.16 @
+4.9k; classical TV 0.21 @ 0 params; 121× fewer params than the ITNet champion).
+The FoE bank decisively beat a tiny CNN reg (iter-4, 2.8k p → 0.238) at fewer
+params — a learned-filter-bank prior is the apt, param-efficient image regulariser
+for this tied prox+DC scheme.
+
+**It is a RAZOR-SHARP optimum — 10/10 perturbations failed to beat it** (iters
+8–16). The takeaways (do NOT re-try these on Mayo under the 20-min budget):
+- **Capacity↑ diverges/degrades.** Pooled micro-UNet reg (26k) caps at psnr 32.4
+  (the pool→upsample blurs inside the unroll); flat-dilated CNN (38k) and a
+  *scaled* FoE (nf40) **diverge** to a degenerate constant (psnr 1.9–11.4). ~2k
+  params is the ceiling, not a floor.
+- **Unroll depth K>5 diverges** (K=7 → psnr 11.4), and **momentum / per-step-α
+  diverges** — the plain tied prox+DC at K=5 with one scalar α is the only stable
+  recon.
+- **An extra trainable stage freezes training.** A zero-init learned-init refiner
+  (image-domain conv on the FBP before the unroll) collapsed training to the SAME
+  degenerate attractor *even with the byte-for-byte-verified zero-init seed* — the
+  added stage, not its initialisation, destabilises the optimisation in-budget.
+- **The LR schedule has a narrow knee.** Peak 5e-3 is the stability edge: raising
+  it to 1e-2 diverges; holding it **constant** (no anneal) diverges; **completing**
+  the cosine anneal to 1e-5 is stable but **overfits** (val hr drops to ~0.228).
+  The champion only wins because its 16-ep schedule is **budget-cut at ~epoch 8**
+  → a *partial* decay to ~2.5e-3 that acts as an implicit early-stop regulariser.
+- **FoE geometry**: nf24/k7 optimal; a wider k9 kernel at iso-param is slightly
+  worse (0.240).
+
+**Why 0.44 is unreachable here.** The hard **20-min budget train-cuts at ~epoch 8**
+(loss still falling); the champion is mildly *under-trained* but it cannot be
+fixed — more time breaks the budget, higher LR diverges, finishing the anneal
+overfits. So **0.2515 is a genuine budget+stability-bound ceiling** for the
+≪233k-param regime; matching ITNet's 0.44 needs the full ~233k U-Net capacity and
+much longer training, which the param-efficiency budget forbids.
+
+**Param/headroom Pareto frontier** (iters 18–20, shrinking the FoE bank at the
+champion's training): the design degrades *gracefully* — **1,921p → 0.2515**,
+961p → 0.233, **241p → 0.230** (all clear the LD-FBP floor and beat classical TV
+0.2085); 481p → 0.169 is a single-run variance dip; a 17-param trainable-bilateral
+reg falls **below** the floor (too weak). So a **241-param** FoE unrolled solver
+already beats classical TV, and **~1–2k params is the practical sweet spot** — the
+"elegant few-param method" the goal asked for, just short of the U-Net headroom.
+
 ## 2026-06-14 — ⚠️ Mayo solver collapse to SSIM 0.3089 is a TRAINING NaN (FBP-adjoint gradient explosion), NOT data — fixed by grad-clip + nonfinite-grad skip
 
 **After** the canonical per-sample re-stage (below) fixed the *data* (val LD-FBP
