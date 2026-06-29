@@ -61,12 +61,30 @@ for this tied prox+DC scheme.
 - **FoE geometry**: nf24/k7 optimal; a wider k9 kernel at iso-param is slightly
   worse (0.240).
 
-**Why 0.44 is unreachable here.** The hard **20-min budget train-cuts at ~epoch 8**
-(loss still falling); the champion is mildly *under-trained* but it cannot be
-fixed — more time breaks the budget, higher LR diverges, finishing the anneal
-overfits. So **0.2515 is a genuine budget+stability-bound ceiling** for the
-≪233k-param regime; matching ITNet's 0.44 needs the full ~233k U-Net capacity and
-much longer training, which the param-efficiency budget forbids.
+**Why 0.44 is unreachable here — and a fairness caveat (the comparison is
+wall-clock-fair but NOT optimization-fair).** The hard **20-min budget
+train-cuts param_efficient at ~epoch 8** (loss still falling); it is mildly
+*under-trained* but cannot be pushed — more time breaks the budget, higher LR
+diverges, finishing the anneal overfits. **However**, the gap to ITNet is NOT a
+clean capacity story. Under the **same ~20-min wall**, the two solvers got very
+different *amounts of training*:
+- **ITNet v1 (champion, 0.4398):** itnet_k=**1** (one DC projection/sample),
+  train_n=**579**, **66 epochs completed**, elapsed **1,055 s** (≈17.6 min).
+- **param_efficient (0.2515):** n_iter=**5** (five projection/back-projection
+  pairs/sample every forward), train_n=200, 16 epochs **cut at ~8**, train capped
+  at 1,080 s (1,331 s total).
+That is ITNet **~66×579 ≈ 38k sample-passes vs ~8×200 ≈ 1.6k — roughly 24× more
+gradient exposure in the same wall-clock**, because the fully-unrolled K=5 design
+spends its time budget on the expensive projections (~5× the physics cost/step)
+while ITNet's k=1 / image-domain-denoiser-pretrain paradigm fits far more updates.
+So **0.2515 conflates the 1,921-param capacity with training-starvation** — it is
+NOT purely a capacity ceiling. The honest claim: *at equal wall-clock the
+1,921-param FoE solver reaches 0.25 and the 233k-param ITNet reaches 0.44, but
+ITNet's edge is partly its cheaper training paradigm, not capacity alone.* The
+untested lever that could close part of the gap (campaign closed before trying):
+**pre-train the FoE reg as a cheap projection-free image denoiser, then fine-tune
+the K=5 DC loop** — mirroring ITNet's pretrain+few-DC-steps strategy to buy more
+effective epochs under the same budget.
 
 **Param/headroom Pareto frontier** (iters 18–20, shrinking the FoE bank at the
 champion's training): the design degrades *gracefully* — **1,921p → 0.2515**,
