@@ -144,58 +144,78 @@ def _final_complete(slug: str) -> bool:
 # ==========================================================================
 # WORKER role (cluster-side): loop 5 patients, run the solver, write final.json
 # ==========================================================================
-def run_worker(slug: str, solver_key: str, cfg_json: Path) -> int:
+def run_worker(slug: str, solver_key: str, cfg_json: Path,
+               solver_src: str | None = None) -> int:
     if solver_key not in SOLVER_MAP:
         print(f"[testset] unknown solver {solver_key!r}; choices: {list(SOLVER_MAP)}",
               flush=True)
         return 2
-    solver_path, env_var = SOLVER_MAP[solver_key]
+    default_path, env_var = SOLVER_MAP[solver_key]
+    # Code-evolving solvers (param_efficient) snapshot their source per iter; the
+    # SOLVER_MAP path is the LATEST iter, not the best one. `solver_src` (the
+    # best-iter's solver_src.py) overrides it so we re-score the EXACT architecture
+    # the best-iter cfg belongs to. Non-evolving solvers pass solver_src=None.
+    solver_path = solver_src if solver_src else default_path
     base_out = RUNS_BASE / f"{slug}-testset"
     base_out.mkdir(parents=True, exist_ok=True)
 
-    per_patient: dict[str, dict | None] = {}
-    for patient in TEST_PATIENTS:
-        out_dir = base_out / patient
+    def _run_eval(label: str, eval_patient: str | None) -> dict | None:
+        """One held-out eval (a test patient, or val L277 when eval_patient is
+        None). Persists the raw recon (AGENT4CT_SAVE_RECON) for auditability +
+        future re-scoring; reads back the FIXED-metric scalars from result.json."""
+        out_dir = base_out / label
         out_dir.mkdir(parents=True, exist_ok=True)
         env = os.environ.copy()
         env["AGENT4CT_DATASET"] = "mayo_ldct_2d"
-        env["AGENT4CT_EVAL_PATIENT"] = patient
+        if eval_patient is not None:
+            env["AGENT4CT_EVAL_PATIENT"] = eval_patient
+        else:
+            env.pop("AGENT4CT_EVAL_PATIENT", None)        # normal val (L277)
+        env["AGENT4CT_SAVE_RECON"] = str(out_dir)         # persist raw recon
         env[env_var] = str(cfg_json)
-        print(f"[testset] {slug} patient={patient}: "
-              f"python {solver_path} {out_dir}", flush=True)
+        print(f"[testset] {slug} {label}: python {solver_path} {out_dir}", flush=True)
         t0 = time.time()
         res = subprocess.run([sys.executable, str(REPO / solver_path), str(out_dir)],
                              env=env)
         elapsed = time.time() - t0
         rj = out_dir / "result.json"
         if res.returncode != 0 or not rj.exists():
-            print(f"[testset] {patient}: FAILED (rc={res.returncode}, "
+            print(f"[testset] {label}: FAILED (rc={res.returncode}, "
                   f"result.json={'present' if rj.exists() else 'missing'})", flush=True)
-            per_patient[patient] = None
-            continue
+            return None
         try:
             r = json.loads(rj.read_text())
         except Exception as e:
-            print(f"[testset] {patient}: bad result.json: {e}", flush=True)
-            per_patient[patient] = None
-            continue
-        per_patient[patient] = {
-            "headroom": r.get("headroom"),
-            "ssim": r.get("val_ssim"),
-            "psnr": r.get("val_psnr"),
-            "rmse": r.get("val_rmse"),
-            "n_slices": r.get("val_n"),
-            "elapsed_s": round(elapsed, 1),
+            print(f"[testset] {label}: bad result.json: {e}", flush=True)
+            return None
+        rec = {
+            "headroom": r.get("headroom"), "ssim": r.get("val_ssim"),
+            "psnr": r.get("val_psnr"), "rmse": r.get("val_rmse"),
+            "ssim_std": r.get("val_ssim_std"), "psnr_std": r.get("val_psnr_std"),
+            "rmse_std": r.get("val_rmse_std"),
+            "n_slices": r.get("val_n"), "elapsed_s": round(elapsed, 1),
+            "recon_saved": (out_dir / "recon_raw.npz").exists(),
         }
-        print(f"[testset] {patient}: hr={r.get('headroom')} ssim={r.get('val_ssim')} "
-              f"({elapsed:.0f}s)", flush=True)
+        print(f"[testset] {label}: hr={rec['headroom']} ssim={rec['ssim']} "
+              f"({elapsed:.0f}s, recon_saved={rec['recon_saved']})", flush=True)
+        return rec
+
+    per_patient: dict[str, dict | None] = {}
+    for patient in TEST_PATIENTS:
+        per_patient[patient] = _run_eval(patient, patient)
+    # NO validation pass. L277 val is a training-loop signal, NEVER a reported
+    # result (see README "Evaluation paradigm"). Mayo results are TEST-only:
+    # mean ± std over the 5 held-out patients. (Removed 2026-06-30.)
 
     final = _aggregate(slug, solver_key, per_patient)
+    final["solver_src"] = solver_path
+    final["recons_saved"] = all((per_patient.get(p) or {}).get("recon_saved")
+                                for p in TEST_PATIENTS)
     out_path = DOCS_RUNS / slug / "final.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(final, indent=2))
     n_ok = sum(1 for v in per_patient.values() if v is not None)
-    print(f"[testset] wrote {out_path}  ({n_ok}/{len(TEST_PATIENTS)} patients ok)",
+    print(f"[testset] wrote {out_path}  ({n_ok}/{len(TEST_PATIENTS)} test patients ok)",
           flush=True)
     return 0 if n_ok == len(TEST_PATIENTS) else 1
 
@@ -255,15 +275,21 @@ def dispatch_one(slug: str, *, dry_run: bool, force: bool) -> str | None:
 
     CFG_DIR.mkdir(parents=True, exist_ok=True)
     cfg_path = CFG_DIR / f"{slug}_testset_best_iter_{best_it:04d}.json"
+    # Code-evolving solvers snapshot their source per iter; re-score the EXACT
+    # best-iter architecture, not the latest SOLVER_MAP file. Empty for the
+    # (majority) non-evolving solvers -> worker uses the SOLVER_MAP path.
+    snap = DOCS_RUNS / slug / "iterations" / f"iter-{best_it:04d}" / "solver_src.py"
+    solver_src_rel = str(snap.relative_to(REPO)) if snap.exists() else ""
     if dry_run:
         print(f"[testset] DRY-RUN dispatch {slug}: solver={smk} best_iter={best_it} "
-              f"cfg->{cfg_path.name} sbatch={SBATCH.name}")
+              f"cfg->{cfg_path.name} solver_src={solver_src_rel or '(SOLVER_MAP)'} "
+              f"sbatch={SBATCH.name}")
         return None
     cfg_path.write_text(json.dumps(cfg, indent=2))
     cmd = [
         "sbatch",
         f"--job-name=mayo-test-{smk}",
-        f"--export=ALL,SLUG={slug},SOLVER={smk},CFG_JSON={cfg_path}",
+        f"--export=ALL,SLUG={slug},SOLVER={smk},CFG_JSON={cfg_path},SOLVER_SRC={solver_src_rel}",
         str(SBATCH),
     ]
     print(f"[testset] dispatch {slug}: solver={smk} best_iter={best_it}")
@@ -297,6 +323,9 @@ def main() -> int:
                     help="cluster-side: loop the 5 patients + write final.json")
     ap.add_argument("--slug", help="(worker) the run-id slug")
     ap.add_argument("--cfg", help="(worker) path to the best-iter cfg JSON")
+    ap.add_argument("--solver-src", default=None,
+                    help="(worker) explicit solver .py to run (code-evolving "
+                         "iter snapshot); empty/unset -> SOLVER_MAP path")
     args = ap.parse_args()
 
     if args.worker:
@@ -305,7 +334,8 @@ def main() -> int:
         smk = solver_map_key(args.solver)
         if smk is None:
             ap.error(f"--worker: unknown solver {args.solver!r}")
-        return run_worker(args.slug, smk, Path(args.cfg))
+        return run_worker(args.slug, smk, Path(args.cfg),
+                          solver_src=(args.solver_src or None))
 
     runids = load_allow_runids()
     if args.solver:

@@ -135,7 +135,12 @@ def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
       2. compute `fg_pred = pred[fg].mean()`, `fg_truth = truth[fg].mean()`
       3. solve for the affine that maps `fg_pred → fg_truth` and
          `bg_pred → bg_dst` (see `bg_target`).
-      4. clip below 0; if `display_max` is given, also clip above it.
+      4. clip below 0 (μ≥0 floor). NO upper clip: the old `clamp(0, display_max)`
+         was removed (2026-06-30) because it truncated bone/iodine (μ up to
+         ~0.0814 in Mayo) at the display window, corrupting RMSE/SSIM. The
+         `display_max` arg is retained for signature compatibility (several debug
+         callers pass it) but is now IGNORED here — display windowing is a
+         visualization concern, applied only in figures.
 
     `bg_target` — where the background level is mapped:
       * ``None`` (default): map `bg_pred → 0`, i.e. `a = fg_truth/(fg_pred-bg_pred)`,
@@ -161,11 +166,8 @@ def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
     fg_mask = truth > fg_threshold
     bg_mask = ~fg_mask
     if not bool(fg_mask.any()) or not bool(bg_mask.any()):
-        # Degenerate (uniform truth) — nothing to calibrate.
-        out = pred.clamp_min(0.0)
-        if display_max is not None:
-            out = out.clamp(0.0, display_max)
-        return out
+        # Degenerate (uniform truth) — nothing to calibrate. μ≥0 floor only.
+        return pred.clamp_min(0.0)
     bg_pred  = pred[bg_mask].mean()
     fg_pred  = pred[fg_mask].mean()
     fg_truth = truth[fg_mask].mean()
@@ -186,10 +188,11 @@ def intensity_calibrate(pred: torch.Tensor, truth: torch.Tensor, *,
         # proper two-point affine: bg_pred -> bg_dst, fg_pred -> fg_truth
         a = (fg_truth - bg_dst) / span
         pred_cal = bg_dst + a * (pred - bg_pred)
-    pred_cal = pred_cal.clamp_min(0.0)
-    if display_max is not None:
-        pred_cal = pred_cal.clamp(0.0, float(display_max))
-    return pred_cal
+    # μ≥0 floor only. The previous `clamp(0, display_max)` UPPER clamp was removed
+    # (2026-06-30): it truncated bone/iodine (μ up to ~0.0814 in Mayo) at the
+    # display window, corrupting RMSE/SSIM. `display_max` is now visualization-only
+    # and is intentionally NOT applied here (kept in the signature for caller compat).
+    return pred_cal.clamp_min(0.0)
 
 
 def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
@@ -217,7 +220,12 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
     """
     if fg_threshold is None:
         fg_threshold = display_min + 0.05 * (display_max - display_min)
-    dr = float(display_max - display_min)
+    # SSIM/PSNR data_range = the TRUTH's actual dynamic range (the standard skimage
+    # convention), NOT the display window. As of 2026-06-30 the display window
+    # (display_min/max) is visualization-only; using it as data_range made the
+    # metric depend on a viz choice (and a too-small window truncated the range,
+    # the Mayo bone bug). Floor avoids div-by-zero on a degenerate uniform slab.
+    dr = max(float(truth.max() - truth.min()), 1e-6)
 
     pred_cal = intensity_calibrate(pred, truth,
                                     fg_threshold=fg_threshold,
@@ -254,7 +262,7 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
         print(f"[metrics] WARN: {_n_bad} non-finite calibrated-pred px -> 0 "
               f"(degenerate/air slice?)", flush=True)
     pred_cal = torch.nan_to_num(pred_cal, nan=0.0,
-                                posinf=float(display_max), neginf=0.0)
+                                posinf=float(truth.max()), neginf=0.0)
 
     # Local masked copies for the METRIC only (display tensors stay full-frame).
     pred_m  = pred_cal * mask_2d if mask_2d is not None else pred_cal
@@ -289,7 +297,7 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
                                             display_max=display_max,
                                             bg_target=bg_target)
         baseline_cal = torch.nan_to_num(baseline_cal, nan=0.0,
-                                        posinf=float(display_max), neginf=0.0)
+                                        posinf=float(truth.max()), neginf=0.0)
         base_m = baseline_cal * mask_2d if mask_2d is not None else baseline_cal
         bl_rmse = float(((base_m - truth_m) ** 2).mean().sqrt().cpu())
         result["baseline_psnr"] = float(psnr(base_m, truth_m, data_range=dr).cpu())
@@ -297,6 +305,28 @@ def evaluate_calibrated(pred: torch.Tensor, truth: torch.Tensor,
         result["baseline_rmse"] = bl_rmse
         result["baseline_cal"]  = baseline_cal    # UNMASKED — for display / figures
         result["headroom"]      = max(0.0, 1.0 - result["val_rmse"] / max(bl_rmse, 1e-12))
+
+    # Recon persistence (auditability + future re-scoring WITHOUT retraining):
+    # if AGENT4CT_SAVE_RECON names a dir, dump the RAW pred/truth/baseline
+    # (PRE-calibration, PRE-clamp) as a compressed npz. A future metric change is
+    # then a parse of these arrays, not a re-run. Gated on the env so normal
+    # (search-iteration) runs are byte-identical and pay nothing. 2026-06-30.
+    import os as _os2
+    _save_dir = _os2.environ.get("AGENT4CT_SAVE_RECON")
+    if _save_dir:
+        try:
+            import numpy as _np2
+            from pathlib import Path as _P2
+            _d = _P2(_save_dir); _d.mkdir(parents=True, exist_ok=True)
+            _arrs = {"pred":  pred.detach().float().cpu().numpy(),
+                     "truth": truth.detach().float().cpu().numpy()}
+            if baseline is not None:
+                _arrs["baseline"] = baseline.detach().float().cpu().numpy()
+            _np2.savez_compressed(str(_d / "recon_raw.npz"), **_arrs)
+            print(f"[metrics] AGENT4CT_SAVE_RECON -> {_d/'recon_raw.npz'} "
+                  f"(pred {tuple(pred.shape)}, raw/uncalibrated)", flush=True)
+        except Exception as _e:
+            print(f"[metrics] WARN: recon save failed: {_e}", flush=True)
     return result
 
 
@@ -356,7 +386,7 @@ def make_4panel_comparison(truth: torch.Tensor, fbp: torch.Tensor,
         # Convert single-scene 2D tensors to (1, 1, H, W) for psnr/ssim.
         r = rec_t.view(1, 1, *rec_t.shape[-2:]).float()
         g = gt_t.view(1, 1, *gt_t.shape[-2:]).float()
-        dr = display_max - display_min
+        dr = max(float(g.max() - g.min()), 1e-6)   # truth-range data_range (matches headline metric)
         try:
             ps = float(psnr(r, g, data_range=dr).cpu())
         except Exception:

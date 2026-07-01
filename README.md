@@ -49,6 +49,42 @@ substrate facts.
 >   calibration/validation has been done — and that work has not
 >   happened.
 
+## Evaluation paradigm (canonical, frozen)
+
+This is the source of truth for how every result on a dataset **with a
+held-out test set** (currently `mayo_ldct`) is produced and reported. It is
+frozen — do not re-interpret it mid-experiment.
+
+- **Mayo-LDCT uses the Wagner split.** Train on **L145 / L186 / L209 / L219**.
+  The held-out **TEST** set is the **5 patients L014 / L056 / L058 / L075 /
+  L123**. **L277 is a single VALIDATION patient used ONLY as a training-loop
+  signal** (early-stop / model selection / hyperparameter search) — it is
+  **never** reported as a result.
+- **Train once, then infer on all 5 test patients.** You train the model
+  **once** on the train set, then evaluate that **one** trained model on each
+  of the 5 TEST patients. This is **inference only** — there is **NO
+  retraining, NO per-patient hold-out, NO cross-validation** over the test
+  patients.
+- **Reported results are the MEAN ± STD over the 5 test patients**, for
+  **every** metric: headroom (`hr`), SSIM, PSNR, RMSE. A single number with no
+  spread is not a Mayo result.
+- **Validation (L277) scores are NEVER a reported result** for Mayo (or any
+  dataset that has a held-out test set). L277 drives the search; it does not
+  appear on the leaderboard as the ranking number.
+- **Datasets with NO held-out test set** (`demo_dl`, `breast_ct`)
+  legitimately rank and report by their single-patient **validation** metrics
+  — that is correct for them and is left unchanged.
+- **The scoring metric is the frozen calibrated-headroom** in
+  [`evaluate_calibrated`](ddssl_ldct/metrics.py): two-point intensity
+  calibration, a **μ ≥ 0 floor with NO upper clamp** (the old
+  `clamp(0, display_max)` upper clamp was a **bug** — it truncated bone/iodine,
+  μ up to ~0.0814 in Mayo, at the display window; **removed 2026-06-30**),
+  **SSIM/PSNR `data_range` = the truth's actual dynamic range**, FOV-masked;
+  `hr = max(0, 1 − rmse / baseline_rmse)` against the low-dose FBP baseline.
+  This metric is changed exactly **once, deliberately, then frozen** — never
+  tweaked per experiment.
+- **Leaderboards list ALL solvers** (never a truncated top-N).
+
 ## 🏆 Current leaderboards
 
 Best-of-best per solver per dataset, all metrics through the
@@ -76,7 +112,7 @@ Click a leaderboard for the full all-solver table.
 |---|---|---:|---:|---|
 | **Breast-CT** (128-view sparse) | Learned Primal-Dual | — | **0.9062** (val) | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | Learned Primal-Dual | — | **0.4947** (val) | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
-| **Mayo-LDCT** (Wagner split, real helical) | ITNet v2 | 0.9843 | **0.4019** (test, n=5) | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | ITNet v2 | 0.9783 | **0.3707** (test, n=5) | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
 <!--/REGISTRY_TABLE-->
 
 Mayo-LDCT was **RESET on 2026-06-19** (the second reset). The 2026-06-14

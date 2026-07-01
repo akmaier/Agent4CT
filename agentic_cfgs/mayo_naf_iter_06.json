@@ -1,0 +1,20 @@
+{
+  "val_n": 214,
+  "naf_encoding": "hash",
+  "naf_hash_levels": 16,
+  "naf_hash_feat_dim": 2,
+  "naf_hash_log2_size": 19,
+  "naf_hash_base_res": 16,
+  "naf_hash_max_res": 512,
+  "naf_n_freqs": 8,
+  "naf_hidden": 32,
+  "naf_layers": 3,
+  "naf_n_iter": 3000,
+  "naf_lr": 0.02,
+  "naf_tv_weight": 0.0001,
+  "naf_n_clip": 0.05,
+  "naf_outer_wall_s": 1080,
+  "naf_per_scene_s": 5.0,
+  "seed": 42,
+  "rationale": "ITER-6 (search-20260619-01, naf). PAPER-FIDELITY AUDIT FIX (A): add the Instant-NGP multi-resolution HASH encoding (config-gated, user-authorized 2026-06-20). SIX-BOX (NUMBERS). (1) NUMBERS trajectory (Fourier-PosEnc path, all hr=0, monotone climb via leanness+lr then a regression): iter-1 hidden=128,layers=4,lr=1e-2 -> SSIM 0.4729 (PSNR 18.55, baseline_PSNR 34.08, ~91 Adam steps/scene at the 5.0s per-scene wall). iter-2 hidden 128->64 -> 0.4943 (+0.0215). iter-3 layers 4->3 -> 0.5452 (+0.0509). iter-4 lr 1e-2->2e-2 -> 0.5629 (PSNR 20.28, RMSE 0.004843) = BEST. iter-5 lr 2e-2->4e-2 -> 0.3592 REGRESSED (lr lever exhausted, short-Adam instability). So iter-6 REVERTS to the iter-4 BEST scalars (hidden 64->32 SMALL MLP per the reference, layers 3, lr 2e-2) and changes the ARCHITECTURE: naf_encoding fourier->hash. (2) FAILURE MODE the fix targets: the Fourier-PosEnc -> vanilla-MLP path is the WRONG inductive bias and is budget-starved (~90-100 steps/scene leaves the coordinate-MLP barely off its water-mu init). The NAF paper's headline contribution is a multi-resolution HASH grid (Instant-NGP) feeding a SMALL MLP -- that is what makes it converge in few steps. The shipped solver had only a plain Fourier PosEnc (audit gap A). (3) ONE KNOB (architecture, user-authorized code fix): naf_encoding 'fourier'->'hash'. New pure-torch HashEncoding: 16 levels, feat_dim 2, log2_hashmap_size 19, base_res 16 -> max_res 512 (geometric: [16,20,25,32,40,51,64,81,102,128,161,203,256,323,406,512]), standard spatial hash h=(ix*1)^(iy*2654435761) mod 2^19, bilinear interp per level, concat -> 32-dim feature -> SMALL MLP (naf_hidden 64->32, naf_layers 3). All other knobs reverted to iter-4 BEST (lr 2e-2, n_freqs 8 unused on the hash path, tv 1e-4, n_clip 0.05). LOCAL+CLUSTER VALIDATION before dispatch: py_compile clean both sides (sha match), and a direct-fit smoke (structured disk-on-bg target) shows the hash path drops loss 99.1% in 60 steps with healthy table gradients (9.1e-5) vs the Fourier path 97.5% -- the hash encoder learns and converges slightly FASTER per step, confirming the code path is correct + the tables are in the autograd graph. (4) HYPOTHESIS: the hash grid's locality + multi-resolution structure converges faster off init than the Fourier MLP in the SAME ~90-100 steps/scene, so SSIM rises above the 0.5629 iter-4 Fourier best. HONEST EXPECTATION (audit): even a FAITHFUL hash-NAF is REGIME-BOUNDED on DENSE 2304-view Mayo (LD-FBP near-complete -> hr likely stays ~0); the hash encoding's real payoff is convergence speed/SSIM here and the 128-view SPARSE benchmarks elsewhere. FALSIFIER: if SSIM <= ~0.56 despite the faithful hash encoder, the per-scene-INR fit is structurally bounded on dense Mayo (document the hash-NAF ceiling as a NEGATIVE result, fix validated as runs+no-regress). (5) HARD 20-min budget UNCHANGED: 214-scene pass, naf_outer_wall_s=1080 (18-min in-solver outer wall = governor) + naf_per_scene_s=5.0 (in-solver per-scene wall; naf_n_iter=3000 stays a high cap so the WALL governs). 214x5.0s=1070s ~= 1080s outer wall (hit ~scene 214 every iter; well inside the 30-min sbatch kill). The hash MLP is SMALLER (32 vs 64 hidden) but adds a 16-table gather/step; per-step cost stays dominated by the fixed 2304-view fan-beam forward+backward, so the step count per 5.0s scene is comparable. val_n=214 (ALL L277 slices, NOT reduced), staged_canonical v3 mayo_ldct_fitted geometry, per-sample-ps (inlined single-val-ps probe -> L277 native ps ~0.73979), bg_target=truth, 321px detector-geometry FOV default (no fov= override). (6) no control return; the loop dispatches the next iter."
+}

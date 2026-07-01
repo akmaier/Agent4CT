@@ -34,7 +34,7 @@ CONFIG = {
     "tv_lambda":     0.001,
     "tv_iterations": 200,
     "tv_lr":         0.01,
-    "tv_clip_max":   0.05,
+    "tv_clip_max":   0.09,   # 2026-06-29: was 0.05 (display window); raised to physical mu ceiling (bone up to 0.0814)
 }
 
 
@@ -86,9 +86,11 @@ def tv_reconstruction(proj, sino, fbp_init, lam, iterations, lr, clip_max, devic
             # Adaptive step size that decays
             step = lr / (1.0 + 0.01 * it)
             f -= step * f.grad
-            # Hard constraints
-            f.clamp_(0.0, clip_max)
-        
+            # μ≥0 floor only. Upper clamp REMOVED 2026-06-30: clip_max truncated
+            # bone (μ up to 0.0814) — same bug class as the metric clamp; the recon
+            # must be allowed to represent bone. clip_max is now vestigial.
+            f.clamp_min_(0.0)
+
         if (it + 1) % 50 == 0:
             print(f"[TV] iter {it+1}/{iterations}  data={data_term.item():.6f} "
                   f"tv={tv_term.item():.6f}  step={step:.4f}", flush=True)
@@ -131,7 +133,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         lam=cfg["tv_lambda"],
         iterations=cfg["tv_iterations"],
         lr=cfg["tv_lr"],
-        clip_max=cfg["tv_clip_max"],
+        clip_max=max(cfg["tv_clip_max"], cfg["display_max"]),  # 2026-06-29: box >= physical mu (display_max=0.09); 0.05 truncated bone
         device=device,
     )
     train_time = time.time() - t0

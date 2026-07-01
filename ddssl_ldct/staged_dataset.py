@@ -308,7 +308,7 @@ GEOMETRIES: dict[str, DatasetInfo] = {
         image_size=512, pixel_spacing=0.700857,    # was 0.5859375 (stale)
         n_angles=2304, n_det=736, det_spacing=1.285044,   # was 1.2858
         sod=595.362, sdd=1086.803,                  # was 595.0 / 1085.6 (DICOM)
-        display_min=0.0, display_max=0.05,
+        display_min=0.0, display_max=0.09,   # VISUALIZATION-ONLY figure window. Truth mu reaches 0.0814 (cortical bone/iodine); 0.09 covers it. As of 2026-06-30 SCORING no longer uses display_max at all (ddssl_ldct/metrics.py: no upper clamp; SSIM/PSNR data_range = truth's actual range) -> this value affects ONLY figure windowing, never the metric. (Was 0.05, which truncated bone in scoring before the metric fix; the fix removed the clamp rather than relying on this number.)
         has_real_sino=True,
         # CANONICAL per-sample data (2026-06-14): lossless angle-rolled sinos +
         # native truth + per-slice ps. Uniform angle_start=0 so only ps varies;
@@ -421,7 +421,46 @@ def load_val_split(kind: str, split: str, n: int, *, device,
         "L075": (457, 594), "L123": (594, 745),
     }
     _eval_patient = _os.environ.get("AGENT4CT_EVAL_PATIENT")
-    if _eval_patient and kind == "mayo_ldct_2d" and split == "val":
+    if _eval_patient == "all" and kind == "mayo_ldct_2d" and split == "val":
+        # TRAIN-ONCE, EVAL-ALL (2026-06-30): one run reconstructs the WHOLE held-out
+        # set — val (L277) THEN the 5 test patients, concatenated in Wagner order
+        # (= n_val + 745 slices). The model still trains on `split=="train"` (this
+        # only overrides the scored "val" load), so a SUPERVISED solver trains ONCE
+        # and the same model reconstructs every held-out slice; a per-image solver
+        # fits each slice as usual — no per-patient RE-training. Pair with
+        # AGENT4CT_SAVE_RECON so the raw recon is persisted; the offline scorer
+        # (scripts/score_mayo_from_recons.py) splits by the documented boundaries
+        # [val | L014 | L056 | L058 | L075 | L123] and calibrates+scores EACH
+        # patient independently (matching the per-patient EVAL_PATIENT=Lxxx
+        # convention) for per-patient mean ± std.
+        sd = info.staged_dir
+        def _load_split(spl):
+            with h5py.File(sd / info.truth_file_tmpl.format(split=spl), "r") as f:
+                tk = info.truth_dataset if info.truth_dataset in f else "truth"
+                tr = f[tk][...]; pv = f["ps"][...] if "ps" in f else None
+            with h5py.File(sd / info.sino_file_tmpl.format(split=spl), "r") as f:
+                sk = (info.sino_dataset if info.sino_dataset in f
+                      else ("sino" if "sino" in f else list(f.keys())[0]))
+                si = f[sk][...]
+            return tr, si, pv
+        _vt, _vs, _vp = _load_split("val")
+        _tt, _ts, _tp = _load_split("test")
+        truth = np.concatenate([_vt, _tt], 0); sino = np.concatenate([_vs, _ts], 0)
+        ps_arr = (np.concatenate([_vp, _tp], 0)
+                  if (_vp is not None and _tp is not None) else None)
+        truth_t = torch.from_numpy(np.ascontiguousarray(truth)).to(device=device, dtype=torch.float32)
+        sino_t  = torch.from_numpy(np.ascontiguousarray(sino )).to(device=device, dtype=torch.float32)
+        if truth_t.dim() == 3: truth_t = truth_t.unsqueeze(1)
+        if sino_t.dim() == 3:  sino_t = sino_t.unsqueeze(1)
+        if info.sino_angle_shift != 0:
+            sino_t = torch.roll(sino_t, shifts=int(info.sino_angle_shift), dims=-2)
+        print(f"[staged] EVAL_PATIENT=all: val({_vt.shape[0]}) + test({_tt.shape[0]}) "
+              f"= {truth_t.shape[0]} slices (TRAIN-ONCE EVAL-ALL; n_val={_vt.shape[0]})",
+              flush=True)
+        if return_ps:
+            return truth_t, sino_t, sino_t, ps_arr
+        return truth_t, sino_t, sino_t
+    if _eval_patient and _eval_patient != "all" and kind == "mayo_ldct_2d" and split == "val":
         if _eval_patient not in MAYO_TEST_PATIENT_RANGES:
             raise ValueError(
                 f"AGENT4CT_EVAL_PATIENT={_eval_patient!r} not a Wagner test patient; "

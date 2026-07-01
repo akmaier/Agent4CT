@@ -1,0 +1,15 @@
+{
+  "itnet_k": 3,
+  "unet_c": 16,
+  "alpha_init": 0.0037,
+  "lr": 0.0001,
+  "epochs": 18,
+  "batch_size": 1,
+  "val_chunk": 1,
+  "train_n": 200,
+  "val_n": 214,
+  "grad_clip": 1.0,
+  "max_train_s": 900,
+  "seed": 42,
+  "rationale": "iter-3 (search-20260619-01, corrected protocol). ONE KNOB: epochs 14 -> 18 (all else = iter-2 exactly: itnet_k=3, unet_c=16, alpha_init=0.0037, lr=1e-4, train_n=200, val_n=214, grad_clip=1.0, max_train_s=900, seed=42). SIX-BOX (NUMBERS): (1) iter-1 ep8 -> SSIM 0.895903 / hr 0.268409 / PSNR 36.79 / RMSE 0.000723, elapsed 737.85s = 12.30 min; iter-2 ep14 -> SSIM 0.908534 / hr 0.310054 / PSNR 37.30 / RMSE 0.000682, elapsed 1010.07s = 16.83 min. The epochs-up lever is CONFIRMED (hr +0.0416, monotone over 8->14 ep) -> itnet_v3 is STILL UNDER-TRAINED, not capacity-limited (iter-2 falsifier hr<=0.268 did NOT trigger). (2) LIMITER NOW = the 20-min train+score wall, NOT convergence: iter-2 used 16.83/20 min. (3) ONE KNOB: epochs 14 -> 18 (~29pct more gradient steps). (4) HYPOTHESIS: if itnet_v3 trains 18 epochs (all else fixed), hr rises above 0.310 (predicted iter-3 hr ~0.33-0.34, extrapolating the +0.0416/6-epoch slope sub-linearly as convergence nears). FALSIFIER (NUMBERS): if hr <= 0.310 (or drops) at ep18, itnet_v3 has reached its training-convergence basin at unet_c=16/lr=1e-4 -> it is CAPACITY-limited, and iter-4 must raise unet_c (16->24) or lr rather than epochs (which cannot fit the wall anyway). (5) BUDGET (HARD 20-min train+score): from the two measured (epochs, elapsed_s) points the per-epoch cost is (1010.07-737.85)/(14-8) = 45.37 s/epoch and the fixed cost (data load + 214-slice per-sample val + figure I/O + startup) is 737.85 - 8*45.37 = 374.9 s. epochs=18 predicts 374.9 + 18*45.37 = 1191.5 s = 19.86 min (~8.5 s inside the 1200 s budget); epochs=20 would be 374.9 + 20*45.37 = 1282 s = 21.4 min -> BUSTS the 20-min wall, so 18 is the largest epoch count the measured timing permits. Train alone at 18 ep = 18*45.37 = 817 s < the unchanged max_train_s=900 backstop, so the backstop does not truncate (it checks between epochs and would only fence runaway slowdown). val stays ALL 214 L277 slices, 321px detector-geometry FOV (default; no fov= override). grad_clip=1.0 retained (mandatory: the 2304-view Mayo FBP adjoint inside dc_step overflows otherwise). HARD-WIRED (unchanged): staged_canonical v3 mayo_ldct_fitted geometry, per-sample-ps FBP init + per-sample itnet.projector swap for the k=3 DC steps, bg_target=truth, metric=321px detector-geometry FOV (evaluate_calibrated default for AGENT4CT_DATASET=mayo_ldct_2d). (6) do NOT return control mid-campaign."
+}

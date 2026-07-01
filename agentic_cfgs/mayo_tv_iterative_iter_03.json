@@ -1,0 +1,12 @@
+{
+  "val_n": 214,
+  "train_n": 0,
+  "tv_lambda": 0.003,
+  "tv_iterations": 120,
+  "tv_lr": 0.01,
+  "tv_clip_max": 0.08,
+  "tv_decay": 0.01,
+  "tv_optimizer": "gd",
+  "tv_init": "fbp",
+  "rationale": "tv_iterative iter-3 (search-20260619-01, corrected 214-slice/321px-FOV metric). ONE KNOB: tv_lambda 0.001->0.003 (all else held IDENTICAL to iter-2: tv_iterations=120, tv_lr=0.01, tv_clip_max=0.08, tv_decay=0.01, gd, fbp-init, val_n=214). NUMBERS: iter-1 SSIM 0.922979 hr 0.132941 RMSE 8.573e-4 (clip 0.05); iter-2 SSIM 0.923844 hr 0.205364 RMSE 7.857e-4 (clip 0.05->0.08) elapsed 928s. Trajectory: the clip bump moved hr +0.072 (0.133->0.205) and dropped RMSE 8.3% by un-truncating high-mu bone -- the clamp WAS the binding constraint (iter-2 falsifier 'hr<=0.133' NOT triggered). iter-2 clip_max=0.08 is now at the TOP of the solver search bound [0.03,0.08] so clip is exhausted as a lever. tv_lambda has been FROZEN at the solver default 0.001 for BOTH prior iters -- never probed -- and is the highest-value untouched knob (the classical data-vs-smoothness balance). FAILURE MODE: Mayo is real LOW-DOSE CT where the dominant error is photon/electronic noise, not under-sampling (2304 views is dense). At lambda=0.001 the data term dominates: SSIM barely moves between iters (recon is data-fit-dominated, leaving the LDCT noise floor in), and the iter-1->2 headroom gain came PURELY from un-truncating bone (clip), NOT from denoising. The regularizer is currently too WEAK to suppress LDCT noise. HYPOTHESIS: raising tv_lambda 0.001->0.003 strengthens the TV denoiser, suppressing residual LDCT noise so val_rmse drops below 7.857e-4 and hr rises above 0.205364; the RMSE-sensitive calibrated-headroom metric credits the lower noise floor. 3x is a bounded probe inside [0.0001,0.01] -- large enough to move the needle, small enough not to over-smooth in one shot. FALSIFIER: if hr <= 0.205 (no gain or regression) either side of lambda=0.003, TV is AT its regularization ceiling on Mayo (lambda=0.001 was already near-optimal) -- the lever is exhausted and the next probe would be tv_lr/tv_iterations for finer convergence, or accept ~0.92 SSIM / ~0.20 hr as the structural TV ceiling on real Mayo LDCT. BUDGET: tv_lambda is a ZERO marginal-compute knob -- identical iteration count (120) -> identical ~928s wall, ~272s margin under the 1200s hard 20-min budget preserved. tv_iterations deliberately NOT raised: iter-2 used 928/1200s, and lambda is the higher-value probe per the mandate. val = ALL 214 L277 slices unchanged."
+}

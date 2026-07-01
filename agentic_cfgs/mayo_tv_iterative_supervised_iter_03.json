@@ -1,0 +1,18 @@
+{
+  "val_n": 214,
+  "val_chunk": 5,
+  "train_n": 40,
+  "epochs": 8,
+  "batch_size": 1,
+  "lr": 0.05,
+  "tv_K": 30,
+  "tv_step_init": 1e-08,
+  "tv_lambda_init": 0.001,
+  "tv_share_steps": false,
+  "tv_clip_max": 0.05,
+  "tv_eps": 1e-06,
+  "lambda_neg": 1.0,
+  "loss_base": "mse",
+  "grad_clip": 1.0,
+  "rationale": "tv_iterative_supervised iter-3 (search-20260619-01, corrected 214-slice/321px-FOV metric). TRAINING-DIAGNOSIS iter, NOT a hyperparameter tune. PRIOR: iter-1 (K=10) SSIM 0.285541 hr 0.0 PSNR 1.87 elapsed 321.5s; iter-2 (K=30) SSIM 0.285541 hr 0.0 PSNR 1.87 elapsed 946s -- BYTE-IDENTICAL to every digit, comparison.png identical (289606 B). iter-2 deepened the unroll 10->30 and the result did NOT change AT ALL -> depth is FALSIFIED as the limiter. SLURM TRAINING LOG (jobs 765204 iter-1 / 765283 iter-2) shows the smoking gun: loss=0.001739 IDENTICAL across all 8 epochs, and the learnable step[k]=0.01, lambda[k]=0.001 PINNED at init for all 8 epochs -- the 20/60 scalars receive ZERO gradient and never move. FAILURE MODE (named): the supervised TV TRAINING is structurally frozen by a SATURATED-CLAMP gradient kill. Mechanism: data_grad = back_project(Rf - sino) is the RAW unfiltered adjoint of a 2304-view Mayo sinogram (sum-scaled, NO 1/N normalization). The classical tv_iterative sibling (SSIM 0.92) computes its gradient via AUTOGRAD on 0.5*mean(residual^2) -- a mean over 2304*736~1.7e6 elements -> per-element gradient ~1.7e6x SMALLER. tv_step_init=0.01 was inherited from the classical sibling's tv_lr but the supervised path's gradient is ~1.7e6x bigger, so f - 0.01*data_grad overshoots massively -> clamp(0,0.05) saturates the WHOLE image at K=1 -> the saturated clamp has derivative 0 everywhere -> no gradient reaches log_step/log_lambda -> scalars frozen, recon a near-constant clamped blob (PSNR 1.87, RMSE 0.0403) regardless of K. baseline LD-FBP PSNR=34.08 (Wagner-grade) confirms the data/projector are fine -- only the unrolled step scale is wrong. ONE CHANGE (un-stick training): tv_step_init 0.01 -> 1e-8 (operator-norm-matched: 0.01 / (2304*736) ~ 6e-9, rounded to 1e-8) so the unrolled iteration stays INSIDE the [0,0.05] clamp basin where the clamp is NOT saturated and gradients flow to the scalars. PAIRED ENABLER (not an independent knob -- with frozen gradients lr is inert): outer lr 5e-3 -> 5e-2 so the now-NONZERO scalar gradients move meaningfully across 8 epochs over the log-parametrised step/lambda. All else IDENTICAL to iter-2 (K=30, train_n=40, epochs=8, bs=1, tv_lambda_init=0.001, tv_clip_max=0.05, val_n=214 ALL L277, grad_clip=1.0). HYPOTHESIS: with the step un-saturated, training un-freezes -- loss DECREASES across epochs, step[k]/lambda[k] DEPART from init, and SSIM rises from 0.2855 toward (and ideally above) the LD-FBP floor (~0.81) / the classical TV ceiling (SSIM 0.92, hr 0.205); even landing near the FBP baseline clears the 0.2855 collapse and proves the harness is repairable. FALSIFIER (decisive): if SSIM stays ~0.286 (clamp still saturates) OR the scalars still don't move, the supervised-TV harness is STRUCTURALLY BROKEN on Mayo's 2304-view scale via the shared solver's unnormalized-adjoint step (which is FORBIDDEN to edit per the no-shared-module rule) -> file a NEGATIVE RESULT (supervised-TV-unrolled is not viable on real Mayo LDCT under the config-only contract) and STOP iterating this solver. BUDGET (HARD 20-min train+score): identical compute to iter-2 (K=30, same train/val sizes) -> ~946s, ~250s margin under the 1200s wall; sbatch --time=00:30:00 carries figure/IO headroom. Predicted iter trajectory: iter-1 0.2855 -> iter-2 0.2855 -> iter-3 either >0.81 (training un-froze, harness repaired) OR ~0.286 (structural -> negative result + STOP)."
+}

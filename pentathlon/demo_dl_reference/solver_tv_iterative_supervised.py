@@ -54,7 +54,7 @@ CONFIG = {
     "tv_step_init":    1.0e-2,      # per-iter GD step (log-parametrised)
     "tv_lambda_init":  1.0e-3,      # per-iter TV weight (log-parametrised)
     "tv_share_steps":  False,       # if True, single scalar shared across K
-    "tv_clip_max":     0.05,        # μ clamp upper bound
+    "tv_clip_max":     0.09,        # μ clamp upper bound (2026-06-29: was 0.05 display window; raised to physical mu)
     "tv_eps":          1.0e-6,      # smooth-TV epsilon
     # Training
     "epochs":          10,
@@ -131,7 +131,9 @@ class UnrolledTV(nn.Module):
             data_grad = self.proj.back_project(Rf - sino)
             tv_grad = _smooth_tv_grad(f, self.eps)
             f = f - step * (data_grad + lam * tv_grad)
-            f = f.clamp(0.0, self.clip_max)
+            # μ≥0 floor only. Upper clamp REMOVED 2026-06-30: clip_max truncated
+            # bone (μ up to 0.0814) — same bug class as the metric clamp. Vestigial.
+            f = f.clamp_min(0.0)
         return f
 
 
@@ -199,7 +201,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     model = UnrolledTV(
         geom, K=cfg["tv_K"],
         step_init=cfg["tv_step_init"], lambda_init=cfg["tv_lambda_init"],
-        clip_max=cfg["tv_clip_max"], eps=cfg["tv_eps"],
+        clip_max=max(cfg["tv_clip_max"], cfg["display_max"]), eps=cfg["tv_eps"],  # 2026-06-29: box >= display_max (0.09); 0.05 truncated bone
         share_steps=cfg["tv_share_steps"],
     ).to(device)
 

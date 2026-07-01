@@ -5,52 +5,74 @@
   "test_n_patients": 5,
   "patients": {
     "L014": {
-      "headroom": 0.40308070372252536,
-      "ssim": 0.9852009415626526,
-      "psnr": 46.318206787109375,
-      "rmse": 0.00043484268826432526,
+      "headroom": 0.4093993604556394,
+      "ssim": 0.972541332244873,
+      "psnr": 42.28955078125,
+      "rmse": 0.00043023968464694917,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 675.6
+      "elapsed_s": 707.1,
+      "recon_saved": true
     },
     "L056": {
-      "headroom": 0.35438921616600116,
-      "ssim": 0.985507607460022,
-      "psnr": 45.987213134765625,
-      "rmse": 0.00045173309626989067,
+      "headroom": 0.3526632816265629,
+      "ssim": 0.9760714173316956,
+      "psnr": 42.73540496826172,
+      "rmse": 0.0004529407306108624,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 674.4
+      "elapsed_s": 693.4,
+      "recon_saved": true
     },
     "L058": {
-      "headroom": 0.3790028213679273,
-      "ssim": 0.9701756238937378,
-      "psnr": 42.919960021972656,
-      "rmse": 0.0006430497160181403,
+      "headroom": 0.23584867766868856,
+      "ssim": 0.9668482542037964,
+      "psnr": 39.210201263427734,
+      "rmse": 0.0008969616028480232,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 678.0
+      "elapsed_s": 727.6,
+      "recon_saved": true
     },
     "L075": {
-      "headroom": 0.34274476724424385,
-      "ssim": 0.9843447208404541,
-      "psnr": 46.16533660888672,
-      "rmse": 0.00044256384717300534,
+      "headroom": 0.3554586508871975,
+      "ssim": 0.983135998249054,
+      "psnr": 45.514034271240234,
+      "rmse": 0.0004340924497228116,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 677.0
+      "elapsed_s": 701.7,
+      "recon_saved": true
     },
     "L123": {
-      "headroom": 0.412367556929054,
-      "ssim": 0.9864538311958313,
-      "psnr": 46.45137405395508,
-      "rmse": 0.0004282268928363919,
+      "headroom": 0.4084784844534737,
+      "ssim": 0.9841797947883606,
+      "psnr": 45.57366180419922,
+      "rmse": 0.0004311225493438542,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 678.5
+      "elapsed_s": 707.1,
+      "recon_saved": true
     }
   },
-  "test_hr_mean": 0.3783170130859504,
-  "test_hr_std": 0.030046107828718353,
-  "test_ssim_mean": 0.9823365449905396,
-  "test_ssim_std": 0.006839832285421857,
-  "test_psnr_mean": 45.56841812133789,
-  "test_psnr_std": 1.4906228119821339,
-  "test_rmse_mean": 0.0004800832481123507,
-  "test_rmse_std": 9.152225966383242e-05
+  "test_hr_mean": 0.3523696910183124,
+  "test_hr_std": 0.07068831996415752,
+  "test_ssim_mean": 0.9765553593635559,
+  "test_ssim_std": 0.007280304387020815,
+  "test_psnr_mean": 43.064570617675784,
+  "test_psnr_std": 2.639156099163,
+  "test_rmse_mean": 0.0005290714034345001,
+  "test_rmse_std": 0.0002058651053927309,
+  "solver_src": "pentathlon/demo_dl_reference/solver_uswin.py",
+  "recons_saved": true
 }

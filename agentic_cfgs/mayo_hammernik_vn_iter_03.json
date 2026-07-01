@@ -1,0 +1,21 @@
+{
+  "vn_T": 5,
+  "vn_n_filters": 24,
+  "vn_kernel": 11,
+  "vn_n_bumps": 31,
+  "vn_x_range": 1.0,
+  "vn_lambda_init": 0.05,
+  "vn_init": "fbp",
+  "vn_dc_norm": true,
+  "vn_checkpoint": true,
+  "vn_normalize_filters": false,
+  "epochs": 10,
+  "batch_size": 2,
+  "lr": 0.0005,
+  "grad_clip": 1.0,
+  "train_n": 200,
+  "val_n": 214,
+  "max_train_s": 1000,
+  "seed": 42,
+  "rationale": "hammernik_vn iter-3 (search-20260619-01, corrected 214-slice/321px-FOV metric). ONE KNOB: vn_lambda_init 0.0023 -> 0.05 (~22x DC-weight init). All else held at iter-2 (vn_T=5, vn_n_filters=24, vn_kernel=11, vn_n_bumps=31, lr=5e-4, batch_size=2, vn_checkpoint=true, grad_clip=1.0, vn_dc_norm=true, vn_init=fbp, max_train_s=1000, train_n=200, val_n=214, seed=42). PRIOR (NUMBERS): iter-1 SSIM 0.80528 (vn_n_filters=16, hr=0, elapsed 1295.7s); iter-2 SSIM 0.79195 (vn_n_filters=24, hr=0, elapsed 1351.7s, train 1191.6s). The iter-2 filter bump 16->24 did NOT help -- it REGRESSED -0.0133 (0.80528->0.79195). Both sit BELOW the LD-FBP floor (baseline SSIM ~0.84, baseline_PSNR=34.08), so hr=0. This FIRES iter-2's own pre-registered falsifier ('if val_ssim stays <=0.81 still <FBP, the VN is smoothing-bound regardless of filter count, iter-3 must raise the DC weight vn_lambda_init'). DIAGNOSIS from iter-2 SLURM log 765279: dc_norm power-iter ~= 1.47e+03; training CONVERGED (loss 4.9e-4 ep1 -> 1.3e-6 ep6, flat by ep3) -- NOT under-training, so epochs-up is INERT; and CRITICALLY lambda_t stayed pinned at ['0.0023','0.00231','0.00231','0.00231','0.00231'] across ALL epochs -- Adam never grew the learnable DC weight from its init. The update is u <- u - KT_rho - lam * R^T(Ru-g)/dc_norm (solver lines 141-156): with lam ~= 0.0023 the data-consistency pull is negligible vs the learned regulariser gradient KT_rho, so the VN converges to a blunt smoother that degrades the FBP init below baseline. LIMITER = DC weight too small (NOT capacity: filters^ regressed; NOT epochs: loss flat). Since lambda_t never moves from init, the init vn_lambda_init IS the lever. vn_lambda_init 0.0023 -> 0.05 makes data-consistency dominate the regulariser from step 1 so the recon stays anchored to the measured sinogram instead of over-smoothing. lr held (campaign has lr5e-4-optimal / 8e-4-worse on record). HYPOTHESIS: with the DC init ~22x stronger, val_ssim clears the FBP floor (val_ssim > 0.84, hr>0). FALSIFIER: if val_ssim stays <=0.84 (still <FBP), the VN regulariser is structurally degrading even under strong DC, and iter-4 must attack the regulariser itself (vn_normalize_filters=True to constrain filters zero-mean/unit-norm, or vn_init=backproj). BUDGET (HARD 20-min train+score; sbatch --time=00:30:00): the lambda VALUE does not change per-step compute (same forward/back-project DC step), so cost ~= iter-2: train 1191.6s (max_train_s=1000 binds, ~6 epochs) + ~160s score(214)+figure = ~1352s, under the 1800s SLURM kill. MEMORY-SAFE: identical footprint to iter-2 -- batch_size=2 + vn_checkpoint=true keep N_k=24 within the 16 GB card (no OOM; cf. the hammernik_2017 bs=4 OOM). grad_clip=1.0 retained (VN-family NaN-skip stability; the 2304-view Mayo FBP adjoint overflows the backward otherwise -- and a stronger DC step makes the clip MORE load-bearing)."
+}

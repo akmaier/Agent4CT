@@ -1,0 +1,14 @@
+{
+  "train_n": 200,
+  "val_n": 214,
+  "epochs": 64,
+  "batch_size": 4,
+  "lr": 5e-4,
+  "uswin_c": 24,
+  "swin_window": 8,
+  "swin_heads": 4,
+  "grad_clip": 1.0,
+  "max_train_s": 1000,
+  "seed": 42,
+  "rationale": "ITER-3 (search-20260619-01, corrected protocol). ONE KNOB: epochs 40 -> 64 (1.6x); everything else identical to iter-2 (train_n=200, val_n=214, bs=4, lr=5e-4, uswin_c=24, swin_window=8, swin_heads=4, grad_clip=1.0, max_train_s=1000, seed=42). SIX-BOX (NUMBERS): (1) TRAJECTORY iter-1 ep10 -> SSIM 0.885910 / hr 0.173021 in 328.96s; iter-2 ep40 -> SSIM 0.914097 / hr 0.322063 in 737.72s. epochs-up lever CONFIRMED (hr +0.149 for +30 epochs, monotone, near-linear). iter-2 used 737.72s = 61pct of the HARD 20-min (1200s) train+score wall -> clear epoch headroom. (2) LIMITER: still UNDER-TRAINED, not capacity/optimization-limited (hr rose monotonically with epochs, no sign of a convergence basin yet; uswin is historically epochs-sensitive, ep10->40 prior run 0.173->0.322). The new ceiling is the 20-min wall, not the optimizer. (3) ONE KNOB = epochs 40 -> 64, justified by timing: from the two measured (epochs, elapsed_s) points the per-epoch cost is (737.72-328.96)/(40-10)=13.63 s/epoch and the fixed cost (data load + 214-slice per-sample val + figure I/O) is 328.96-10*13.63=192.7s. Max epochs that fit the 1200s wall: (1200-192.7)/13.63=73.9 -> 64 predicts 192.7 + 64*13.63 = 1065s = 17.7 min (~135s margin inside the 1200s budget; sbatch wall is 30 min). ep72 would be 1174s = 19.6 min (only 26s margin -> too tight given timing variance), so 64 is chosen as the safe-aggressive count. Train-only = 64*13.63 = 872s < max_train_s=1000 backstop, so the backstop does NOT truncate training. (4) HYPOTHESIS: uswin is still epochs-limited at ep40; +60pct more gradient steps (40->64) lifts hr above the iter-2 0.322063 toward/past dual_domain_supervised (predicted iter-3 hr ~0.37-0.41, extrapolating the iter1->iter2 +0.149/30-epoch slope sub-linearly as convergence approaches). FALSIFIER (NUMBERS): if hr plateaus at or below 0.322 (or drops) at ep64, uswin has reached its training-convergence basin at uswin_c=24 -> it is CAPACITY-limited, not training-limited, and iter-4 must raise uswin_c (24->32) or add an lr-schedule rather than epochs (which cannot fit the wall much beyond 72 anyway). (5) HARD 20-min train+score budget; val_n=214 = ALL L277 slices (NOT reduced); grad_clip=1.0 retained (mandatory; the 2304-view Mayo FBP adjoint amplifies gradients). HARD-WIRED (unchanged): staged_canonical v3 mayo_ldct_fitted geometry, per-sample-ps FBP, bg_target=truth, metric=321px detector-geometry FOV (evaluate_calibrated default for AGENT4CT_DATASET=mayo_ldct_2d; no fov= override). (6) no control return."
+}

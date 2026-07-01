@@ -432,13 +432,23 @@ REQUIRED):
   (`val_psnr` / `val_rmse` / `elapsed_s`). `-` only for pre-2026-06 runs that
   predate those fields (raw recon not retained → cannot back-compute).
 - **Mayo is AUTO-GENERATED** by `scripts/gen_mayo_leaderboard.py` between the
-  `<!-- AGENTIC_TABLE_START/END -->` markers (best iter per solver, ranked by
-  headroom). That same script ALSO syncs the Mayo champion row into the homepage
-  summaries (`README.md`, `docs/index.md`) and the leaderboards landing
-  (`docs/leaderboards/index.md`) — **do NOT hand-edit those summary rows**, they
-  are regenerated every wave (single source of truth = the run data). Breast/demo
-  boards are hand-curated; backfill new metrics with
-  `scripts/backfill_leaderboard_metrics.py` + `docs/leaderboards/solver_params.json`.
+  `<!-- AGENTIC_TABLE_START/END -->` markers. Mayo has a **held-out test set**,
+  so its reported numbers follow the canonical evaluation paradigm
+  (README → "Evaluation paradigm (canonical, frozen)"): the leaderboard
+  **columns (SSIM, hr, PSNR, RMSE) are the MEAN ± STD over the 5 Wagner TEST
+  patients** (L014/L056/L058/L075/L123) from a model **trained once** on the
+  train set and run **inference-only** on each test patient — **no retraining,
+  no per-patient hold-out, no cross-validation**. **Validation (L277) drives the
+  search** (it selects the best iter per solver during the agentic/TPE loop) but
+  **is NEVER the reported number** — Mayo is ranked by **test hr** (test-SSIM
+  tiebreak), not by val. That same script ALSO syncs the Mayo champion row into
+  the homepage summaries (`README.md`, `docs/index.md`) and the leaderboards
+  landing (`docs/leaderboards/index.md`) — **do NOT hand-edit those summary
+  rows**, they are regenerated every wave (single source of truth = the run
+  data). Breast/demo boards (no held-out test set) are hand-curated and
+  legitimately report/rank by the single-patient **val** metrics; backfill new
+  metrics with `scripts/backfill_leaderboard_metrics.py` +
+  `docs/leaderboards/solver_params.json`.
 
 Only the **best version of each solver family** per dataset gets a row.
 Multiple variants of the same solver (e.g. DD-UNet L2 vs DD-UNet N2I)
@@ -471,7 +481,11 @@ template as the existing docs (e.g. `solver_dual_ddomain_supervised.md`).
   full training set** for the final number, not a sub-sample. The
   per-iter agentic loop runs at `train_n=400` for speed; the
   leaderboard entry should be the same config rerun at the
-  dataset's full `train_n` (typically 1000–4000 phantoms).
+  dataset's full `train_n` (typically 1000–4000 phantoms). For a
+  dataset with a **held-out test set** (Mayo), the reported number is
+  that one fully-trained model run **inference-only on the 5 Wagner test
+  patients** and summarised as **mean ± std** — the per-iter val (L277)
+  scores selected the config but are **not** the reported result.
 - **Val_n discipline**: keep `val_n=20` during search to make the
   per-iter loop fast, but **stage-check the winner at val_n=60** (or
   higher) to confirm the metric isn't val-set-noise-limited. Several

@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=lme49,lme50,lme51,lme52,lme53,lme170
+#SBATCH --exclude=lme49,lme50,lme51,lme52,lme170   # 2026-06-29: lme53 (v100 16GB) re-enabled after driver update + smoke test; lme49 still down (unk*), lme50/51/52 too small (gtx1080ti/titanxp 11-12GB), lme170 blacklisted
 #SBATCH --mem=24G
 #SBATCH --time=00:30:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out

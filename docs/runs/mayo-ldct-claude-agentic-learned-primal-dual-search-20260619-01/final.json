@@ -6,51 +6,73 @@
   "patients": {
     "L014": {
       "headroom": 0.0,
-      "ssim": 0.858677864074707,
-      "psnr": 31.88982391357422,
-      "rmse": 0.0022895564325153828,
+      "ssim": 0.8405269384384155,
+      "psnr": 28.517498016357422,
+      "rmse": 0.002100453246384859,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 1112.0
+      "elapsed_s": 719.4,
+      "recon_saved": true
     },
     "L056": {
       "headroom": 0.0,
-      "ssim": 0.8543551564216614,
-      "psnr": 30.569364547729492,
-      "rmse": 0.0026654726825654507,
+      "ssim": 0.8498687148094177,
+      "psnr": 29.722185134887695,
+      "rmse": 0.0020262945909053087,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 1087.0
+      "elapsed_s": 699.5,
+      "recon_saved": true
     },
     "L058": {
       "headroom": 0.0,
-      "ssim": 0.8672187328338623,
-      "psnr": 32.16493606567383,
-      "rmse": 0.0022181749809533358,
+      "ssim": 0.8501657247543335,
+      "psnr": 30.67848014831543,
+      "rmse": 0.0023952999617904425,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 1130.8
+      "elapsed_s": 892.9,
+      "recon_saved": true
     },
     "L075": {
       "headroom": 0.0,
-      "ssim": 0.9122902750968933,
-      "psnr": 34.37221908569336,
-      "rmse": 0.001720408326946199,
+      "ssim": 0.8710006475448608,
+      "psnr": 31.703113555908203,
+      "rmse": 0.0021287675481289625,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 1107.4
+      "elapsed_s": 860.0,
+      "recon_saved": true
     },
     "L123": {
       "headroom": 0.0,
-      "ssim": 0.8916316032409668,
-      "psnr": 33.712257385253906,
-      "rmse": 0.001856221235357225,
+      "ssim": 0.903222918510437,
+      "psnr": 32.50349426269531,
+      "rmse": 0.001941374153830111,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 214,
-      "elapsed_s": 1103.6
+      "elapsed_s": 869.5,
+      "recon_saved": true
     }
   },
   "test_hr_mean": 0.0,
   "test_hr_std": 0.0,
-  "test_ssim_mean": 0.8768347263336181,
-  "test_ssim_std": 0.024512820858783164,
-  "test_psnr_mean": 32.54172019958496,
-  "test_psnr_std": 1.514761148148928,
-  "test_rmse_mean": 0.002149966731667519,
-  "test_rmse_std": 0.0003743964726509584
+  "test_ssim_mean": 0.862956988811493,
+  "test_ssim_std": 0.025120071917748163,
+  "test_psnr_mean": 30.624954223632812,
+  "test_psnr_std": 1.5772261205930371,
+  "test_rmse_mean": 0.0021184379002079368,
+  "test_rmse_std": 0.00017097127702746904,
+  "solver_src": "pentathlon/demo_dl_reference/solver_learned_primal_dual.py",
+  "recons_saved": true
 }

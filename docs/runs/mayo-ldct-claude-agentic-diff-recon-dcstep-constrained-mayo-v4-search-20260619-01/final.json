@@ -6,51 +6,73 @@
   "patients": {
     "L014": {
       "headroom": 0.0,
-      "ssim": 0.5119469165802002,
-      "psnr": 19.273162841796875,
-      "rmse": 0.009785532020032406,
+      "ssim": 0.43728190660476685,
+      "psnr": 15.221009254455566,
+      "rmse": 0.009708174504339695,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 154,
-      "elapsed_s": 592.1
+      "elapsed_s": 574.6,
+      "recon_saved": true
     },
     "L056": {
       "headroom": 0.0,
-      "ssim": 0.5185661911964417,
-      "psnr": 19.298404693603516,
-      "rmse": 0.009757135063409805,
+      "ssim": 0.46939319372177124,
+      "psnr": 16.240671157836914,
+      "rmse": 0.009567055851221085,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 93,
-      "elapsed_s": 377.9
+      "elapsed_s": 365.0,
+      "recon_saved": true
     },
     "L058": {
       "headroom": 0.0,
-      "ssim": 0.47283631563186646,
-      "psnr": 18.564716339111328,
-      "rmse": 0.010617118328809738,
+      "ssim": 0.45654457807540894,
+      "psnr": 17.680137634277344,
+      "rmse": 0.010697371326386929,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 210,
-      "elapsed_s": 789.5
+      "elapsed_s": 763.2,
+      "recon_saved": true
     },
     "L075": {
       "headroom": 0.0,
-      "ssim": 0.5652527809143066,
-      "psnr": 20.682865142822266,
-      "rmse": 0.008319539949297905,
+      "ssim": 0.5514508485794067,
+      "psnr": 19.921491622924805,
+      "rmse": 0.008264362812042236,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 137,
-      "elapsed_s": 532.0
+      "elapsed_s": 511.6,
+      "recon_saved": true
     },
     "L123": {
       "headroom": 0.0,
-      "ssim": 0.5500284433364868,
-      "psnr": 20.530391693115234,
-      "rmse": 0.00846687238663435,
+      "ssim": 0.5368996858596802,
+      "psnr": 19.7670955657959,
+      "rmse": 0.008412578143179417,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 151,
-      "elapsed_s": 594.8
+      "elapsed_s": 551.7,
+      "recon_saved": true
     }
   },
   "test_hr_mean": 0.0,
   "test_hr_std": 0.0,
-  "test_ssim_mean": 0.5237261295318604,
-  "test_ssim_std": 0.03595630148763276,
-  "test_psnr_mean": 19.669908142089845,
-  "test_psnr_std": 0.9060055730831328,
-  "test_rmse_mean": 0.00938923954963684,
-  "test_rmse_std": 0.0009740507617470663
+  "test_ssim_mean": 0.49031404256820676,
+  "test_ssim_std": 0.05074050971256106,
+  "test_psnr_mean": 17.766081047058105,
+  "test_psnr_std": 2.0893483364791505,
+  "test_rmse_mean": 0.009329908527433872,
+  "test_rmse_std": 0.0010057535998506768,
+  "solver_src": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+  "recons_saved": true
 }

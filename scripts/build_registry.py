@@ -223,10 +223,6 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
     # Phase 1B: fold in the per-patient test-set mean±std (or None if no
     # final.json yet — graceful for the whole inventory pre-scoring).
     row.update(_testset_aggregates(best["run_id"]))
-    # Ranking basis: test datasets (Mayo) rank by test_hr_mean (val headroom
-    # fallback while the test-eval drains); others by val headroom. The within-run
-    # best-iter pick above stays val-headroom-based — that is the iter final.json
-    # was scored against.
     # Ranking basis: test datasets (Mayo) rank by test_hr_mean; runs without a
     # final.json are pending-test (dimmed, NOT val-fallback-ranked into the test
     # ordering). Others rank by val headroom. The within-run best-iter pick above
@@ -234,6 +230,16 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
     ch = R.challenge_from_slug(best["run_id"])
     has_final = (DOCS_RUNS / best["run_id"] / "final.json").exists()
     row["metric_basis"] = R.metric_basis(ch)
+    # On a TEST-ranked dataset (Mayo, held-out test set) the reported metrics are
+    # the per-patient TEST mean±std (folded in above). Validation (L277) is the
+    # search-time signal, NOT a result — drop the val_* display fields entirely so
+    # no validation number can surface anywhere on a test board. Datasets WITHOUT a
+    # held-out test set (demo_dl, breast_ct) keep their native val_* metrics: those
+    # legitimately ARE their reported results.
+    if row["metric_basis"] == "test":
+        for _k in ("val_ssim", "headroom", "val_psnr", "val_rmse",
+                   "val_ssim_std", "val_psnr_std", "val_rmse_std"):
+            row[_k] = None
     rm, tb, reason = R.rank_fields(row, best["status"], ch, has_final)
     row["rank_metric"] = rm
     row["rank_tiebreak"] = tb
@@ -337,6 +343,16 @@ def main() -> int:
                     run = h
                 curve.append([l["iter"], None if run == -math.inf else round(run, 4)])
             br = best_iter_row(rl)
+            basis_run = br["metric_basis"] if br else "val"
+            is_test_run = (basis_run == "test")
+            # On a test dataset (Mayo) the run card's headline numbers are the
+            # per-patient TEST means (mean over the 5 held-out test patients), NOT
+            # validation — the val_* fields were dropped on the row above. On a val
+            # dataset (demo_dl, breast_ct) they stay the single-patient val metrics.
+            head_hr = (br["test_hr_mean"] if br and is_test_run else
+                       (br["headroom"] if br else None))
+            head_ssim = (br["test_ssim_mean"] if br and is_test_run else
+                         (br["val_ssim"] if br else None))
             runs_view.append({
                 "slug": slug,
                 "solver_key": R.solver_key(slug),
@@ -345,11 +361,22 @@ def main() -> int:
                 "campaign": R.campaign_from_slug(slug),
                 "n_iterations": len(rl),
                 "best_iter": br["best_iter"] if br else None,
-                "best_headroom": br["headroom"] if br else None,
-                "best_ssim": br["val_ssim"] if br else None,
+                "metric_basis": basis_run,
+                "best_headroom": head_hr,
+                "best_ssim": head_ssim,
                 # schema-2 aliases so the current dashboard.js keeps working in
                 # Phase 1 (additive). best_score = the SSIM it historically read.
-                "best_score": br["val_ssim"] if br else None,
+                "best_score": head_ssim,
+                # Test-set mean±std (test datasets only; None elsewhere) so the
+                # dashboard run card can render "mean ± std" for held-out test runs.
+                "test_hr_mean": br["test_hr_mean"] if br else None,
+                "test_hr_std": br["test_hr_std"] if br else None,
+                "test_ssim_mean": br["test_ssim_mean"] if br else None,
+                "test_ssim_std": br["test_ssim_std"] if br else None,
+                "test_psnr_mean": br["test_psnr_mean"] if br else None,
+                "test_psnr_std": br["test_psnr_std"] if br else None,
+                "test_rmse_mean": br["test_rmse_mean"] if br else None,
+                "test_rmse_std": br["test_rmse_std"] if br else None,
                 "started": rl[-1].get("ts"),
                 "status": ("excluded" if (br and br["excluded_reason"]) else "ranked"),
                 "params_M": br["params_M"] if br else None,

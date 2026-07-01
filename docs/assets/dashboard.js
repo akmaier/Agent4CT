@@ -44,6 +44,12 @@ function fmtNum(n, digits = 3) {
   if (n === null || n === undefined || isNaN(n)) return "—";
   return Number(n).toFixed(digits);
 }
+// "mean ± std" when a finite, non-zero std is present, else just the mean.
+function fmtMeanStd(mean, std, digits = 3) {
+  const m = fmtNum(mean, digits);
+  if (std === null || std === undefined || isNaN(std) || Number(std) === 0) return m;
+  return m + " ± " + fmtNum(std, digits);
+}
 function badge(text, cls = "") {
   const span = document.createElement("span");
   span.className = `badge ${cls}`;
@@ -357,8 +363,16 @@ function renderRunCard(r) {
     el("span", { class: "label" }, lbl), el("span", {}, val)));
   stat("started", (r.started || "—").slice(0, 10));
   stat("iterations", String(r.n_iterations ?? "—"));
-  stat("best val (SSIM)", fmtNum(r.best_score, 4));
-  stat("best headroom", fmtNum(r.best_headroom));
+  // Test datasets (Mayo, held-out test set): report the per-patient TEST
+  // mean ± std (n=5) — NEVER validation. Datasets without a held-out test set
+  // (demo_dl, breast_ct) report their single-patient val metrics as before.
+  if (r.metric_basis === "test") {
+    stat("test SSIM (n=5)", fmtMeanStd(r.test_ssim_mean, r.test_ssim_std, 4));
+    stat("test hr (n=5)", fmtMeanStd(r.test_hr_mean, r.test_hr_std));
+  } else {
+    stat("best val (SSIM)", fmtNum(r.best_score, 4));
+    stat("best headroom", fmtNum(r.best_headroom));
+  }
   return card;
 }
 

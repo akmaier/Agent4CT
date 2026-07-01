@@ -1,0 +1,16 @@
+{
+  "val_n": 214,
+  "gs_n_gaussians": 512,
+  "gs_n_iter": 100,
+  "gs_lr_pos": 0.005,
+  "gs_lr_scale": 0.01,
+  "gs_lr_amp": 0.01,
+  "gs_lr_rot": 0.01,
+  "gs_amp_init": 0.01,
+  "gs_scale_init": 0.04,
+  "gs_tv_weight": 0.0001,
+  "gs_n_clip": 0.05,
+  "gs_init_from_fbp": false,
+  "gs_outer_wall_s": 1080,
+  "rationale": "iter-4 TERMINAL CONFIRMATION (search-20260619-01). ONE KNOB: gs_n_iter 60->100 (the only unmapped interior point between iter-3's 60 and iter-1's 150). FAILURE MODE (now structurally established across 3 iters): R2-Gaussian is a PER-SCENE Gaussian-splatting fit (no training, no amortization) and is BUDGET-INCOMPATIBLE with the 214-slice Mayo protocol at the hard 20-min wall. The exact [fit] outer-wall scene counts from the SLURM logs: iter-1 n_iter=150 -> sample 26 (12% coverage), SSIM 0.738335; iter-2 n_iter=400 -> sample 10 (4.7%), SSIM 0.736981; iter-3 n_iter=60 -> sample 64 (30%), SSIM 0.680981. BOTH levers are now REFUTED in NUMBERS: (a) iter-2 QUALITY lever -- 2.67x more Adam steps (150->400) moved the 214-avg by -0.0001 (FLAT); (b) iter-3 COVERAGE lever -- 2.5x more completed scenes (26->64) DROPPED the 214-avg by -0.057 (0.7383->0.6810). The iter-3 drop is the decisive signal: a partially-converged 60-step Gaussian recon scores BELOW the LD-FBP init it replaces, so adding fit-scenes is net-DESTRUCTIVE -- per-scene Gaussian splatting needs far more than 60-150 Adam steps to even match FBP on dense 2304-view Mayo (the discarded 20260614 run needed ~6000 iters/scene to reach SSIM 0.89-0.92, which at 0.282 s/step is 28 min/scene -> 0 of 214 scenes fit in 20 min). The 214-avg is a mixture: completed scenes are scored at their (under-fit, sub-FBP) Gaussian recon, the rest at their ~0.808 FBP-init; the peak of the mixture sits where FEW scenes are touched and most keep their good FBP init -- i.e. near iter-1's n_iter=150 / 26 scenes (0.7383). HYPOTHESIS (falsifiable in NUMBERS): the (coverage, SSIM) curve is smooth and monotone over [60,150]; n_iter=100 -> per-scene 0.282*100 = 28.2 s -> 1080/28.2 = ~38/214 scenes -> predicted SSIM in (0.681, 0.738), strictly BELOW iter-1's 0.738. PREDICTION: SSIM <= 0.74, hr 0. FALSIFIER: if n_iter=100 BEATS 0.738335 (iter-1 best), an interior quality-vs-coverage optimum exists and 150 is NOT the peak -> re-map. If n_iter=100 lands in (0.681, 0.738) as predicted, NO gs_n_iter beats 0.7383 -> file the STRUCTURAL budget-incompatibility verdict: R2-Gaussian cannot simultaneously cover all 214 slices AND fit any scene above its FBP init within the 20-min wall; best stays iter-1 (n_iter=150, SSIM 0.7383, hr=0, BELOW the 0.808 LD-FBP baseline). BUDGET MATH: 38 scenes * 28.2 s = 1072s ~ the 1080s outer wall (self-truncates and scores whatever completed, exactly as iter-1/2/3); SLURM --time=00:30:00 has headroom, val figure excluded. val_n stays 214 (NOT reduced) per mandate; gs_n_gaussians held at 512 (<=1024 cap). TRAJECTORY: iter-2 0.7370 (10/214) -> iter-1 0.7383 (26/214, BEST) -> iter-4 predicted ~0.71-0.73 (38/214) -> iter-3 0.6810 (64/214). Monotone-decreasing in coverage -> R2-Gaussian is STRUCTURALLY budget-incompatible with the 214-slice Mayo protocol (documented NEGATIVE RESULT)."
+}

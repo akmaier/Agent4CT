@@ -80,6 +80,12 @@ def cg_data_consistency(x0_img, sino, proj, n_cg, relax):
     """
     with torch.no_grad():
         x = x0_img.clone()
+        # Degenerate-batch guard: a 0-batch (or otherwise empty) warm start has
+        # no data to fit, so CG is a no-op. Returning it unchanged keeps the
+        # caller's shape contract and avoids `.max()`/`.sqrt()` on a numel==0
+        # reduction (the empty-tensor RuntimeError this guard exists to prevent).
+        if x.numel() == 0 or x.shape[0] == 0:
+            return x0_img
         # r0 = A^T (y - A x)
         r = proj.back_project(sino - proj.forward_project(x))
         p = r.clone()
@@ -93,7 +99,11 @@ def cg_data_consistency(x0_img, sino, proj, n_cg, relax):
             r = r - alpha * AtAp
             rs_new = (r * r).sum(dim=(1, 2, 3), keepdim=True)
             # Stop early on numerically-converged residual to avoid NaNs.
-            if float(rs_new.sqrt().max()) < 1e-12:
+            # `.amax()` (vs `.max()`) returns -inf rather than raising on an
+            # empty reduction, so this can never throw even on a 0-batch; the
+            # 0-batch is already short-circuited above but this keeps the inner
+            # loop robust to any future degenerate tensor.
+            if float(rs_new.sqrt().amax()) < 1e-12:
                 break
             beta = rs_new / rs_old.clamp(min=1e-12)
             p = r + beta * p
@@ -270,9 +280,20 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
 
     # ---- reconstruct each val scene ------------------------------------------
+    # ROOT CAUSE FIX: iterate over the number of slices the loader ACTUALLY
+    # returned, not the requested cfg["val_n"]. On Mayo, load_val_split returns
+    # the eval patient's whole volume (e.g. L058 = 210 slices), which is < the
+    # default val_n=214. The old `range(cfg["val_n"])` ran 4 extra iterations
+    # where `val_noisy[i:i+1]` is an EMPTY (0,1,A,D) slice (Python tolerates
+    # out-of-range slicing), and that 0-batch reached cg_data_consistency and
+    # crashed on `rs_new.sqrt().max()` (numel==0). `n_val` is the real count.
+    n_val = int(val_noisy.shape[0])
+    if n_val < cfg["val_n"]:
+        print(f"[solver] loader returned {n_val} slices (< requested val_n="
+              f"{cfg['val_n']}); reconstructing all {n_val}.", flush=True)
     t0 = time.time()
     preds = []
-    for i in range(cfg["val_n"]):
+    for i in range(n_val):
         pred_i = sample_recon(model, proj,
                               val_noisy[i:i + 1], val_fbp[i:i + 1],
                               domain=domain,
@@ -286,7 +307,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
                               dc_relax=cfg.get("fd_recon_dc_relax", 0.5))
         preds.append(pred_i)
         if (i + 1) % 5 == 0:
-            print(f"[sample] {i+1}/{cfg['val_n']}  elapsed={time.time()-t0:.1f}s",
+            print(f"[sample] {i+1}/{n_val}  elapsed={time.time()-t0:.1f}s",
                   flush=True)
         if time.time() - t0 > 1800:
             print(f"[sample] 30-min wall at {i+1}", flush=True); break

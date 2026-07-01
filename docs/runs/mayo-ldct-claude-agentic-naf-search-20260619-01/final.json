@@ -4,18 +4,75 @@
   "solver_key": "naf",
   "test_n_patients": 5,
   "patients": {
-    "L014": null,
-    "L056": null,
-    "L058": null,
-    "L075": null,
-    "L123": null
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.5561803579330444,
+      "psnr": 18.781478881835938,
+      "rmse": 0.006443384103477001,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 154,
+      "elapsed_s": 846.3,
+      "recon_saved": true
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.597099781036377,
+      "psnr": 18.81328010559082,
+      "rmse": 0.007114555686712265,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 93,
+      "elapsed_s": 508.1,
+      "recon_saved": true
+    },
+    "L058": {
+      "headroom": 0.0,
+      "ssim": 0.6036685109138489,
+      "psnr": 21.166982650756836,
+      "rmse": 0.007160358130931854,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 210,
+      "elapsed_s": 1136.1,
+      "recon_saved": true
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.6894228458404541,
+      "psnr": 25.54378890991211,
+      "rmse": 0.00432607950642705,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 137,
+      "elapsed_s": 735.7,
+      "recon_saved": true
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.6920298337936401,
+      "psnr": 25.317882537841797,
+      "rmse": 0.004440069664269686,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 151,
+      "elapsed_s": 813.3,
+      "recon_saved": true
+    }
   },
-  "test_hr_mean": null,
-  "test_hr_std": null,
-  "test_ssim_mean": null,
-  "test_ssim_std": null,
-  "test_psnr_mean": null,
-  "test_psnr_std": null,
-  "test_rmse_mean": null,
-  "test_rmse_std": null
+  "test_hr_mean": 0.0,
+  "test_hr_std": 0.0,
+  "test_ssim_mean": 0.6276802659034729,
+  "test_ssim_std": 0.060367583058074124,
+  "test_psnr_mean": 21.9246826171875,
+  "test_psnr_std": 3.344637521832312,
+  "test_rmse_mean": 0.005896889418363571,
+  "test_rmse_std": 0.0014113369853552523,
+  "solver_src": "pentathlon/demo_dl_reference/solver_naf.py",
+  "recons_saved": true
 }

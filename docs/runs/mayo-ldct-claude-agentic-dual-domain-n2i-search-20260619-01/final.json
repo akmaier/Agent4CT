@@ -6,51 +6,73 @@
   "patients": {
     "L014": {
       "headroom": 0.0,
-      "ssim": 0.9596133828163147,
-      "psnr": 40.77442169189453,
-      "rmse": 0.0008232304244302213,
+      "ssim": 0.9471170902252197,
+      "psnr": 37.174041748046875,
+      "rmse": 0.0007753288373351097,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 154,
-      "elapsed_s": 976.5
+      "elapsed_s": 1031.7,
+      "recon_saved": true
     },
     "L056": {
       "headroom": 0.0,
-      "ssim": 0.9644577503204346,
-      "psnr": 41.52245330810547,
-      "rmse": 0.0007553002797067165,
+      "ssim": 0.9516963958740234,
+      "psnr": 38.23623275756836,
+      "rmse": 0.0007603266276419163,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 93,
-      "elapsed_s": 685.9
+      "elapsed_s": 728.6,
+      "recon_saved": true
     },
     "L058": {
-      "headroom": 0.06535054169904453,
-      "ssim": 0.9499379992485046,
-      "psnr": 39.368778228759766,
-      "rmse": 0.0009678402566350996,
+      "headroom": 0.037947513774346464,
+      "ssim": 0.9426923990249634,
+      "psnr": 37.20981216430664,
+      "rmse": 0.0011292581912130117,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 210,
-      "elapsed_s": 1216.8
+      "elapsed_s": 1290.2,
+      "recon_saved": true
     },
     "L075": {
       "headroom": 0.0,
-      "ssim": 0.9731422066688538,
-      "psnr": 41.39295959472656,
-      "rmse": 0.0007666452438570559,
+      "ssim": 0.9682154059410095,
+      "psnr": 39.54319381713867,
+      "rmse": 0.0008632254903204739,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 137,
-      "elapsed_s": 877.8
+      "elapsed_s": 931.0,
+      "recon_saved": true
     },
     "L123": {
-      "headroom": 0.013057838433231939,
-      "ssim": 0.9720531702041626,
-      "psnr": 41.947654724121094,
-      "rmse": 0.0007192168850451708,
+      "headroom": 0.0,
+      "ssim": 0.9711344838142395,
+      "psnr": 40.87018585205078,
+      "rmse": 0.000740925723221153,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
       "n_slices": 151,
-      "elapsed_s": 943.2
+      "elapsed_s": 1017.1,
+      "recon_saved": true
     }
   },
-  "test_hr_mean": 0.015681676026455295,
-  "test_hr_std": 0.028335603178304823,
-  "test_ssim_mean": 0.963840901851654,
-  "test_ssim_std": 0.009559010707394466,
-  "test_psnr_mean": 41.00125350952148,
-  "test_psnr_std": 1.004637541854311,
-  "test_rmse_mean": 0.0008064466179348529,
-  "test_rmse_std": 9.764569417799832e-05
+  "test_hr_mean": 0.007589502754869293,
+  "test_hr_std": 0.01697064407530966,
+  "test_ssim_mean": 0.9561711549758911,
+  "test_ssim_std": 0.012773425644175017,
+  "test_psnr_mean": 38.606693267822266,
+  "test_psnr_std": 1.592281393304805,
+  "test_rmse_mean": 0.0008538129739463329,
+  "test_rmse_std": 0.0001609360518970419,
+  "solver_src": "pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py",
+  "recons_saved": true
 }

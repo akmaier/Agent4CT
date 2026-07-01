@@ -1,0 +1,17 @@
+{
+  "itnet_k": 3,
+  "unet_c": 16,
+  "itnet_alpha_init": 0.0037,
+  "residual_learning": false,
+  "pretrain_lr": 0.0001,
+  "pretrain_epochs": 48,
+  "pretrain_patience": 48,
+  "batch_size": 1,
+  "val_chunk": 1,
+  "train_n": 200,
+  "val_n": 214,
+  "grad_clip": 1.0,
+  "max_train_s": 960,
+  "seed": 42,
+  "rationale": "ITER-2 (search-20260619-01, corrected 214-slice/321px-FOV metric). ONE KNOB: pretrain_epochs 12->48 (4x); pretrain_patience tracked 12->48 so the early-stop never fires before the full 48 epochs (same disable-early-stop intent as iter-1, where patience==epochs). All else identical to iter-1 (k=3, unet_c=16, alpha_init=0.0037, residual_learning=False, pretrain_lr=1e-4, batch_size=1, val_chunk=1, train_n=200, val_n=214, grad_clip=1.0, seed=42); only max_train_s 900->960 to admit the longer pretrain inside the wall. SIX-BOX (NUMBERS): (1) iter-1 = SSIM 0.4554 / hr 0.000 (val_psnr 21.24, val_rmse 0.00434) in elapsed_s=170.2 -- only ~14% of the 1200s (20-min) train+score budget used; pretrain_epochs=12. (2) FAILURE MODE: the pretrain-denoiser-then-data-consistency path UNDER-CONVERGES in the budget (same as v1, which was stuck at 0.441). The k=3 DC steps refine a denoiser that has not yet learned the Mayo image statistics; SSIM 0.455 is far below the end-to-end itnet_v3 sibling (0.896). With only 12 pretrain epochs at lr=1e-4 the denoiser is under-trained, and 170s/1200s proves the budget was almost entirely idle. (3) ONE KNOB: pretrain_epochs 12->48, mirroring the SIBLING itnet (v1) iter-2 which raised pretrain_epochs 8->48 and jumped SSIM 0.441->0.593 (+0.15) under THIS campaign and metric -- the strongest just-proven signal that pretraining was the v1/v2 bottleneck. Chosen over lr-up (v3 is unstable above 1e-4; mirror the safe v1 move) and over architecture knobs (k/unet_c) which would change the model not the convergence. (4) HYPOTHESIS: if pretrain_epochs 12->48, val_ssim rises substantially above 0.4554 (toward v1 iter-2's ~0.59, possibly the ~0.88-0.90 sibling band) because more pretraining lets the denoiser converge before the k=3 DC refinement, exactly as it did for v1. FALSIFIER: if val_ssim stays flat (<=~0.47) at 48 epochs, the pretrain-DC architecture is CAPPED in this budget regardless of pretraining (not an under-training problem), and iter-3 must move toward end-to-end unrolled training (the v3 recipe) or accept the pretrain-DC path is budget-limited. (5) BUDGET: HARD 20-min train+score. iter-1 ran 12 epochs + 214-slice per-sample val + figure in 170s; the per-epoch pretrain cost over 200 stratified slices is the variable part and the 214-slice per-sample val + figure are roughly fixed. 4x the epochs is roughly 4x the small pretrain base plus the single fixed val/figure pass: est well under 600s, far below 1200s; max_train_s=960 is a 16-min HARD backstop so train always leaves room for the 214-slice per-sample val + figure inside the 30-min sbatch wall. val_n=214 KEPT (NOT reduced), grad_clip=1.0 KEPT. (6) Loop continues -- no control returned. HARD-WIRED (unchanged from iter-1): staged_canonical data, v3 mayo_ldct_fitted geometry, per-sample-ps (each slice swaps itnet.projector to its own ps; batch_size=1 + val_chunk=1 FORCED), bg_target=truth, val=ALL 214 L277 slices under the 321px detector-geometry FOV (evaluate_calibrated default for AGENT4CT_DATASET=mayo_ldct_2d; NO fov= override). residual_learning=False KEPT (the CONFIG default True double-applies the residual and collapses eval to ~0.34)."
+}

@@ -320,17 +320,34 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     with torch.no_grad():
         fbps = torch.clamp(proj_full.fbp(noisys), min=0.0)
 
+    # SIZE ADAPTATION (2026-06-30 bugfix): `cfg["val_n"]` is hard-wired to the
+    # VAL patient (L277 = 214 slices). The TEST-set scorer
+    # (AGENT4CT_EVAL_PATIENT=Lxxx) makes load_val_split return a DIFFERENT
+    # patient's whole volume (e.g. L056 = 93 slices) while IGNORING `n`, so the
+    # loaded `noisys`/`phs` tensors are NOT cfg["val_n"] long. Iterating
+    # range(cfg["val_n"]) then over-ran the 93-slice tensor: empty `noisys[i:]`
+    # slices past 92 still emitted a (1,1,H,W) coordinate-MLP recon, so `pred`
+    # came out 214 long while `phs` stayed 93, and evaluate_calibrated's
+    # 93-shaped truth mask indexed the 214-shaped pred -> IndexError(mask[93..]
+    # vs tensor[214..]). Drive the per-scene loop (and the per-scene wall split)
+    # from the ACTUAL loaded tensor's slice count, never the cached cfg value.
+    n_eval = int(noisys.shape[0])                           # real eval-set size
+    if n_eval != int(cfg.get("val_n", n_eval)):
+        print(f"[solver] eval-set size {n_eval} != cfg val_n {cfg.get('val_n')} "
+              f"(EVAL_PATIENT override / staged-load mismatch) -> using {n_eval}",
+              flush=True)
+
     outer_wall = cfg.get("naf_outer_wall_s", 600)            # 10 min default; 4x = 2400
-    per_scene_wall = cfg.get("naf_per_scene_s", outer_wall / max(1, cfg["val_n"]))
+    per_scene_wall = cfg.get("naf_per_scene_s", outer_wall / max(1, n_eval))
     t0 = time.time()
     preds = []
-    for i in range(cfg["val_n"]):
+    for i in range(n_eval):
         s = noisys[i:i+1]
         pred_i, last_loss, n_done = fit_one_scene(s, geom, cfg, device,
                                                    t_limit=per_scene_wall)
         preds.append(pred_i.detach())
         if (i + 1) % 2 == 0:
-            print(f"[fit] {i+1}/{cfg['val_n']}  inner_iters={n_done}  "
+            print(f"[fit] {i+1}/{n_eval}  inner_iters={n_done}  "
                   f"last_loss={last_loss:.4g}  elapsed={time.time()-t0:.1f}s",
                   flush=True)
         if time.time() - t0 > outer_wall:

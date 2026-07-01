@@ -1,0 +1,22 @@
+{
+  "proj_n_bf": 1,
+  "img_n_bf": 6,
+  "proj_kernel": 3,
+  "proj_sx": 0.01,
+  "proj_sy": 0.3,
+  "proj_sr": 0.0005,
+  "img_kernel": 5,
+  "img_sx": 0.5,
+  "img_sy": 0.5,
+  "img_sr": 0.02,
+  "lr": 0.005,
+  "epochs": 24,
+  "batch_size": 1,
+  "val_chunk": 1,
+  "train_n": 200,
+  "val_n": 214,
+  "grad_clip": 1.0,
+  "lambda_neg": 1.0,
+  "seed": 42,
+  "rationale": "ITER-3 (search-20260619-01, corrected 214-slice/321px-FOV metric). ONE KNOB: img_n_bf 3->6 (image-domain bilateral DEPTH; 12->21 trainable params, formula 3*(proj_n_bf+img_n_bf)). All else identical to iter-2 (epochs KEPT at 24 -- proven inert, see below). SIX-BOX (NUMBERS): (1) iter-1 = SSIM 0.919181 / hr 0.027984 in 254.3s @ ep8; iter-2 = SSIM 0.919155 / hr 0.028237 in 449.6s @ ep24 -- params_M 1.2e-05 (=12 params, proj_n_bf=1 img_n_bf=3). FLAT: ep8->24 moved SSIM 0.91918->0.91916 (-0.00003) and hr 0.02798->0.02824 (+0.0003, noise). (2) FAILURE MODE: NOT under-training -- the 3x-epoch iter-2 falsified the under-training hypothesis. The 12-param trainable bilateral is at a CAPACITY CEILING on the 2304-view Mayo FBP: only 4 scalar-sigma filters (1 proj + 3 img), too few DOF to push the calibrated RMSE-sensitive headroom past ~0.028 no matter how long they train. epochs is INERT (proven), so the lever is CAPACITY. (3) ONE KNOB = img_n_bf 3->6 (NOT epochs -- proven flat; NOT proj_n_bf -- image-domain is where the FBP-residual noise lives and where added depth has the most leverage; NOT img_sr -- a sigma re-tune is a within-capacity move that the inert epochs already explored via MSE). img_n_bf 3->6 DOUBLES image-domain bilateral depth: 4->7 BFs, params 12->21. (4) HYPOTHESIS: more image-domain bilateral filters (21 vs 12 params) lift hr/SSIM above the 0.9192 ceiling, because added filter DOF let the cascade approximate a richer (less purely-smoothing) image-domain denoiser that the RMSE-driven supervised-MSE loss can exploit. FALSIFIER: if hr stays <=~0.029 (flat) at img_n_bf=6, the dual-domain trainable-bilateral architecture is STRUCTURALLY capped on Mayo regardless of filter count -> iter-4 attacks the OTHER domain (proj_n_bf up) or the kernel size (img_kernel 5->7), not more img depth. (5) BUDGET: HARD 20-min (1200s) train+score. iter-2 @ ep24 ran in 449.6s; per-step cost is dominated by the SHARED 2304-view FBP adjoint, NOT the BF params, so adding 3 image-domain BFs (4->7 total) costs only a few extra cheap bilateral passes per step -> est ~480-540s, comfortably <1200s (30-min sbatch wall). val_n=214 KEPT (do NOT reduce), grad_clip=1.0 KEPT, epochs=24 KEPT. (6) Loop continues -- no control returned. HARD-WIRED (unchanged): staged_canonical data, v3 mayo_ldct_fitted geometry, per-sample-ps (mayo_per_sample_setup/_fbp, per-sample pipe.R_full swap), bg_target=truth, val=ALL 214 L277 slices under the 321px detector-geometry FOV (evaluate_calibrated default for AGENT4CT_DATASET=mayo_ldct_2d; NO fov= override)."
+}

@@ -1,0 +1,15 @@
+{
+  "recon_ckpt": "/cluster/maier/Agent4CT/checkpoints/ddpm_mayo_constrained_v4.pt",
+  "recon_mode": "dps",
+  "recon_sample_steps": 28,
+  "recon_eta": 30.0,
+  "recon_init": "fbp",
+  "recon_eta_clamp": false,
+  "recon_dcstep_every": 5,
+  "recon_dcstep_n_cg": 3,
+  "recon_dcstep_warmup": 5,
+  "recon_dcstep_relax": 1.0,
+  "val_n": 214,
+  "train_n": 0,
+  "rationale": "iter-4 search-20260619-01 CONSTRAINED diff-recon — CONFIRMATION iter (last untried lever). BASE = iter-1 BEST config (eta=30.0, relax=1.0, every5/n_cg3/warmup5), NOT iter-2/3: the eta+relax levers are EXHAUSTED and both REGRESSED from iter-1. TRAJECTORY (val=ALL 214 L277, 321px geometry FOV): iter-1 eta=30/relax=1.0/T=25 SSIM 0.3937 (BEST) / hr 0; iter-2 eta 30->1 -> 0.2366 (regressed); iter-3 relax 1.0->0.3 -> 0.2377 (flat). All hr 0, all stuck in the 0.24-0.39 band, FAR below the ~0.81 LD-FBP floor. ONE KNOB: recon_sample_steps 25->28 (the DDIM reverse-step count T = the last untried lever, restarted from the iter-1 best config). FAILURE MODE (numbers): the recon sits 0.39 vs the 0.81 FBP floor and eta (DPS gain) + relax (hard-DC blend) both FAILED to move it off that band -> the corruption is NOT a step-size or DC-weight issue; the remaining hypothesis is that the 25-step low-T DDIM schedule is too coarse to let the constrained hard-DC trajectory converge. The unconstrained sibling's n_steps lever was ALSO flat (T 25->32: 0.396->0.387, hr 0), which is the strong prior that T-up won't help on the constrained side either. HYPOTHESIS: if a finer 28-step schedule meaningfully helped, SSIM would clear the ~0.81 FBP floor (hr>0); I predict it stays ~0.3-0.4 / hr 0 (cf. unconstrained T-up flat). FALSIFIER: if SSIM clears the FBP floor (hr>0) -> the Mayo v4 prior is NOT structurally mismatched, just T-budget-limited -> keep climbing T. If SSIM stays ~0.3-0.4 / hr 0 -> the eta, relax, AND T levers are all exhausted: FILE THE DIFFUSION-PRIOR-MISMATCH VERDICT (Mayo v4 DDPM globally faithful but not conditionally faithful under DPS/DC, mirroring the breast-DDPM hr=0 structural verdict); the constrained best stays iter-1 (SSIM 0.394, hr 0). BUDGET: cost is linear in n_steps (sample_guided loops `for k in range(n_steps)`, one UNet+DPS-grad eval/step + DC-CG on k in {5,10,15,20,25}). iter-1 ran 214 slices in 1018.96 s at T=25 = 40.8 s/step -> T=28 ~= 40.8*28 + ~5 DC events ~= 1163 s ~= 19.4 min < 20-min wall (1800 s in-solver backstop + 30-min --time as further backstops). T=30 was REJECTED as too tight (~21 min, would blow the hard 20-min budget). val=ALL 214 L277, 321px detector-geometry FOV default."
+}

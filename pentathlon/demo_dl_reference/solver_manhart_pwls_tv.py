@@ -114,7 +114,7 @@ CONFIG = {
     "tv_lambda":     0.001,   # regularization weight
     "tv_iterations": 200,     # number of iterations
     "tv_lr":         0.01,    # step size
-    "tv_clip_max":   0.05,    # hard upper bound
+    "tv_clip_max":   0.09,    # hard upper bound (2026-06-29: was 0.05 display window; raised to physical mu)
     "tv_decay":      0.01,    # step decay per iteration
     "tv_optimizer":  "gd",     # "gd" or "adam"
     "tv_init":       "fbp",    # "fbp" or "zeros"
@@ -182,7 +182,7 @@ def tv_reconstruction(proj, sino, fbp_init, cfg, device):
     lam = cfg["tv_lambda"]
     iterations = cfg["tv_iterations"]
     lr = cfg["tv_lr"]
-    clip_max = cfg["tv_clip_max"]
+    clip_max = max(cfg["tv_clip_max"], cfg["display_max"])   # 2026-06-29: box >= physical mu (display_max=0.09); 0.05 truncated bone
     decay = cfg["tv_decay"]
     optimizer = cfg["tv_optimizer"]
     init = cfg["tv_init"]
@@ -242,8 +242,9 @@ def tv_reconstruction(proj, sino, fbp_init, cfg, device):
                 step = lr / (1.0 + decay * it) if decay > 0 else lr
                 f -= step * f.grad
 
-            # Hard constraints
-            f.clamp_(0.0, clip_max)
+            # μ≥0 floor only. Upper clamp REMOVED 2026-06-30: clip_max truncated
+            # bone (μ up to 0.0814) — same bug class as the metric clamp. Vestigial.
+            f.clamp_min_(0.0)
 
         if (it + 1) % 50 == 0 or it == 0:
             print(f"[PWLS-TV] iter {it+1}/{iterations}  data={data_term.item():.6f} "

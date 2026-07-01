@@ -14,6 +14,85 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-06-30 — Scoring metric frozen: NO upper clamp; data_range = truth range; Mayo reports TEST mean±std, never val
+
+Two paradigm points pinned here so the next agent does not re-litigate them
+(full canonical statement: README → "Evaluation paradigm (canonical, frozen)").
+
+**1. The metric's upper clamp was a BUG — removed once, now frozen.** The
+calibrated-eval path (`evaluate_calibrated` / `intensity_calibrate` in
+`ddssl_ldct/metrics.py`) used to end with `clamp(0, display_max)`. The **upper**
+limb (`display_max`, e.g. 0.05 μ) **truncated bone/iodine** — Mayo truth μ runs
+up to ~**0.0814** — at the display window, corrupting RMSE/SSIM/PSNR for any
+recon that resolved high-attenuation structure. It was removed **2026-06-30**:
+the calibrated output now has a **μ ≥ 0 floor and NO upper clamp**, and
+**SSIM/PSNR `data_range` = the truth's actual dynamic range** (the standard
+skimage convention) rather than the fixed display window. `display_max` is now
+**visualization-only** (figures/windowing); it is no longer a scoring knob. This
+is the one deliberate metric change — the metric is now **frozen**: do NOT tweak
+it mid-experiment. (Distinct from, and downstream of, the 2026-06-13 bg→0 *lower*
+calibration bug below — that fixed the background offset; this removes the bone
+truncation at the top.)
+
+**2. Validation is not a result. Mayo results are TEST mean ± std.** For any
+dataset with a **held-out test set** (currently `mayo_ldct`, Wagner split):
+train the model **once** on the train set (L145/186/209/219), use **L277 val
+ONLY as a training-loop signal** (early-stop / config selection), then run that
+single trained model **inference-only on the 5 Wagner TEST patients**
+(L014/056/058/075/123). The **reported result is the MEAN ± STD over those 5
+test patients** for every metric (hr, SSIM, PSNR, RMSE). There is **NO
+retraining, NO per-patient hold-out, NO cross-validation** over the test
+patients, and **L277 val scores are NEVER reported** as the Mayo result.
+Datasets with no held-out test set (`demo_dl`, `breast_ct`) legitimately rank
+and report by their single-patient val metrics — unchanged.
+
+## 2026-06-29 — Methodology: recombine COMPLEMENTARY inductive biases to suppress LD-CT streak noise (user guidance, A. Maier) — agenda for param-efficient iters 28-40
+
+*(Prose / methodology only — per the single-source-of-truth rule, no metrics here;
+all live numbers are in the [Mayo leaderboard](leaderboards/mayo_ldct.md) / registry.
+Iteration ids below are navigation, not results.)*
+
+Treat the param-efficient solver as a **composition of complementary inductive
+biases**, each targeting a distinct artifact mechanism, and **BALANCE** them — do not
+maximize any single one. The extension (iters 21-40) found the iter-7 FoE-only design
+was missing an edge-preserving prior: adding a bilateral term *in parallel* to the FoE
+convolutions (not replacing it, not pooling) supplied it and became the val champion at
+iter-25. So the earlier "iter-7 is a hard capacity ceiling" reading (entry below) was
+wrong — it was a *missing bias*, not a capacity limit. Study what bias each method we've
+investigated contributes, and recombine optimally.
+
+**Physics — LD-CT streak noise.** Low-dose noise is dominated by **photon starvation on
+high-attenuation rays** (large absorbers / long dense paths): few photons → high-variance
+line integrals → when backprojected, those noisy rays paint **directional STREAK
+artifacts** across the image. Fix the noisy rays at their *source* in the projection
+domain and the streaks never form in the reconstruction. Different methods attack this at
+different points:
+
+| Inductive bias | Domain | What it fixes | Failure mode if pushed too hard |
+|---|---|---|---|
+| **Manduca noise-adaptive filter** (Anscombe / PWLS ray-weighting) | projection | reduces noise at the SOURCE on high-attenuation rays → streaks never form in the recon | (a) too MUCH projection denoising → **over-smooth images**; (b) too HARD edge-preservation in projection → **VIEW INCONSISTENCY** (the filtered sinogram no longer corresponds to one consistent object across angles → data-consistency fights it → new artifacts). **Keep projection filtering GENTLE / soft-edged; the lever is STRENGTH, not edge-hardness.** |
+| **FoE learned filter bank** (iter-7 base) | image | learned edge/texture regularization prior | — (verified stable base) |
+| **Bilateral, IN PARALLEL to FoE** (the iter-25 addition) | image | edge-preserving denoise the FoE bank lacked | bilateral ALONE (no FoE) fell below the FBP floor (iter-17) — it is a *complement*, never a replacement |
+| **Anisotropic / oriented filtering** (next lever) | image | streaks are DIRECTIONAL → direction-aware filtering suppresses residual streaks that survive the projection-domain fix | over-aggressive orientation smears real oriented structure |
+| **Data consistency (DC)** | both | forward-model fidelity; the anchor every prior is balanced against | — |
+
+**Recombination order for iters 28-40** (compose, don't replace; balance the strengths):
+1. **GENTLE** noise-adaptive projection-domain streak reduction at the source (Manduca;
+   soft enough to preserve view consistency). [iter-26 tests it on the FoE — read its `proj_gain`.]
+2. Image-domain **edge-preserving** FoE + bilateral (the iter-25 win; multi-scale
+   parallel bilateral bank in iter-27 — read its per-filter `bf_gains` vector).
+3. Image-domain **ANISOTROPIC / oriented** filtering for residual directional streaks
+   (new lever — add once 1+2 are characterized; suppresses streaks the gentle
+   projection stage deliberately leaves behind).
+
+Each added bias carries its own **zero-init gain** so the composition starts == the
+current champion (stable seed, no divergence/regression risk), and the **learned gains
+ARE the experiment**: which biases the optimizer keeps tells us which mechanisms actually
+matter on dense full-view Mayo (2,304 views — at that angular density the FBP already
+averages much of the projection noise, so the projection stage is expected to help only
+*in combination*, and gently). Optimize the RMSE-vs-LD-FBP headroom across the balance,
+not any single term.
+
 ## 2026-06-29 — Param-efficient code-evolving campaign COMPLETE: a ~2k-param FoE unrolled solver is the best headroom-per-param method on Mayo, and it is a razor-sharp budget+stability-bound optimum
 
 **Goal** (user): beat the Mayo champion **ITNet v1 (hr 0.4398 @ 233k params)** with

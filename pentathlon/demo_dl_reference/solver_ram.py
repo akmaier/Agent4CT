@@ -388,9 +388,32 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             return t
         raise ValueError(f"unexpected shape {t.shape}")
 
-    for i in range(cfg["val_n"]):
+    # Bound the loop by the number of ACTUALLY loaded slices, never the
+    # configured cfg["val_n"]. The two diverge whenever the val load returns a
+    # different count than the search-time val (cfg["val_n"]=214 was tuned for
+    # L277's 214 slices). Crucially the Mayo TEST-set scorer reuses the val
+    # load slot via AGENT4CT_EVAL_PATIENT=<Lxxx>, which returns that patient's
+    # WHOLE volume (e.g. L056 = 93 slices); with the loop still at 214 the
+    # indices 93..213 produce empty `val_noisy[i:i+1]` slices, so
+    # physics.A_adjoint(y) returns a 0-element tensor and `adj.abs().max()`
+    # (adjoint_max norm) crashes with "max(): Expected reduction dim ...
+    # numel() == 0". Every SUPERVISED solver already loops over
+    # val_noisy.shape[0]; do the same here so RAM survives any slice count.
+    n_eval = int(val_noisy.shape[0])
+    if n_eval != int(cfg["val_n"]):
+        print(f"[solver] val_n cfg={cfg['val_n']} but {n_eval} slices loaded "
+              f"-> evaluating all {n_eval} loaded slices", flush=True)
+    for i in range(n_eval):
         y = _b1(val_noisy[i:i + 1])
         x_init = _b1(val_fbp[i:i + 1])
+        # Defensive: a degenerate (0-element) slice must never reach the
+        # adjoint_max reduction below (max() on numel()==0 raises). With the
+        # n_eval=val_noisy.shape[0] loop bound this should be unreachable, but
+        # guard so any future empty input is skipped rather than crashing.
+        if y.numel() == 0:
+            print(f"[infer] slice {i}: empty input (numel=0) — skipping",
+                  flush=True)
+            continue
 
         # Compute normalisation scale and rescaled inputs. Whatever `denom`
         # we apply to y, the image-domain prediction comes out in [x / denom]
@@ -411,7 +434,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             # op_scale upstream), so `denom` here is on the normalised sino.
             with torch.no_grad():
                 adj = physics.A_adjoint(y)  # A^T_normalised
-                denom = float(adj.abs().max().clamp(min=1e-6))
+                # Guard the degenerate adjoint: max() on a 0-element tensor
+                # raises "Expected reduction dim ... numel() == 0". Fall back
+                # to a unit denom so the slice still produces a finite recon.
+                denom = (float(adj.abs().max().clamp(min=1e-6))
+                         if adj.numel() > 0 else 1.0)
             y_n = y / denom
             x_init_n = x_init / x_init.max().clamp(min=1e-6)
         else:
@@ -454,7 +481,7 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             pred_i = pred_i.clamp(float(cfg["display_min"]), out_scale)
         preds.append(pred_i.detach())
         if (i + 1) % 5 == 0:
-            print(f"[infer] {i+1}/{cfg['val_n']}  elapsed={time.time()-t0:.1f}s",
+            print(f"[infer] {i+1}/{n_eval}  elapsed={time.time()-t0:.1f}s",
                   flush=True)
 
     sample_time = time.time() - t0
