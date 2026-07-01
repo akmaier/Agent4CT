@@ -14,6 +14,32 @@ recipe for adapting solvers to a new dataset — FBP investigation,
 agentic autoresearch, TPE refinement, DDPM constrained+unconstrained,
 leaderboard + per-solver cross-dataset insights).
 
+## 2026-07-01 — param-efficient trajectory re-scored on TEST: the val-champion overfit; smaller FoE generalizes best
+
+All 40 param-efficient iterations were re-evaluated on the 5 held-out Wagner
+TEST patients under the frozen metric (train once, mean ± std over 5 — NOT val).
+Full numbers: `docs/runs/pe-iter-testeval/trajectory_test.json` (regenerate via
+`scripts/rescore_pe_iters.py --test --collect`). What the next agent should not
+have to re-discover:
+
+- **The campaign's val-selected "champion" iter-32** (nf24 FoE + 3-scale Manduca
+  + anisotropic, val hr ~0.40) scores only **~0.24 on TEST** — it did not
+  generalize. The mid-campaign metric drift + val-only selection inflated it.
+- **The TEST-best iters are the SMALLER FoE banks** — iter-33 (nf12) and iter-36
+  (nf6, ~487 params) at **~0.32** test hr. Shrinking capacity *improved*
+  generalization (less overfit) — the opposite of the val story.
+- **Effect value on TEST:** the FoE-reg switch (iter-7, ~0.21) is the
+  foundation; the **Manduca projection-domain lever** (iter-26/28) adds real
+  value (→~0.30); the **anisotropic + multi-scale-Manduca stacking**
+  (iter-31/32/34) added **nothing** on test (≤ the simpler FoE+Manduca); image
+  bilateral is modest.
+- **Seed fragility confirmed:** the seed-123 robustness probes (iter-37/38/39)
+  diverged to hr 0, and iter-32's own test hr is run-to-run variable
+  (~0.19–0.24), so it is not a reliable champion.
+- **Methodology this validates:** select on val, but *report* on test; a large
+  val→test gap is the overfitting signal. Prefer the smallest model on the
+  test-Pareto front.
+
 ## 2026-06-30 — Scoring metric frozen: NO upper clamp; data_range = truth range; Mayo reports TEST mean±std, never val
 
 Two paradigm points pinned here so the next agent does not re-litigate them

@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "pe-iter-testeval/iter-0033",
+  "solver_key": "param_efficient",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.37657213331671346,
+      "ssim": 0.9634569883346558,
+      "psnr": 41.819705963134766,
+      "rmse": 0.0004541536036413163,
+      "ssim_std": 0.0037091923877596855,
+      "psnr_std": 1.438795566558838,
+      "rmse_std": 7.765409100102261e-05,
+      "n_slices": 214,
+      "elapsed_s": 1342.7,
+      "recon_saved": true
+    },
+    "L056": {
+      "headroom": 0.3166063736207789,
+      "ssim": 0.9722905158996582,
+      "psnr": 42.26459503173828,
+      "rmse": 0.000478169706184417,
+      "ssim_std": 0.006518298760056496,
+      "psnr_std": 1.4558852910995483,
+      "rmse_std": 8.45393878989853e-05,
+      "n_slices": 214,
+      "elapsed_s": 1314.7,
+      "recon_saved": true
+    },
+    "L058": {
+      "headroom": 0.23141373183875946,
+      "ssim": 0.9594895243644714,
+      "psnr": 39.159934997558594,
+      "rmse": 0.0009021673467941582,
+      "ssim_std": 0.02054634317755699,
+      "psnr_std": 3.9394125938415527,
+      "rmse_std": 0.0005308187683112919,
+      "n_slices": 214,
+      "elapsed_s": 1367.1,
+      "recon_saved": true
+    },
+    "L075": {
+      "headroom": 0.30765211255749325,
+      "ssim": 0.9840589165687561,
+      "psnr": 44.89256286621094,
+      "rmse": 0.00046628969721496105,
+      "ssim_std": 0.0027232940774410963,
+      "psnr_std": 1.1438236236572266,
+      "rmse_std": 6.20810387772508e-05,
+      "n_slices": 214,
+      "elapsed_s": 1340.9,
+      "recon_saved": true
+    },
+    "L123": {
+      "headroom": 0.38839805042887654,
+      "ssim": 0.984085202217102,
+      "psnr": 45.283695220947266,
+      "rmse": 0.0004457579052541405,
+      "ssim_std": 0.0023068473674356937,
+      "psnr_std": 1.1622982025146484,
+      "rmse_std": 6.11693030805327e-05,
+      "n_slices": 214,
+      "elapsed_s": 1335.0,
+      "recon_saved": true
+    }
+  },
+  "test_hr_mean": 0.3241284803525243,
+  "test_hr_std": 0.06285895272632018,
+  "test_ssim_mean": 0.9726762294769287,
+  "test_ssim_std": 0.01138818025786438,
+  "test_psnr_mean": 42.68409881591797,
+  "test_psnr_std": 2.498904959076813,
+  "test_rmse_mean": 0.0005493076518177986,
+  "test_rmse_std": 0.00019763564666574983,
+  "solver_src": "docs/runs/mayo-ldct-claude-agentic-param-efficient-search-20260624-01/iterations/iter-0033/solver_src.py",
+  "recons_saved": true
+}
