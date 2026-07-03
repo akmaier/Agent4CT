@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "_note": "The SINGLE allowlist for the result register. build_registry.py walks ONLY the run-ids listed under datasets[].run_ids; everything else on disk is ignored (legacy / different-scoring-convention runs, purged campaigns). A campaign reset edits THIS ONE FILE. publish.sh rsyncs exactly these run-ids (never a blanket docs/runs glob).",
-  "updated": "2026-06-20T18:00:00Z",
+  "updated": "2026-07-03T00:00:00Z",
   "datasets": {
     "mayo_ldct": {
       "label": "Mayo-LDCT",
@@ -40,34 +40,8 @@
     "breast_ct": {
       "label": "Breast-CT",
       "campaign": "calibrated+agentic",
-      "note": "Calibrated-SSIM-headroom convention (TPE Bayesian search + claude-agentic seeds). Stable.",
-      "run_ids": [
-        "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-breast-search-20260523-01",
-        "breast-ct-calibrated-tpe-diff-recon-dcstep-constrained-search-20260521-01",
-        "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-breast-search-20260523-01",
-        "breast-ct-calibrated-tpe-diff-recon-dcstep-unconstrained-search-20260521-01",
-        "breast-ct-calibrated-tpe-dual-domain-bilateral-supervised-search-20260524-01",
-        "breast-ct-calibrated-tpe-dual-domain-supervised-search-20260524-01",
-        "breast-ct-calibrated-tpe-hammernik-search-20260521-01",
-        "breast-ct-calibrated-tpe-hammernik-vn-search-20260521-01",
-        "breast-ct-calibrated-tpe-itnet-v2-search-20260521-01",
-        "breast-ct-calibrated-tpe-itnet-v3-search-20260521-01",
-        "breast-ct-calibrated-tpe-lpd-search-20260524-01",
-        "breast-ct-calibrated-tpe-naf-search-20260521-01",
-        "breast-ct-calibrated-tpe-r2gaussian-search-20260521-01",
-        "breast-ct-calibrated-tpe-ram-zeroshot-v2-search-20260521-01",
-        "breast-ct-calibrated-tpe-tv-search-20260521-01",
-        "breast-ct-calibrated-tpe-tv-v2-search-20260521-01",
-        "breast-ct-calibrated-tpe-uswin-search-20260521-01",
-        "breast-ct-calibrated-tpe-wu-search-20260521-01",
-        "breast-ct-claude-agentic-dual-domain-bf-l2-search-20260522-01",
-        "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260618-01",
-        "breast-ct-claude-agentic-dual-domain-n2i-search-20260618-01",
-        "breast-ct-claude-agentic-dual-domain-unet-l2-search-20260522-01",
-        "breast-ct-claude-agentic-learned-primal-dual-search-20260522-01",
-        "breast-ct-claude-agentic-ram-zeroshot-search-20260521-01",
-        "breast-ct-claude-agentic-wu-2015-l2-search-20260522-01"
-      ],
+      "note": "REDO IN PROGRESS (2026-07-03): prior val-only TPE+agentic runs delisted after breast gained a held-out test split (train 3600 / val 200 / test 200, seed 20260703). Rebuilding from scratch under the strict 20-min budget with test-set scoring. Old run dirs remain on disk, archived at git tag archive/breast-preredo-20260703.",
+      "run_ids": [],
       "exclude_iters": {}
     },
     "demo_dl": {

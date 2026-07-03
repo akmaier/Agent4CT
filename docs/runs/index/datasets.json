@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-03T13:39:38Z",
+ "updated": "2026-07-03T15:52:16Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
@@ -21,16 +21,16 @@
    "challenge": "breast_ct",
    "label": "Breast-CT",
    "campaign": "calibrated+agentic",
-   "n_runs": 25,
-   "n_iterations": 417,
-   "n_solvers": 25,
-   "champion_slug": "breast-ct-calibrated-tpe-lpd-search-20260524-01",
-   "champion_name": "Learned Primal-Dual",
-   "champion_headroom": 0.9062405977538153,
+   "n_runs": 0,
+   "n_iterations": 0,
+   "n_solvers": 0,
+   "champion_slug": null,
+   "champion_name": null,
+   "champion_headroom": null,
    "champion_ssim": null,
    "champion_metric_basis": "val",
-   "champion_score": 0.9062405977538153,
-   "thumbnail": "runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png"
+   "champion_score": null,
+   "thumbnail": null
   },
   {
    "challenge": "demo_dl",
