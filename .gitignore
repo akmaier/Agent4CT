@@ -42,6 +42,10 @@ docs/leaderboards/baseline_*/
 .pytest_cache/
 .ipynb_checkpoints/
 papers/
+# Wiley/AAPM LaTeX template asset — re-download with the curl command in
+# paper_CTautoresearch.md §2 rather than redistributing it on the public repo.
+paper/*.zip
+paper/Optimal-Design-layout/
 
 .env
 llm_api.toml
