@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "_note": "The SINGLE allowlist for the result register. build_registry.py walks ONLY the run-ids listed under datasets[].run_ids; everything else on disk is ignored (legacy / different-scoring-convention runs, purged campaigns). A campaign reset edits THIS ONE FILE. publish.sh rsyncs exactly these run-ids (never a blanket docs/runs glob).",
-  "updated": "2026-07-03T00:00:00Z",
+  "updated": "2026-07-03T12:00:00Z",
   "datasets": {
     "mayo_ldct": {
       "label": "Mayo-LDCT",
@@ -40,8 +40,14 @@
     "breast_ct": {
       "label": "Breast-CT",
       "campaign": "calibrated+agentic",
-      "note": "REDO IN PROGRESS (2026-07-03): prior val-only TPE+agentic runs delisted after breast gained a held-out test split (train 3600 / val 200 / test 200, seed 20260703). Rebuilding from scratch under the strict 20-min budget with test-set scoring. Old run dirs remain on disk, archived at git tag archive/breast-preredo-20260703.",
-      "run_ids": [],
+      "note": "INTERIM val-scored snapshot (2026-07-03) of the in-progress test-split redo — search-phase val=200 headroom, runs still advancing to 5 iters; FINAL board will be test-scored (best-by-test-hr over 200 test cases). ITNet v1 currently below baseline (config WIP).",
+      "run_ids": [
+        "breast-ct-claude-agentic-itnet-search-20260703-01",
+        "breast-ct-claude-agentic-itnet-v2-search-20260703-01",
+        "breast-ct-claude-agentic-learned-primal-dual-search-20260703-01",
+        "breast-ct-claude-agentic-uswin-search-20260703-01",
+        "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01"
+      ],
       "exclude_iters": {}
     },
     "demo_dl": {

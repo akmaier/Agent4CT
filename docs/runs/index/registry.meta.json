@@ -1,9 +1,9 @@
 {
  "schema_version": 3,
- "builder_git_sha": "35e34dc5",
- "built_at": "2026-07-03T15:52:16Z",
- "content_hash": "8ec1b8d8a031fdc076fe6dd1ba59e45ef0e51b7eb273685f0036dc0b53336f3a",
- "allowlist_sha": "2a1d50a63431e36ccb90f7e1fa53d09b67829efd",
- "n_runs": 41,
- "n_iterations": 828
+ "builder_git_sha": "f6529903",
+ "built_at": "2026-07-03T19:12:35Z",
+ "content_hash": "dc6bea862cb955d8a6c30f489d453560df15df2ba9cd0ddc3421864d0502fcef",
+ "allowlist_sha": "311295a2b9ad632a9174d68f412c6e4f59233898",
+ "n_runs": 46,
+ "n_iterations": 842
 }
