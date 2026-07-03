@@ -380,6 +380,65 @@ canonical-key table above is the **naming target** for the rebuilt board.
 
 ---
 
+## 5.4 · Full 20-iteration Breast-CT campaign (launched 2026-07-03, user-directed)
+
+After the 5-solver shakedown validated the test-split + per-case mean±std pipeline
+(test scoring wired in `scripts/score_breast_testset.py` + the `AGENT4CT_EVAL_SPLIT`
+gate in `staged_dataset.py`; the interim board was published test-scored), the user
+directed a **full deep benchmark**: take **every solver (except `param_efficient`) to
+20 agentic iterations** on Breast-CT, then run the param-efficient recombination study.
+
+**Scope (decided with user 2026-07-03): ALL solvers, full 20 iters; extend the 5
+shakedown runs to 20 too.** Canonical set = **24 solvers** (deduped SOLVER_MAP aliases;
+excludes `param_efficient` and the Mayo-DDPM `diffusion_recon_*_mayo_*` keys — those
+need breast DDPM ckpts; the 4 `fastdiff` variants cover the diffusion category):
+- Extend 5: itnet, itnet_v2, uswin, learned_primal_dual, dual_domain_supervised
+- New 19: itnet_v3, hammernik_2017, hammernik_vn, wu_2015_trainable, wu_2015,
+  tv_iterative, tv_iterative_supervised, ram_zeroshot, manduca_bilateral,
+  manhart_pwls_tv, dual_domain_bilateral_supervised, dual_domain_n2i,
+  dual_domain_bilateral_n2i, naf, r2gaussian, fastdiff_flow_pixel_{constrained,
+  unconstrained}, fastdiff_wdm_wavelet_{constrained,unconstrained}
+- NAF / R²-Gaussian / fast-diffusion are documented breast structural-failures
+  (`docs/leaderboards/breast_ct.md`); user chose to give them the full 20 anyway
+  ("we genuinely tried each").
+
+**Operating model.** One Opus-4.8 subagent per solver, self-driving the six-box loop
+to iter 20 via a robust **persistent Monitor gate** (numeric-headroom observation.json
++ job left squeue). Run-id `breast-ct-claude-agentic-<solver>-search-20260703-01`.
+Every iter: strict **20-min** budget (`--time=00:30:00`), `val_n ≤ 200`, ONE knob
+(architecture changes — layers/width/unroll depth — explicitly allowed), and **saves
+`model_ckpt.pt` + `recon_raw.npz`** per iter (via `AGENT4CT_SAVE_RECON` +
+`AGENT4CT_MODEL_CKPT` in the sbatch `--export`) so re-scoring reloads instead of
+retrains. Launched in **waves of ~8** (matches the ~8 effective GPU concurrency under
+the ≤60 cap). Known failure mode: subagents stall between iters / on app restart —
+mitigated by the hourly watchdog + straggler nudges; on restart, re-resume from
+cluster state (observation.json is the durable source of truth).
+
+**Hourly watchdog:** persistent `Monitor` runs `/cluster/maier/Agent4CT/breast_watchdog.py`
+(tracks all 24 run-ids, `done N/24`), one chat line per hour.
+
+**Close-out (after all 24 reach 20):** `score_breast_alliters.py --build` → array
+test-scoring every iter → `--collect` best-by-test-hr per solver → build_registry →
+validate PASS → republish the final board (test, mean±std, n=200). Then commit the
+still-uncommitted infra (the `_os` fix + scoring code are already committed as of
+`9e7e3d74`; verify tree).
+
+## 5.5 · Param-efficient recombination study (the finale, after the 24 land)
+
+Mirror the Mayo param-efficient investigation but **for the sparse-view (128-view)
+regime**, which differs from Mayo's dense helical — so the optimal compact architecture
+may be different. Spec (user 2026-07-03):
+- A dedicated agent **learns from all 24 solvers' trajectories** (their observation.json
+  rationales + what knobs/architectures worked on breast) and **recombines the best
+  ideas** into a minimal-parameter solver. **Everything is changeable; cross-method
+  recombination to save parameters is explicitly allowed.**
+- Goal: highest test hr at the **lowest parameter count** — identify which method
+  families are *particularly suited to 128-view sparse-view* (e.g. unrolled
+  data-consistency vs pure image-domain denoisers) and fuse their strengths cheaply.
+- Report params_M as the headline alongside test hr (mean±std, n=200), the Maier
+  "≈X% of the parameters, statistically tied" framing (§3).
+- Run under the same 20-min budget + test-scoring pipeline; publish into the same board.
+
 ## 6 · Author list
 
 **Andreas Maier · Lucas Kachelriess · Moritz Zaiss.**
