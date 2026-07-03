@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=cl-ag-iter
 #SBATCH --partition=main
+#SBATCH --qos=turbo
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=lme49,lme52,lme53,lme170,lme171
+#SBATCH --exclude=lme49,lme50,lme51,lme52,lme53,lme170,lme171
 #SBATCH --mem=24G
 #SBATCH --time=00:30:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%j.out
@@ -26,6 +27,8 @@ export PYTHONPATH="$REPO:${PYTHONPATH:-}"
 # read-only otherwise fail with "errno 37, No locks available". The Mayo
 # sbatch already sets this; the generic dispatcher must too.
 export HDF5_USE_FILE_LOCKING=FALSE
+# Reduce CUDA fragmentation OOMs on borderline configs (per the runbook OOM note).
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 : "${SLUG:?need SLUG}"
 : "${ITER_N:?need ITER_N}"
