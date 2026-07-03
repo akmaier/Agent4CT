@@ -3,11 +3,12 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-07-03T19:12:35Z",
+ "updated": "2026-07-03T21:24:45Z",
  "leaderboard": {
   "ranking_metric": "test hr (mean over 5 patients)",
   "tiebreak": "test_ssim",
   "metric_basis": "test",
+  "test_n": 5,
   "rows": [
    {
     "solver_key": "itnet",

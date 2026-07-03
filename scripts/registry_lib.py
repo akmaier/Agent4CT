@@ -46,11 +46,14 @@ DATASET_LABELS = {
 
 # ---------------------------------------------------------------------------
 # Ranking + display basis. Datasets WITH a held-out test set rank by and show
-# the per-patient TEST metrics (mean ± std over the 5 Wagner test patients,
-# from docs/runs/<slug>/final.json); datasets without one keep the single-patient
-# val (L277) metrics. Mayo-LDCT is the only test-scored campaign today.
+# the held-out TEST metrics (mean ± std, from docs/runs/<slug>/final.json);
+# datasets without one keep their single-split val metrics.
+#   - mayo_ldct: mean ± std over the 5 Wagner TEST patients (n=5).
+#   - breast_ct: mean ± std over the 200 held-out TEST cases (n=200, i.i.d. —
+#     no patients; the redo added a train/val/test split, paper §5.0). Its
+#     final.json (breast_testset_final_v1) carries the same test_*_mean/std keys.
 # ---------------------------------------------------------------------------
-TEST_RANKED_DATASETS = {"mayo_ldct"}
+TEST_RANKED_DATASETS = {"mayo_ldct", "breast_ct"}
 
 
 def metric_basis(challenge: str | None) -> str:

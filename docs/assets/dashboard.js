@@ -363,12 +363,16 @@ function renderRunCard(r) {
     el("span", { class: "label" }, lbl), el("span", {}, val)));
   stat("started", (r.started || "—").slice(0, 10));
   stat("iterations", String(r.n_iterations ?? "—"));
-  // Test datasets (Mayo, held-out test set): report the per-patient TEST
-  // mean ± std (n=5) — NEVER validation. Datasets without a held-out test set
-  // (demo_dl, breast_ct) report their single-patient val metrics as before.
+  // Test datasets (held-out test set): report the held-out TEST mean ± std —
+  // NEVER validation. Test-set size differs per dataset (Mayo n=5 patients,
+  // breast n=200 i.i.d. cases). Datasets without a held-out test set (demo_dl)
+  // report their single-split val metrics as before.
   if (r.metric_basis === "test") {
-    stat("test SSIM (n=5)", fmtMeanStd(r.test_ssim_mean, r.test_ssim_std, 4));
-    stat("test hr (n=5)", fmtMeanStd(r.test_hr_mean, r.test_hr_std));
+    const _tn = (r.challenge === "breast_ct") ? 200
+              : (r.challenge === "mayo_ldct") ? 5 : null;
+    const _s = _tn ? " (n=" + _tn + ")" : "";
+    stat("test SSIM" + _s, fmtMeanStd(r.test_ssim_mean, r.test_ssim_std, 4));
+    stat("test hr" + _s, fmtMeanStd(r.test_hr_mean, r.test_hr_std));
   } else {
     stat("best val (SSIM)", fmtNum(r.best_score, 4));
     stat("best headroom", fmtNum(r.best_headroom));

@@ -3,11 +3,12 @@
  "challenge": "demo_dl",
  "label": "Demo-DL",
  "campaign": "intensity-calibrated+agentic",
- "updated": "2026-07-03T19:12:35Z",
+ "updated": "2026-07-03T21:24:45Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
   "metric_basis": "val",
+  "test_n": null,
   "rows": [
    {
     "solver_key": "lpd",

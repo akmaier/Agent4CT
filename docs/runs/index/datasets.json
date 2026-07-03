@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-03T19:12:35Z",
+ "updated": "2026-07-03T21:24:45Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
@@ -14,6 +14,7 @@
    "champion_headroom": 0.37562600067864943,
    "champion_ssim": 0.979025661945343,
    "champion_metric_basis": "test",
+   "champion_test_n": 5,
    "champion_score": 0.37562600067864943,
    "thumbnail": "runs/mayo-ldct-claude-agentic-itnet-search-20260619-01/iterations/iter-0010/comparison.png"
   },
@@ -22,14 +23,15 @@
    "label": "Breast-CT",
    "campaign": "calibrated+agentic",
    "n_runs": 5,
-   "n_iterations": 14,
+   "n_iterations": 21,
    "n_solvers": 5,
    "champion_slug": "breast-ct-claude-agentic-itnet-v2-search-20260703-01",
    "champion_name": "ITNet v2",
-   "champion_headroom": 0.8498876522045717,
-   "champion_ssim": 0.9984647631645203,
-   "champion_metric_basis": "val",
-   "champion_score": 0.8498876522045717,
+   "champion_headroom": 0.843340574215895,
+   "champion_ssim": 0.9981955692172051,
+   "champion_metric_basis": "test",
+   "champion_test_n": 200,
+   "champion_score": 0.843340574215895,
    "thumbnail": "runs/breast-ct-claude-agentic-itnet-v2-search-20260703-01/iterations/iter-0005/comparison.png"
   },
   {
@@ -44,6 +46,7 @@
    "champion_headroom": 0.4947240928024762,
    "champion_ssim": null,
    "champion_metric_basis": "val",
+   "champion_test_n": null,
    "champion_score": 0.4947240928024762,
    "thumbnail": "runs/demo-intensity-calibrated-tpe-lpd-search-20260527-01/iterations/iter-0010/comparison.png"
   }

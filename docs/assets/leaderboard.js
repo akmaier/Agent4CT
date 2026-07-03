@@ -72,7 +72,8 @@
       mount.appendChild(caption);
       mount.appendChild(
         window.A4CTable.renderLeaderboardTable(lb.rows,
-          { imgBase: base, metricBasis: lb.metric_basis || "val" }));
+          { imgBase: base, metricBasis: lb.metric_basis || "val",
+            testN: lb.test_n || null }));
     });
   }
 

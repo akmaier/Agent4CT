@@ -68,16 +68,19 @@
   //   "val"  (others): the single-patient val (L277) SSIM · hr · PSNR · RMSE,
   //                  SSIM/PSNR/RMSE carrying the per-slice std.
   // params(M) · <metrics> · time(s) · best iter · comparison on both.
-  function _metricCols(basis) {
+  function _metricCols(basis, testN) {
     if (basis === "test") {
+      // Held-out test-set size varies per dataset (Mayo n=5 patients, breast
+      // n=200 cases). Fall back to "n=5" only if the board omits test_n (legacy).
+      var nsuf = " (n=" + (testN || 5) + ")";
       return [
-        { label: "hr (n=5)", cls: "lb-num lb-hr",
+        { label: "hr" + nsuf, cls: "lb-num lb-hr",
           val: function (r) { return fmtMeanStd(r.test_hr_mean, r.test_hr_std, fmtHr); } },
-        { label: "SSIM (n=5)", cls: "lb-num",
+        { label: "SSIM" + nsuf, cls: "lb-num",
           val: function (r) { return fmtMeanStd(r.test_ssim_mean, r.test_ssim_std, fmtSSIM); } },
-        { label: "PSNR dB (n=5)", cls: "lb-num",
+        { label: "PSNR dB" + nsuf, cls: "lb-num",
           val: function (r) { return fmtMeanStd(r.test_psnr_mean, r.test_psnr_std, fmtPSNR); } },
-        { label: "RMSE (n=5)", cls: "lb-num",
+        { label: "RMSE" + nsuf, cls: "lb-num",
           val: function (r) { return fmtMeanStd(r.test_rmse_mean, r.test_rmse_std, fmtRMSE); } },
       ];
     }
@@ -96,7 +99,7 @@
   function renderLeaderboardTable(rows, opts) {
     opts = opts || {};
     const imgBase = opts.imgBase || "";
-    const cols = _metricCols(opts.metricBasis || "val");
+    const cols = _metricCols(opts.metricBasis || "val", opts.testN);
     const table = _el("table", { class: "lb-table" }, []);
     const headRow = [
       _el("th", { class: "lb-rank" }, ["#"]),

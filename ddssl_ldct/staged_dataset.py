@@ -391,6 +391,33 @@ def load_val_split(kind: str, split: str, n: int, *, device,
         return (phantoms, clean, noisy, None) if return_ps else (phantoms, clean, noisy)
 
     assert info.staged_dir is not None, f"{kind!r} has no staged_dir"
+
+    # ----------------------------------------------------------------------
+    # Breast-CT held-out-split redirect (AGENT4CT_EVAL_SPLIT). Breast cases are
+    # i.i.d. synthetic phantom realizations (NO patient grouping, so no
+    # per-patient ranges — this is the simpler analogue of Mayo's
+    # AGENT4CT_EVAL_PATIENT trick). When AGENT4CT_EVAL_SPLIT names a split
+    # ("test" or "val"), a solver that calls load_val_split(kind="breast_ct",
+    # split="val", ...) is transparently redirected to load THAT split instead —
+    # WITHOUT any solver change — so the test-set scorer (scripts/
+    # score_breast_testset.py) can reconstruct the 200 held-out test cases via an
+    # unmodified solver main(). It loads test_truth.h5 (key "image") /
+    # test_sinograms.h5 (key "sino") from the SAME staged dir the val split reads.
+    #
+    # Default preserved: env UNSET -> byte-identical to today. Only activates for
+    # kind=="breast_ct" AND the scored split (split=="val"); split=="train" (the
+    # training load) is NEVER redirected, so training is unchanged and the model
+    # still trains on train_*.h5. Other datasets ignore the env entirely.
+    _eval_split = _os.environ.get("AGENT4CT_EVAL_SPLIT")
+    if _eval_split and kind == "breast_ct" and split == "val":
+        if _eval_split not in ("test", "val"):
+            raise ValueError(
+                f"AGENT4CT_EVAL_SPLIT={_eval_split!r} must be 'test' or 'val' "
+                f"(breast_ct held-out split redirect)")
+        split = _eval_split
+        print(f"[staged] AGENT4CT_EVAL_SPLIT: breast_ct scored load redirected "
+              f"val -> {split} split (i.i.d. held-out cases)", flush=True)
+
     truth_path = info.staged_dir / info.truth_file_tmpl.format(split=split)
     sino_path  = info.staged_dir / info.sino_file_tmpl .format(split=split)
     # Presentation-only TEST showcase (AGENT4CT_SHOWCASE): replace the Mayo val
@@ -401,7 +428,10 @@ def load_val_split(kind: str, split: str, n: int, *, device,
     # Indices are the per-patient central slice in Wagner test order; boundaries
     # verified vs ps transitions (247/457) + counts (L014 154, L056 93, L058 210,
     # L075 137, L123 151 = 745).
-    import os as _os
+    # NOTE: `_os` is already imported at module scope (top of this file). Do NOT
+    # add a function-local `import os as _os` here — it would make `_os` a local
+    # for the whole function and raise UnboundLocalError at the AGENT4CT_EVAL_SPLIT
+    # use above (line ~411), which precedes this point.
     # Per-patient TEST scoring override (AGENT4CT_EVAL_PATIENT=Lxxx). Replaces the
     # Mayo val load (single patient L277) with ONE held-out TEST patient's WHOLE
     # volume (truth + lowdose sino + per-slice ps), returning the SAME tuple shape

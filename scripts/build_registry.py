@@ -181,21 +181,36 @@ def _testset_aggregates(slug: str) -> dict:
 
 _TEST_PATIENTS = ("L014", "L056", "L058", "L075", "L123")
 
+# Held-out TEST-set size per test-ranked dataset, for the "(test, n=…)" basis tag
+# (Mayo = 5 Wagner patients; breast = 200 i.i.d. held-out cases, paper §5.0).
+_TEST_N_BY_CHALLENGE = {"mayo_ldct": 5, "breast_ct": 200}
+
 
 def _itertest_base(slug: str) -> Path:
-    """Per-iter TEST-sweep namespace for a run. param-efficient (code-evolving) was
-    scored into pe-iter-testeval/; every other Mayo solver into <slug>-itertest/ by
-    scripts/score_mayo_alliters.py."""
+    """Per-iter TEST-sweep namespace for a run. Mayo param-efficient (code-evolving)
+    was scored into pe-iter-testeval/; every other solver (Mayo or breast) into
+    <slug>-itertest/ by scripts/score_mayo_alliters.py / score_breast_alliters.py."""
     return DOCS_RUNS / ("pe-iter-testeval" if "param-efficient" in slug
                         else f"{slug}-itertest")
 
 
+def _test_final_complete(obj: dict) -> bool:
+    """A per-iter TEST final.json is complete when its whole held-out set scored.
+    Mayo: all 5 patients present in the `patients` dict. Breast (i.i.d. cases, no
+    patients): the `complete` flag its worker sets (breast_testset_final_v1). Both
+    then require a finite test_hr_mean (checked by the caller)."""
+    if "patients" in obj:                       # Mayo per-patient final.json
+        pats = obj.get("patients") or {}
+        return all(pats.get(p) is not None for p in _TEST_PATIENTS)
+    return bool(obj.get("complete"))            # breast per-case final.json
+
+
 def _test_best_iter(slug: str):
     """Pick a run's leaderboard iter by MAX test_hr_mean (test_ssim_mean tiebreak)
-    over the per-iter TEST-sweep aggregates. All-5-patients only, so incomplete /
-    refused iters (e.g. a GT-leak config the solver rejects) are skipped. Returns
-    (iter:int, aggr:dict over _TESTSET_KEYS) or None if the run has no complete
-    sweep result (then the caller falls back to the val-headroom iter)."""
+    over the per-iter TEST-sweep aggregates. Complete iters only, so incomplete /
+    refused iters are skipped. Returns (iter:int, aggr:dict over _TESTSET_KEYS) or
+    None if the run has no complete sweep result (then the caller falls back to the
+    val-headroom iter)."""
     base = _itertest_base(slug)
     if not base.is_dir():
         return None
@@ -205,8 +220,7 @@ def _test_best_iter(slug: str):
             obj = R.load_json(fp)
         except Exception:
             continue
-        pats = obj.get("patients") or {}
-        if not all(pats.get(p) is not None for p in _TEST_PATIENTS):
+        if not _test_final_complete(obj):
             continue
         hrv = obj.get("test_hr_mean")
         if not R.finite(hrv):
@@ -322,12 +336,15 @@ def build_leaderboard(ch_lines: list[dict], ch: str | None = None) -> dict:
     if ch is None and rows:
         ch = R.challenge_from_slug(rows[0]["run_id"])
     basis = R.metric_basis(ch)
+    test_n = _TEST_N_BY_CHALLENGE.get(ch) if basis == "test" else None
     if basis == "test":
-        ranking_metric, tiebreak = "test hr (mean over 5 patients)", "test_ssim"
+        unit = "patients" if ch == "mayo_ldct" else "cases"
+        ranking_metric = f"test hr (mean over {test_n} {unit})" if test_n else "test hr"
+        tiebreak = "test_ssim"
     else:
         ranking_metric, tiebreak = "headroom", "val_ssim"
     return {"ranking_metric": ranking_metric, "tiebreak": tiebreak,
-            "metric_basis": basis, "rows": rows}
+            "metric_basis": basis, "test_n": test_n, "rows": rows}
 
 
 # Views that carry an "updated" wall-clock field (with the json.dump indent they
@@ -480,6 +497,10 @@ def main() -> int:
             "champion_headroom": champ_hr,
             "champion_ssim": champ_ssim,
             "champion_metric_basis": basis,
+            # test-set size for the "(test, n=…)" tag (Mayo 5 / breast 200); None
+            # on a val dataset.
+            "champion_test_n": (_TEST_N_BY_CHALLENGE.get(ch) if basis == "test"
+                                else None),
             # schema-2 alias: champion_score was the metric the dashboard card
             # printed — the ranking metric (test hr for Mayo, val headroom else).
             "champion_score": champ_hr,
@@ -622,8 +643,13 @@ def write_readme_block(datasets_summary: list[dict]) -> None:
         lab, link = label_link.get(d["challenge"], (d["label"], "#"))
         champ = d.get("champion_name") or "—"
         # basis tag so a reader never compares a test mean against a val number
-        # under the shared "SSIM | hr" header (Mayo is test-set n=5; others val).
-        basis_tag = " (test, n=5)" if d.get("champion_metric_basis") == "test" else " (val)"
+        # under the shared "SSIM | hr" header (test set n varies per dataset:
+        # Mayo n=5 patients, breast n=200 cases; others are val).
+        if d.get("champion_metric_basis") == "test":
+            _tn = d.get("champion_test_n")
+            basis_tag = f" (test, n={_tn})" if _tn else " (test)"
+        else:
+            basis_tag = " (val)"
         rows.append(f"| **{lab} | {champ} | {_fmt(d.get('champion_ssim'))} "
                     f"| **{_fmt(d.get('champion_headroom'))}**{basis_tag} | [`{link}`]({link}) |")
     block = (_BEGIN + "\n"
