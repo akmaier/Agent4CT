@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-uswin-search-20260619-01-itertest/iter-0019",
+  "solver_key": "uswin",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.4100979532023562,
+      "ssim": 0.972295880317688,
+      "psnr": 42.299835205078125,
+      "rmse": 0.0004297307750675827,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 672.8,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.3580516797060812,
+      "ssim": 0.9752813577651978,
+      "psnr": 42.808013916015625,
+      "rmse": 0.0004491704748943448,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 26.5,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.2176333354954153,
+      "ssim": 0.9661694169044495,
+      "psnr": 39.00558090209961,
+      "rmse": 0.0009183427901007235,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 31.2,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.34853274860381744,
+      "ssim": 0.9827702641487122,
+      "psnr": 45.421199798583984,
+      "rmse": 0.0004387569788377732,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 26.7,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.410303931263466,
+      "ssim": 0.9843295216560364,
+      "psnr": 45.60050964355469,
+      "rmse": 0.00042979209683835506,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 29.9,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.34892392965422725,
+  "test_hr_std": 0.07878841081151207,
+  "test_ssim_mean": 0.9761692881584167,
+  "test_ssim_std": 0.007515840414415946,
+  "test_psnr_mean": 43.0270278930664,
+  "test_psnr_std": 2.697391316718295,
+  "test_rmse_mean": 0.0005331586231477559,
+  "test_rmse_std": 0.0002154730148339256,
+  "solver_src": "pentathlon/demo_dl_reference/solver_uswin.py",
+  "recons_saved": false
+}

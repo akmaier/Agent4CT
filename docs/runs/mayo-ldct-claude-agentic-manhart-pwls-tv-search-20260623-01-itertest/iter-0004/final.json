@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-manhart-pwls-tv-search-20260623-01-itertest/iter-0004",
+  "solver_key": "manhart_pwls_tv",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.040937550938222156,
+      "ssim": 0.9416553378105164,
+      "psnr": 38.0784912109375,
+      "rmse": 0.0006986560765653849,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 1068.2,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.056451710852265746,
+      "ssim": 0.9475213885307312,
+      "psnr": 39.462730407714844,
+      "rmse": 0.000660199613776058,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 637.4,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.03635173860151386,
+      "ssim": 0.9218509197235107,
+      "psnr": 37.19541931152344,
+      "rmse": 0.0011311313137412071,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 1468.5,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.05046714578256839,
+      "ssim": 0.970008134841919,
+      "psnr": 42.14885330200195,
+      "rmse": 0.0006395013188011944,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 907.7,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.04898206402872285,
+      "ssim": 0.9652135968208313,
+      "psnr": 41.44929885864258,
+      "rmse": 0.0006931367097422481,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 1000.1,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.0466380420406586,
+  "test_hr_std": 0.007980730031486232,
+  "test_ssim_mean": 0.9492498755455017,
+  "test_ssim_std": 0.019346273393585797,
+  "test_psnr_mean": 39.66695861816406,
+  "test_psnr_std": 2.121908478500297,
+  "test_rmse_mean": 0.0007645250065252185,
+  "test_rmse_std": 0.00020636732990383415,
+  "solver_src": "pentathlon/demo_dl_reference/solver_manhart_pwls_tv.py",
+  "recons_saved": false
+}

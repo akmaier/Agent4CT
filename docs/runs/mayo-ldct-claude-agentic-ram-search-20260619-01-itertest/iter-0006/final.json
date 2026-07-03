@@ -1,0 +1,23 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-ram-search-20260619-01-itertest/iter-0006",
+  "solver_key": "ram_zeroshot",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": null,
+    "L056": null,
+    "L058": null,
+    "L075": null,
+    "L123": null
+  },
+  "test_hr_mean": null,
+  "test_hr_std": null,
+  "test_ssim_mean": null,
+  "test_ssim_std": null,
+  "test_psnr_mean": null,
+  "test_psnr_std": null,
+  "test_rmse_mean": null,
+  "test_rmse_std": null,
+  "solver_src": "pentathlon/demo_dl_reference/solver_ram.py",
+  "recons_saved": false
+}

@@ -158,6 +158,10 @@ def run_worker(slug: str, solver_key: str, cfg_json: Path,
     solver_path = solver_src if solver_src else default_path
     base_out = RUNS_BASE / f"{slug}-testset"
     base_out.mkdir(parents=True, exist_ok=True)
+    # ONE checkpoint path shared across all 5 patient subprocesses this iter:
+    # patient-1 (L014) trains + saves it, L056..L123 load it and skip training
+    # (training is patient-independent). NOT deleted between patients.
+    model_ckpt = base_out / "model_ckpt.pt"
 
     def _run_eval(label: str, eval_patient: str | None) -> dict | None:
         """One held-out eval (a test patient, or val L277 when eval_patient is
@@ -171,7 +175,18 @@ def run_worker(slug: str, solver_key: str, cfg_json: Path,
             env["AGENT4CT_EVAL_PATIENT"] = eval_patient
         else:
             env.pop("AGENT4CT_EVAL_PATIENT", None)        # normal val (L277)
-        env["AGENT4CT_SAVE_RECON"] = str(out_dir)         # persist raw recon
+        # Persist the raw recon for auditability / future re-scoring — UNLESS
+        # this is the big all-iters sweep (AGENT4CT_SWEEP_NORECON=1): ~500 iters
+        # x 5 patients x ~300 MB ≈ 700 GB won't fit (3.3 TB free, 90% full). In
+        # sweep mode we keep only the (tiny) per-iter checkpoint; recons for the
+        # SELECTED board iter are regenerated from that ckpt after collection.
+        if os.environ.get("AGENT4CT_SWEEP_NORECON"):
+            env.pop("AGENT4CT_SAVE_RECON", None)
+        else:
+            env["AGENT4CT_SAVE_RECON"] = str(out_dir)     # persist raw recon
+        # Shared per-iter checkpoint (train-once, reuse): the first patient's
+        # process trains + saves it; the rest load it and skip training.
+        env["AGENT4CT_MODEL_CKPT"] = str(model_ckpt)
         env[env_var] = str(cfg_json)
         print(f"[testset] {slug} {label}: python {solver_path} {out_dir}", flush=True)
         t0 = time.time()

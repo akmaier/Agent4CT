@@ -1,18 +1,20 @@
 ---
 title: Mayo-LDCT leaderboard
-description: Real-helical-data leaderboard (Wagner split). LIVE search-20260619-01 — all 19 solvers onboarded and iterating under the corrected metric (214 L277 slices, 321px geometry FOV). Current standings in the auto-generated solver table.
+description: Real-helical-data leaderboard (Wagner split). search-20260619-01 complete and test-selected — every iteration of all 26 solvers scored on the 5 held-out test patients; each row is its best iteration by test mean hr. Standings in the auto-generated solver table.
 ---
 
 # Mayo-LDCT leaderboard (Wagner split)
 
-> 🟢 **LIVE — the fresh `search-20260619-01` campaign is running now.** All 19
-> solvers are onboarded and iterating (iter-1 → iter-20) under the corrected
-> metric (all 214 L277 slices + 321 px detector-geometry FOV). **Current
-> standings, including the test-headroom champion, are in the auto-generated
-> solver table further down** (regenerated every wave, ranked by **test-set
-> headroom** — `hr` averaged over the 5 held-out Wagner test patients). The reset
-> notice immediately below is *historical context* for why the prior campaign
-> was discarded — it is not the current status.
+> ✅ **COMPLETE + test-selected (2026-07-03).** The `search-20260619-01` campaign
+> ran to completion, then **every iteration of all 26 solvers was scored on the 5
+> held-out Wagner test patients** (`scripts/score_mayo_alliters.py`,
+> train-once-per-config with checkpoint reuse). Each solver's row is its **best
+> iteration by test mean `hr`** (mean over the 5 test patients; `test_ssim`
+> tiebreak) — this is final-result leaderboard reporting, not test-set model
+> selection (the search was never steered by test hr). **Champion: ITNet v1
+> (iter-10), hr 0.3756.** Standings are in the auto-generated solver table further
+> down, ranked by **test-set headroom**. The reset notice below is *historical
+> context* for why the prior campaign was discarded — not the current status.
 
 > 🛑 **2026-06-19 — SECOND full reset (`search-20260614-01` discarded).**
 > The entire 2026-06-14 rebuild (`search-20260614-01`, 19 solvers) was scored on

@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-learned-primal-dual-search-20260619-01-itertest/iter-0012",
+  "solver_key": "learned_primal_dual",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.9138610363006592,
+      "psnr": 34.292911529541016,
+      "rmse": 0.0010802949545904994,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 1078.8,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.9213076233863831,
+      "psnr": 35.91009521484375,
+      "rmse": 0.000993818393908441,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 83.7,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.0,
+      "ssim": 0.9157387614250183,
+      "psnr": 34.1234130859375,
+      "rmse": 0.0016110659344121814,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 107.4,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.9492413401603699,
+      "psnr": 38.17414093017578,
+      "rmse": 0.0010105943074449897,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 91.5,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.9482487440109253,
+      "psnr": 38.43516540527344,
+      "rmse": 0.0009806767338886857,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 95.4,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.0,
+  "test_hr_std": 0.0,
+  "test_ssim_mean": 0.9296795010566712,
+  "test_ssim_std": 0.017621994193720746,
+  "test_psnr_mean": 36.1871452331543,
+  "test_psnr_std": 2.0570376154948455,
+  "test_rmse_mean": 0.0011352900648489595,
+  "test_rmse_std": 0.00026872648172205846,
+  "solver_src": "pentathlon/demo_dl_reference/solver_learned_primal_dual.py",
+  "recons_saved": false
+}

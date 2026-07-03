@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-hammernik-2017-search-20260619-01-itertest/iter-0014",
+  "solver_key": "hammernik_2017",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.11851953950249139,
+      "ssim": 0.9204083681106567,
+      "psnr": 38.81117630004883,
+      "rmse": 0.0006421392899937928,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 489.5,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0731193286533085,
+      "ssim": 0.929326057434082,
+      "psnr": 39.61753463745117,
+      "rmse": 0.0006485373014584184,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 30.3,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.03275266555944267,
+      "ssim": 0.9122135043144226,
+      "psnr": 37.16304016113281,
+      "rmse": 0.0011353559093549848,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 42.1,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0815225752164388,
+      "ssim": 0.9611018896102905,
+      "psnr": 42.43768310546875,
+      "rmse": 0.00061858567642048,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 34.9,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.11576736570383406,
+      "ssim": 0.955919086933136,
+      "psnr": 42.08174133300781,
+      "rmse": 0.0006444611353799701,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 36.1,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.08433629492710308,
+  "test_hr_std": 0.035181723201153994,
+  "test_ssim_mean": 0.9357937812805176,
+  "test_ssim_std": 0.021680060694112834,
+  "test_psnr_mean": 40.02223510742188,
+  "test_psnr_std": 2.229427985531891,
+  "test_rmse_mean": 0.0007378158625215292,
+  "test_rmse_std": 0.00022253859170370127,
+  "solver_src": "pentathlon/demo_dl_reference/solver_hammernik_2017.py",
+  "recons_saved": false
+}

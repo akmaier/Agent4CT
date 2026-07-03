@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-itnet-search-20260619-01-itertest/iter-0001",
+  "solver_key": "itnet",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.4467521905899048,
+      "psnr": 19.44768714904785,
+      "rmse": 0.005967654753476381,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 138.4,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.443286657333374,
+      "psnr": 19.058223724365234,
+      "rmse": 0.006916727405041456,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 88.7,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.0,
+      "ssim": 0.5560282468795776,
+      "psnr": 22.71754264831543,
+      "rmse": 0.005989723838865757,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 115.2,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.5853531956672668,
+      "psnr": 24.8951416015625,
+      "rmse": 0.004661513026803732,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 96.6,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.5888664722442627,
+      "psnr": 23.64896011352539,
+      "rmse": 0.005380665883421898,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 98.8,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.0,
+  "test_hr_std": 0.0,
+  "test_ssim_mean": 0.5240573525428772,
+  "test_ssim_std": 0.07327948849215671,
+  "test_psnr_mean": 21.953511047363282,
+  "test_psnr_std": 2.5871472818861614,
+  "test_rmse_mean": 0.005783256981521845,
+  "test_rmse_std": 0.0008339327602830082,
+  "solver_src": "pentathlon/demo_dl_reference/solver_itnet.py",
+  "recons_saved": false
+}

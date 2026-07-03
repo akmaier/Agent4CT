@@ -285,6 +285,18 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     #    generic BF-sigma init for the per-image fits. Bounded by
     #    pretrain_epochs or (if >0) a hard pretrain_steps cap.
     # ------------------------------------------------------------------ #
+    # Opt-in "train once, save checkpoint, reuse" hook. Gated ENTIRELY on the
+    # AGENT4CT_MODEL_CKPT env var, which is set ONLY by the testset sweep worker
+    # (scripts/score_mayo_testset.py). Unset in normal runs -> no-op, byte-
+    # identical behaviour. When set: the FIRST patient's process runs + saves the
+    # WARM-START pre-pass; the other four LOAD it and skip the warm-start loop.
+    # The warm-start is deterministic + patient-independent (train set is always
+    # the 4 fixed train patients), so 5 warm-starts/iter -> 1. ONLY the warm-start
+    # `pipe` is cached; the PER-IMAGE N2I refit below (step 2) MUST STILL RUN in
+    # both branches -- it is NOT skipped and NOT gated on _CKPT.
+    _CKPT = os.environ.get("AGENT4CT_MODEL_CKPT")
+    _CKPT_EXISTS = bool(_CKPT) and Path(_CKPT).exists()
+
     warm_state = None
     if warm_start:
         pipe = _build_bf_pipe(geom, cfg, device)
@@ -292,7 +304,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
         opt = torch.optim.Adam(pipe.parameters(), lr=cfg["lr"])
         max_steps = int(cfg.get("pretrain_steps", 0) or 0)
         n_steps = 0
-        for ep in range(int(cfg.get("pretrain_epochs", 3))):
+        if _CKPT_EXISTS:
+            # Skip-branch: load the trained warm-start weights, do NOT run the
+            # warm-start loop. (The per-image refit below still runs.)
+            print(f"[solver] loading checkpoint {_CKPT} (skip warm-start)", flush=True)
+            pipe.load_state_dict(torch.load(_CKPT, map_location=device))
+        for ep in ([] if _CKPT_EXISTS else range(int(cfg.get("pretrain_epochs", 3)))):
             pipe.train()
             perm = torch.randperm(train_noisy.shape[0])
             running = 0.0
@@ -320,6 +337,11 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             if max_steps and n_steps >= max_steps:
                 print(f"[solver] warm-start pretrain_steps cap {max_steps} hit", flush=True)
                 break
+        if _CKPT and not _CKPT_EXISTS:
+            # First patient: persist the warm-start model for the other four to reuse.
+            Path(_CKPT).parent.mkdir(parents=True, exist_ok=True)
+            torch.save(pipe.state_dict(), _CKPT)
+            print(f"[solver] saved checkpoint {_CKPT}", flush=True)
         warm_state = {k: v.detach().clone() for k, v in pipe.state_dict().items()}
     pretrain_time = time.time() - t0
 

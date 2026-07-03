@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-r2gaussian-search-20260619-01-itertest/iter-0013",
+  "solver_key": "r2gaussian",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.7983435392379761,
+      "psnr": 20.514917373657227,
+      "rmse": 0.005277668125927448,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 38,
+      "elapsed_s": 1109.5,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.8174586892127991,
+      "psnr": 22.020084381103516,
+      "rmse": 0.0038689535576850176,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 38,
+      "elapsed_s": 1108.0,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.0,
+      "ssim": 0.8227325081825256,
+      "psnr": 24.873401641845703,
+      "rmse": 0.004673193674534559,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 38,
+      "elapsed_s": 1114.9,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.830805242061615,
+      "psnr": 21.351472854614258,
+      "rmse": 0.004741722252219915,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 38,
+      "elapsed_s": 1107.1,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.8085368275642395,
+      "psnr": 20.8333683013916,
+      "rmse": 0.005005911458283663,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 38,
+      "elapsed_s": 1105.9,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.0,
+  "test_hr_std": 0.0,
+  "test_ssim_mean": 0.815575361251831,
+  "test_ssim_std": 0.012581708869077345,
+  "test_psnr_mean": 21.91864891052246,
+  "test_psnr_std": 1.747200458197,
+  "test_rmse_mean": 0.004713489813730121,
+  "test_rmse_std": 0.0005290250285546638,
+  "solver_src": "pentathlon/demo_dl_reference/solver_r2gaussian.py",
+  "recons_saved": false
+}

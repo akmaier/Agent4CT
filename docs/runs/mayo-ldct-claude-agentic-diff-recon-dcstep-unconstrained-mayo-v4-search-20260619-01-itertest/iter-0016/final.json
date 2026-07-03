@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-diff-recon-dcstep-unconstrained-mayo-v4-search-20260619-01-itertest/iter-0016",
+  "solver_key": "diffusion_recon_dcstep_unconstrained_mayo_v4",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.9018475413322449,
+      "psnr": 32.56544494628906,
+      "rmse": 0.0013180014211684465,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 72,
+      "elapsed_s": 763.0,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.9188056588172913,
+      "psnr": 34.34735870361328,
+      "rmse": 0.0011897176736965775,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 72,
+      "elapsed_s": 758.6,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.0,
+      "ssim": 0.92677241563797,
+      "psnr": 35.27983856201172,
+      "rmse": 0.0014102368149906397,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 72,
+      "elapsed_s": 769.4,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.8954275250434875,
+      "psnr": 29.49728775024414,
+      "rmse": 0.0018562881741672754,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 72,
+      "elapsed_s": 752.2,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.8990605473518372,
+      "psnr": 31.91754913330078,
+      "rmse": 0.0013972503365948796,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 72,
+      "elapsed_s": 759.9,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.0,
+  "test_hr_std": 0.0,
+  "test_ssim_mean": 0.9083827376365662,
+  "test_ssim_std": 0.013640629555738037,
+  "test_psnr_mean": 32.7214958190918,
+  "test_psnr_std": 2.250263736167093,
+  "test_rmse_mean": 0.0014342988841235637,
+  "test_rmse_std": 0.00025168015780960225,
+  "solver_src": "pentathlon/demo_dl_reference/solver_diffusion_recon.py",
+  "recons_saved": false
+}

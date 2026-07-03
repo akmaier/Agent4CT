@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-dual-domain-n2i-search-20260619-01-itertest/iter-0008",
+  "solver_key": "dual_domain_n2i",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.9440511465072632,
+      "psnr": 36.50918960571289,
+      "rmse": 0.0008370059076696634,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 154,
+      "elapsed_s": 1272.2,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.9470974206924438,
+      "psnr": 38.22444534301758,
+      "rmse": 0.0007613591733388603,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 93,
+      "elapsed_s": 640.8,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.06234085638678022,
+      "ssim": 0.9458085894584656,
+      "psnr": 37.43288803100586,
+      "rmse": 0.001100625260733068,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 210,
+      "elapsed_s": 1363.9,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.9667303562164307,
+      "psnr": 40.77503204345703,
+      "rmse": 0.000749087193980813,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 137,
+      "elapsed_s": 909.9,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.9674124717712402,
+      "psnr": 40.26435089111328,
+      "rmse": 0.0007944499957375228,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 151,
+      "elapsed_s": 995.1,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.012468171277356044,
+  "test_hr_std": 0.027879678531278502,
+  "test_ssim_mean": 0.9542199969291687,
+  "test_ssim_std": 0.011783875304248577,
+  "test_psnr_mean": 38.64118118286133,
+  "test_psnr_std": 1.8280473587351844,
+  "test_rmse_mean": 0.0008485055062919855,
+  "test_rmse_std": 0.0001449974945811036,
+  "solver_src": "pentathlon/demo_dl_reference/solver_dual_ddomain_n2i.py",
+  "recons_saved": false
+}

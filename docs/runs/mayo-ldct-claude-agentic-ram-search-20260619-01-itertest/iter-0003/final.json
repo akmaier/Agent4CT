@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-ram-search-20260619-01-itertest/iter-0003",
+  "solver_key": "ram_zeroshot",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.9159176349639893,
+      "psnr": 33.80305862426758,
+      "rmse": 0.0011429707519710064,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 154,
+      "elapsed_s": 646.3,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.9163386821746826,
+      "psnr": 34.40224838256836,
+      "rmse": 0.0011822229716926813,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 93,
+      "elapsed_s": 395.2,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.0,
+      "ssim": 0.9287513494491577,
+      "psnr": 33.336700439453125,
+      "rmse": 0.001763798063620925,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 210,
+      "elapsed_s": 912.4,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.9384157657623291,
+      "psnr": 33.324485778808594,
+      "rmse": 0.0017662807367742062,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 137,
+      "elapsed_s": 564.1,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.9420382380485535,
+      "psnr": 36.880672454833984,
+      "rmse": 0.0011728712124750018,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 151,
+      "elapsed_s": 615.4,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.0,
+  "test_hr_std": 0.0,
+  "test_ssim_mean": 0.9282923340797424,
+  "test_ssim_std": 0.0121209262448657,
+  "test_psnr_mean": 34.34943313598633,
+  "test_psnr_std": 1.481943963702812,
+  "test_rmse_mean": 0.0014056287473067641,
+  "test_rmse_std": 0.0003284168653435239,
+  "solver_src": "pentathlon/demo_dl_reference/solver_ram.py",
+  "recons_saved": false
+}

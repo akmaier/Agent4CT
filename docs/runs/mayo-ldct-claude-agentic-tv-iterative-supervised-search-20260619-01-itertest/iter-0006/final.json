@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01-itertest/iter-0006",
+  "solver_key": "tv_iterative_supervised",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.03779608091306863,
+      "ssim": 0.9278031587600708,
+      "psnr": 38.050086975097656,
+      "rmse": 0.0007009445689618587,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 637.8,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.012411638091317845,
+      "ssim": 0.9346010088920593,
+      "psnr": 39.066497802734375,
+      "rmse": 0.0006910144002176821,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 104.5,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.0,
+      "ssim": 0.9052425026893616,
+      "psnr": 36.13804244995117,
+      "rmse": 0.0012775611830875278,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 215.5,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.9601351022720337,
+      "psnr": 41.016700744628906,
+      "rmse": 0.0007285323808901012,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 146.7,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.004469816995303577,
+      "ssim": 0.9553269147872925,
+      "psnr": 41.05198669433594,
+      "rmse": 0.0007255788659676909,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 163.2,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.010935507199938011,
+  "test_hr_std": 0.015848069029609783,
+  "test_ssim_mean": 0.9366217374801635,
+  "test_ssim_std": 0.02218822341159957,
+  "test_psnr_mean": 39.06466293334961,
+  "test_psnr_std": 2.0829295801407177,
+  "test_rmse_mean": 0.0008247262798249721,
+  "test_rmse_std": 0.00025364527601159904,
+  "solver_src": "pentathlon/demo_dl_reference/solver_tv_iterative_supervised.py",
+  "recons_saved": false
+}

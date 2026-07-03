@@ -191,33 +191,60 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
             val_fbp = torch.clamp(proj.fbp(val_noisy), min=0.0)
         val_ref = proj.fbp(val_clean)  # noiseless reference (panel only)
 
+    # Opt-in "train once, save checkpoint, reuse" hook. Gated ENTIRELY on the
+    # AGENT4CT_MODEL_CKPT env var, which is set ONLY by the testset sweep worker
+    # (scripts/score_mayo_testset.py). In normal runs the var is unset, so this
+    # is a no-op and behaviour is byte-identical to before. When set: the FIRST
+    # patient's process trains + saves the ckpt; the other four LOAD it and skip
+    # training. Training is deterministic + patient-independent (train set is
+    # always the 4 fixed train patients; only the EVAL set changes per patient),
+    # so this turns 5 trainings/iter into 1.
+    _CKPT = os.environ.get("AGENT4CT_MODEL_CKPT")
+    _CKPT_EXISTS = bool(_CKPT) and Path(_CKPT).exists()
+
     t0 = time.time()
 
     # 1. Pre-train denoiser (predict residual: truth - fbp)
     denoiser = SmallUNet(c=cfg.get("unet_c", 16))
-    print(f"[solver] pre-training denoiser (residual={cfg['residual_learning']})...", flush=True)
-    if cfg["residual_learning"]:
-        # Target is residual (truth - fbp)
-        train_target = train_ph - train_fbp
+    if _CKPT_EXISTS:
+        # Skip-branch: build the SAME architecture but do NOT pre-train; the
+        # weights come from the checkpoint (loaded into itnet below).
+        print(f"[solver] loading checkpoint {_CKPT} (skip training)", flush=True)
     else:
-        train_target = train_ph
-    
-    pretrain_denoiser(
-        denoiser, train_fbp, train_target,
-        epochs=cfg["pretrain_epochs"],
-        lr=cfg["pretrain_lr"],
-        patience=cfg["pretrain_patience"],
-        device=device,
-        grad_clip=cfg.get("grad_clip", 0.0),
-    )
+        print(f"[solver] pre-training denoiser (residual={cfg['residual_learning']})...", flush=True)
+        if cfg["residual_learning"]:
+            # Target is residual (truth - fbp)
+            train_target = train_ph - train_fbp
+        else:
+            train_target = train_ph
 
-    # 2. Build ItNet v2
+        pretrain_denoiser(
+            denoiser, train_fbp, train_target,
+            epochs=cfg["pretrain_epochs"],
+            lr=cfg["pretrain_lr"],
+            patience=cfg["pretrain_patience"],
+            device=device,
+            grad_clip=cfg.get("grad_clip", 0.0),
+        )
+
+    # 2. Build ItNet v2 (itnet.state_dict() covers the denoiser submodule + alpha)
     itnet = ItNetV2(
         geom, denoiser,
         k=cfg["itnet_k"],
         alpha_init=cfg["itnet_alpha_init"],
         residual=cfg["residual_learning"],
     )
+    if _CKPT_EXISTS:
+        # Match the trained path's device placement (non-skip moves the denoiser
+        # to `device` inside pretrain_denoiser); load_state_dict copies in place,
+        # so move the whole module to `device` first for a device-consistent load.
+        itnet.to(device)
+        itnet.load_state_dict(torch.load(_CKPT, map_location=device))
+    elif _CKPT:
+        # First patient: persist the trained model for the other four to reuse.
+        Path(_CKPT).parent.mkdir(parents=True, exist_ok=True)
+        torch.save(itnet.state_dict(), _CKPT)
+        print(f"[solver] saved checkpoint {_CKPT}", flush=True)
 
     # 3. Evaluate on validation
     itnet.eval()

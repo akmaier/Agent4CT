@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-naf-search-20260619-01-itertest/iter-0019",
+  "solver_key": "naf",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.7505154013633728,
+      "psnr": 24.204437255859375,
+      "rmse": 0.003451168304309249,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 154,
+      "elapsed_s": 843.8,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.8108243346214294,
+      "psnr": 27.095046997070312,
+      "rmse": 0.0027419496327638626,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 93,
+      "elapsed_s": 509.8,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.0,
+      "ssim": 0.7913765907287598,
+      "psnr": 27.607097625732422,
+      "rmse": 0.0034113714937120676,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 202,
+      "elapsed_s": 1097.6,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.8363203406333923,
+      "psnr": 27.98668098449707,
+      "rmse": 0.0032655009999871254,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 137,
+      "elapsed_s": 746.4,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.816543459892273,
+      "psnr": 27.563264846801758,
+      "rmse": 0.0034286309964954853,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 151,
+      "elapsed_s": 822.0,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.0,
+  "test_hr_std": 0.0,
+  "test_ssim_mean": 0.8011160254478454,
+  "test_ssim_std": 0.032507232097703176,
+  "test_psnr_mean": 26.89130554199219,
+  "test_psnr_std": 1.5349679754030494,
+  "test_rmse_mean": 0.003259724285453558,
+  "test_rmse_std": 0.00029845482344986323,
+  "solver_src": "pentathlon/demo_dl_reference/solver_naf.py",
+  "recons_saved": false
+}

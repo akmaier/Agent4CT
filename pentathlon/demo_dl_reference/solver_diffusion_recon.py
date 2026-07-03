@@ -137,8 +137,12 @@ def cg_data_consistency(x0_img, sino, proj, n_cg, relax):
             x = x + alpha * p
             r = r - alpha * AtAp
             rs_new = (r * r).sum(dim=(1, 2, 3), keepdim=True)
-            # Stop early on numerically-converged residual to avoid NaNs.
-            if float(rs_new.sqrt().max()) < 1e-12:
+            # Stop early on numerically-converged residual to avoid NaNs. Guard
+            # the empty-batch edge case: a patient whose slices chunk to a 0-size
+            # tail hands CG a 0-element tensor, and .max() on numel()==0 raises
+            # (crashed diff-recon on L056, the 93-slice patient). Nothing to
+            # solve -> stop.
+            if rs_new.numel() == 0 or float(rs_new.sqrt().max()) < 1e-12:
                 break
             beta = rs_new / rs_old.clamp(min=1e-12)
             p = r + beta * p

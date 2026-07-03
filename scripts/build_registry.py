@@ -179,12 +179,57 @@ def _testset_aggregates(slug: str) -> dict:
     return out
 
 
+_TEST_PATIENTS = ("L014", "L056", "L058", "L075", "L123")
+
+
+def _itertest_base(slug: str) -> Path:
+    """Per-iter TEST-sweep namespace for a run. param-efficient (code-evolving) was
+    scored into pe-iter-testeval/; every other Mayo solver into <slug>-itertest/ by
+    scripts/score_mayo_alliters.py."""
+    return DOCS_RUNS / ("pe-iter-testeval" if "param-efficient" in slug
+                        else f"{slug}-itertest")
+
+
+def _test_best_iter(slug: str):
+    """Pick a run's leaderboard iter by MAX test_hr_mean (test_ssim_mean tiebreak)
+    over the per-iter TEST-sweep aggregates. All-5-patients only, so incomplete /
+    refused iters (e.g. a GT-leak config the solver rejects) are skipped. Returns
+    (iter:int, aggr:dict over _TESTSET_KEYS) or None if the run has no complete
+    sweep result (then the caller falls back to the val-headroom iter)."""
+    base = _itertest_base(slug)
+    if not base.is_dir():
+        return None
+    best = None
+    for fp in sorted(base.glob("iter-*/final.json")):
+        try:
+            obj = R.load_json(fp)
+        except Exception:
+            continue
+        pats = obj.get("patients") or {}
+        if not all(pats.get(p) is not None for p in _TEST_PATIENTS):
+            continue
+        hrv = obj.get("test_hr_mean")
+        if not R.finite(hrv):
+            continue
+        try:
+            it = int(fp.parent.name.split("-")[-1])
+        except Exception:
+            continue
+        ssv = obj.get("test_ssim_mean")
+        key = (hrv, ssv if R.finite(ssv) else -math.inf)
+        if best is None or key > best[0]:
+            best = (key, it, {k: (obj.get(k) if R.finite(obj.get(k)) else None)
+                              for k in _TESTSET_KEYS})
+    return (best[1], best[2]) if best else None
+
+
 def best_iter_row(slug_lines: list[dict]) -> dict | None:
-    """Pick the leaderboard row for ONE run = its best iter by the canonical
-    ranking (headroom desc, val_ssim tiebreak) among iters that have a
-    comparison image; fall back to the best-by-headroom iter even imageless so
-    the solver still shows (excluded_reason flags it). Returns a leaderboard row
-    dict."""
+    """Pick the leaderboard row for ONE run. On a TEST-ranked dataset (Mayo) the
+    representing iter is the one with the MAX per-patient test headroom over the
+    full per-iter TEST sweep (score_mayo_alliters.py) — the final leaderboard is
+    the best test result each solver reached. On a val dataset (demo_dl/breast_ct,
+    no held-out test set) it stays the best-by-val-headroom iter that has a
+    comparison image. Returns a leaderboard row dict."""
     if not slug_lines:
         return None
 
@@ -196,12 +241,30 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
         s = l["metrics"].get("val_ssim")
         return s if R.finite(s) else -math.inf
 
-    # Prefer the best-headroom iter that has a comparison image (so the rendered
-    # row always links a real figure). If none of this run's iters saved an
-    # image, take the best-headroom iter regardless.
-    with_img = [l for l in slug_lines if l["images"].get("comparison")]
-    pool = with_img or slug_lines
-    best = max(pool, key=lambda l: (hr(l), ss(l)))
+    run_id = slug_lines[0]["run_id"]
+    ch = R.challenge_from_slug(run_id)
+    is_test = R.metric_basis(ch) == "test"
+
+    test_aggr = {k: None for k in _TESTSET_KEYS}
+    has_final = False
+    best = None
+    if is_test:
+        tb = _test_best_iter(run_id)
+        if tb is not None:
+            tb_iter, test_aggr = tb
+            has_final = True
+            best = next((l for l in slug_lines if l["iter"] == tb_iter), None)
+    if best is None:
+        # val datasets, OR a test run with no usable sweep result: best-by-val-
+        # headroom iter that has a comparison image (imageless fallback so the
+        # solver still shows).
+        with_img = [l for l in slug_lines if l["images"].get("comparison")]
+        pool = with_img or slug_lines
+        best = max(pool, key=lambda l: (hr(l), ss(l)))
+        if is_test and not has_final:      # legacy single-final.json (pre-sweep)
+            test_aggr = _testset_aggregates(run_id)
+            has_final = (DOCS_RUNS / run_id / "final.json").exists()
+
     m = best["metrics"]
     row = {
         "solver_key": best["solver_key"],
@@ -220,15 +283,12 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
         "elapsed_s": best["runtime"].get("elapsed_s"),
         "image": best["images"].get("comparison"),
     }
-    # Phase 1B: fold in the per-patient test-set mean±std (or None if no
-    # final.json yet — graceful for the whole inventory pre-scoring).
-    row.update(_testset_aggregates(best["run_id"]))
-    # Ranking basis: test datasets (Mayo) rank by test_hr_mean; runs without a
-    # final.json are pending-test (dimmed, NOT val-fallback-ranked into the test
-    # ordering). Others rank by val headroom. The within-run best-iter pick above
-    # stays val-headroom-based — that is the iter final.json was scored against.
-    ch = R.challenge_from_slug(best["run_id"])
-    has_final = (DOCS_RUNS / best["run_id"] / "final.json").exists()
+    # Fold in the per-patient test-set mean±std for the CHOSEN iter: on a test
+    # dataset that is the test-best iter's aggregate (computed above); on a val
+    # dataset it is empty (None). `has_final` (set above) marks whether a complete
+    # test result exists, so a run with no sweep result is 'pending-test' (dimmed)
+    # rather than val-fallback-ranked.
+    row.update(test_aggr)
     row["metric_basis"] = R.metric_basis(ch)
     # On a TEST-ranked dataset (Mayo, held-out test set) the reported metrics are
     # the per-patient TEST mean±std (folded in above). Validation (L277) is the

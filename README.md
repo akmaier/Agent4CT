@@ -2,18 +2,16 @@
 
 📊 **Live dashboard & docs:** <https://akmaier.github.io/Agent4CT/>
 
-🛑 **Mayo-LDCT was RESET on 2026-06-19 — read before running anything Mayo.**
-The prior campaign (`search-20260614-01`) was **discarded and purged**: the
-validation metric scored unrepresentative top-of-volume **boundary slices** of
-L277 under the **wrong (256px Sidky) FOV mask**, and figures rendered
-**upside-down** — so the dashboard, leaderboard, and the whole search trajectory
-were built on a bad signal. The corrected protocol (val = **all 214 L277 slices**
-+ **detector-geometry FOV 321px**, a **hard 20-min per-iter budget** with the
-figure excluded, orientation fix) and a **ready-to-run loop-tick template** live
-in [`docs/runs/mayo_campaign_state.md`](docs/runs/mayo_campaign_state.md) —
-**START THERE** to launch the fresh `search-20260619-01`. The breast-CT / demo-DL
-per-image N2I search (`search-20260618-01`) is unaffected and still finishing to
-iter-20.
+✅ **Mayo-LDCT is rebuilt and test-selected (2026-07-03).** After the 2026-06-19
+reset (the prior `search-20260614-01` was discarded — validation scored
+unrepresentative top-of-volume **boundary slices** of L277 under the **wrong
+(256px Sidky) FOV mask** with **upside-down** figures), the corrected
+`search-20260619-01` ran to completion under the frozen metric (all 214 L277
+slices + 321px detector-geometry FOV, orientation fix). The leaderboard is now
+built by scoring **every iteration of all 26 solvers on the 5 held-out test
+patients** and taking each solver's best iteration by **test mean `hr`** — see
+the frozen **Evaluation paradigm** below. Reset history +
+protocol: [`docs/runs/mayo_campaign_state.md`](docs/runs/mayo_campaign_state.md).
 
 📋 **Working on this repo?** → start at [`solver_plan.md`](solver_plan.md)
 **before** touching any solver. It's the canonical recipe for adapting
@@ -71,6 +69,14 @@ frozen — do not re-interpret it mid-experiment.
 - **Validation (L277) scores are NEVER a reported result** for Mayo (or any
   dataset that has a held-out test set). L277 drives the search; it does not
   appear on the leaderboard as the ranking number.
+- **Each solver's leaderboard row is its best iteration by test mean `hr`** —
+  the strongest test result that solver reached across its search iterations
+  (mean over the 5 test patients; `test_ssim` tiebreak). This is *final-result
+  leaderboard reporting*, **not** model selection on the test set: the search
+  itself was never steered by test hr. It is produced by scoring **every**
+  iteration of every solver on the 5 test patients (the one-time
+  `scripts/score_mayo_alliters.py` sweep, train-once-per-config with checkpoint
+  reuse), then `build_registry.py` picks each solver's max-`test_hr_mean` iter.
 - **Datasets with NO held-out test set** (`demo_dl`, `breast_ct`)
   legitimately rank and report by their single-patient **validation** metrics
   — that is correct for them and is left unchanged.
@@ -112,7 +118,7 @@ Click a leaderboard for the full all-solver table.
 |---|---|---:|---:|---|
 | **Breast-CT** (128-view sparse) | Learned Primal-Dual | — | **0.9062** (val) | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | Learned Primal-Dual | — | **0.4947** (val) | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
-| **Mayo-LDCT** (Wagner split, real helical) | ITNet v2 | 0.9783 | **0.3707** (test, n=5) | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
+| **Mayo-LDCT** (Wagner split, real helical) | ITNet v1 | 0.9790 | **0.3756** (test, n=5) | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
 <!--/REGISTRY_TABLE-->
 
 Mayo-LDCT was **RESET on 2026-06-19** (the second reset). The 2026-06-14
@@ -124,14 +130,19 @@ signal. The corrected protocol (val = **all 214 L277 slices** + **321px
 detector-geometry FOV**, a **hard 20-min per-iter budget** with the figure
 excluded, orientation fix) + a ready-to-run loop-tick are in
 [`docs/runs/mayo_campaign_state.md`](docs/runs/mayo_campaign_state.md). The fresh
-`search-20260619-01` starts from a clean **HD vs LD FBP baseline**. See the
-[Mayo-LDCT leaderboard](docs/leaderboards/mayo_ldct.md) for status.
+`search-20260619-01` ran to completion and the board is now **rebuilt and
+test-selected**: every iteration of all 26 solvers was scored on the 5 held-out
+test patients (`scripts/score_mayo_alliters.py`), and each solver's row is its
+best iteration by test mean `hr` (see the frozen paradigm above). Champion:
+**ITNet v1, hr 0.3756** (test, n=5). See the
+[Mayo-LDCT leaderboard](docs/leaderboards/mayo_ldct.md).
 
 [![Breast-CT champion (LPD)](docs/runs/breast-ct-calibrated-tpe-lpd-search-20260524-01/iterations/iter-0011/comparison.png)](docs/leaderboards/breast_ct.md)
 
 *Current breast-CT champion (Learned Primal-Dual, TPE iter-11 — hr
-0.9062). Click for the full leaderboard. (Mayo-LDCT is being rebuilt —
-see its leaderboard for the HD/LD FBP baseline as it lands.)*
+0.9062). Click for the full leaderboard. (Mayo-LDCT is rebuilt and
+test-selected — champion ITNet v1, hr 0.3756 over the 5 held-out test
+patients; see its leaderboard.)*
 
 ---
 

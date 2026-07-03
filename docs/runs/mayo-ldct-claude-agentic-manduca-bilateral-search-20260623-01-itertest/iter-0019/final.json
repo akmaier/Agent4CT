@@ -1,0 +1,78 @@
+{
+  "schema": "mayo_testset_final_v1",
+  "run_id": "mayo-ldct-claude-agentic-manduca-bilateral-search-20260623-01-itertest/iter-0019",
+  "solver_key": "manduca_bilateral",
+  "test_n_patients": 5,
+  "patients": {
+    "L014": {
+      "headroom": 0.0,
+      "ssim": 0.9430943131446838,
+      "psnr": 35.520774841308594,
+      "rmse": 0.0009378840331919491,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 424.1,
+      "recon_saved": false
+    },
+    "L056": {
+      "headroom": 0.0,
+      "ssim": 0.9534620046615601,
+      "psnr": 37.5769157409668,
+      "rmse": 0.0008202871540561318,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 421.6,
+      "recon_saved": false
+    },
+    "L058": {
+      "headroom": 0.07924982500029254,
+      "ssim": 0.9522586464881897,
+      "psnr": 37.5909538269043,
+      "rmse": 0.001080777496099472,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 431.9,
+      "recon_saved": false
+    },
+    "L075": {
+      "headroom": 0.0,
+      "ssim": 0.9669240713119507,
+      "psnr": 39.59968185424805,
+      "rmse": 0.0008576295804232359,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 415.1,
+      "recon_saved": false
+    },
+    "L123": {
+      "headroom": 0.0,
+      "ssim": 0.9646782279014587,
+      "psnr": 38.94686508178711,
+      "rmse": 0.000924572057556361,
+      "ssim_std": null,
+      "psnr_std": null,
+      "rmse_std": null,
+      "n_slices": 214,
+      "elapsed_s": 424.5,
+      "recon_saved": false
+    }
+  },
+  "test_hr_mean": 0.01584996500005851,
+  "test_hr_std": 0.03544159918112329,
+  "test_ssim_mean": 0.9560834527015686,
+  "test_ssim_std": 0.009767395397661088,
+  "test_psnr_mean": 37.84703826904297,
+  "test_psnr_std": 1.5677552034426219,
+  "test_rmse_mean": 0.00092423006426543,
+  "test_rmse_std": 9.991671440690493e-05,
+  "solver_src": "pentathlon/demo_dl_reference/solver_manduca_bilateral.py",
+  "recons_saved": false
+}

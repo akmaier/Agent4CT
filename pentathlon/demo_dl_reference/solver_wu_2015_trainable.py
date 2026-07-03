@@ -310,8 +310,22 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["lr"],
                              weight_decay=cfg.get("weight_decay", 0.0))
 
+    # Opt-in "train once, save checkpoint, reuse" hook. Gated ENTIRELY on the
+    # AGENT4CT_MODEL_CKPT env var, which is set ONLY by the testset sweep worker
+    # (scripts/score_mayo_testset.py). Unset in normal runs -> no-op, byte-
+    # identical behaviour. When set: the FIRST patient's process trains + saves
+    # the ckpt; the other four LOAD it and skip the training loop. Training is
+    # deterministic + patient-independent (train set is always the 4 fixed train
+    # patients; only the EVAL set changes per patient), so 5 trainings/iter -> 1.
+    _CKPT = os.environ.get("AGENT4CT_MODEL_CKPT")
+    _CKPT_EXISTS = bool(_CKPT) and Path(_CKPT).exists()
+
     t0 = time.time()
-    for ep in range(cfg["epochs"]):
+    if _CKPT_EXISTS:
+        # Skip-branch: load the trained weights, do NOT run the training loop.
+        print(f"[solver] loading checkpoint {_CKPT} (skip training)", flush=True)
+        model.load_state_dict(torch.load(_CKPT, map_location=device))
+    for ep in ([] if _CKPT_EXISTS else range(cfg["epochs"])):
         model.train()
         perm = torch.randperm(train_noisy.shape[0])
         running = 0.0
@@ -346,6 +360,12 @@ def main(out_dir: Path, cfg: dict | None = None) -> dict:
               f"sigmoid(slope={sl:.3f} offset={so:.3f}) "
               f"soft_thresh={['%.5f'%v for v in st]} "
               f"blend={['%.3f'%v for v in rb]}", flush=True)
+
+    if _CKPT and not _CKPT_EXISTS:
+        # First patient: persist the trained model for the other four to reuse.
+        Path(_CKPT).parent.mkdir(parents=True, exist_ok=True)
+        torch.save(model.state_dict(), _CKPT)
+        print(f"[solver] saved checkpoint {_CKPT}", flush=True)
 
     train_time = time.time() - t0
 
