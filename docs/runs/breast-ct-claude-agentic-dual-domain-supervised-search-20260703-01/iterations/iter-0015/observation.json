@@ -11,9 +11,9 @@
   "val_ssim": 0.9982197284698486,
   "val_psnr": 51.80026626586914,
   "val_rmse": 0.0008777916664257646,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0005196216344583389,
+  "val_psnr_std": 1.1007922491157314,
+  "val_rmse_std": 0.00011102132184475852,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 44,
     "rationale": "iter-15 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX vs BEST config (c16/ep44/lr1e-3/lneg0.03/bs1/tn400). (1) PRIOR: seed42(iter-8)=0.8915 but seed43(iter-14)=0.8589 at the IDENTICAL config -> seed/init variance is LARGE (~0.033 spread over 2 seeds), far above the +-0.003 I hypothesized. (2) Failure mode: single-seed optimization (iters 1-13 all seed=42) was NOISE-CONFOUNDED -- 0.8915 is likely an upper-tail draw, not a robust config gain; cannot report a trustworthy best from 2 seeds. (3) ONE KNOB: seed 44 (config otherwise identical) -- 3rd replicate to estimate mean+-std at the optimum. (4) HYPOTHESIS: seed=44 lands in [0.859,0.892]; with 3 seeds the HONEST best-config number is the mean (~0.87-0.88 +- ~0.017), NOT the seed-42 peak. This bounds the noise floor for the leaderboard. (5) BUDGET: same config -> ~941s, inside 20-min. (6) Loop to iter-20; iters 14-16 seed replicates, 17-20 reserved (a 4th replicate if variance still wide, else confirm config edges under the measured noise floor). Artifacts saved."
+  },
+  "headroom_std": 0.011180888051404936,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8340046451447524,
+    "recomputed_val_ssim_mean": 0.9980567860603332,
+    "recomputed_val_psnr_mean": 51.42028684616089,
+    "recomputed_val_rmse_mean": 0.000873001333384309
   }
 }

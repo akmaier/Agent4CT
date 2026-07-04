@@ -11,9 +11,9 @@
   "val_ssim": 0.9498988389968872,
   "val_psnr": 39.53218078613281,
   "val_rmse": 0.0036040889099240303,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0066678303766478176,
+  "val_psnr_std": 0.5892177638424052,
+  "val_rmse_std": 0.00023897801044868845,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-11 (one knob vs iter-7 best). NUMBERS: firm plateau hr=0.3035 across lr(7-8.5e-5) and lambda_neg(0.4 tie=0.7) -> lr LOCKED 7e-5, lambda_neg back to 0.7 (non-binding, revert to TPE value). FAILURE MODE: continuous training knobs mapped, hr stuck 0.3035. Next lever = wu_soft_thresh, the INIT of the per-outer-iter residual soft-threshold (the optimizer then learns it, but init sets the basin). Base 0.0015. ONE KNOB: wu_soft_thresh 0.0015 -> 0.0008 (lighter init, NO param change, 12 params, lr locked 7e-5). HYPOTHESIS: if the residual soft-threshold starts lighter (0.0008) I expect val hr >= 0.3035 because less aggressive thresholding lets more genuine aliasing-residual structure survive into the refinement add-back, and the low-lr optimizer keeps it near this basin; risk = more noise passes through (hr down) -> heavier thresh confirmed. Budget: ~819s."
+  },
+  "headroom_std": 0.009299221883577413,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.3138352951948682,
+    "recomputed_val_ssim_mean": 0.9453211745619774,
+    "recomputed_val_psnr_mean": 39.0749315071106,
+    "recomputed_val_rmse_mean": 0.0035953870380762963
   }
 }

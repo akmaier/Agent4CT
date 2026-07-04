@@ -11,9 +11,9 @@
   "val_ssim": 0.9757276773452759,
   "val_psnr": 38.079837799072266,
   "val_rmse": 0.004260029178112745,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00401746234415584,
+  "val_psnr_std": 0.48353199603035735,
+  "val_rmse_std": 0.00022517474519735635,
   "kept": true,
   "status": "keep",
   "params_M": 35.618953,
@@ -39,5 +39,15 @@
     "ram_post_fbp_blend": 0.42,
     "val_n": 200,
     "rationale": "iter-3: lower ram_sigma 0.008->0.004 (ONLY knob). iter-2 raising sigma to 0.015 dropped hr 0.2925->0.2252 (over-smoothing). Hypothesis: weaker denoising conditioning preserves dense breast tissue detail, cutting RMSE and lifting hr>0.2925; if hr drops, sigma~0.008 is the optimum and I pivot to post_fbp_blend."
+  },
+  "headroom_std": 0.023228892141445148,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.2245096922236892,
+    "recomputed_val_ssim_mean": 0.9740392655134201,
+    "recomputed_val_psnr_mean": 38.01505657196045,
+    "recomputed_val_rmse_mean": 0.004059133703121915
   }
 }

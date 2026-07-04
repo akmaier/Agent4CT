@@ -11,9 +11,9 @@
   "val_ssim": 0.9499902129173279,
   "val_psnr": 39.50564193725586,
   "val_rmse": 0.003615116933360696,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006680516395596437,
+  "val_psnr_std": 0.5866176574386305,
+  "val_rmse_std": 0.00023873767424844523,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-13 (one knob vs iter-11 best). NUMBERS soft_thresh sweep: 0.0004->0.2943(too light), 0.0008->0.3088(BEST), 0.0015->0.3035. Peak near 0.0008. FAILURE MODE: soft_thresh has a clear interior optimum ~0.0008; both sides lower. ONE KNOB: wu_soft_thresh 0.0008 -> 0.0011 (bisect the [0.0008,0.0015] high side, NO param change, 12 params). HYPOTHESIS: if hr(0.0011) >= 0.3088 the peak plateau extends toward 0.0015 and 0.0011 is a robust operating point; if hr < 0.3088 then 0.0008 is the sharp optimum -> LOCK soft_thresh=0.0008 and move to weight_decay/sigmoid init. Budget: ~819s."
+  },
+  "headroom_std": 0.009328617711676916,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.3116691068613026,
+    "recomputed_val_ssim_mean": 0.9454229709506035,
+    "recomputed_val_psnr_mean": 39.047553329467775,
+    "recomputed_val_rmse_mean": 0.003606668919092044
   }
 }

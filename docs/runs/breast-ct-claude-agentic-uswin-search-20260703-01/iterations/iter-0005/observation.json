@@ -11,9 +11,9 @@
   "val_ssim": 0.99773770570755,
   "val_psnr": 50.915191650390625,
   "val_rmse": 0.0009719521040096879,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0007011395043175692,
+  "val_psnr_std": 1.291801578533228,
+  "val_rmse_std": 0.00014020025231263372,
   "kept": true,
   "status": "keep",
   "params_M": 3.954049,
@@ -37,5 +37,15 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "ITER-5 (breast-ct-claude-agentic-uswin-search-20260703-01). SIX-BOX (NUMBERS): (1) READ iter-1/2/3/4: hr 0.648994 (ep8,win8,h4) -> 0.819250 (ep40,win8,h4, was best) -> 0.809221 (win16, backstop ep32) -> 0.820804 (win8,h8, ep38 backstop, NEW BEST). val_ssim: 0.9910/0.9977/0.9973/0.9977. iter-4 heads 4->8 gave only +0.0015 hr (0.819250 -> 0.820804) = essentially at the val-noise floor. iter-4 train loss drove to ~8.2e-7 by ep38 (deep convergence, no instability), and the max_train_s=1000 backstop fired at ep38 (~26 s/epoch). (2) FAILURE MODE: BOTH attention-shape capacity levers are now saturated at uswin_c=24 on the 512px substrate: window (iter-3 win16 REGRESSED to 0.809 under the budget, since 2x attention cost cut epochs 40->32) and heads (iter-4 h8 gained only +0.0015, within noise). The loss reaching ~1e-6 means the optimizer is FULLY CONVERGING within budget, so hr ~0.82 looks like an architecture/capacity ceiling at c=24, not an under-training one. The one lever not yet tested is the OPTIMIZATION step size (lr); iter-1..4 all used lr=2e-4. (3) ONE KNOB: lr 2e-4 -> 4e-4 (2x); hold everything else at the iter-4 BEST config (epochs=40, bs=2, uswin_c=24, swin_window=8, swin_heads=8, grad_clip=1.0, seed=42). This is BUDGET-NEUTRAL (same per-epoch cost, same 40-epoch target, same backstop) -> a clean isolated test of the step-size lever. (4) HYPOTHESIS: a 2x-larger lr lets Adam reach a marginally BETTER minimum in the same 40 epochs (or the same minimum in fewer steps, freeing budget), lifting hr above the iter-4 best 0.820804. grad_clip=1.0 already guards against a larger-lr gradient spike. FALSIFIER (NUMBERS): if hr <= ~0.821 (flat) or DROPS / destabilizes (loss diverges) at lr=4e-4, then hr ~0.82 is CONFIRMED as the uswin_c=24 architecture ceiling on 512px breast under the 20-min budget, and the next lever (out of this 5-iter scope) would be a capacity bump uswin_c 24->32 WITH an epoch cut to fit the wall (accepting the iter-3-style epochs/capacity tradeoff), or full TPE. (5) HARD 20-min budget honored (budget-neutral vs iter-4 which ran 1030s; backstop max_train_s=1000 guard); val_n=200 = whole val pool. (6) FINAL iter of this 5-iter search; I report all five hr/ssim + best when iter-5 lands."
+  },
+  "headroom_std": 0.015831578220442347,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8179455797602305,
+    "recomputed_val_ssim_mean": 0.9976160725951195,
+    "recomputed_val_psnr_mean": 50.63190803527832,
+    "recomputed_val_rmse_mean": 0.0009586851808126084
   }
 }

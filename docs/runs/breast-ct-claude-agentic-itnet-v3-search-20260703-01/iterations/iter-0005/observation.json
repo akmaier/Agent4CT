@@ -11,9 +11,9 @@
   "val_ssim": 0.9977295398712158,
   "val_psnr": 51.55821228027344,
   "val_rmse": 0.0009025969193316996,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0006763446797541814,
+  "val_psnr_std": 1.3990727851906282,
+  "val_rmse_std": 0.00014045800919200126,
   "kept": true,
   "status": "keep",
   "params_M": 8.317706,
@@ -37,5 +37,15 @@
     "max_train_s": 1050,
     "seed": 42,
     "rationale": "iter-5 (breast-ct redo, search-20260703-01). START FROM iter-3 BEST (k2/n2400/ep5, hr 0.8277), NOT iter-4's regressed k3. ONE KNOB (ARCHITECTURE): unet_c 16 -> 24 (denoiser CAPACITY), with epochs traded DOWN 5 -> 3 to fund the bigger net inside the HARD 20-min wall. All else = iter-3 best exactly (itnet_k=2, alpha_init=0.0025734, lr=2.16e-4, batch_size=2, train_n=2400, val_n=200, grad_clip=1.0, seed=42). SIX-BOX (NUMBERS): (1) iter-1 (n400/ep12/k2/c16): 0.7737. iter-2 (n2400/ep4/k2/c16): 0.8198. iter-3 (n2400/ep5/k2/c16): 0.8277 = BEST, elapsed 877.4s. iter-4 (n2400/ep3/k3/c16): 0.7946 = REGRESSED -0.033. (2) FAILURE MODE: iter-4's k=2->3 REGRESSED, but it confounded k-up WITH epochs-down (5->3) -> the deeper unrolled loop was under-trained at 3 epochs. Rather than chase k=3 with more epochs (would need train_n cut, muddying the coverage gain), REVERT to the confirmed-good k=2 and test the single strongest UNTRIED lever: denoiser CAPACITY. My v3 runs unet_c=16 (3.7M params); the sibling itnet_v2 breast champion used unet_c=96 (~0.871), so capacity is clearly the dominant unexplored axis on this dataset. (3) ONE KNOB vs iter-3 best: unet_c 16 -> 24 (params 3.70M -> ~8.3M, conv FLOPs x2.25). epochs 5 -> 3 funds the bigger net; k held at 2 (confirmed good), train_n held at 2400 (coverage locked). itnet_v3 is END-TO-END unrolled so added denoiser capacity is trained against the full recon objective. (4) HYPOTHESIS: c=24 lifts hr above 0.8277 because the c=16 denoiser is representationally saturated (ep4->5 gave only +0.008) and more channels capture the finer breast-tissue structure. FALSIFIER (NUMBERS): if hr <= 0.8277 at c24/ep3, then 3 epochs is too few to train the bigger net (iter-6 trades train_n down for epochs at c24) OR c=16 already suffices (iter-6 reverts to c16/ep5 champion and pivots to lr/alpha). (5) BUDGET (HARD 20min=1200s): iter-3 (c16/ep5/k2/n2400)=877.4s, ~5min headroom. Raising c 16->24 scales UNet conv FLOPs x2.25 but the k=2 DC projector fwd+adj is FLAT in c and is a large share of per-forward, so per-epoch scales ~1.5-1.7x, NOT 2.25x. epochs 5->3 = 0.6x. Net train ~= 0.6*1.6 = 0.96x iter-3 train; val (200 fwd) also ~1.5x its small share. Predicted elapsed ~= 880-980s = 15-16min < 1200s. max_train_s=1050 fences the TRAIN phase; a finite val+figure land inside the 30-min sbatch wall. train_n=2400 (<= OOM-safe cap; c=24 whole-train FBP precompute is unchanged in c and fits >=24GB nodes). val=200 distinct val_truth.h5 cases, 256px inscribed-circle FOV (breast default). (6) do NOT return control mid-campaign; gate on iter-5 numeric-headroom obs via iter_wait.sh v3 then dispatch iter-6."
+  },
+  "headroom_std": 0.01667093966009502,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8310750408430085,
+    "recomputed_val_ssim_mean": 0.9975767993927002,
+    "recomputed_val_psnr_mean": 51.291870307922366,
+    "recomputed_val_rmse_mean": 0.0008901949902065099
   }
 }

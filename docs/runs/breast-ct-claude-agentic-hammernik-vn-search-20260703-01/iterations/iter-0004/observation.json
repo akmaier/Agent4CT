@@ -11,9 +11,9 @@
   "val_ssim": 0.9794331192970276,
   "val_psnr": 42.47394561767578,
   "val_rmse": 0.0025686630979180336,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003297167948110422,
+  "val_psnr_std": 0.7694383428875345,
+  "val_rmse_std": 0.0002222640911968502,
   "kept": true,
   "status": "keep",
   "params_M": 0.007683,
@@ -40,5 +40,15 @@
     "vn_checkpoint": true,
     "max_train_s": 1080,
     "rationale": "iter-4 (one knob: train_n 200->120). iter-1/3 both wall-capped at ep12 (train_n=200) -> identical hr 0.5083; learned lambda stayed pinned at init = regulariser underused. Hypothesis: cheaper epochs let the run finish ~20-24 real epochs under the 1080s wall, giving the filter bank + lambda more steps -> hr>0.5083. If it drops, breast VN is data-size-bound not epoch-bound."
+  },
+  "headroom_std": 0.013183456378153033,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.5122303298628392,
+    "recomputed_val_ssim_mean": 0.9773581087589264,
+    "recomputed_val_psnr_mean": 42.0415901184082,
+    "recomputed_val_rmse_mean": 0.002559244813164696
   }
 }

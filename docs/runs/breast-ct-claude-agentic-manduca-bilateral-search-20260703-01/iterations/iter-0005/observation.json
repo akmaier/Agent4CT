@@ -11,9 +11,9 @@
   "val_ssim": 0.9558666944503784,
   "val_psnr": 37.794986724853516,
   "val_rmse": 0.004402052145451307,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0061535030073998,
+  "val_psnr_std": 0.6218857316147693,
+  "val_rmse_std": 0.0003076677736958981,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-5 manduca_bilateral breast (train_n=400, val=200). SIX-BOX from BEST (iter-4 img_sr=0.05 hr=0.2752): (1) PRIOR: iter-2 hr=0.2431 (img_sr=0.02,img=3); iter-3 hr=0.2467 (img_sr=0.02,img=6); iter-4 hr=0.2752 (img_sr=0.05,img=6, +0.0285 -- biggest lever yet). Widening image range bandwidth is the binding lever. (2) FAILURE MODE: img_sr was under-reaching; 0.05 helped strongly but likely not yet at optimum -- the streak residual amplitude spans up to ~0.05+ mu so a wider range may pool more of it. (3) ONE KNOB: img_sr 0.05 -> 0.10 (double image range bandwidth again; img_n_bf=6 held). (4) HYPOTHESIS: img_sr 0.05->0.10 lifts hr above 0.2752 because the 0.02->0.05 step gave +0.0285 and the range-sigma optimum for suppressing streak residual sits wider than 0.05. FALSIFIER: if hr drops (over-smoothing real breast edges), optimum is in (0.05,0.10) -> iter-6 bisects to 0.07. (5) BUDGET: identical cost ~236s, far under 20-min. (6) Loop continues; iter-6 on landing. turbo, save ckpt+recon."
+  },
+  "headroom_std": 0.005584814719640601,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.15461507612669767,
+    "recomputed_val_ssim_mean": 0.9515472984313965,
+    "recomputed_val_psnr_mean": 37.261804542541505,
+    "recomputed_val_rmse_mean": 0.004430970100220293
   }
 }

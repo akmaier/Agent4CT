@@ -11,9 +11,9 @@
   "val_ssim": 0.9984728693962097,
   "val_psnr": 52.8242301940918,
   "val_rmse": 0.0007801768952049315,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0005390405334812464,
+  "val_psnr_std": 1.5264109151828709,
+  "val_rmse_std": 0.00013050618782508688,
   "kept": true,
   "status": "keep",
   "params_M": 0.928098,
@@ -37,5 +37,15 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "ITER-12 slot (v3 sentinel gate, strict serial, 20-min, --qos=turbo). SIX-BOX (VERIFIED, real hr>0): best=iter-6 c32/n2400 hr0.8768. LEARNED THIS ROUND: c48/n2400 does NOT fit the 30-min wall -- BOTH attempts (771871, 771918) TIMEOUT'd at 30min. So capacity-scaling above c=32 is budget-infeasible at n=2400; I must tune TRAINING knobs at the fast, budget-safe c=32/n2400 champion instead. (2) FAILURE MODE: heavier nets time out; the recon IS the pretrained denoiser (single k=1 DC step), so denoiser training quality dominates and pretrain_lr (fixed at 2.5e-4 all along) is the untested cheap lever. (3) ONE KNOB vs iter-6 (c32/n2400): pretrain_lr 0.00025 -> 0.0005 (2x). Hold c=32, n=2400, k=1, ep=15, grad_clip=1.0, seed=42. (4) HYPOTHESIS: if pretrain_lr 2.5e-4->5e-4, hr rises above 0.8768 because a higher lr may reach a better denoiser minimum in 15 epochs (loss floored ~1e-6 by ep4-6 at 2.5e-4, suggesting room to move faster); grad_clip=1.0 guards instability. FALSIFIER: hr <= ~0.877 (flat) or unstable => lr near-optimal; iter-13 tries itnet_alpha_init instead. (5) BUDGET: identical cost to iter-6 (c32/n2400, fits easily) -- only lr changes. (6) STRICT one-at-a-time via v3 sentinel; rm DONE.* before dispatch."
+  },
+  "headroom_std": 0.01618938609953838,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8548769382970874,
+    "recomputed_val_ssim_mean": 0.9983817720413208,
+    "recomputed_val_psnr_mean": 52.62355321884155,
+    "recomputed_val_rmse_mean": 0.0007654477938194759
   }
 }

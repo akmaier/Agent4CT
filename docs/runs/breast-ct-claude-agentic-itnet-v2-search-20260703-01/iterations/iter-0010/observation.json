@@ -11,9 +11,9 @@
   "val_ssim": 0.9986385107040405,
   "val_psnr": 53.51548767089844,
   "val_rmse": 0.0007204937282949686,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00048446171911099975,
+  "val_psnr_std": 1.6190767667803372,
+  "val_rmse_std": 0.0001270749292409842,
   "kept": true,
   "status": "keep",
   "params_M": 3.705538,
@@ -37,5 +37,15 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "ITER-10 (breast itnet_v2, extend-to-20, 20-min budget). SIX-BOX (VERIFIED): i7 c48/n1200 0.8621; i8 c64/n1200 0.8650; i9 c64/n2400 0.8686=BEST. (2) FINDING: width AND data are both heavily DIMINISHING near c=64/n2400 (c48->64 +0.0029; c64 n1200->2400 +0.0036). The two obvious capacity/data axes are near-saturated. The recon IS the pretrained denoiser (the single k=1 DC step barely moves PSNR ~53/SSIM0.9986), so DENOISER TRAINING QUALITY dominates -- and pretrain_lr has been fixed at 2.5e-4 all along. (3) ONE KNOB vs iter-8 (c64/n1200 fast baseline): pretrain_lr 0.00025 -> 0.0005 (2x). Hold c=64, n=1200 (fast, isolate lr cheaply -- NOT at slow n2400), k=1, all else = champion (alpha0.0026, residual False, epochs15, patience15, grad_clip1.0, val_n200, seed42). (4) HYPOTHESIS: if pretrain_lr 2.5e-4->5e-4, hr rises above iter-8's 0.8650 (and possibly above the 0.8686 best) because a higher lr may reach a better denoiser minimum within 15 epochs -- the loss floored at ~1e-6 by epoch ~4 at 2.5e-4, suggesting headroom to move faster/further. grad_clip=1.0 guards against instability. FALSIFIER: hr <= ~0.865 (flat) or training destabilizes => lr is already near-optimal; iter-11 reverts lr and tries a DIFFERENT knob (alpha_init, or an architecture/depth change). (5) BUDGET: identical cost to iter-8 (c64/n1200, comfortably in budget) -- only lr changes. (6) Serial gated loop; dispatch iter-11 only after iter-10 writes numeric-hr observation.json."
+  },
+  "headroom_std": 0.016273774880189006,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8653874723250824,
+    "recomputed_val_ssim_mean": 0.9985352823138237,
+    "recomputed_val_psnr_mean": 53.2871138381958,
+    "recomputed_val_rmse_mean": 0.0007103939972876106
   }
 }

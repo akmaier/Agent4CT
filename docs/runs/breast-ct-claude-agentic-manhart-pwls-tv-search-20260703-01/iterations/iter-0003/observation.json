@@ -35,5 +35,12 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-3 PWLS-ACTIVATION (lower lambda). DIAGNOSIS: iter-1 (gamma=1.0) hr=0.16647825 and iter-2 (gamma=0.0 plain TV) hr=0.16647791 differ only at the 8th sig-digit (dHR~3.4e-7) => PWLS ray-weight is INERT at tv_lambda=0.001 (TV term dominates data term, same as Mayo). To let the data term BITE so Manhart's gamma can shape the recon: ONE knob tv_lambda 0.001->1e-4 (10x drop; gamma=1.0 full Manhart kept). HYPOTHESIS: at 10x lower lambda the data-fidelity term is non-negligible, so (a) hr moves materially and (b) PWLS weighting starts to matter; if hr improves this is the productive regime, if it collapses (under-regularized/noisy on 128-view sparse) I back off toward 3e-4. All else fixed from iter-1. Budget: iter-1/2 ran ~200-270s<<1200s."
+  },
+  "headroom_std": null,
+  "_val_std_rescore_skipped": {
+    "reason": "ssim_mean_drift",
+    "drift": 0.08267796218395229,
+    "recomputed_val_ssim_mean": 0.8431426268815995,
+    "stored_val_ssim": 0.9258205890655518
   }
 }

@@ -35,5 +35,12 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-6 SATURATION probe. iter-5 (800 iters) hr=0.2635 (best), up from iter-4 (400) 0.2178. Slurm log: the DATA term is FLAT at 0.740 from iter 450->800 (data-consistency CONVERGED) while the TV term keeps dropping (100684->92709) -> the 0.2178->0.2635 gain is from continued TV smoothing, still net-beneficial. ONE knob: tv_iterations 800->1000 (same lambda=1e-3, lr=0.01, gamma=1.0). HYPOTHESIS: if hr still climbs past 0.2635 the TV-smoothing optimum is not reached (then reach it faster via higher lambda next); if it saturates ~0.2635 GD+TV has converged and I pivot to lambda/optimizer. Budget: iter-5 717.8s total at 800 iters -> ~900s at 1000, still <1200s wall."
+  },
+  "headroom_std": null,
+  "_val_std_rescore_skipped": {
+    "reason": "ssim_mean_drift",
+    "drift": 0.16973040193319322,
+    "recomputed_val_ssim_mean": 0.8116722932457924,
+    "stored_val_ssim": 0.9814026951789856
   }
 }

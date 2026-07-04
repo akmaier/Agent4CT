@@ -11,9 +11,9 @@
   "val_ssim": 0.9502016305923462,
   "val_psnr": 39.466121673583984,
   "val_rmse": 0.003631604602560401,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006867310954780319,
+  "val_psnr_std": 0.6006058829610753,
+  "val_rmse_std": 0.00024558623386442815,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-9 (one knob vs iter-7 best). NUMBERS: iter-6 0.2914(lr=2e-4); iter-1 0.3009(lr=1.1e-4); iter-7 0.3035(lr=7e-5 BEST); iter-8 0.0(lr=4e-5 CLIFF -- underfits below baseline in 12 epochs). So lr response is a NARROW peak: collapses below ~7e-5, best at 7e-5, gently declines above. The optimum is bracketed in [7e-5, 1.1e-4]. ONE KNOB: lr 7e-5 -> 8.5e-5 (bisect the [7e-5,1.1e-4] bracket, NO param change, 12 params). HYPOTHESIS: if lr=8.5e-5 gives hr >= 0.3035 the peak is broad/flat on the high side and 8.5e-5 is a safer operating point; if hr < 0.3035 then 7e-5 is the sharp peak and I LOCK lr=7e-5 and move to the next knob (lambda_neg). Budget: ~819s."
+  },
+  "headroom_std": 0.009365140489890272,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.3085468812459059,
+    "recomputed_val_ssim_mean": 0.9456551131606102,
+    "recomputed_val_psnr_mean": 39.0082434463501,
+    "recomputed_val_rmse_mean": 0.003623427199199796
   }
 }

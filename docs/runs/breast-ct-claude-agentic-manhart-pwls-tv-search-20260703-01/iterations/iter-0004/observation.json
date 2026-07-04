@@ -35,5 +35,12 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-4 CONVERGENCE probe. iter-3 (tv_lambda=1e-4) COLLAPSED hr 0.1665->0.0217 (under-regularized: on 128-view sparse the data term drags in streaks/noise faster than PWLS helps) => lower lambda is the WRONG direction; revert to lambda=1e-3. At lambda=1e-3 plain TV only reaches hr=0.1665/ssim=0.96 in 200 GD iters at lr=0.01 \u2014 the data-consistency solve may not be converged. ONE knob: tv_iterations 200->400 (double GD steps, same lambda/lr, gamma=1.0). HYPOTHESIS: more iters enforce data-consistency further so hr climbs past 0.1665; if it saturates the solve is already converged and I pivot to lr/optimizer. Budget: iter-1 200s -> ~400s at 2x iters, <<1200s."
+  },
+  "headroom_std": null,
+  "_val_std_rescore_skipped": {
+    "reason": "ssim_mean_drift",
+    "drift": 0.14877660781145097,
+    "recomputed_val_ssim_mean": 0.8227002450823784,
+    "stored_val_ssim": 0.9714768528938293
   }
 }

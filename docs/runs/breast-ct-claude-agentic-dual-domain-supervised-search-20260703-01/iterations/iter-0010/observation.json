@@ -11,9 +11,9 @@
   "val_ssim": 0.9989380240440369,
   "val_psnr": 54.63611602783203,
   "val_rmse": 0.0006332843913696706,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00030899710604255883,
+  "val_psnr_std": 1.3102307590690243,
+  "val_rmse_std": 9.360450719390533e-05,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-10 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX vs BEST (iter-8 c16/ep44/lr1e-3/lneg0.03/train_n400 hr=0.8915): (1) PRIOR: loss-weighting sweep RESOLVED -- lneg 1.0(0.8843)/0.1(0.8869)/0.03(0.8915 BEST)/0.0(0.8731, iter-9 DROPPED) => 0.03 is the optimum, a tiny penalty is protective. All 9 iters used only train_n=400 of the 3600-scene pool. (2) Failure mode: possible DATA limitation -- 400 scenes repeated 44x may memorize rather than generalize; more UNIQUE scenes at the same gradient budget could lift val hr. (3) ONE KNOB (constant-compute data swap): train_n 400->800 WITH epochs 44->22 to hold total gradient steps fixed at 17600 (= 400x44 = 800x22); same wall time + same optimizer budget, so the single EFFECTIVE lever is 2x unique training scenes per step. lneg=0.03/c=16/lr=1e-3 held at iter-8 winners. (4) HYPOTHESIS: 2x more distinct breast scenes at identical total steps improves val generalization -> hr above 0.8915; if it DROPS, 400 scenes already saturated the val distribution and iter-11 reverts to train_n=400 and instead spends budget on more steps (train_n=800 ep=44, if it fits). Expect ~0.89-0.90. (5) BUDGET: 17600 steps = iter-8 step count -> ~941s, inside 20-min budget (train_n=800 <= 2400 cap, OOM-fixed sbatch). (6) Loop to iter-20. Artifacts saved."
+  },
+  "headroom_std": 0.01115998042518728,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8808284106480923,
+    "recomputed_val_ssim_mean": 0.9988879162073135,
+    "recomputed_val_psnr_mean": 54.31815265655518,
+    "recomputed_val_rmse_mean": 0.00062741038724198
   }
 }

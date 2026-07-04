@@ -11,9 +11,9 @@
   "val_ssim": 0.9985949397087097,
   "val_psnr": 53.49361038208008,
   "val_rmse": 0.0007223106222227216,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0004982122717765133,
+  "val_psnr_std": 1.604699869506249,
+  "val_rmse_std": 0.00012595584153635717,
   "kept": true,
   "status": "keep",
   "params_M": 7.024897,
@@ -37,5 +37,15 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "ITER-12. SIX-BOX (NUMBERS): (1) READ iter-1..11: hr .649/.8193/.8092/.8208/.8136/.8093/.8440/.8464(c32bs1,BEST)/.8289(c48)/.8378(ep64 backstop ep37)/.6059(lr3e-4 DESTABILIZED). iter-11 lr 2e-4->3e-4 at bs1 CRASHED to 0.6059: loss spiked ep38->ep39 (7.3e-7->1.2e-5), final model near under-trained. At bs1's 2x update density lr=3e-4 is TOO aggressive (overshoots late despite grad_clip) - decisively confirms lr=2e-4 is the right step size for c32/bs1 (mirrors iter-5 lr=4e-4 fail at bs2, worse here). (2) FAILURE MODE / limiter: lr is now bracketed (2e-4 good, 3e-4 breaks); capacity bracketed (c32 sweet spot, c48 too costly); optimization density optimized (bs1); epochs help but backstop-limited. The one strong UNTESTED capacity-free lever is TRAINING DATA VOLUME: iter-1..11 all used train_n=200. The advice.md rule 'more data/augmentation is cheap' + the small-data regime (200 scenes) suggest more data lifts val generalization independent of capacity/lr/epochs. (3) ONE KNOB: train_n 200 -> 400 (2x data, well within the coordinator's train_n<=2400 cap and the 3600 available); hold everything else at iter-8 BEST (c32, bs=1, ep=40, lr=2e-4, win=8, heads=8, grad_clip=1.0, seed=42). (4) HYPOTHESIS: U-Swin at c32/bs1 is (partly) DATA-limited at train_n=200; doubling to 400 breast scenes improves val generalization and lifts hr above 0.8464. NOTE: train_n=400 at bs1 = 400 steps/epoch (2x iter-8's 200), so per-epoch cost ~2x -> max_train_s=1000 backstop caps epochs ~ep20; but each epoch now sees 2x the DATA DIVERSITY, so effective data exposure per wall-second is similar while generalization improves. FALSIFIER (NUMBERS): if hr <= 0.8464 at train_n=400, either the epoch-cut (backstop ~ep20) outweighs the data gain OR 200 scenes already saturate generalization -> iter-13 tries train_n=800 with an explicit epoch cut, or a lower lr=1.5e-4 for stability headroom, or returns to lock iter-8's config as the answer. (5) 20-min budget via max_train_s=1000 backstop; val_n=200; train_n=400<=2400; expandable_segments OOM-guard. (6) STRICT SERIAL: rm iter-12 obs pre-dispatch; iter_wait.sh gate before iter-13."
+  },
+  "headroom_std": 0.01592609590885005,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8653152727978743,
+    "recomputed_val_ssim_mean": 0.9985332617163658,
+    "recomputed_val_psnr_mean": 53.27963554382324,
+    "recomputed_val_rmse_mean": 0.000710783413524041
   }
 }

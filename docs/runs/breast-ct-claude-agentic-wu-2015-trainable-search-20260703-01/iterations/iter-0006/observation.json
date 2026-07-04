@@ -11,9 +11,9 @@
   "val_ssim": 0.9499829411506653,
   "val_psnr": 39.31669616699219,
   "val_rmse": 0.0036946204490959644,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0071294480856938895,
+  "val_psnr_std": 0.5976628218946572,
+  "val_rmse_std": 0.0002489849942490374,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-6 (one knob vs iter-1 best). NUMBERS: iter-1 0.3009 (BEST); iter-2 0.2805(bands=8); iter-3 0.0(outer=3); iter-4 0.2950(window=3); iter-5 0.2938(epochs=18, mild overfit). CONCLUSION: structure (6,2,window2,range8) AND epochs(12) are at optimum. FAILURE MODE: hr plateaus ~0.30 at fixed structure/epochs; lr is the single most sensitive knob per the prior TPE (it found the 1.1e-4 corner on the OLD split), but lr is UNTESTED on the new 200-case val split -- the optimal lr can shift with a different val distribution. ONE KNOB: lr 1.1e-4 -> 2e-4 (~1.8x, NO param change, 12 params). HYPOTHESIS: if I raise lr to 2e-4 I expect val hr to move off 0.3009 because a modestly larger step converges the 12 scalars (esp per-band log_band_scale) further within the fixed 12-epoch budget; still far below the lr>=1e-3 band-runaway regime, so safe. If hr rises, lr sweeps up next; if it drops, 1.1e-4 confirmed and I sweep DOWN. Budget: same as iter-1 (~819s)."
+  },
+  "headroom_std": 0.009692150064188675,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.29579989791359496,
+    "recomputed_val_ssim_mean": 0.9454044073820114,
+    "recomputed_val_psnr_mean": 38.84960247039795,
+    "recomputed_val_rmse_mean": 0.0036901228793431076
   }
 }

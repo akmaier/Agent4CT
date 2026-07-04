@@ -11,9 +11,9 @@
   "val_ssim": 0.9902437925338745,
   "val_psnr": 44.35996627807617,
   "val_rmse": 0.0020673125982284546,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.002092641691015829,
+  "val_psnr_std": 1.1132053630838186,
+  "val_rmse_std": 0.0002410048122026527,
   "kept": true,
   "status": "keep",
   "params_M": 3.705538,
@@ -37,5 +37,15 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "ITER-8 (breast itnet_v2, extend-to-20, 20-min budget). SIX-BOX (VERIFIED): i5 c32/n1200 hr0.8499; i6 c32/n2400 hr0.8574 (~15min, near budget); i7 c48/n1200 hr0.8621 (BEST, beats i6 at HALF the data, well within budget). (2) FINDING: denoiser WIDTH is the EFFICIENT lever -- c32->c48 at n1200 gave +0.012 (bigger than data doubling's +0.0075) and stays in budget, while data-scaling is diminishing AND expensive. (3) ONE KNOB: unet_c 48 -> 64. Hold n=1200 (fast, in-budget), k=1 (locked), all else = champion (alpha0.0026, residual False, lr2.5e-4, epochs15, patience15, grad_clip1.0, val_n200, seed42). (4) HYPOTHESIS: if c 48->64, hr rises above 0.8621 because the capacity axis is still paying (c16->32 +0.009, c32->48 +0.012 -- not yet saturated) and the wider denoiser closes more of the val generalization gap. FALSIFIER: hr <= ~0.863 (flat/down) => width saturates at 48; iter-9 pivots to DEPTH (more U-Net levels via a different knob) or combines best-c with n2400, or tunes pretrain_epochs. (5) BUDGET: c64/n1200 ~1.8x c48 conv FLOPs on the fast n1200 base (i7 fit comfortably) -> well under 20min. (6) Serial gated loop; dispatch iter-9 only after iter-8 writes numeric-hr observation.json."
+  },
+  "headroom_std": 0.022916662556876605,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.6356225163604268,
+    "recomputed_val_ssim_mean": 0.9894584479928017,
+    "recomputed_val_psnr_mean": 44.588933086395265,
+    "recomputed_val_rmse_mean": 0.0019168706564232708
   }
 }

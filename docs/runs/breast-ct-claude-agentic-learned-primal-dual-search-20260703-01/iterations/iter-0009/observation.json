@@ -11,9 +11,9 @@
   "val_ssim": 0.9833331108093262,
   "val_psnr": 41.84856414794922,
   "val_rmse": 0.0027604259084910154,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0035048915776928796,
+  "val_psnr_std": 0.8671169580782435,
+  "val_rmse_std": 0.0002717698217563817,
   "kept": true,
   "status": "keep",
   "params_M": 0.317712,
@@ -41,5 +41,15 @@
     "val_n": 200,
     "val_chunk": 4,
     "rationale": "iter-9 one-knob: lpd_n_primal 5->7 at the BEST config (iter-6: I12/h32/ep10/lr1.2e-3/gc1.0, hr=0.6685); grad_clip reverted to 1.0 (iter-8 gc=0.5 COLLAPSED to hr=0.0/ssim0.71 -- divergence). FAILURE MODE resolved: gc must stay 1.0. Remaining time-neutral lever = inter-iteration memory. HYPOTHESIS: if I widen the image-domain primal memory n_primal 5->7 at I=12, expect hr>0.6685 because the primal channels carry the quality-bearing partial reconstruction between unrolled steps (Adler 2018) and more state = richer updates; only the primal block in/out channels grow by 2 -> ~time-neutral (~1800s, at wall). If TIMEOUT, re-dispatch at I=11."
+  },
+  "headroom_std": 0.0222055432168211,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.4769684501212557,
+    "recomputed_val_ssim_mean": 0.981921417415142,
+    "recomputed_val_psnr_mean": 41.44002815246582,
+    "recomputed_val_rmse_mean": 0.0027458805800415573
   }
 }

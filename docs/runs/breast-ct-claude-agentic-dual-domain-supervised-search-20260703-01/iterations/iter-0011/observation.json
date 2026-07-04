@@ -11,9 +11,9 @@
   "val_ssim": 0.9991576671600342,
   "val_psnr": 55.58562469482422,
   "val_rmse": 0.0005677058361470699,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00029921485754820694,
+  "val_psnr_std": 1.6856687393208063,
+  "val_rmse_std": 0.00010589033183821028,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-11 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX vs BEST (iter-8 c16/ep44/lr1e-3/lneg0.03/tn400 hr=0.8915). (1) PRIOR: landscape mapped -- epochs monotone up to 44; c=32 WORSE (iter-3 0.8243); lr1e-3>5e-4; lneg 0.03 OPTIMAL (0.1=0.8869, 0.0=0.8731 both lower); constant-compute data swap tn800/ep22 WORSE (iter-10 0.8785) => repetition-to-convergence beats more scenes. iter-8 elapsed only 941s (~16 min) -> ep=44 was NOT the budget ceiling. (2) Failure mode: epochs curve may NOT be saturated -- ep32->44 still gave +0.0186; I capped at 44 assuming budget-bound but ~4 min was spare. (3) ONE KNOB: epochs 44 -> 52 (iter-8 config otherwise identical). (4) HYPOTHESIS: more gradient passes-to-convergence has been the dominant lever throughout and budget was under-used, so ep=52 lifts hr above 0.8915; expect ~0.892-0.895. If flat/down, epochs saturates ~44-52 and iter-12 pivots to lr-schedule/warmup. (5) BUDGET: iter-8 ep44=941s -> ep52 ~ 1112s ~ 18.5 min, inside 20-min budget. (6) Loop to iter-20. Artifacts saved."
+  },
+  "headroom_std": 0.013614223523232312,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8940875238826211,
+    "recomputed_val_ssim_mean": 0.9991069686412811,
+    "recomputed_val_psnr_mean": 55.37701992034912,
+    "recomputed_val_rmse_mean": 0.0005593884772679303
   }
 }

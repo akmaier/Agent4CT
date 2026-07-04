@@ -11,9 +11,9 @@
   "val_ssim": 0.9819186329841614,
   "val_psnr": 38.78335189819336,
   "val_rmse": 0.003928592428565025,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0033101668831031364,
+  "val_psnr_std": 0.5778525934330445,
+  "val_rmse_std": 0.00025475522339795623,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-3 manduca_bilateral breast (train3600/val200/test200 seed20260703, per-iter train_n=400, val=200). SIX-BOX: (1) PRIOR: iter-1 hr=0.2159 (img_n_bf=1 ep10); iter-2 hr=0.2431 (img_n_bf=3 ep10, 140s). img_n_bf 1->3 gave +0.027 hr -> image-domain bilateral DEPTH is a rising lever; budget barely used (140/1200s). (2) FAILURE MODE: still under-denoising; the img_n_bf depth trend is monotone rising and NOT yet plateaued -> the image-domain cascade is the productive axis. (3) ONE KNOB: img_n_bf 3->6 (double image-domain bilateral depth again; +3 trainable BFs, params 12->21). All else held (ep=10, proj_sr=1.5, bf_d_w_ratio=1/6, lr=5e-3). (4) HYPOTHESIS: img_n_bf 3->6 lifts hr above 0.2431 because the depth curve is still rising (1->3 = +0.027) and a deeper edge-preserving cascade further suppresses residual 128-view streak in the reconstructed image where calibrated-SSIM-headroom lives. FALSIFIER: if hr plateaus <=~0.245, img depth saturating -> iter-4 pivots to proj-domain range (proj_sr) or epochs. (5) BUDGET: +3 cheap bilateral passes; iter-2 was 140s -> far under the 20-min budget (30-min sbatch wall). (6) Loop continues; iter-4 on landing. --qos=turbo active."
+  },
+  "headroom_std": 0.00905703783468433,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.2439162906715144,
+    "recomputed_val_ssim_mean": 0.9805042114853859,
+    "recomputed_val_psnr_mean": 38.231925830841064,
+    "recomputed_val_rmse_mean": 0.0039612734247930345
   }
 }

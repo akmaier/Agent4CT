@@ -11,9 +11,9 @@
   "val_ssim": 0.9990134835243225,
   "val_psnr": 55.130210876464844,
   "val_rmse": 0.0005982655566185713,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00035471423689497505,
+  "val_psnr_std": 1.7426694854992593,
+  "val_rmse_std": 0.00011191713880655362,
   "kept": true,
   "status": "keep",
   "params_M": 0.928098,
@@ -37,5 +37,15 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "ITER-14 (v3 sentinel, normal QOS, strict serial). SIX-BOX (sentinel-verified): iter-6 c32/n2400/alpha0.0026 0.8768; iter-13 c32/n2400/alpha0.001 0.8804=BEST (smaller DC-step alpha HELPED +0.0036 -- the k=1 DC step was slightly over-strong; a milder step lets the strong pretrained denoiser recon dominate, consistent with k>=2 collapse). (2) OPEN QUESTION: is alpha monotonic-better as it shrinks toward 0 (pure denoiser)? iter-13 (0.001) beat iter-6 (0.0026); test even smaller. (3) ONE KNOB vs iter-13 (c32/n2400/alpha0.001): itnet_alpha_init 0.001 -> 0.0004. Hold c=32, n=2400, k=1, lr=2.5e-4, ep=15, grad_clip=1.0, seed=42. (4) HYPOTHESIS: if alpha 0.001->0.0004, hr rises above 0.8804 because an even milder DC step corrupts the denoiser recon even less (approaching pure-denoiser). FALSIFIER: hr <= ~0.880 => alpha optimum is near 0.001 (or the DC step's tiny residual consistency has some value); then iter-15 locks alpha=0.001 champion and does seed replicates. (5) BUDGET: identical to iter-6 (c32/n2400) -- only alpha changes. (6) STRICT one-at-a-time; rm DONE.* before dispatch; confirm via ssh cat DONE.<jobid>."
+  },
+  "headroom_std": 0.014733892129840553,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8889994750965786,
+    "recomputed_val_ssim_mean": 0.9989786434173584,
+    "recomputed_val_psnr_mean": 54.97679307937622,
+    "recomputed_val_rmse_mean": 0.0005863019789103419
   }
 }

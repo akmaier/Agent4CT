@@ -45,8 +45,11 @@ SOLVER_PARAMS_BACKSTOP = REPO / "docs" / "leaderboards" / "solver_params.json"
 SCRATCH_CAP = 200
 
 # Fields copied verbatim from observation.json into each registry line's metrics.
+# headroom_std is the per-case val-headroom spread (populated by
+# scripts/rescore_val_std.py from the saved recon_raw.npz) so the val board can
+# render hr as mean ± std alongside the SSIM/PSNR/RMSE per-slice stds.
 _METRIC_KEYS = ("val_ssim", "headroom", "val_psnr", "val_rmse",
-                "val_ssim_std", "val_psnr_std", "val_rmse_std")
+                "val_ssim_std", "val_psnr_std", "val_rmse_std", "headroom_std")
 
 
 def _git_sha() -> str:
@@ -294,6 +297,7 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
         "val_ssim_std": m.get("val_ssim_std"),
         "val_psnr_std": m.get("val_psnr_std"),
         "val_rmse_std": m.get("val_rmse_std"),
+        "headroom_std": m.get("headroom_std"),
         "elapsed_s": best["runtime"].get("elapsed_s"),
         "image": best["images"].get("comparison"),
     }
@@ -312,7 +316,7 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
     # legitimately ARE their reported results.
     if row["metric_basis"] == "test":
         for _k in ("val_ssim", "headroom", "val_psnr", "val_rmse",
-                   "val_ssim_std", "val_psnr_std", "val_rmse_std"):
+                   "val_ssim_std", "val_psnr_std", "val_rmse_std", "headroom_std"):
             row[_k] = None
     rm, tb, reason = R.rank_fields(row, best["status"], ch, has_final)
     row["rank_metric"] = rm

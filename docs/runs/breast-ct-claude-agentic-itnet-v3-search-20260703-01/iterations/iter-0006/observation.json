@@ -11,9 +11,9 @@
   "val_ssim": 0.9980659484863281,
   "val_psnr": 52.16461181640625,
   "val_rmse": 0.0008417321369051933,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0006062043199324832,
+  "val_psnr_std": 1.4469016852606553,
+  "val_rmse_std": 0.0001357810673671957,
   "kept": true,
   "status": "keep",
   "params_M": 8.317706,
@@ -37,5 +37,15 @@
     "max_train_s": 1050,
     "seed": 42,
     "rationale": "iter-6 (breast-ct redo, search-20260703-01). ONE KNOB: epochs 3 -> 4 at unet_c=24 (all else = iter-5 exactly: itnet_k=2, unet_c=24, alpha_init=0.0025734, lr=2.16e-4, batch_size=2, train_n=2400, val_n=200, grad_clip=1.0, seed=42). SIX-BOX (NUMBERS): (1) iter-3 (c16/ep5/k2/n2400): 0.8277 = prior best, 877s. iter-4 (c16/ep3/k3): 0.7946 regress. iter-5 (c24/ep3/k2/n2400): 0.8269, SSIM 0.9977, PSNR 51.56, params 8.32M, elapsed 745.0s=12.4min. (2) FAILURE MODE: c=24 at 3 epochs TIED c=16 at 5 epochs (0.8269 vs 0.8277, within noise) -> the added capacity did NOT pay off, but iter-5 gave the bigger net only 3 epochs AND finished in just 12.4min (7.6min budget headroom -- the c-scaling is cheap because the k=2 projector DC steps dominate per-forward and are flat in c). So the c=24 net is likely UNDER-TRAINED at ep3, not capacity-useless. (3) ONE KNOB: epochs 3 -> 4 at c=24 (+33pct gradient steps to properly train the 8.3M-param denoiser; c/k/train_n all held so any hr change isolates whether capacity pays off WHEN adequately trained). (4) HYPOTHESIS: c=24 at ep4 lifts hr above 0.8277 because the bigger denoiser needed more than 3 epochs to exploit its extra channels. FALSIFIER (NUMBERS): if hr <= 0.8277 at c24/ep4, the c=16 champion is genuinely capacity-sufficient on this breast val set -> iter-7 reverts to the c16/ep5 champion and pivots to a training-recipe lever (lr or alpha_init), abandoning the capacity axis. (5) BUDGET (HARD 20min=1200s): iter-5 (c24/ep3/n2400)=745.0s. Per-epoch@c24/n2400 ~= (745-130 fixed)/3 ~= 205s; fixed ~130s. At ep4: 130 + 4*205 = 950s = 15.8min < 1200s with ~4min margin. ep5 (~1155s=19.3min) is tight; ep4 is the safe next step. max_train_s=1050 fences the TRAIN phase; a finite val+figure land inside the 30-min sbatch wall. train_n=2400 (<= OOM-safe cap). val=200 distinct val_truth.h5 cases, 256px inscribed-circle FOV (breast default). (6) do NOT return control mid-campaign; gate on iter-6 numeric-headroom obs via iter_wait.sh v3 then dispatch iter-7."
+  },
+  "headroom_std": 0.016346277305685348,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.842420373610466,
+    "recomputed_val_ssim_mean": 0.9979275539517403,
+    "recomputed_val_psnr_mean": 51.900168857574464,
+    "recomputed_val_rmse_mean": 0.0008307387659442611
   }
 }

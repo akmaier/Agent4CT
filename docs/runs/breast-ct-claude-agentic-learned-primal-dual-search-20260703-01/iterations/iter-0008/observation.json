@@ -11,9 +11,9 @@
   "val_ssim": 0.7067359089851379,
   "val_psnr": 16.10369873046875,
   "val_rmse": 0.05348346009850502,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011198190463788562,
+  "val_psnr_std": 0.25311439895201593,
+  "val_rmse_std": 0.0012239307404529529,
   "kept": false,
   "status": "discard",
   "params_M": 0.303864,
@@ -41,5 +41,15 @@
     "val_n": 200,
     "val_chunk": 4,
     "rationale": "iter-8 one-knob: grad_clip 1.0->0.5 at the BEST config (iter-6: I12/h32/ep10/lr1.2e-3, hr=0.6685). FAILURE MODE: lr axis saturated (I10 sweep peaked at lr1.2e-3=0.621; 1.6e-3 overshot to 0.550), and depth (I=12) is what set the 0.6685 best but ran at the 1800s wall. HYPOTHESIS: if I tighten grad_clip 1.0->0.5, expect hr >= 0.6685 because deeper I=12 unrolls carry larger/noisier grads and a tighter clip stabilizes late-epoch convergence (the old breast LPD champion paired I>=12 with gc=0.5); time-neutral (~1800s, at wall). If this TIMEOUTs I will re-dispatch at I=11."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.7013047704100609,
+    "recomputed_val_psnr_mean": 15.676046175956726,
+    "recomputed_val_rmse_mean": 0.05306749226525426
   }
 }

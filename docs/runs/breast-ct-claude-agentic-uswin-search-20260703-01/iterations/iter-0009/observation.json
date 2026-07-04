@@ -11,9 +11,9 @@
   "val_ssim": 0.9979990720748901,
   "val_psnr": 51.65846252441406,
   "val_rmse": 0.0008922393899410963,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0006766992143555025,
+  "val_psnr_std": 1.4966416631178237,
+  "val_rmse_std": 0.00014766162178824198,
   "kept": true,
   "status": "keep",
   "params_M": 15.795841,
@@ -37,5 +37,15 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "ITER-9. SIX-BOX (NUMBERS): (1) READ iter-1..8: hr .6490/.8193/.8092(win16)/.8208(c24bs2)/.8136(lr4e4)/.8093(c32bs2)/.8440(c24bs1)/.8464(c32bs1,NEW BEST). iter-8=c32/win8/h8/ep40/lr2e-4/bs1 hr=0.846430 ssim=0.9983 PSNR=52.60 RMSE=8.01e-4 elapsed=828s (full 40ep). c24->c32 UNDER bs1 gave +0.0024 (capacity DID pay off once optimization dense enough), loss to ~5.5e-7. This CONFIRMED capacity is productive under bs1 and FALSIFIED the earlier fixed-ceiling idea. (2) FAILURE MODE / next limiter: c32 helped modestly; is capacity still the live lever or diminishing? The natural next test is MORE width. iter-6's c32-at-bs2 regression was stale (under-optimized). Under bs1 the model exploits capacity (loss deeper each width). (3) ONE KNOB: uswin_c 32 -> 48 (~2.2x c32 params); hold everything else at iter-8 BEST (bs=1, ep=40, lr=2e-4, win=8, heads=8, grad_clip=1.0, seed=42). No epoch cut -> ONE knob; max_train_s=1000 backstop caps overrun (c48 per-epoch ~2.2x c32, so backstop may fire ~ep25-30). (4) HYPOTHESIS: capacity remains productive under bs1; c32->48 lifts hr above 0.8464 even with a modest epoch cut, since each prior width increase deepened the loss basin. FALSIFIER (NUMBERS): if hr <= 0.8464 at c48/bs1, capacity has saturated (or the backstop epoch-cut outweighs the width gain) -> iter-10 stops widening and returns to optimization (lr sweep or cosine schedule at c32/bs1) or train_n 200->400. (5) 20-min budget via max_train_s=1000 backstop; PYTORCH_CUDA_ALLOC_CONF=expandable_segments guards OOM at c48; val_n=200. (6) STRICT SERIAL: gate on iter-9 numeric-hr obs + job-left-squeue before iter-10."
+  },
+  "headroom_std": 0.01807512773848225,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8332665374870245,
+    "recomputed_val_ssim_mean": 0.9978930315375328,
+    "recomputed_val_psnr_mean": 51.41441242218018,
+    "recomputed_val_rmse_mean": 0.000879294465703424
   }
 }

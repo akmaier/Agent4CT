@@ -11,9 +11,9 @@
   "val_ssim": 0.989298403263092,
   "val_psnr": 42.94141387939453,
   "val_rmse": 0.0024340737145394087,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0026702564471361985,
+  "val_psnr_std": 1.0545284134177981,
+  "val_rmse_std": 0.0002929356364137218,
   "kept": true,
   "status": "keep",
   "params_M": 0.51802,
@@ -41,5 +41,15 @@
     "val_n": 200,
     "val_chunk": 4,
     "rationale": "iter-4 one-knob: lpd_hidden 32->48 (epochs=10, lr=8e-4, I=10 fixed from iter-3). FAILURE MODE: capacity-limited -- epochs are at the budget ceiling and lr is tuned (8e-4 best), yet hr=0.566 is still well below the old uncapped champion ~0.90 which used wider proximals (hidden 64). HYPOTHESIS: if I widen the proximal CNN hidden 32->48, expect hr above 0.5663 because the proximal blocks are now the bottleneck (lr/epochs already tuned) and wider convs fit breast mu-structure better; chose 48 not 64 to keep wall under the 30-min SLURM ceiling (iter-3 was 1517s at h32)."
+  },
+  "headroom_std": 0.02965484154014347,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.5404813500976947,
+    "recomputed_val_ssim_mean": 0.9885442206263542,
+    "recomputed_val_psnr_mean": 42.574586925506594,
+    "recomputed_val_rmse_mean": 0.002415518895140849
   }
 }

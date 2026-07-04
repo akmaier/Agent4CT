@@ -11,9 +11,9 @@
   "val_ssim": 0.9981319904327393,
   "val_psnr": 52.120689392089844,
   "val_rmse": 0.000845999107696116,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0006482183454961949,
+  "val_psnr_std": 1.6196825212183883,
+  "val_rmse_std": 0.00014911840367441153,
   "kept": true,
   "status": "keep",
   "params_M": 7.024897,
@@ -37,5 +37,15 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "ITER-10. SIX-BOX (NUMBERS): (1) READ iter-1..9: hr .649/.8193/.8092/.8208/.8136/.8093/.8440(c24bs1)/.8464(c32bs1,BEST)/.8289(c48bs1,ep23 backstop). iter-8=c32/win8/h8/ep40/bs1/lr2e-4 hr=0.846430 elapsed=828s (full 40ep, train ~720s, well UNDER the 1000s backstop). iter-9 c48 REGRESSED to 0.8289 because its ~2.2x per-epoch cost triggered the backstop at ep23 (vs c32's 40) - epoch-cut erased the width gain, same tradeoff as iter-3(win16)/iter-6(c32bs2). So c32 is the CAPACITY SWEET SPOT under the 20-min wall; wider overshoots. (2) FAILURE MODE / limiter: capacity optimized (c32), optimization density optimized (bs1). But iter-8 had EPOCH HEADROOM: 40ep used only ~720s train of the 1000s budget, and its loss was still ~5.5e-7 and DECREASING (not fully converged). So the current limiter at the c32/bs1 optimum is EPOCHS (training length), not capacity or batch. (3) ONE KNOB: epochs 40 -> 64; hold everything else at iter-8 BEST (c32, bs=1, lr=2e-4, win=8, heads=8, grad_clip=1.0, seed=42). max_train_s=1000 backstop caps: at iter-8's ~18s/epoch train, 64ep=~1150s train -> backstop fires ~ep55, giving ~+15 real epochs over iter-8's 40 (an honest budget-max epochs increase). (4) HYPOTHESIS: iter-8 c32/bs1 was epoch-limited (loss still dropping at ep40); +epochs to the budget max (~ep55 via backstop) squeezes hr above 0.8464. FALSIFIER (NUMBERS): if hr <= 0.8464 at ep64(->~ep55), the c32/bs1 optimum has CONVERGED at ~40ep and more epochs don't help -> 0.846 is the U-Swin/512px-breast ceiling at this train_n; iter-11 then probes train_n 200->400 (more data, the last untried capacity-free lever; train_n<=2400 per coordinator). (5) 20-min budget via max_train_s=1000 backstop; val_n=200; expandable_segments OOM-guard. (6) STRICT SERIAL: rm iter-10 obs pre-dispatch; gate via iter_wait.sh on JOBID+obs before iter-11."
+  },
+  "headroom_std": 0.018925659770020153,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8424272991055536,
+    "recomputed_val_ssim_mean": 0.998040743470192,
+    "recomputed_val_psnr_mean": 51.91810806274414,
+    "recomputed_val_rmse_mean": 0.0008316733599349391
   }
 }

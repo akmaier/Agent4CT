@@ -35,5 +35,12 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-5 CONVERGENCE-2. iter-4 (tv_iterations 200->400) lifted hr 0.1665->0.2178 (ssim 0.96->0.9715): the GD data-consistency solve was NOT converged; more iters help. ONE knob: tv_iterations 400->800 (same lambda=1e-3, lr=0.01, gamma=1.0). HYPOTHESIS: if 800 iters still climbs past 0.2178 the solve is still convergence-limited (keep pushing/raise lr); if it saturates ~0.2178 GD has converged and I pivot to lr or lambda for a better-regularized optimum. Budget: iter-4 388s at 400 iters -> ~780s at 800, <<1200s."
+  },
+  "headroom_std": null,
+  "_val_std_rescore_skipped": {
+    "reason": "ssim_mean_drift",
+    "drift": 0.16513294219970698,
+    "recomputed_val_ssim_mean": 0.8142694211006165,
+    "stored_val_ssim": 0.9794023633003235
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9985755681991577,
   "val_psnr": 53.32521057128906,
   "val_rmse": 0.0007364514749497175,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0004737517691783055,
+  "val_psnr_std": 1.4280277686352405,
+  "val_rmse_std": 0.00011812682377743495,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-13 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX vs BEST (iter-8 c16/ep44/lr1e-3/lneg0.03/bs1/tn400 hr=0.8915). (1) PRIOR: lr BRACKETED -- 5e-4<1e-3(best)>2e-3 (iter-12=0.8470, sharp drop). epochs SATURATE ~44 (iter-11 ep52 flat). VERIFIED the solver hardcodes Adam(lr) with NO lr_schedule/weight_decay/AdamW support, so those are NOT available knobs. Remaining effective config knobs: batch_size, train_n, seed. (2) Failure mode: constant lr=1e-3 with batch_size=1 gives noisy single-sample gradients that may jitter near the minimum instead of settling. (3) ONE KNOB: batch_size 1 -> 2 (iter-8 config otherwise identical). Breast has NO per-sample-ps constraint (_per_ps=False), so batching >1 is valid here (unlike Mayo). (4) HYPOTHESIS: batch_size=2 averages 2 samples/step -> smoother gradients settle into a marginally better minimum -> hr >= 0.8915, and it is also ~faster (half the steps) so budget-safe. If hr DROPS, single-sample stochasticity was beneficial and iter-14 reverts to bs=1 and tries a modest train_n bump (400->500) at ep=44. Expect ~0.89-0.895. (5) BUDGET: <= iter-8 941s (fewer optimizer steps), inside 20-min budget. (6) Loop to iter-20. Artifacts saved."
+  },
+  "headroom_std": 0.014162451982652917,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8622365836915726,
+    "recomputed_val_ssim_mean": 0.9984949165582657,
+    "recomputed_val_psnr_mean": 53.06641277313233,
+    "recomputed_val_rmse_mean": 0.0007261929792002775
   }
 }

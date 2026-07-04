@@ -11,9 +11,9 @@
   "val_ssim": 0.9800881743431091,
   "val_psnr": 42.45074462890625,
   "val_rmse": 0.0025755339302122593,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0033402357985508387,
+  "val_psnr_std": 0.7841674032359213,
+  "val_rmse_std": 0.00022710966755605763,
   "kept": true,
   "status": "keep",
   "params_M": 0.007683,
@@ -40,5 +40,15 @@
     "vn_checkpoint": true,
     "max_train_s": 1080,
     "rationale": "iter-6 (one knob: vn_lambda_init 1e-2 -> 3e-2). iter-5 lifted hr 0.508->0.523 by activating the regulariser (lambda stayed ~0.0099). Hypothesis: push lambda_init further up the productive axis for more structure -> hr>0.523; if it over-smooths and drops, 1e-2 brackets the peak."
+  },
+  "headroom_std": 0.0141606472718062,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.5113223020009121,
+    "recomputed_val_ssim_mean": 0.9781215912103653,
+    "recomputed_val_psnr_mean": 42.025910511016846,
+    "recomputed_val_rmse_mean": 0.0025642612884985284
   }
 }

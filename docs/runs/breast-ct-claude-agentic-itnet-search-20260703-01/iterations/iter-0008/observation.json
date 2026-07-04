@@ -11,9 +11,9 @@
   "val_ssim": 0.998993456363678,
   "val_psnr": 55.04883575439453,
   "val_rmse": 0.0006038966821506619,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0003676225374846424,
+  "val_psnr_std": 1.725715079379994,
+  "val_rmse_std": 0.00011259568291206905,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,15 @@
     "grad_clip": 1.0,
     "seed": 42,
     "rationale": "iter-8 REDO (breast ItNet v1). Prior iter-8 (train_n800, ep120) TIMED OUT at 30:15 (2x data at full epochs overran even turbo). SIX-BOX: (1) PRIOR: iter-5 (train_n400,ep120,c16,k1,a0.0,lr1e-3) hr 0.8741 CHAMPION (400x120=48000 grad steps). iter-6 lr dead; iter-7 c24+epcut 0.8584. (2) FAILURE MODE: is the denoiser DATA-limited (400 scenes) or COMPUTE-limited? Disentangle by holding total gradient steps CONSTANT while doubling scene DIVERSITY. (3) ONE KNOB (data-diversity, compute-matched): train_n 400 -> 800 with pretrain_epochs 120 -> 60 so 800x60 = 48000 grad steps = EXACTLY iter-5s budget (the epoch cut is pure compute-normalization, not an independent hypothesis). All else = champion iter-5. (4) HYPOTHESIS: if I show the denoiser 2x MORE distinct scenes at the SAME total compute, I expect hr above 0.8741 because 400 scenes likely under-cover the breast-phantom distribution and more diversity reduces val overfit at equal training cost. FALSIFIER: if hr<=0.8741, the denoiser was NOT data-diversity-limited at 400 scenes -> the ceiling is model CAPACITY -> iter-9 tests unet_c at compute-matched epochs (width up, epochs down to hold steps). (5) BUDGET: 48000 grad steps = iter-5s ~1189s train portion; +turbo -> comfortably < 20 min. train_n=800 <= 2400 FBP-safe. (6) Loop to iter-20."
+  },
+  "headroom_std": 0.014795951027771275,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.88792843183115,
+    "recomputed_val_ssim_mean": 0.9989596694707871,
+    "recomputed_val_psnr_mean": 54.89202835083008,
+    "recomputed_val_rmse_mean": 0.0005918821458180901
   }
 }

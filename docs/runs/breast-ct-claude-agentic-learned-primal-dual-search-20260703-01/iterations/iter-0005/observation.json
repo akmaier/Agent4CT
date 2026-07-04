@@ -11,9 +11,9 @@
   "val_ssim": 0.9916570782661438,
   "val_psnr": 44.75040054321289,
   "val_rmse": 0.0019764439202845097,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0019778058310263155,
+  "val_psnr_std": 0.9327784561477724,
+  "val_rmse_std": 0.00021219483178992233,
   "kept": true,
   "status": "keep",
   "params_M": 0.25322,
@@ -41,5 +41,15 @@
     "val_n": 200,
     "val_chunk": 4,
     "rationale": "iter-5 one-knob: REVERT iter-4 (hidden 48->32, which hurt hr 0.566->0.533 AND hit the 29.6-min wall) and instead push lr 8e-4 -> 1.2e-3 (epochs=10, I=10 fixed). FAILURE MODE at iter-4: over-widening proximals both lowered hr and blew the wall -> not capacity-limited. HYPOTHESIS: if I raise lr 8e-4->1.2e-3 with the same cosine decay at h32/I10/ep10, expect hr above 0.5663 because lr was the strongest single-knob lever (0.44->0.57 from 5e-4->8e-4) and iter-3 was likely not yet at the lr optimum; wall stays ~1517s (h32) safely under the 30-min ceiling."
+  },
+  "headroom_std": 0.019101804840938465,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.6259882853889761,
+    "recomputed_val_ssim_mean": 0.9909776744246482,
+    "recomputed_val_psnr_mean": 44.356316299438475,
+    "recomputed_val_rmse_mean": 0.0019645115750608964
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9499896168708801,
   "val_psnr": 39.4661865234375,
   "val_rmse": 0.003631575033068657,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0068247643421171355,
+  "val_psnr_std": 0.5961596197745226,
+  "val_rmse_std": 0.00024369060006656414,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-7 (one knob vs iter-1 best). NUMBERS: iter-1 0.3009(BEST lr=1.1e-4); iter-6 0.2914(lr=2e-4 UP -> worse). So the lr optimum is AT or BELOW 1.1e-4. FAILURE MODE: hr plateaus ~0.30; raising lr overshoots the shallow low-lr optimum. ONE KNOB: lr 1.1e-4 -> 7e-5 (DOWN ~0.64x, NO param change, 12 params). HYPOTHESIS: if I lower lr to 7e-5 I expect val hr >= 0.3009 because a smaller step lets the 12 scalars (per-band log_band_scale, per-iter soft_thresh/blend) settle more precisely into the asymmetric weighting without overshoot, at a fixed 12-epoch budget. If hr rises, sweep lr further down; if it drops, 1.1e-4 is the confirmed lr optimum and I move to lambda_neg / soft_thresh. Budget: same ~819s as iter-1."
+  },
+  "headroom_std": 0.009316375520773783,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.3085354628575579,
+    "recomputed_val_ssim_mean": 0.9454244500398636,
+    "recomputed_val_psnr_mean": 39.008091621398925,
+    "recomputed_val_rmse_mean": 0.0036233602510765193
   }
 }

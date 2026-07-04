@@ -11,9 +11,9 @@
   "val_ssim": 0.9989429116249084,
   "val_psnr": 54.256752014160156,
   "val_rmse": 0.0006615560851059854,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0003387162927053587,
+  "val_psnr_std": 1.1997044733896507,
+  "val_rmse_std": 9.044396522540935e-05,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-9 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX vs BEST (iter-8 c16/ep44/lr1e-3/lneg0.03 hr=0.8915): (1) PRIOR: lambda_neg sweep monotone improving 1.0(0.8843)->0.1(0.8869)->0.03(0.8915); latest step +0.0046 = largest recent gain -> the negativity penalty was load-bearing against the supervised L2 fit. (2) Failure mode: none; penalty at 0.03 still constrains the fit and hr keeps rising as it relaxes. (3) ONE KNOB: lambda_neg 0.03 -> 0.0 (fully off; c=16, ep=44, lr=1e-3 held) -- the sweep endpoint. (4) HYPOTHESIS: lambda_neg=0.0 gives pure supervised L2 its best fit -> hr above 0.8915; if hr DROPS vs 0.03 a tiny penalty is protective and 0.03 is the optimum. Either way the loss-weighting sweep resolves and iter-10 pivots to the DATA lever (train_n 400->higher, still <=2400). Expect ~0.89-0.895. (5) BUDGET: same ep=44 -> ~940s, inside 20-min budget. (6) Loop to iter-20. Artifacts saved."
+  },
+  "headroom_std": 0.009854892625690028,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8756197185654245,
+    "recomputed_val_ssim_mean": 0.998897241950035,
+    "recomputed_val_psnr_mean": 53.93483678817749,
+    "recomputed_val_rmse_mean": 0.0006545514875324443
   }
 }

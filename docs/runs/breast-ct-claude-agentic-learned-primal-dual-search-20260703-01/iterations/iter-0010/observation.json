@@ -11,9 +11,9 @@
   "val_ssim": 0.9488400220870972,
   "val_psnr": 30.99632453918457,
   "val_rmse": 0.00962915737181902,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.009219575397122147,
+  "val_psnr_std": 0.9119331722834212,
+  "val_rmse_std": 0.000961840226560727,
   "kept": false,
   "status": "discard",
   "params_M": 0.303864,
@@ -41,5 +41,15 @@
     "val_n": 200,
     "val_chunk": 4,
     "rationale": "iter-10 one-knob: lr_schedule cosine->constant at the BEST config (iter-6: I12/h32/ep10/lr1.2e-3/np5/nd5/gc1.0, hr=0.6685). FAILURE MODE survey: off iter-6, lr1.6e-3(0.55)/gc0.5(0.0)/n_primal7(0.47)/hidden48(0.53) all HURT -- only DEPTH(I=12) helped. Before concluding a budget-bound local optimum, test whether cosine annealing is under-training the last epochs. HYPOTHESIS: if I hold lr=1.2e-3 CONSTANT (no cosine decay to ~0) at I=12, hr will differ from 0.6685 -- higher if cosine decayed too early (more effective late-epoch learning), lower if the anneal was stabilizing. Informative one-knob; time-neutral ~1800s (at wall)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9453362083435058,
+    "recomputed_val_psnr_mean": 30.626085062026977,
+    "recomputed_val_rmse_mean": 0.009539368676487357
   }
 }

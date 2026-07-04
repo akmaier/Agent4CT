@@ -11,9 +11,9 @@
   "val_ssim": 0.9499896168708801,
   "val_psnr": 39.466190338134766,
   "val_rmse": 0.0036315745674073696,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006824845332571243,
+  "val_psnr_std": 0.5961573228432271,
+  "val_rmse_std": 0.00024368787253273958,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-10 (one knob vs iter-7 best). NUMBERS: lr fully mapped -> iter-8 0.0(4e-5 cliff), iter-7 0.3035(7e-5 BEST), iter-9 0.3035(8.5e-5 tie), iter-1 0.3009(1.1e-4), iter-6 0.2914(2e-4). Broad flat lr peak at 7-8.5e-5 -> LOCK lr=7e-5. FAILURE MODE: lr exhausted; hr plateau 0.3035. Next continuous knob = lambda_neg (non-negativity penalty weight in the supervised loss); base=0.7 (TPE value). ONE KNOB: lambda_neg 0.7 -> 0.4 (weaker penalty, NO param change, 12 params, lr locked 7e-5). HYPOTHESIS: if I weaken the non-negativity penalty to 0.4 I expect val hr >= 0.3035 because a lighter penalty lets the soft-thresholded residual refinement retain more fine low-mu breast-tissue contrast rather than being pushed toward the mu>=0 floor; risk = negative-mu leakage degrading the calibrated metric (hr down) -> then lambda_neg>=0.7 confirmed. Budget: ~819s."
+  },
+  "headroom_std": 0.009316857374777512,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.3085353179175324,
+    "recomputed_val_ssim_mean": 0.945424494445324,
+    "recomputed_val_psnr_mean": 39.00808996200561,
+    "recomputed_val_rmse_mean": 0.0036233607679605484
   }
 }

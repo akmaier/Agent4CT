@@ -11,9 +11,9 @@
   "val_ssim": 0.9985619187355042,
   "val_psnr": 53.05765151977539,
   "val_rmse": 0.0007594898925162852,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0005061295127021702,
+  "val_psnr_std": 1.5382599445234577,
+  "val_rmse_std": 0.0001283460402544024,
   "kept": true,
   "status": "keep",
   "params_M": 0.522697,
@@ -37,5 +37,15 @@
     "grad_clip": 1.0,
     "seed": 42,
     "rationale": "iter-11 (breast ItNet v1). SIX-BOX: (1) PRIOR: iter-8 (c16,tn800,ep60) 0.8842; iter-9 (tn1600) 0.8840 diversity-saturated; iter-10 (tn800,ep100=80000 steps) 0.8847 = FLAT (+0.0005 noise, 1783s at the wall). Training-budget levers (diversity, epochs, lr, alpha) are EXHAUSTED; pure-denoiser c16 ceiling ~0.884. (2) FAILURE MODE: capacity ceiling of the c=16 SmallUNet. iter-7 tested c24 but was CONFOUNDED (ep120->80 cut AND ran before the tn800 diversity win). Now test WIDTH cleanly at the good tn800. (3) ONE KNOB (architecture/capacity from champion iter-8): unet_c 16 -> 24 at tn800. pretrain_epochs 60 -> 40 SOLELY to keep wall-time in budget (c24 per-step ~2.25x c16; 800x40 fits under turbo). (4) HYPOTHESIS: if I widen the denoiser to c=24 at the diversity-rich tn800, I expect hr above 0.8847 because training budget is saturated but c16 may be capacity-limited for 512^2 breast detail; more channels resolve finer structure. FALSIFIER: if hr<=0.8847, c16 was NOT capacity-limited and the ~0.884 plateau is the pretrain-then-fixed-DC v1 ARCHITECTURE ceiling on breast -> remaining iters confirm the plateau (repeat best for noise band) + probe grad_clip / seed robustness rather than chase capacity. (5) BUDGET: c24 @ tn800 ep40 ~ 2.25 * (40/60) * 890s(iter-8) ~= 1335s; turbo -> within 20-min wall. If TIMEOUT, re-dispatch ep30. (6) Loop to iter-20."
+  },
+  "headroom_std": 0.016026014508285082,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8583896307099295,
+    "recomputed_val_ssim_mean": 0.9985024014115333,
+    "recomputed_val_psnr_mean": 52.83793380737305,
+    "recomputed_val_rmse_mean": 0.0007469600626791362
   }
 }

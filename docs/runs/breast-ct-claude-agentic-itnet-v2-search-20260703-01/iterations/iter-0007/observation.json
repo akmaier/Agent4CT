@@ -11,9 +11,9 @@
   "val_ssim": 0.9986510872840881,
   "val_psnr": 53.44806671142578,
   "val_rmse": 0.0007261080900207162,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00046885386585270115,
+  "val_psnr_std": 1.5947047988592864,
+  "val_rmse_std": 0.0001253070751265291,
   "kept": true,
   "status": "keep",
   "params_M": 2.08565,
@@ -37,5 +37,15 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "ITER-7 (breast itnet_v2 search, extend-to-20, 20-min budget). SIX-BOX (VERIFIED tsv/solver-log): i4 c32/n600 hr0.8347; i5 c32/n1200 hr0.8499 (PSNR52.80); i6 c32/n2400 hr0.8574 (PSNR52.88, ~15min elapsed). (2) FINDINGS: DATA lever now strongly DIMINISHING (n600->1200 +0.015, n1200->2400 only +0.0075) AND n=2400 nears the 20-min compute budget (~15min) -- data is not the efficient lever anymore. PIVOT to denoiser CAPACITY (architecture; coordinator allows). The proven capacity axis c16->c32 gave +0.009. (3) ONE KNOB vs the n1200 baseline (iter-5): unet_c 32 -> 48. Hold train_n=1200 (fast ~4min baseline, leaves ample budget for a wider net), k=1 (locked), all else = champion (alpha0.0026, residual False, lr2.5e-4, epochs15, patience15, grad_clip1.0, val_n200, seed42). NOTE isolating width against iter-5 (n1200), not iter-6 (n2400), because n2400+c48 would risk the time budget and n1200 is the clean fast baseline for the width knob. (4) HYPOTHESIS: if c 32->48 at n1200, hr rises above iter-5's 0.8499 (toward/above iter-6's 0.8574) because added denoiser capacity closes the val generalization gap more cheaply than data, and does so within ~6-8 min. FALSIFIER: hr <= ~0.851 => c=32 already capacity-sufficient at n1200; iter-8 then tries DEPTH or pretrain_epochs, or combines best-c with n2400. (5) BUDGET: c48/n1200 ~2.25x c32 conv FLOPs on the fast n1200 base (iter-5 ~4min) -> comfortably <20min. (6) Self-driving to iter-20."
+  },
+  "headroom_std": 0.015880408381892492,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8647768378649654,
+    "recomputed_val_ssim_mean": 0.9985927432775498,
+    "recomputed_val_psnr_mean": 53.24431058883667,
+    "recomputed_val_rmse_mean": 0.0007135205723170656
   }
 }

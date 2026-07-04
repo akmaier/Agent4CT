@@ -11,9 +11,9 @@
   "val_ssim": 0.998254656791687,
   "val_psnr": 52.62617492675781,
   "val_rmse": 0.0007981705130077899,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.000575984114408986,
+  "val_psnr_std": 1.5194527757678506,
+  "val_rmse_std": 0.00013425672814929848,
   "kept": true,
   "status": "keep",
   "params_M": 8.317706,
@@ -37,5 +37,15 @@
     "max_train_s": 1080,
     "seed": 42,
     "rationale": "iter-7 (breast-ct redo, search-20260703-01). ONE KNOB: epochs 4 -> 5 at unet_c=24 (all else = iter-6 exactly: itnet_k=2, unet_c=24, alpha_init=0.0025734, lr=2.16e-4, batch_size=2, train_n=2400, val_n=200, grad_clip=1.0, seed=42). SIX-BOX (NUMBERS): (1) iter-3 (c16/ep5): 0.8277. iter-5 (c24/ep3): 0.8269. iter-6 (c24/ep4): 0.8385 = NEW BEST, SSIM 0.9981, PSNR 52.16, params 8.32M, elapsed 759.8s=12.7min. (2) FAILURE MODE / signal: capacity PAYS OFF once trained -- c24/ep3->ep4 gave +0.0116 (0.8269->0.8385) and beat the c16/ep5 champion by +0.011. The epochs lever is STILL climbing at c=24 (unlike c=16 where ep4->5 gave only +0.008). iter-6 used just 12.7/20min -> ~7min budget headroom for another epoch. (3) ONE KNOB: epochs 4 -> 5 at c=24 (+25pct gradient steps; c/k/train_n held so any hr change isolates whether the c=24 net is still under-trained at ep4). (4) HYPOTHESIS: c=24 at ep5 lifts hr above 0.8385 because the 8.3M-param denoiser was still improving from ep3->4 and has not yet plateaued. FALSIFIER (NUMBERS): if hr <= 0.8385 at c24/ep5, the c=24 net has converged at ep4 -> iter-8 pivots the lever to MORE capacity (unet_c 24->32) rather than epochs. (5) BUDGET (HARD 20min=1200s): iter-6 (c24/ep4/n2400)=759.8s. Per-epoch@c24/n2400 ~= (760-130 fixed)/4 ~= 158s; fixed ~130s. At ep5: 130 + 5*158 = 920s = 15.3min < 1200s with ~5min margin. max_train_s=1080 fences the TRAIN phase; a finite val+figure land inside the 30-min sbatch wall. train_n=2400 (<= OOM-safe cap). val=200 distinct val_truth.h5 cases, 256px inscribed-circle FOV (breast default). (6) do NOT return control mid-campaign; gate on iter-7 numeric-headroom obs via iter_wait.sh v3 then dispatch iter-8."
+  },
+  "headroom_std": 0.01657516232768816,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8510456580152927,
+    "recomputed_val_ssim_mean": 0.9981473582983017,
+    "recomputed_val_psnr_mean": 52.39648937225342,
+    "recomputed_val_rmse_mean": 0.0007856607303256169
   }
 }

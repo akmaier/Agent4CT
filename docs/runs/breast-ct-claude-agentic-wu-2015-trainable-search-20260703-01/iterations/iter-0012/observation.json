@@ -11,9 +11,9 @@
   "val_ssim": 0.9466502070426941,
   "val_psnr": 39.35261917114258,
   "val_rmse": 0.0036793695762753487,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006905028201939263,
+  "val_psnr_std": 0.5819209908235768,
+  "val_rmse_std": 0.0002410345821771285,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-12 (one knob vs iter-11 best). NUMBERS: iter-7/9/10 plateau 0.3035 (soft_thresh=0.0015); iter-11 0.3088 NEW BEST (soft_thresh=0.0008). hr RISES as soft_thresh init drops -> optimum below 0.0008. FAILURE MODE: residual thresholding was too aggressive at the 0.0015 TPE value; lighter is better. ONE KNOB: wu_soft_thresh 0.0008 -> 0.0004 (DOWN, NO param change, 12 params). HYPOTHESIS: if soft_thresh init drops to 0.0004 I expect val hr > 0.3088 continuing the trend, as more aliasing-residual detail survives into the refinement; risk = noise pass-through degrades hr -> brackets the optimum in [0.0004, 0.0015] and I bisect. Budget: ~819s."
+  },
+  "headroom_std": 0.009902454705776546,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.2994602724097838,
+    "recomputed_val_ssim_mean": 0.9417766174674034,
+    "recomputed_val_psnr_mean": 38.894913005828855,
+    "recomputed_val_rmse_mean": 0.00367047916399315
   }
 }

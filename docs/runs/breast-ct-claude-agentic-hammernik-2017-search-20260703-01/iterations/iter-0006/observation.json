@@ -11,9 +11,9 @@
   "val_ssim": 0.9895423054695129,
   "val_psnr": 45.02937316894531,
   "val_rmse": 0.0019139734795317054,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0019193614162798841,
+  "val_psnr_std": 0.8584639121154305,
+  "val_rmse_std": 0.00018654186872792044,
   "kept": true,
   "status": "keep",
   "params_M": 0.008965,
@@ -42,5 +42,15 @@
     "seed": 42,
     "max_train_s": 1650,
     "rationale": "iter-6 (six-box). DEPTH GRADIENT: iter-3 T=3 hr=0.5921 -> iter-5 T=4 hr=0.6174 (+0.025, NEW BEST, ssim 0.9891, RMSE 2.0e-3, 1660s). Lambda fixed at its optimum 0.02. FAILURE MODE: none -- each extra unroll step suppresses more sparse-view streaks. HYPOTHESIS KNOB: vn_T 4 -> 5 (continue the winning depth direction; one more data+regularizer GD step). Predict hr > 0.6174 unless the tiny 16-filter bank saturates. BUDGET NOTE: T=5 at 30 epochs would be ~2075s > the 1800s SLURM kill, so epochs is set to 24 as a DEPENDENT budget variable (NOT a hypothesis knob) to hold wall-time ~constant (24*T5 ~= 30*T4 ~1650s) -- this keeps the compute matched to iter-5 so the T=4->5 comparison is clean and avoids the iter-2 under-training trap (24 epochs still fully converges this VN, which plateaued well before 30 in iters 1/3/5). All else = iter-5 (filters=16, kernel=9, n_bumps=31, x_range=2.0, lr=9.6e-4, batch=2, grad_clip=1.0, seed=42, train_n=400). max_train_s=1650 guards the wall under the 1800s kill. batch_size=2 (512px OOM guard)."
+  },
+  "headroom_std": 0.014089806744174142,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.6370030043096048,
+    "recomputed_val_ssim_mean": 0.9885422319173813,
+    "recomputed_val_psnr_mean": 44.611198539733884,
+    "recomputed_val_rmse_mean": 0.0019057788216741756
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9986565709114075,
   "val_psnr": 53.489356994628906,
   "val_rmse": 0.0007226645248010755,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0004592914677494193,
+  "val_psnr_std": 1.533626575302048,
+  "val_rmse_std": 0.00011981413336231105,
   "kept": true,
   "status": "keep",
   "params_M": 7.024897,
@@ -37,5 +37,15 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "ITER-14. SIX-BOX (NUMBERS): (1) READ iter-1..13 data-scaling series: tn200 hr 0.8464 (ep40) -> tn400 0.8615 (ep26) -> tn800 0.8696 (ep13). Each doubling of train_n LIFTED hr despite HALVING the achievable epochs (backstop): +0.0151 then +0.0081. iter-13 = c32/bs1/tn800/lr2e-4 hr=0.869586 ssim=0.9988 PSNR=54.02 RMSE=6.80e-4, backstop ep13, loss ~5.1e-7 (deep, stable). U-Swin remains DATA-LIMITED; gain is diminishing but clearly positive. (2) FAILURE MODE / limiter: DATA VOLUME still the dominant lever, but two competing effects now: (+) more data improves generalization, (-) the backstop epoch-cut gets more severe each doubling (tn1600 at bs1 = 1600 steps/epoch -> backstop ~ep6-7). Test whether data STILL wins at tn1600 or the epoch-cut finally flips it. (3) ONE KNOB: train_n 800 -> 1600 (2x again; 1600<=2400 cap, 3600 available); hold everything else at iter-13 config (c32, bs=1, ep=40, lr=2e-4, win=8, heads=8, grad_clip=1.0, seed=42). (4) HYPOTHESIS: data-scaling continues; tn 800->1600 lifts hr above 0.8696 (diminishing, maybe +0.003-0.006), because the data effect has dominated the epoch-cut at every doubling so far (200->400->800). FALSIFIER (NUMBERS): if hr <= 0.8696 at tn1600, the backstop epoch-cut (~ep6-7) FINALLY outweighs the data gain -> tn800/ep13 is the budget-optimal data/epoch balance; iter-15 stops scaling data and instead LOCKS tn800 and reallocates budget (e.g. tn800 needs the full epochs -> but backstop caps it; so iter-15 would test a lower lr for faster convergence at tn800, or accept tn800 as the practical optimum and do a confirmation/stage run). (5) 20-min budget via max_train_s=1000 backstop; val_n=200; train_n=1600<=2400; expandable_segments OOM-guard (note: tn1600 doubles the FBP-precompute memory -> expandable_segments important). (6) STRICT SERIAL: rm iter-14 obs pre-dispatch; iter_wait.sh gate before iter-15."
+  },
+  "headroom_std": 0.014818486365513774,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8653388306043442,
+    "recomputed_val_ssim_mean": 0.9986032378673554,
+    "recomputed_val_psnr_mean": 53.27298973083496,
+    "recomputed_val_rmse_mean": 0.000710292985313572
   }
 }

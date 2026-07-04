@@ -11,9 +11,9 @@
   "val_ssim": 0.9757035374641418,
   "val_psnr": 38.54008483886719,
   "val_rmse": 0.00404017511755228,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.004331456009743415,
+  "val_psnr_std": 0.6216809589843377,
+  "val_rmse_std": 0.0002719743408720536,
   "kept": true,
   "status": "keep",
   "params_M": 35.618953,
@@ -39,5 +39,15 @@
     "ram_post_fbp_blend": 0.42,
     "val_n": 200,
     "rationale": "iter-2: raise ram_sigma 0.008->0.015 (ONLY knob). Hypothesis: stronger noise-level conditioning lets RAM suppress more 128-view breast FBP quantum/streak noise, closing more RMSE gap and lifting hr>0.2925; if it over-smooths tissue hr drops and I sweep sigma downward next."
+  },
+  "headroom_std": 0.011891172758156151,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.271102412774636,
+    "recomputed_val_ssim_mean": 0.9739804127812386,
+    "recomputed_val_psnr_mean": 38.550524349212644,
+    "recomputed_val_rmse_mean": 0.003820400539552793
   }
 }

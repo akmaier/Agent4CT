@@ -11,9 +11,9 @@
   "val_ssim": 0.9814876317977905,
   "val_psnr": 39.120052337646484,
   "val_rmse": 0.0037792169023305178,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003316521780708086,
+  "val_psnr_std": 0.5587609490364478,
+  "val_rmse_std": 0.00023656980589079925,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-4 manduca_bilateral breast (train3600/val200/test200 seed20260703, per-iter train_n=400, val=200). SIX-BOX from BEST (iter-3 img_n_bf=6 hr=0.2467): (1) PRIOR: iter-1 hr=0.2159 (img=1); iter-2 hr=0.2431 (img=3, +0.027); iter-3 hr=0.2467 (img=6, +0.0036). img_n_bf DEPTH is PLATEAUING (1->3 big, 3->6 tiny). ep=10 and proj_sr=1.5 untouched since iter-1. budget 271/1200s. (2) FAILURE MODE: image-domain depth saturating; the binding constraint shifts to the image bilateral RANGE BANDWIDTH. img_sr=0.02 is a very tight range sigma in image-intensity units (breast mu up to 0.5, display_max=0.5), so each image BF only averages pixels within +/-0.02 mu -- barely reaching across the 128-view streak residual whose amplitude likely exceeds 0.02. The filters cannot pool the noisy neighbors. (3) ONE KNOB (from iter-3 best, img_n_bf=6 held): img_sr 0.02 -> 0.05 (widen image-domain range bandwidth 2.5x). All else held. (4) HYPOTHESIS: img_sr 0.02->0.05 lifts hr above 0.2467 because the current tight range sigma prevents averaging across streak residual >0.02 mu; widening to +/-0.05 lets each edge-preserving filter pool genuinely-noisy neighbors up to the wider threshold, suppressing more residual where calibrated-SSIM-headroom lives. FALSIFIER: if hr drops (edge over-smoothing) or stays flat, range bandwidth is not binding -> iter-5 attacks proj_sr or epochs. (5) BUDGET: same params (21) and filter passes -> ~270s, well under the 20-min budget. (6) Loop continues; iter-5 on landing. --qos=turbo, save ckpt+recon."
+  },
+  "headroom_std": 0.009504684275895656,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.2723712449935313,
+    "recomputed_val_ssim_mean": 0.9799084222316742,
+    "recomputed_val_psnr_mean": 38.56524185180664,
+    "recomputed_val_rmse_mean": 0.0038116064958740024
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9989535808563232,
   "val_psnr": 54.768348693847656,
   "val_rmse": 0.0006237163906916976,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00037671992561392554,
+  "val_psnr_std": 1.7017774962272916,
+  "val_rmse_std": 0.00011421913852740467,
   "kept": true,
   "status": "keep",
   "params_M": 0.928098,
@@ -37,5 +37,15 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "ITER-13 (v3 sentinel gate, normal QOS, strict serial, 20-min). SIX-BOX (VERIFIED via DONE.<jobid> sentinel + obs): iter-6 c32/n2400/lr2.5e-4/alpha0.0026 hr0.8768=BEST; iter-12 c32/n2400/lr5e-4 hr0.8504 (lr 2x HURT -0.026 -> lr=2.5e-4 is better, reverted). (2) FAILURE MODE: lr-up degraded the denoiser; capacity>c32 times out at n2400; data capped at 2400. Remaining cheap training knob at the c32/n2400 champion: itnet_alpha_init (the single k=1 DC-step strength), fixed at 0.0026 all along and untested. The learned alpha settled tiny (~0.0014) so the DC step is near-vestigial; a smaller alpha_init tests whether an even-milder DC step (closer to pure denoiser) helps. (3) ONE KNOB vs iter-6 (c32/n2400/lr2.5e-4): itnet_alpha_init 0.0026 -> 0.001. Hold c=32, n=2400, k=1, lr=2.5e-4, ep=15, grad_clip=1.0, seed=42. (4) HYPOTHESIS: if alpha_init 0.0026->0.001, hr rises above 0.8768 because a milder DC step corrupts the strong pretrained denoiser recon less (k=2/k=4 collapse showed DC hurts on sparse breast; smaller alpha = gentler). FALSIFIER: hr <= ~0.877 => alpha near-optimal/vestigial; iter-14 does seed replicates of the iter-6 champion for mean+/-std. (5) BUDGET: identical to iter-6 (c32/n2400, fits) -- only alpha changes. (6) STRICT one-at-a-time; rm DONE.* before dispatch; confirm via ssh cat DONE.<jobid>."
+  },
+  "headroom_std": 0.01487322232683282,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8844430078330667,
+    "recomputed_val_ssim_mean": 0.9989094606041908,
+    "recomputed_val_psnr_mean": 54.6222229385376,
+    "recomputed_val_rmse_mean": 0.000610215774649987
   }
 }

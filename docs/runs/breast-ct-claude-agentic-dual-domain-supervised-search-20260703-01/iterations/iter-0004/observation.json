@@ -11,9 +11,9 @@
   "val_ssim": 0.9987428188323975,
   "val_psnr": 53.47400665283203,
   "val_rmse": 0.0007239425322040915,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00041996562420234916,
+  "val_psnr_std": 1.5547767420854999,
+  "val_rmse_std": 0.00012311402520330533,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-4 dual_domain_supervised on re-split Breast-CT (train3600/val200/test200, seed20260703), val=200. SIX-BOX vs the BEST config (iter-2 c16/ep20 hr=0.8372): (1) PRIOR: iter-1 hr=0.8095 (c16/ep10), iter-2 hr=0.8372 (c16/ep20, BEST), iter-3 hr=0.8243 (c32/ep20 \u2014 REGRESSED, 3x params no gain). (2) Failure mode: c=32 was over-parameterized (capacity is NOT the lever); revert to the winning c=16. Open question: is c16 still EPOCHS-limited beyond 20? The 10->20 step gave +0.028 hr. (3) ONE KNOB vs the best config: epochs 20 -> 32 (unet_c=16 is iter-2 value, lr/lambda_neg/grad_clip unchanged). (4) HYPOTHESIS: at c=16, raising epochs 20->32 lifts hr above 0.8372 because the 10->20 doubling was still improving and the supervised MSE likely keeps descending; expect hr ~0.84-0.85. If it plateaus, epochs is saturated and iter-5 pivots to lr. (5) BUDGET: iter-2 ep20=440s -> ep32 ~ 700s << 20 min (30-min sbatch wall; breast single shared projector). (6) iter-5 dispatched on landing. Artifacts (recon_raw.npz + model_ckpt.pt) saved via AGENT4CT_SAVE_RECON / AGENT4CT_MODEL_CKPT to this iter dir."
+  },
+  "headroom_std": 0.015260254509951545,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8651057056659242,
+    "recomputed_val_ssim_mean": 0.9986514103412628,
+    "recomputed_val_psnr_mean": 53.2603133392334,
+    "recomputed_val_rmse_mean": 0.0007117299498349893
   }
 }

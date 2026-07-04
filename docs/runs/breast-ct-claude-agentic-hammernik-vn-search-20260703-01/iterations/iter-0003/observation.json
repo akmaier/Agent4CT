@@ -11,9 +11,9 @@
   "val_ssim": 0.979552149772644,
   "val_psnr": 42.490848541259766,
   "val_rmse": 0.0025636691134423018,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0032993812586994734,
+  "val_psnr_std": 0.7726862129090732,
+  "val_rmse_std": 0.00022270544468073932,
   "kept": true,
   "status": "keep",
   "params_M": 0.007683,
@@ -40,5 +40,15 @@
     "vn_checkpoint": true,
     "max_train_s": 1080,
     "rationale": "iter-3 (one knob: epochs 15->20, back to iter-1 winner T=3). iter-2 (T=4,ep=11) fell to 0.486 vs iter-1 (T=3,ep=15) 0.508 -> the drop tracks TRAINING TIME not unroll depth. Hypothesis: iter-1 was undertrained at ep=15; more epochs on T=3 should exceed 0.508. max_train_s=1080 caps the wall (may early-stop before ep20)."
+  },
+  "headroom_std": 0.013523097816300341,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.5132786544750119,
+    "recomputed_val_ssim_mean": 0.977511340379715,
+    "recomputed_val_psnr_mean": 42.06046073913574,
+    "recomputed_val_rmse_mean": 0.0025537746126065033
   }
 }

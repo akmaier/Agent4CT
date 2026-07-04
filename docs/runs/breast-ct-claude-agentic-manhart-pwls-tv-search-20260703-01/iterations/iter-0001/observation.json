@@ -35,5 +35,12 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-1 onboarding on breast_ct (128-view sparse, mu up to 0.05): Manhart 2013 PWLS statistical ray weighting W=exp(-gamma*p) on TV-iterative, gamma=1.0 paper baseline. Seeded from Mayo run config (tv_lambda=0.001, tv_iter=200, tv_lr=0.01, gd, fbp init). val_n=200 (full breast val). Feasibility: does PWLS-TV run on breast and clear the FBP baseline."
+  },
+  "headroom_std": null,
+  "_val_std_rescore_skipped": {
+    "reason": "ssim_mean_drift",
+    "drift": 0.13051942855119703,
+    "recomputed_val_ssim_mean": 0.8306719276309014,
+    "stored_val_ssim": 0.9611913561820984
   }
 }

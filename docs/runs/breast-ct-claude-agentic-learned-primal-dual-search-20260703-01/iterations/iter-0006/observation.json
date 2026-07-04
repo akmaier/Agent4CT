@@ -11,9 +11,9 @@
   "val_ssim": 0.9929436445236206,
   "val_psnr": 45.91483688354492,
   "val_rmse": 0.0017284741625189781,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0017458115806065226,
+  "val_psnr_std": 0.9602115363069474,
+  "val_rmse_std": 0.00019170635584320693,
   "kept": true,
   "status": "keep",
   "params_M": 0.303864,
@@ -41,5 +41,15 @@
     "val_n": 200,
     "val_chunk": 4,
     "rationale": "iter-6 one-knob: lpd_iters 10->12 (lr=1.2e-3, ep10, h32 fixed from best iter-5 hr=0.621). FAILURE MODE avoided: widening hidden (iter-4) hurt hr AND hit the wall, so I add DEPTH not WIDTH. HYPOTHESIS: if I add unrolled primal-dual iters I 10->12, expect hr above 0.621 because unroll depth is LPD s core inductive lever (old champion used I=15) and at h32 the extra convs are cheap; est wall ~1666s (1388*12/10), under the 30-min ceiling."
+  },
+  "headroom_std": 0.01783379234268451,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.6730716816600888,
+    "recomputed_val_ssim_mean": 0.9923527452349663,
+    "recomputed_val_psnr_mean": 45.52652244567871,
+    "recomputed_val_rmse_mean": 0.0017175429774215446
   }
 }

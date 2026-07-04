@@ -11,9 +11,9 @@
   "val_ssim": 0.9785143136978149,
   "val_psnr": 39.18022918701172,
   "val_rmse": 0.003753125201910734,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0037544872910520947,
+  "val_psnr_std": 0.5866382656733367,
+  "val_rmse_std": 0.0002359050965276112,
   "kept": true,
   "status": "keep",
   "params_M": 35.618953,
@@ -39,5 +39,15 @@
     "ram_post_fbp_blend": 0.42,
     "val_n": 200,
     "rationale": "iter-4: fine sigma probe 0.008->0.010 (ONLY knob). sigma curve is concave-peaked at 0.008 (0.004->0.183, 0.008->0.2925, 0.015->0.2252) with mild asymmetry favoring the high side. Hypothesis: peak may sit marginally above 0.008; expect hr ~>=0.2925. If not, lock sigma=0.008 and pivot to post_fbp_blend."
+  },
+  "headroom_std": 0.011354659495244265,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.32831764702560173,
+    "recomputed_val_ssim_mean": 0.9769591185450553,
+    "recomputed_val_psnr_mean": 39.26066175460815,
+    "recomputed_val_rmse_mean": 0.0035194440046325327
   }
 }

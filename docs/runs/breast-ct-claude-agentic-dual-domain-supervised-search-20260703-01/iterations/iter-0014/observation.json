@@ -11,9 +11,9 @@
   "val_ssim": 0.998680830001831,
   "val_psnr": 53.33452224731445,
   "val_rmse": 0.0007356620626524091,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0004857140064255781,
+  "val_psnr_std": 1.594076691595825,
+  "val_rmse_std": 0.00013085746532342452,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 43,
     "rationale": "iter-14 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX vs BEST (iter-8 c16/ep44/lr1e-3/lneg0.03/bs1/tn400/seed42 hr=0.8915). (1) PRIOR: search PLATEAUED at iter-8 -- every neighbor worse: lr2e-3=0.8470, ep52=0.8911(flat), c32=0.8243, lneg0.1=0.8869, lneg0.0=0.8731, bs2=0.8588, data-swap tn800/ep22=0.8785. iter-8 is optimal on every config-accessible axis. (2) Failure mode: NOT a failure -- but ALL 13 iters used seed=42; the init/training NOISE FLOOR is unknown, so iter-8s small margins over iter-7 (0.8869) and iter-11 (0.8911) may be noise not signal. (3) ONE KNOB: seed 42 -> 43 (iter-8 config otherwise identical) -- a REPLICATE to measure variance at the optimum. (4) HYPOTHESIS: at the plateau config, changing only the seed yields hr within +-~0.003 of 0.8915 (init noise), confirming a robust ~0.89 optimum not a lucky seed; if it lands much lower, iter-8 was seed-lucky and iters 15-16 add seeds to report an honest mean+-std. (5) BUDGET: same config -> ~941s, inside 20-min budget. (6) Loop to iter-20 (iters 14-16 = seed replicates to bound the noise floor). Artifacts saved."
+  },
+  "headroom_std": 0.0163513421213654,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8629163565757932,
+    "recomputed_val_ssim_mean": 0.99862319201231,
+    "recomputed_val_psnr_mean": 53.12521949768066,
+    "recomputed_val_rmse_mean": 0.0007236187212402001
   }
 }

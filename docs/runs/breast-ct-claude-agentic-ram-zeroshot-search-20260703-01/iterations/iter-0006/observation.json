@@ -11,9 +11,9 @@
   "val_ssim": 0.9769018888473511,
   "val_psnr": 39.198387145996094,
   "val_rmse": 0.0037452864926308393,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003370221725171902,
+  "val_psnr_std": 0.5421287820622659,
+  "val_rmse_std": 0.00020047526982116878,
   "kept": true,
   "status": "keep",
   "params_M": 35.618953,
@@ -39,5 +39,15 @@
     "ram_post_fbp_blend": 0.55,
     "val_n": 200,
     "rationale": "iter-6: sigma LOCKED 0.008. blend 0.42->0.55 (ONLY knob). iter-5 lowering blend to 0.30 dropped hr 0.2925->0.2616, so FBP anchor supplies needed low-freq fidelity. Hypothesis: raising FBP fraction restores data-consistent low frequencies, hr>0.2925; if hr drops, 0.42 is near-optimal."
+  },
+  "headroom_std": 0.01030494105987963,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.3753765052879912,
+    "recomputed_val_ssim_mean": 0.9749581888318062,
+    "recomputed_val_psnr_mean": 39.89151514053345,
+    "recomputed_val_rmse_mean": 0.003271661074832082
   }
 }

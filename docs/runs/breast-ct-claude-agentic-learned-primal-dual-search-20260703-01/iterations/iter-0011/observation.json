@@ -11,9 +11,9 @@
   "val_ssim": 0.991013765335083,
   "val_psnr": 44.226173400878906,
   "val_rmse": 0.002099403413012624,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0021425394691623294,
+  "val_psnr_std": 0.9572319813207453,
+  "val_rmse_std": 0.00023033103955456293,
   "kept": true,
   "status": "keep",
   "params_M": 0.25322,
@@ -41,5 +41,15 @@
     "val_n": 200,
     "val_chunk": 4,
     "rationale": "iter-11 one-knob: train_n 400->500 at the CHEAP I=10 base (iter-5: I10/h32/ep10/lr1.2e-3/cosine/gc1.0, hr=0.621, 1388s). FAILURE MODE: architecture/optimizer knobs off the iter-6 best are exhausted (lr1.6e-3/gc0.5/hidden48/n_primal7/constant-lr ALL worse or collapsed) -> pivot to the untested DATA axis. Chose I=10 (not the wall-bound I=12) and only +100 samples so wall stays <1800s (est ~1675s). HYPOTHESIS: if I add training data 400->500 at I=10, expect val hr above 0.621 because LPD is data-limited on breast s diverse phantoms and more scenes improve generalization to the 200 val cases; if it beats 0.6685 the data axis is the new lever to push. If TIMEOUT, re-dispatch train_n=450."
+  },
+  "headroom_std": 0.021597027017188897,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.6037170140766485,
+    "recomputed_val_ssim_mean": 0.9903062587976456,
+    "recomputed_val_psnr_mean": 43.85537281036377,
+    "recomputed_val_rmse_mean": 0.002081687635509297
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9956854581832886,
   "val_psnr": 49.23216247558594,
   "val_rmse": 0.001179767306894064,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0008914568735535111,
+  "val_psnr_std": 0.993828897010215,
+  "val_rmse_std": 0.0001349077261268465,
   "kept": true,
   "status": "keep",
   "params_M": 3.698994,
@@ -37,5 +37,15 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "iter-1 (breast-ct redo, search-20260703-01) FEASIBILITY. SIX-BOX: (1) no prior iter in THIS run; seed from the breast-ct TPE v3 winner (search-20260521-01 trial-18: itnet_k=2, unet_c=16, alpha_init=0.0025734, lr=0.00021567, batch_size=2, epochs=15 -> hr 0.7342 on the OLD 400-case val pool). (2) failure mode to guard: none observed yet; risk is the HARD 20-min train+score wall on the NEW split (train pool now 3600, val now 200 distinct cases) at 512^2/128-view. (3) ONE KNOB vs the TPE seed: train_n held at 400 (standard agentic per-iter train_n, NOT the full 3600) and epochs trimmed 15 -> 12 purely to guarantee the feasibility run lands inside 20 min while I measure per-epoch cost; all architecture knobs = TPE winner exactly. (4) HYPOTHESIS: itnet_k=2/unet_c=16 at lr=2.16e-4 reproduces near the TPE-winner headroom (target hr > 0.60) on the new val-200 split, confirming the architecture transfers to the redo split. FALSIFIER: hr < 0.40 or a crash/timeout => the new split or budget breaks the seed and iter-2 must fix the specific error. (5) BUDGET: 400 samples * 12 ep at batch_size=2 on itnet_k=2; max_train_s=1000 backstop fences a runaway inside the 30-min sbatch wall; measure elapsed to size epochs/train_n for iter-2. val = 200 distinct val_truth.h5 cases (val_n<=200), 256px inscribed-circle FOV (breast metric default). (6) do NOT return control mid-campaign; dispatch iter-2 myself once this lands."
+  },
+  "headroom_std": 0.013818312803391932,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.777456717581945,
+    "recomputed_val_ssim_mean": 0.9953632137179375,
+    "recomputed_val_psnr_mean": 48.87120038986206,
+    "recomputed_val_rmse_mean": 0.0011690689751412719
   }
 }

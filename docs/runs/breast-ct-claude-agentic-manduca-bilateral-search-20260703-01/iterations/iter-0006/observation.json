@@ -11,9 +11,9 @@
   "val_ssim": 0.9785897135734558,
   "val_psnr": 38.896766662597656,
   "val_rmse": 0.0038776290602982044,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003718352980540942,
+  "val_psnr_std": 0.5636799054807307,
+  "val_rmse_std": 0.00024480325581806143,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-6 manduca_bilateral breast (train_n=400, val=200). SIX-BOX from BEST (iter-4 img_sr=0.05 hr=0.2752): (1) PRIOR: iter-4 hr=0.2752 (img_sr=0.05, BEST); iter-5 hr=0.1558 (img_sr=0.10, REGRESSED -0.12, ssim 0.9815->0.9559). The img range-sigma optimum is BETWEEN 0.05 and 0.10. (2) FAILURE MODE: iter-5 over-smoothed -- range bandwidth 0.10 too wide, averaged across real breast tissue edges, ssim collapsed. (3) ONE KNOB: img_sr 0.05 -> 0.07 (bisect toward the peak from the iter-4 best state; img_n_bf=6 held). (4) HYPOTHESIS: img_sr=0.07 lifts hr above 0.2752 because 0.05 helped strongly and 0.10 over-smoothed, so the optimum sits between; 0.07 pools slightly more streak residual than 0.05 without crossing into the edge-destroying regime that collapsed iter-5. FALSIFIER: if hr<=0.2752, peak is at/below 0.05 -> iter-7 tries 0.06 or pivots off img_sr (to epochs or proj_sr). (5) BUDGET: ~236s, under 20-min. (6) Loop continues; iter-7 on landing. turbo, save ckpt+recon, params_M logged."
+  },
+  "headroom_std": 0.008697915729568587,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.2536799776841729,
+    "recomputed_val_ssim_mean": 0.9766795906424522,
+    "recomputed_val_psnr_mean": 38.34478759765625,
+    "recomputed_val_rmse_mean": 0.003909727240679786
   }
 }

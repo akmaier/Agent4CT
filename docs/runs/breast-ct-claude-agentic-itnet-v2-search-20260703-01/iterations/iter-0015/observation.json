@@ -11,9 +11,9 @@
   "val_ssim": 0.9989038705825806,
   "val_psnr": 54.50718307495117,
   "val_rmse": 0.0006427544867619872,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0003955396665365753,
+  "val_psnr_std": 1.672195885460692,
+  "val_rmse_std": 0.00011627964398447079,
   "kept": true,
   "status": "keep",
   "params_M": 0.928098,
@@ -37,5 +37,15 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "ITER-15 (v3 sentinel, normal QOS, strict serial). SIX-BOX (sentinel-verified): alpha trend MONOTONIC-better as it shrinks: alpha0.0026 hr0.8768(i6), alpha0.001 0.8804(i13), alpha0.0004 0.8853(i14)=BEST (+0.0049). The k=1 DC step is best VERY WEAK (approaching pure pretrained denoiser). (2) OPEN QUESTION: does hr keep rising toward alpha->0? Test one more step down. (3) ONE KNOB vs iter-14 (c32/n2400/alpha0.0004): itnet_alpha_init 0.0004 -> 0.0001. Hold c=32, n=2400, k=1, lr=2.5e-4, ep=15, grad_clip=1.0, seed=42. (4) HYPOTHESIS: if alpha 0.0004->0.0001, hr rises above 0.8853 because an even weaker DC step corrupts the strong denoiser recon even less (the learned alpha is softplus(log_alpha) so alpha_init sets the starting DC strength). FALSIFIER: hr <= ~0.885 (flat/down) => alpha optimum reached ~0.0004; iter-16 LOCKS the best-alpha champion and begins seed replicates for mean+/-std. (5) BUDGET: identical to iter-6 (c32/n2400) -- only alpha changes. (6) STRICT one-at-a-time; rm DONE.* first; confirm via ssh cat DONE.<jobid>."
+  },
+  "headroom_std": 0.015025275321955614,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8805091488904074,
+    "recomputed_val_ssim_mean": 0.998864257633686,
+    "recomputed_val_psnr_mean": 54.327804222106934,
+    "recomputed_val_rmse_mean": 0.0006308673738385551
   }
 }

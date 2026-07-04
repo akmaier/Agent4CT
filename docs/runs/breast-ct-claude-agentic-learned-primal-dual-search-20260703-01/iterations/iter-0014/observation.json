@@ -11,9 +11,9 @@
   "val_ssim": 0.9925280809402466,
   "val_psnr": 44.908538818359375,
   "val_rmse": 0.0019407860236242414,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.002111796108344386,
+  "val_psnr_std": 1.2641585836862579,
+  "val_rmse_std": 0.0002864511226682989,
   "kept": true,
   "status": "keep",
   "params_M": 0.303864,
@@ -42,5 +42,15 @@
     "val_chunk": 4,
     "seed": 44,
     "rationale": "iter-14 one-knob: seed 43->44 on the champion config (I12/h32/ep10/lr1.2e-3/cosine/gc1.0/mse). FINDING from iter-13: the seed-42 champion (0.6685) is NOT seed-robust -- seed 43 gave 0.4936 (Delta~0.175). So the config is under-converged at the 20-min budget (400 samples x 10 ep) and hr has high run-to-run variance. HYPOTHESIS: seed 44 lands in [0.49,0.67]; this 3rd replicate {42:0.669, 43:0.494, 44:?} tightens an honest mean+/-std for the leaderboard/paper (the reported number must be the replicate mean, not the lucky seed-42 max). Time-neutral ~1800s."
+  },
+  "headroom_std": 0.03584140656526419,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.6352895228910999,
+    "recomputed_val_ssim_mean": 0.9919890496134758,
+    "recomputed_val_psnr_mean": 44.60343963623047,
+    "recomputed_val_rmse_mean": 0.0019190018728841097
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9466195702552795,
   "val_psnr": 39.18303680419922,
   "val_rmse": 0.0037519128527492285,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007664879323639979,
+  "val_psnr_std": 0.615519952658501,
+  "val_rmse_std": 0.00026032464608627756,
   "kept": true,
   "status": "keep",
   "params_M": 1.4e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-2 (one knob vs iter-1). iter-1 = TPE-winner seed: hr=0.3009 val_ssim=0.9501 psnr=39.43 12 params 819s (~13.7min, fits 20-min budget), status=keep -- reproduces the prior-split ceiling ~0.317 on the new 200-case val. FAILURE MODE: hr pinned at the classical algorithms 4-6-band spectral-expressivity ceiling; the prior TPE lifted hr by moving n_bands 4->6 (+50pct) and the solver design doc lists n_bands=8 (Wagners published value) as the untested lever #4 for finer spectral control. ONE KNOB: wu_n_bands 6 -> 8 (params 12 -> 14, still ultra-low). All else identical to iter-1. HYPOTHESIS: if I raise wu_n_bands to 8 I expect val hr to rise above 0.3009 because 8 triangular radial-frequency bands give the learnable per-band scales finer control to reweight the aliasing-free FBP, matching Wagners recommended band count; risk is +2 params overfit or the extra high-freq bands collapsing (band-runaway) -- watched via per-epoch band_scale log. Budget: +2 bands ~= +1/3 back-projection work in the FBP loop, still well under 20 min."
+  },
+  "headroom_std": 0.00993174173923305,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.2857000548173512,
+    "recomputed_val_ssim_mean": 0.9417500668764114,
+    "recomputed_val_psnr_mean": 38.72592794418335,
+    "recomputed_val_rmse_mean": 0.0037435854994691906
   }
 }

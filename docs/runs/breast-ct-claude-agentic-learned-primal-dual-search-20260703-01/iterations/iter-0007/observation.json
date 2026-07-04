@@ -11,9 +11,9 @@
   "val_ssim": 0.9896417260169983,
   "val_psnr": 43.26460266113281,
   "val_rmse": 0.002345170360058546,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.002791194759733559,
+  "val_psnr_std": 1.1272776353537217,
+  "val_rmse_std": 0.00030772143389367956,
   "kept": true,
   "status": "keep",
   "params_M": 0.25322,
@@ -41,5 +41,15 @@
     "val_n": 200,
     "val_chunk": 4,
     "rationale": "iter-7 one-knob: lr 1.2e-3->1.6e-3 at the CHEAP I=10 baseline (h32, ep10) -- i.e. one knob vs iter-5 (hr=0.621, same I10/h32/ep10/lr1.2e-3). FAILURE MODE: iter-6 (I=12) improved hr to 0.6685 but ran 1799.8s = AT the 30-min wall, so depth is wall-bound; I keep exploring the lr axis, which is the strongest unsaturated lever (fixed-I10 lr sweep: 5e-4=0.44, 8e-4=0.566, 1.2e-3=0.621 -- still climbing). HYPOTHESIS: if I push lr 1.2e-3->1.6e-3 with cosine decay at I10, expect hr above 0.621 (and competitive with iter-6 0.6685) because the lr sweep has not plateaued; wall ~1388s (I10), large margin under the ceiling. grad_clip=1.0 guards the higher lr."
+  },
+  "headroom_std": 0.035663580972917504,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.558109872033464,
+    "recomputed_val_ssim_mean": 0.988853490948677,
+    "recomputed_val_psnr_mean": 42.92391736984253,
+    "recomputed_val_rmse_mean": 0.002323113623424433
   }
 }

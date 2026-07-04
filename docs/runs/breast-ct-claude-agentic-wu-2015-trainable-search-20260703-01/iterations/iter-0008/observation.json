@@ -11,9 +11,9 @@
   "val_ssim": 0.8858630061149597,
   "val_psnr": 35.801788330078125,
   "val_rmse": 0.0055375169031322,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011592414670325681,
+  "val_psnr_std": 0.4796997284483427,
+  "val_rmse_std": 0.0002987207548723166,
   "kept": false,
   "status": "discard",
   "params_M": 1.2e-05,
@@ -45,5 +45,15 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-8 (one knob vs iter-7 best). NUMBERS: iter-1 0.3009(lr=1.1e-4); iter-6 0.2914(lr=2e-4 up=worse); iter-7 0.3035(lr=7e-5 down=NEW BEST). lr response is monotone-improving as lr DROPS from 2e-4->1.1e-4->7e-5. FAILURE MODE: hr still climbing as lr shrinks; optimum lr < 7e-5 not yet bracketed. ONE KNOB: lr 7e-5 -> 4e-5 (DOWN, NO param change, 12 params). HYPOTHESIS: if I lower lr to 4e-5 I expect val hr > 0.3035 continuing the monotone trend, as the 12 scalars settle with even less overshoot at the fixed 12-epoch budget; risk = UNDERFIT in 12 epochs (hr drops), which would bracket the lr optimum in [4e-5, 1.1e-4] and I would then either bisect or lengthen epochs. Budget: same ~819s as iter-1."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8765189549326897,
+    "recomputed_val_psnr_mean": 35.330576190948484,
+    "recomputed_val_rmse_mean": 0.005528744533658028
   }
 }

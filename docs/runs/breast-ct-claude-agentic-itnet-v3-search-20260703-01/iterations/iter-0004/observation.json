@@ -11,9 +11,9 @@
   "val_ssim": 0.9962430596351624,
   "val_psnr": 50.07377624511719,
   "val_rmse": 0.0010708178160712123,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0009494542005676871,
+  "val_psnr_std": 1.238357553501948,
+  "val_rmse_std": 0.00015163746832719466,
   "kept": true,
   "status": "keep",
   "params_M": 3.698994,
@@ -37,5 +37,15 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "iter-4 (breast-ct redo, search-20260703-01). ONE KNOB (ARCHITECTURE): itnet_k 2 -> 3 (one MORE unrolled denoiser+data-consistency step), with epochs traded DOWN 5 -> 3 to fund the extra unroll pass inside the HARD 20-min wall. All else = iter-3 exactly (unet_c=16, alpha_init=0.0025734, lr=2.16e-4, batch_size=2, train_n=2400, val_n=200, grad_clip=1.0, seed=42). SIX-BOX (NUMBERS): (1) iter-1 (n400/ep12/k2): hr 0.7737. iter-2 (n2400/ep4/k2): hr 0.8198. iter-3 (n2400/ep5/k2): hr 0.8277, SSIM 0.9977, PSNR 51.60, RMSE 8.99e-4, elapsed 877.4s=14.6min, params 3.699M. (2) FAILURE MODE: the EPOCHS lever is now in DIMINISHING RETURNS -- coverage (n400->2400) gave +0.046 but the ep4->5 step gave only +0.0079, so more epochs on k=2 will not move the needle much. The distinctive ItNet lever not yet tried is UNROLL DEPTH: itnet_k controls how many denoiser+DC iterations refine the recon; k=2 may under-enforce sinogram data-consistency on this 128-view breast geometry. (3) ONE KNOB: itnet_k 2 -> 3 (an ARCHITECTURE change, explicitly allowed). epochs 5 -> 3 funds the ~1.5x per-forward cost of the extra unroll while holding train_n=2400 so the coverage gain is preserved. (4) HYPOTHESIS: a 3rd unroll step lifts hr above 0.8277 because more DC iterations better reconcile the recon with the measured sinogram (sharper edges, fewer sparse-view streaks) than the k=2 net could at any epoch count. FALSIFIER (NUMBERS): if hr <= 0.8277 at k=3/ep3, then either 3 epochs is too few to train the deeper unrolled loop (optimization-limited -> iter-5 keeps k=3 but adds epochs by trading train_n down) OR k=2 already saturates DC on this geometry (-> iter-5 pivots to capacity, unet_c 16->24). (5) BUDGET (HARD 20min=1200s): iter-3 (k2/ep5/n2400) = 877.4s with ~4.6 min headroom. Train work ~ epochs*k*train_n: iter-3 = 5*2*2400 = 24000 units; iter-4 = 3*3*2400 = 21600 units = 0.9x iter-3 train. The k=3 VAL forward is ~1.5x iter-3's k=2 val, but val is a small share of the 877s (200 cases, one forward each). Net predicted elapsed ~= 0.9*train + 1.5*val + fixed ~= 850-950s = 14-16min < 1200s. max_train_s=1000 fences the TRAIN phase alone so a runaway cannot eat val+figure; a finite val+figure always land inside the 30-min sbatch wall. train_n=2400 (<= OOM-safe cap; whole-train FBP precompute fits >=24GB nodes). val=200 distinct val_truth.h5 cases, 256px inscribed-circle FOV (breast default). (6) do NOT return control mid-campaign; gate on iter-4 numeric-headroom obs via iter_wait.sh v3 sentinel then dispatch iter-5."
+  },
+  "headroom_std": 0.016556655174357324,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.7987480497264885,
+    "recomputed_val_ssim_mean": 0.9959591561555863,
+    "recomputed_val_psnr_mean": 49.75688917160034,
+    "recomputed_val_rmse_mean": 0.0010595324513269588
   }
 }

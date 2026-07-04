@@ -11,9 +11,9 @@
   "val_ssim": 0.985295832157135,
   "val_psnr": 42.23362350463867,
   "val_rmse": 0.002640724880620837,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0033092662828750133,
+  "val_psnr_std": 0.9603524088621792,
+  "val_rmse_std": 0.000288934763931029,
   "kept": true,
   "status": "keep",
   "params_M": 0.303864,
@@ -42,5 +42,15 @@
     "val_chunk": 4,
     "seed": 43,
     "rationale": "iter-13 one-knob: seed 42->43 on the CHAMPION config (iter-6: I12/h32/ep10/lr1.2e-3/cosine/gc1.0/mse, hr=0.6685). SEARCH CONVERGED: 8 distinct single-knob changes off iter-6 (lr up/down, gc0.5, hidden48, n_primal7, constant-lr, train_n500, l1-loss) were ALL worse or collapsed -> iter-6 is the budget-bound optimum (old champ 0.90 needed ~4000s, unreachable under 20 min). Remaining iters characterize the champion SEED SPREAD for the leaderboard/paper mean+/-std. HYPOTHESIS: hr lands within ~+/-0.01 of 0.6685 (config fixed; only train-subset sampling + init RNG change), starting the replicate set {42,43,44,45}. Time-neutral ~1800s."
+  },
+  "headroom_std": 0.027021962688478778,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.5014622115839937,
+    "recomputed_val_ssim_mean": 0.9840421637892723,
+    "recomputed_val_psnr_mean": 41.86144723892212,
+    "recomputed_val_rmse_mean": 0.002618884950061329
   }
 }

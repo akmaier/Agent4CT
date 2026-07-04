@@ -11,9 +11,9 @@
   "val_ssim": 0.9990624785423279,
   "val_psnr": 55.256431579589844,
   "val_rmse": 0.0005896344664506614,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00027696233181181854,
+  "val_psnr_std": 1.291101152286534,
+  "val_rmse_std": 8.549853729904078e-05,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-7 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX vs BEST (iter-6 c16/ep44/lr1e-3/lambda_neg1.0 hr=0.8843): (1) PRIOR: epochs lever tapering (ep32->44 +0.0186, lr5e-4->1e-3 +0.0045 -- diminishing); c=32 REGRESSED. iter-6 elapsed 1023s (~17 min, room but data-scaling at fixed epochs would breach 20-min). (2) Failure mode: hr gains flattening toward ~0.88 with epochs+lr near-tapped; a still-UNTESTED axis is the LOSS weighting -- lambda_neg=1.0 may over-suppress low-mu breast regions. (3) ONE KNOB: lambda_neg 1.0 -> 0.1 (c=16, epochs=44, lr=1e-3 all held at iter-6 winning values). Budget-neutral (same compute). (4) HYPOTHESIS: lowering the negativity-penalty weight to 0.1 lets the supervised L2 term dominate and fit true breast attenuation more faithfully -> hr above 0.8843; a cross-dataset Mayo hint flagged lambda_neg~0.1 as favorable. Expect ~0.885-0.89. If hr DROPS, the penalty was load-bearing -> revert to 1.0 and iter-8 pivots to an architecture knob (sino-branch depth). (5) BUDGET: same ep=44 -> ~1023s, inside the HARD 20-min budget (30-min wall). (6) Loop continues to iter-20. Artifacts saved to this iter dir."
+  },
+  "headroom_std": 0.0101460382358516,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8893009829146628,
+    "recomputed_val_ssim_mean": 0.9990313285589218,
+    "recomputed_val_psnr_mean": 54.957178268432614,
+    "recomputed_val_rmse_mean": 0.0005827090323145967
   }
 }

@@ -88,7 +88,7 @@
       { label: "SSIM", cls: "lb-num",
         val: function (r) { return fmtMeanStd(r.val_ssim, r.val_ssim_std, fmtSSIM); } },
       { label: "hr", cls: "lb-num lb-hr",
-        val: function (r) { return fmtHr(r.headroom); } },
+        val: function (r) { return fmtMeanStd(r.headroom, r.headroom_std, fmtHr); } },
       { label: "PSNR (dB)", cls: "lb-num",
         val: function (r) { return fmtMeanStd(r.val_psnr, r.val_psnr_std, fmtPSNR); } },
       { label: "RMSE", cls: "lb-num",

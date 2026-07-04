@@ -35,5 +35,12 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-2 PWLS-ACTIVATION TEST. iter-1 (gamma=1.0, Manhart) gave hr=0.16648/ssim=0.9612. Mayo lesson: at tv_lambda=0.001 the TV term can dominate the data term ~1000x, making the PWLS ray-weight W=exp(-gamma*p) INERT (Mayo iter-1 g=1.0 vs iter-2 g=0.5 were bit-identical). ONE knob: pwls_gamma 1.0->0.0 (exactly plain TV; W==1 everywhere). HYPOTHESIS: if plain-TV (g=0) hr DIFFERS from iter-1's g=1.0, PWLS ray-weighting is LIVE on breast (128-view sparse data term bites harder than dense Mayo) and gamma is a real lever; if bit-identical, PWLS is inert here and I pivot to TV knobs (tv_lambda/lr/iterations). All else fixed from iter-1. Budget: iter-1 ran 199s<<1200s."
+  },
+  "headroom_std": null,
+  "_val_std_rescore_skipped": {
+    "reason": "ssim_mean_drift",
+    "drift": 0.130519050359726,
+    "recomputed_val_ssim_mean": 0.8306720077991485,
+    "stored_val_ssim": 0.9611910581588745
   }
 }

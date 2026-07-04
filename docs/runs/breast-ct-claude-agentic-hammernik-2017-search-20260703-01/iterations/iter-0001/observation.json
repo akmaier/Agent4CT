@@ -11,9 +11,9 @@
   "val_ssim": 0.9848971962928772,
   "val_psnr": 43.8115119934082,
   "val_rmse": 0.0022020582109689713,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.002346270448582568,
+  "val_psnr_std": 0.7528529712848439,
+  "val_rmse_std": 0.00018966966067437857,
   "kept": true,
   "status": "keep",
   "params_M": 0.005379,
@@ -42,5 +42,15 @@
     "seed": 42,
     "max_train_s": 1000,
     "rationale": "iter-1 FEASIBILITY seed for Hammernik-2017 on the REDONE Breast-CT split (train3600/val200/test200). Seeded from the prior breast TPE optimum (search-20260521-01 iter-15: hr=0.4549 val-only, ep=30 lr=9.6e-4 T=3 filters=16 kernel=9 lambda_init=9.7e-3 batch=2). HYPOTHESIS: this known-good VN config clears the ~0.84 breast LD-FBP floor and reproduces hr~0.45 on the new val200 split. If I re-use the strongest known config I expect hr>0 (recon beats FBP) because this architecture already cleared baseline on breast. train_n=400 for agentic signal, val_n=200 full held-out val, batch_size=2 conservative to avoid 512px OOM in the RBF-bump loop. max_train_s=1000 keeps train+score under the 20-min budget."
+  },
+  "headroom_std": 0.012071133039414707,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.581452547139508,
+    "recomputed_val_ssim_mean": 0.983398522734642,
+    "recomputed_val_psnr_mean": 43.37143672943115,
+    "recomputed_val_rmse_mean": 0.0021958097897004335
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9983187913894653,
   "val_psnr": 52.59807586669922,
   "val_rmse": 0.0008007570286281407,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0005939451146631532,
+  "val_psnr_std": 1.6014624716159398,
+  "val_rmse_std": 0.00014044036935139924,
   "kept": true,
   "status": "keep",
   "params_M": 7.024897,
@@ -37,5 +37,15 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "ITER-8. SIX-BOX (NUMBERS): (1) READ iter-1..7: hr 0.6490/0.8193/0.8092(win16)/0.8208(c24,bs2)/0.8136(lr4e-4)/0.8093(c32,bs2)/0.8440(bs1,NEW BEST). iter-7 = c24/win8/h8/ep40/lr2e-4/BS=1 hr=0.844001 ssim=0.9982 PSNR=52.46 elapsed=714s (full 40ep, NO backstop). bs 2->1 gave +0.023 hr (biggest jump since epochs), loss to ~6.5e-7. (2) FAILURE MODE REVISED: earlier 'hr~0.82 data/geometry ceiling' was WRONG; iter-7 shows it was OPTIMIZATION-GRANULARITY limited (2x gradient updates found a better minimum 0.821->0.844). So capacity may NOW pay off; iter-6 tested c32 but under the STALE bs2 regime (0.809, regressed because bs2 under-optimized). Re-test capacity under the WINNING bs1 dynamics. (3) ONE KNOB: uswin_c 24 -> 32; hold everything else at iter-7 BEST (bs=1, ep=40, lr=2e-4, win=8, heads=8, grad_clip=1.0, seed=42). No epoch cut -> ONE knob; max_train_s=1000 backstop caps overrun. (4) HYPOTHESIS: with bs1's 2x-denser updates the model can EXPLOIT c32 capacity that bs2 could not, lifting hr above 0.844. FALSIFIER: if hr <= 0.844 at c32/bs1, capacity is non-productive even under good optimization -> 0.844 near the ceiling; iter-9 returns to lr sweep/schedule or train_n. (5) 20-min budget via max_train_s=1000 backstop; expandable_segments guards OOM at c32; val_n=200. (6) STRICT SERIAL gate before iter-9."
+  },
+  "headroom_std": 0.017795736296515957,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8507835301274729,
+    "recomputed_val_ssim_mean": 0.9982369017601013,
+    "recomputed_val_psnr_mean": 52.390113773345945,
+    "recomputed_val_rmse_mean": 0.0007874558751063887
   }
 }

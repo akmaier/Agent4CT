@@ -11,9 +11,9 @@
   "val_ssim": 0.9989974498748779,
   "val_psnr": 55.040035247802734,
   "val_rmse": 0.0006045090849511325,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00035306293927033416,
+  "val_psnr_std": 1.6600532756251254,
+  "val_rmse_std": 0.00010872708629790954,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,15 @@
     "grad_clip": 1.0,
     "seed": 42,
     "rationale": "iter-9 (breast ItNet v1). SIX-BOX: (1) PRIOR: iter-5 (tn400,ep120) 0.8741; iter-8 (tn800,ep60, compute-matched 48000 steps) 0.8842 NEW BEST (+0.010). CONFIRMED: at equal compute, 2x MORE scene DIVERSITY helps -> denoiser was DATA-diversity-limited, not compute-limited. (2) FAILURE MODE: keep pushing the winning lever until diversity saturates. (3) ONE KNOB (from champion iter-8): train_n 800 -> 1600, with pretrain_epochs 60 -> 30 so 1600x30 = 48000 grad steps = SAME compute (epoch cut is pure compute-normalization). All else = iter-8 (k1,a0.0,c16,lr1e-3,val200). (4) HYPOTHESIS: if I double scene diversity again at fixed compute, I expect hr above 0.8842 (continuing the 0.8741->0.8842 diversity slope) because the breast-phantom distribution is still under-covered at 800 scenes. FALSIFIER: if hr<=0.8842, diversity saturates around 800-1600 scenes at fixed 48000 steps -> the ceiling shifts to COMPUTE (more total grad steps) or CAPACITY -> iter-10 raises total steps (more epochs at the best train_n, budget permitting) or width. (5) BUDGET: 48000 grad steps = iter-8s ~890s (turbo) < 20 min; each epoch now touches 1600 scenes but only 30 epochs. train_n=1600 <= 2400 FBP-safe cap. (6) Loop to iter-20."
+  },
+  "headroom_std": 0.014041467937810317,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8874338994962383,
+    "recomputed_val_ssim_mean": 0.9989637985825539,
+    "recomputed_val_psnr_mean": 54.845211277008055,
+    "recomputed_val_rmse_mean": 0.0005942365789087489
   }
 }

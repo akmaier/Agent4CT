@@ -11,9 +11,9 @@
   "val_ssim": 0.9984807968139648,
   "val_psnr": 52.63229751586914,
   "val_rmse": 0.0007976078777574003,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0004923989469385551,
+  "val_psnr_std": 1.3542960154759272,
+  "val_rmse_std": 0.00012174515854444792,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,15 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-12 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX vs BEST (iter-8 c16/ep44/lr1e-3/lneg0.03/tn400 hr=0.8915). (1) PRIOR: epochs SATURATE at ~44 -- iter-11 (ep52) = 0.8911, flat vs iter-8 (-0.0004, val noise). lr1e-3 beat 5e-4 (iter-6 +0.0045). lneg0.03 optimal; c=32 worse; data-diversity worse. (2) Failure mode: epochs cannot buy more; fit is optimizer-LIMITED within 44 epochs -- a higher lr covers more loss-descent per epoch. (3) ONE KNOB: lr 1e-3 -> 2e-3 (iter-8 config otherwise identical). (4) HYPOTHESIS: doubling lr to 2e-3 reaches a lower L2 minimum within 44 epochs -> hr above 0.8915; grad_clip=1.0 + nonfinite-skip guard instability. If hr DROPS (too aggressive/unstable), 1e-3 is the lr optimum and iter-13 tries a cosine lr-schedule at 1e-3. Expect ~0.89-0.895. (5) BUDGET: same ep=44 -> ~941s, inside 20-min budget. (6) Loop to iter-20. Artifacts saved."
+  },
+  "headroom_std": 0.014126379285295388,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "recomputed_headroom_mean": 0.8508451931220803,
+    "recomputed_val_ssim_mean": 0.9984102702140808,
+    "recomputed_val_psnr_mean": 52.36904293060303,
+    "recomputed_val_rmse_mean": 0.0007858529983786867
   }
 }
