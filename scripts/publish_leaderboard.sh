@@ -11,6 +11,11 @@ cd "$(dirname "$0")/.." || exit 1
 REPO_C=/cluster/maier/Agent4CT
 SSH="ssh -o BatchMode=yes -o ConnectTimeout=12"
 
+# 0. Populate per-case mean±std for any NEW iters from their saved recon_raw.npz
+#    (idempotent: skips iters that already have a numeric headroom_std). This is
+#    why the board shows ± std in every measure; new best-iters get std here.
+$SSH lme-bastion "cd $REPO_C && HDF5_USE_FILE_LOCKING=FALSE python3 scripts/rescore_val_std.py --all >/dev/null 2>&1" || true
+
 # 1. Discover breast run dirs on the cluster.
 slugs=$($SSH lme-bastion "ls -d $REPO_C/docs/runs/breast-ct-claude-agentic-*-search-20260703-01 2>/dev/null | sed 's#.*/##'" 2>/dev/null)
 [ -z "$slugs" ] && { echo "publish_leaderboard: no breast run dirs on cluster"; exit 0; }
