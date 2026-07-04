@@ -308,7 +308,29 @@ def main() -> int:
         "elapsed_s": elapsed,
         "cfg_full":  cfg,
     }
-    (dash_iter / "observation.json").write_text(json.dumps(obs, indent=2))
+    # Durable write of observation.json, then a per-JOBID completion sentinel.
+    # On this NFS cluster a REUSED path (iter-00NN/observation.json) can serve a
+    # PRIOR attempt's cached content, so completion gates that read it get stale
+    # phantom "DONE"s. A sentinel named after the CURRENT SLURM job (DONE.<jobid>)
+    # cannot be a prior attempt's artifact — gate on that instead. Written LAST,
+    # after observation.json is fsync'd to disk.
+    obs_path = dash_iter / "observation.json"
+    obs_path.write_text(json.dumps(obs, indent=2))
+    try:
+        _fd = os.open(str(obs_path), os.O_RDONLY)
+        os.fsync(_fd); os.close(_fd)
+    except Exception:
+        pass
+    _jobid = os.environ.get("SLURM_JOB_ID", "nojob")
+    _sentinel = dash_iter / f"DONE.{_jobid}"
+    _sentinel.write_text(f"{obs['headroom']}\n")
+    try:
+        _fd = os.open(str(_sentinel), os.O_RDONLY)
+        os.fsync(_fd); os.close(_fd)
+        _dfd = os.open(str(dash_iter), os.O_RDONLY)
+        os.fsync(_dfd); os.close(_dfd)
+    except Exception:
+        pass
 
     # Append results.tsv row (with the git SHA in the commit column + the
     # psnr/rmse/elapsed_s/params_M metrics in their new trailing columns).
