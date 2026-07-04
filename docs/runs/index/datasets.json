@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-03T21:24:45Z",
+ "updated": "2026-07-04T18:16:40Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
@@ -22,17 +22,17 @@
    "challenge": "breast_ct",
    "label": "Breast-CT",
    "campaign": "calibrated+agentic",
-   "n_runs": 5,
-   "n_iterations": 21,
-   "n_solvers": 5,
-   "champion_slug": "breast-ct-claude-agentic-itnet-v2-search-20260703-01",
-   "champion_name": "ITNet v2",
-   "champion_headroom": 0.843340574215895,
-   "champion_ssim": 0.9981955692172051,
-   "champion_metric_basis": "test",
-   "champion_test_n": 200,
-   "champion_score": 0.843340574215895,
-   "thumbnail": "runs/breast-ct-claude-agentic-itnet-v2-search-20260703-01/iterations/iter-0005/comparison.png"
+   "n_runs": 12,
+   "n_iterations": 130,
+   "n_solvers": 12,
+   "champion_slug": "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01",
+   "champion_name": "DD-UNet supervised L2",
+   "champion_headroom": 0.8915438850273929,
+   "champion_ssim": 0.9991382956504822,
+   "champion_metric_basis": "val",
+   "champion_test_n": null,
+   "champion_score": 0.8915438850273929,
+   "thumbnail": "runs/breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01/iterations/iter-0008/comparison.png"
   },
   {
    "challenge": "demo_dl",

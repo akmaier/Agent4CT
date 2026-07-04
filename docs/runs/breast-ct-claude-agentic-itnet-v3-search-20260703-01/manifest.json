@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-claude-agentic-itnet-v3-search-20260703-01",
+  "challenge": "breast_ct",
+  "slug_prefix": "breast-ct-claude-agentic-itnet-v3-search",
+  "started": "2026-07-03T22:35:14Z",
+  "agent": "itnet_v3-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

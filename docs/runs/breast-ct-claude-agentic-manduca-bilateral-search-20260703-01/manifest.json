@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-claude-agentic-manduca-bilateral-search-20260703-01",
+  "challenge": "breast_ct",
+  "slug_prefix": "breast-ct-claude-agentic-manduca-bilateral-search",
+  "started": "2026-07-03T22:34:43Z",
+  "agent": "manduca_bilateral-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

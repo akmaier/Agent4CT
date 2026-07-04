@@ -52,3 +52,10 @@ llm_api.toml
 
 # Cross-agent hand-off notes — ephemeral, regenerated per session.
 hand-off.md
+
+# large per-iter artifacts — never commit (GitHub 100MB limit)
+*.npz
+*.pt
+model_ckpt.pt
+recon_raw.npz
+*.bak

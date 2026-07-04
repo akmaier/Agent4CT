@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01",
+  "challenge": "breast_ct",
+  "slug_prefix": "breast-ct-claude-agentic-wu-2015-trainable-search",
+  "started": "2026-07-03T22:29:34Z",
+  "agent": "wu_2015_trainable-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "_note": "The SINGLE allowlist for the result register. build_registry.py walks ONLY the run-ids listed under datasets[].run_ids; everything else on disk is ignored (legacy / different-scoring-convention runs, purged campaigns). A campaign reset edits THIS ONE FILE. publish.sh rsyncs exactly these run-ids (never a blanket docs/runs glob).",
-  "updated": "2026-07-03T12:00:00Z",
+  "updated": "2026-07-04T18:00:00Z",
   "datasets": {
     "mayo_ldct": {
       "label": "Mayo-LDCT",
@@ -40,13 +40,20 @@
     "breast_ct": {
       "label": "Breast-CT",
       "campaign": "calibrated+agentic",
-      "note": "INTERIM val-scored snapshot (2026-07-03) of the in-progress test-split redo — search-phase val=200 headroom, runs still advancing to 5 iters; FINAL board will be test-scored (best-by-test-hr over 200 test cases). ITNet v1 currently below baseline (config WIP).",
+      "note": "LIVE 20-iter agentic search (2026-07-03/04): 12 solvers, val-ranked (best-by-val-hr per solver, per-slice mean\u00b1std over the 200-case val split). Test-scored final board follows the search.",
       "run_ids": [
         "breast-ct-claude-agentic-itnet-search-20260703-01",
         "breast-ct-claude-agentic-itnet-v2-search-20260703-01",
-        "breast-ct-claude-agentic-learned-primal-dual-search-20260703-01",
+        "breast-ct-claude-agentic-itnet-v3-search-20260703-01",
         "breast-ct-claude-agentic-uswin-search-20260703-01",
-        "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01"
+        "breast-ct-claude-agentic-learned-primal-dual-search-20260703-01",
+        "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01",
+        "breast-ct-claude-agentic-hammernik-2017-search-20260703-01",
+        "breast-ct-claude-agentic-hammernik-vn-search-20260703-01",
+        "breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01",
+        "breast-ct-claude-agentic-ram-zeroshot-search-20260703-01",
+        "breast-ct-claude-agentic-manduca-bilateral-search-20260703-01",
+        "breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01"
       ],
       "exclude_iters": {}
     },
