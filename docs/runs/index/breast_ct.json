@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-04T20:51:34Z",
+ "updated": "2026-07-04T23:09:26Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -14,19 +14,19 @@
     "solver_key": "dual-domain-supervised",
     "solver_name": "DD-UNet supervised L2",
     "run_id": "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01",
-    "best_iter": 8,
+    "best_iter": 19,
     "params_M": 0.465762,
     "params_source": "observation",
-    "val_ssim": 0.9991382956504822,
-    "headroom": 0.8915438850273929,
-    "val_psnr": 55.619117736816406,
-    "val_rmse": 0.000565520953387022,
-    "val_ssim_std": 0.00027375768102684274,
-    "val_psnr_std": 1.4044507288756076,
-    "val_rmse_std": 8.825259797778359e-05,
-    "headroom_std": 0.010629517061311062,
-    "elapsed_s": 941.0925467014313,
-    "image": "runs/breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01/iterations/iter-0008/comparison.png",
+    "val_ssim": 0.9991475939750671,
+    "headroom": 0.8924881061449925,
+    "val_psnr": 55.695068359375,
+    "val_rmse": 0.0005605975165963173,
+    "val_ssim_std": null,
+    "val_psnr_std": null,
+    "val_rmse_std": null,
+    "headroom_std": null,
+    "elapsed_s": 782.4619495868683,
+    "image": "runs/breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01/iterations/iter-0019/comparison.png",
     "test_hr_mean": null,
     "test_hr_std": null,
     "test_ssim_mean": null,
@@ -36,8 +36,8 @@
     "test_rmse_mean": null,
     "test_rmse_std": null,
     "metric_basis": "val",
-    "rank_metric": 0.8915438850273929,
-    "rank_tiebreak": 0.9991382956504822,
+    "rank_metric": 0.8924881061449925,
+    "rank_tiebreak": 0.9991475939750671,
     "excluded_reason": null,
     "rank": 1
    },
@@ -293,19 +293,19 @@
     "solver_key": "wu-2015-trainable",
     "solver_name": "Wu 2015 trainable",
     "run_id": "breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01",
-    "best_iter": 19,
+    "best_iter": 20,
     "params_M": 1.2e-05,
     "params_source": "observation",
-    "val_ssim": 0.9497327208518982,
-    "headroom": 0.31130214727473926,
-    "val_psnr": 39.563621520996094,
-    "val_rmse": 0.0035910659935325384,
+    "val_ssim": 0.9493556022644043,
+    "headroom": 0.3126694505397546,
+    "val_psnr": 39.58088302612305,
+    "val_rmse": 0.0035839364863932133,
     "val_ssim_std": null,
     "val_psnr_std": null,
     "val_rmse_std": null,
     "headroom_std": null,
-    "elapsed_s": 712.336653470993,
-    "image": "runs/breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01/iterations/iter-0019/comparison.png",
+    "elapsed_s": 534.2223269939423,
+    "image": "runs/breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01/iterations/iter-0020/comparison.png",
     "test_hr_mean": null,
     "test_hr_std": null,
     "test_ssim_mean": null,
@@ -315,8 +315,8 @@
     "test_rmse_mean": null,
     "test_rmse_std": null,
     "metric_basis": "val",
-    "rank_metric": 0.31130214727473926,
-    "rank_tiebreak": 0.9497327208518982,
+    "rank_metric": 0.3126694505397546,
+    "rank_tiebreak": 0.9493556022644043,
     "excluded_reason": null,
     "rank": 10
    },
@@ -391,12 +391,12 @@
    "name": "DD-UNet supervised L2",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 17,
-   "best_iter": 8,
+   "n_iterations": 19,
+   "best_iter": 19,
    "metric_basis": "val",
-   "best_headroom": 0.8915438850273929,
-   "best_ssim": 0.9991382956504822,
-   "best_score": 0.9991382956504822,
+   "best_headroom": 0.8924881061449925,
+   "best_ssim": 0.9991475939750671,
+   "best_score": 0.9991475939750671,
    "test_hr_mean": null,
    "test_hr_std": null,
    "test_ssim_mean": null,
@@ -405,13 +405,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-04T20:24:29Z",
+   "started": "2026-07-04T22:22:48Z",
    "status": "ranked",
    "params_M": 0.465762,
    "excluded_reason": null,
    "agent": "dual_domain_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-04T20:24:29Z",
+   "ts": "2026-07-04T22:22:48Z",
    "curve": [
     [
      1,
@@ -480,9 +480,17 @@
     [
      17,
      0.8915
+    ],
+    [
+     18,
+     0.8915
+    ],
+    [
+     19,
+     0.8925
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01/iterations/iter-0008/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01/iterations/iter-0019/comparison.png",
    "test_image": null
   },
   {
@@ -491,7 +499,7 @@
    "name": "Hammernik VN (2017)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 6,
    "metric_basis": "val",
    "best_headroom": 0.6329364517665366,
@@ -505,13 +513,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-04T13:41:51Z",
+   "started": "2026-07-04T21:37:48Z",
    "status": "ranked",
    "params_M": 0.008965,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-04T13:41:51Z",
+   "ts": "2026-07-04T21:37:48Z",
    "curve": [
     [
      1,
@@ -540,6 +548,10 @@
     [
      7,
      0.6329
+    ],
+    [
+     8,
+     0.6329
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-hammernik-2017-search-20260703-01/iterations/iter-0006/comparison.png",
@@ -551,7 +563,7 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 5,
    "metric_basis": "val",
    "best_headroom": 0.5229846353531997,
@@ -565,13 +577,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-04T19:34:11Z",
+   "started": "2026-07-04T22:30:40Z",
    "status": "ranked",
    "params_M": 0.007683,
    "excluded_reason": null,
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-04T19:34:11Z",
+   "ts": "2026-07-04T22:30:40Z",
    "curve": [
     [
      1,
@@ -600,6 +612,10 @@
     [
      7,
      0.523
+    ],
+    [
+     8,
+     0.523
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0005/comparison.png",
@@ -611,7 +627,7 @@
    "name": "ITNet v1",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 13,
+   "n_iterations": 15,
    "best_iter": 12,
    "metric_basis": "val",
    "best_headroom": 0.8851973290857523,
@@ -625,13 +641,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-04T20:28:00Z",
+   "started": "2026-07-04T22:30:34Z",
    "status": "ranked",
    "params_M": 0.232881,
    "excluded_reason": null,
    "agent": "itnet-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-04T20:28:00Z",
+   "ts": "2026-07-04T22:30:34Z",
    "curve": [
     [
      1,
@@ -684,6 +700,14 @@
     [
      13,
      0.8852
+    ],
+    [
+     14,
+     0.8852
+    ],
+    [
+     15,
+     0.8852
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-itnet-search-20260703-01/iterations/iter-0012/comparison.png",
@@ -695,7 +719,7 @@
    "name": "ITNet v2",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 15,
+   "n_iterations": 16,
    "best_iter": 14,
    "metric_basis": "val",
    "best_headroom": 0.885264095690599,
@@ -771,6 +795,10 @@
     ],
     [
      15,
+     0.8853
+    ],
+    [
+     16,
      0.8853
     ],
     [
@@ -851,7 +879,7 @@
    "name": "Learned Primal-Dual",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 16,
+   "n_iterations": 18,
    "best_iter": 16,
    "metric_basis": "val",
    "best_headroom": 0.6791025952104511,
@@ -865,13 +893,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-04T20:29:44Z",
+   "started": "2026-07-04T22:28:18Z",
    "status": "ranked",
    "params_M": 0.303864,
    "excluded_reason": null,
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-04T20:29:44Z",
+   "ts": "2026-07-04T22:28:18Z",
    "curve": [
     [
      1,
@@ -935,6 +963,14 @@
     ],
     [
      16,
+     0.6791
+    ],
+    [
+     17,
+     0.6791
+    ],
+    [
+     18,
      0.6791
     ]
    ],
@@ -1131,7 +1167,7 @@
    "name": "U-Swin",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 13,
    "metric_basis": "val",
    "best_headroom": 0.8695860332076842,
@@ -1145,13 +1181,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-04T03:33:09Z",
+   "started": "2026-07-04T22:42:37Z",
    "status": "ranked",
    "params_M": 7.024897,
    "excluded_reason": null,
    "agent": "uswin-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-04T03:33:09Z",
+   "ts": "2026-07-04T22:42:37Z",
    "curve": [
     [
      1,
@@ -1228,6 +1264,10 @@
     [
      19,
      0.8696
+    ],
+    [
+     20,
+     0.8696
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-uswin-search-20260703-01/iterations/iter-0013/comparison.png",
@@ -1239,12 +1279,12 @@
    "name": "Wu 2015 trainable",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 19,
-   "best_iter": 19,
+   "n_iterations": 20,
+   "best_iter": 20,
    "metric_basis": "val",
-   "best_headroom": 0.31130214727473926,
-   "best_ssim": 0.9497327208518982,
-   "best_score": 0.9497327208518982,
+   "best_headroom": 0.3126694505397546,
+   "best_ssim": 0.9493556022644043,
+   "best_score": 0.9493556022644043,
    "test_hr_mean": null,
    "test_hr_std": null,
    "test_ssim_mean": null,
@@ -1253,13 +1293,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-04T20:21:39Z",
+   "started": "2026-07-04T21:19:40Z",
    "status": "ranked",
    "params_M": 1.2e-05,
    "excluded_reason": null,
    "agent": "wu_2015_trainable-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-04T20:21:39Z",
+   "ts": "2026-07-04T21:19:40Z",
    "curve": [
     [
      1,
@@ -1336,9 +1376,13 @@
     [
      19,
      0.3113
+    ],
+    [
+     20,
+     0.3127
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01/iterations/iter-0019/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01/iterations/iter-0020/comparison.png",
    "test_image": null
   }
  ]
