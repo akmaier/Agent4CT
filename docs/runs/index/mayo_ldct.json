@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-07-05T03:09:25Z",
+ "updated": "2026-07-05T04:09:29Z",
  "leaderboard": {
   "ranking_metric": "test hr (mean over 5 patients)",
   "tiebreak": "test_ssim",
