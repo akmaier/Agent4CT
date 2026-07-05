@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-05T10:18:42Z",
+ "updated": "2026-07-05T10:24:13Z",
  "ranking_metric": "per-dataset",
  "tiebreak": "per-dataset",
  "datasets": {
@@ -1176,10 +1176,10 @@
      "headroom": 0.27814241976554055,
      "val_psnr": 39.15516662597656,
      "val_rmse": 0.0037639702204614878,
-     "val_ssim_std": null,
-     "val_psnr_std": null,
-     "val_rmse_std": null,
-     "headroom_std": null,
+     "val_ssim_std": 0.003328489266682958,
+     "val_psnr_std": 0.5654787712087934,
+     "val_rmse_std": 0.0002385446297853118,
+     "headroom_std": 0.00936822267858847,
      "elapsed_s": 1764.9290957450867,
      "image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0014/comparison.png",
      "test_hr_mean": null,

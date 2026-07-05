@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-05T10:18:42Z",
+ "updated": "2026-07-05T10:24:13Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -362,10 +362,10 @@
     "headroom": 0.27814241976554055,
     "val_psnr": 39.15516662597656,
     "val_rmse": 0.0037639702204614878,
-    "val_ssim_std": null,
-    "val_psnr_std": null,
-    "val_rmse_std": null,
-    "headroom_std": null,
+    "val_ssim_std": 0.003328489266682958,
+    "val_psnr_std": 0.5654787712087934,
+    "val_rmse_std": 0.0002385446297853118,
+    "headroom_std": 0.00936822267858847,
     "elapsed_s": 1764.9290957450867,
     "image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0014/comparison.png",
     "test_hr_mean": null,
@@ -1111,7 +1111,7 @@
    "name": "Manduca proj-bilateral (trainable)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 14,
+   "n_iterations": 15,
    "best_iter": 14,
    "metric_basis": "val",
    "best_headroom": 0.27814241976554055,
@@ -1125,13 +1125,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T09:40:10Z",
+   "started": "2026-07-05T10:20:06Z",
    "status": "ranked",
    "params_M": 2.2e-05,
    "excluded_reason": null,
    "agent": "manduca_bilateral-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T09:40:10Z",
+   "ts": "2026-07-05T10:20:06Z",
    "curve": [
     [
      1,
@@ -1187,6 +1187,10 @@
     ],
     [
      14,
+     0.2781
+    ],
+    [
+     15,
      0.2781
     ]
    ],

@@ -11,9 +11,9 @@
   "val_ssim": 0.9835805296897888,
   "val_psnr": 41.40306854248047,
   "val_rmse": 0.002905700821429491,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003597410687520036,
+  "val_psnr_std": 0.9838540410625715,
+  "val_rmse_std": 0.0003255715951146111,
   "kept": true,
   "status": "keep",
   "params_M": 0.25322,
@@ -42,5 +42,16 @@
     "val_chunk": 4,
     "seed": 45,
     "rationale": "iter-20 (FINAL) one-knob: lpd_iters 12->10 at lr8e-4, seed 45 (the pathological seed). DECISIVE FINDING: seed 45 collapses to hr=0 at I=12 for BOTH lr1.2e-3 AND lr8e-4 -> the ~25% collapse is DEPTH-driven, not lr-driven. Every I=10 run in this campaign (iters 1,2,3,5,7,11) was collapse-free. HYPOTHESIS: if I revert depth I=12->10 at lr8e-4 on the worst seed 45, expect a HEALTHY hr (~0.55-0.62, no hr=0), identifying I=10/lr8e-4 as the ROBUST operating point (trading iter-16 s fragile 0.6791 peak for reliability -- the honest recommendation). Cheaper too (~1400s at I=10)."
+  },
+  "headroom_std": 0.031495104399463764,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.45074291613913053,
+    "recomputed_val_ssim_mean": 0.9820891630649566,
+    "recomputed_val_psnr_mean": 41.021450748443606,
+    "recomputed_val_rmse_mean": 0.0028856473322957754
   }
 }

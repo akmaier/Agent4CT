@@ -11,9 +11,9 @@
   "val_ssim": 0.9815382361412048,
   "val_psnr": 39.15516662597656,
   "val_rmse": 0.0037639702204614878,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003328489266682958,
+  "val_psnr_std": 0.5654787712087934,
+  "val_rmse_std": 0.0002385446297853118,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,16 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-14 manduca_bilateral breast (val=200). SIX-BOX from BEST (iter-8 hr=0.2771): (1) PRIOR: bowtie=True (iter-13) COLLAPSED to hr=0 ssim=0.45 (1024 per-detector log-N0 params diverged, corrupted the log-sino inversion) -> revert bowtie=False; proj-domain conclusively harmful when given DOF. All levers mapped at train_n=400. TRAIN_N (=400 throughout) UNTESTED -- coordinator allows <=2400. (2) FAILURE MODE: the 21-param image bilateral may be DATA-limited not capacity-limited -- 400 train scenes may under-determine the sigma optimum for the val=200 distribution. (3) ONE KNOB: train_n 400 -> 1600 (from iter-8 best config, bowtie reverted False; 4x supervised scenes). (4) HYPOTHESIS: train_n 400->1600 lifts hr above 0.2771 because more supervised scene diversity lets the bilateral sigmas converge to a denoiser that generalizes better to val=200, IF the plateau was data- not capacity-limited. FALSIFIER: if flat, the plateau is a genuine 21-param capacity ceiling -> iters 15-20 confirm best config. (5) BUDGET: 16000 steps vs iter-4's 4000@236s -> ~950s, under 1200s (20-min). ep10 kept. (6) Loop continues; iter-15 on landing. turbo, save ckpt+recon, params_M logged."
+  },
+  "headroom_std": 0.00936822267858847,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2752976317079867,
+    "recomputed_val_ssim_mean": 0.979948607981205,
+    "recomputed_val_psnr_mean": 38.600230560302734,
+    "recomputed_val_rmse_mean": 0.0037964713561814277
   }
 }
