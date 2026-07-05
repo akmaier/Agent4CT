@@ -11,9 +11,9 @@
   "val_ssim": 0.9804481267929077,
   "val_psnr": 38.7901725769043,
   "val_rmse": 0.003925506956875324,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00350821964614662,
+  "val_psnr_std": 0.5872044536339804,
+  "val_rmse_std": 0.0002587880573437355,
   "kept": true,
   "status": "keep",
   "params_M": 2.8e-05,
@@ -48,5 +48,16 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-9 manduca_bilateral breast (train_n=400, val=200). SIX-BOX from BEST (iter-8 img_kernel=9 hr=0.2771): (1) PRIOR: IMAGE-DOMAIN fully explored -- img_n_bf sat@6, img_sr peak=0.05, img_kernel 5->9 (+0.0019, best 0.2771), epochs inert. The PROJECTION-DOMAIN Manduca denoiser (proj_n_bf=1, proj_sr=1.5, bf_d_w_ratio=1/6) is UNTOUCHED -- the solver's namesake core. (2) FAILURE MODE: the single proj-domain bilateral (proj_n_bf=1) is one shallow noise-modeled smoothing pass on the sqrt-count sinogram; too weak to suppress the sinogram inconsistencies that generate streaks after FBP. The image tail cleans post-FBP residual but cannot undo streak structure already baked into backprojection. (3) ONE KNOB: proj_n_bf 1 -> 3 (deepen the projection-domain Manduca bilateral cascade; from iter-8 best; params 21->27). Architecturally-distinct config family from the 8 image-domain-focused iters. (4) HYPOTHESIS: proj_n_bf 1->3 lifts hr above 0.2771 because a deeper noise-modeled bilateral cascade on the sqrt-count sinogram suppresses more signal-dependent sinogram noise BEFORE backprojection, reducing streak inconsistencies the post-FBP tail only partially cleans. FALSIFIER: if hr flat (as on Mayo), proj-domain is cosmetic on breast too -> iter-10 tunes proj_sr or consolidates. (5) BUDGET: +2 proj bilateral passes; ep10 base ~236-500s -> est ~450s, under 20-min. (6) Loop continues; iter-10 on landing. turbo, save ckpt+recon, params_M logged."
+  },
+  "headroom_std": 0.008670554388877663,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2445544534706668,
+    "recomputed_val_ssim_mean": 0.9787489342689514,
+    "recomputed_val_psnr_mean": 38.23921003341675,
+    "recomputed_val_rmse_mean": 0.003958238431951031
   }
 }

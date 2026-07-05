@@ -11,9 +11,9 @@
   "val_ssim": 0.9814385175704956,
   "val_psnr": 39.14239501953125,
   "val_rmse": 0.0037695092614740133,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0033376393235195396,
+  "val_psnr_std": 0.5638711499244398,
+  "val_rmse_std": 0.00023819978690335717,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,16 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-8 manduca_bilateral breast (train_n=400, val=200). SIX-BOX from BEST (iter-4/7 img_sr=0.05 img_n_bf=6 hr~0.2755): (1) PRIOR: best hr=0.2758 (iter-7 ep30) ~= iter-4 0.2752 (ep10). img_n_bf SATURATED by 6; img_sr PEAK=0.05 (fully mapped); EPOCHS INERT (10->30 = +0.0006, 21-param bilateral converged by ep10). Image spatial footprint (img_kernel=5, img_sx=img_sy=0.5) UNTOUCHED. (2) FAILURE MODE: the image bilateral spatial reach is small -- kernel=5/sigma=0.5px pools only immediate neighbors, so coherent 128-view STREAKS (which extend across many pixels) aren't averaged out. Range bandwidth is tuned; the spatial kernel cannot reach the streak structure. (3) ONE KNOB: img_kernel 5 -> 9 (from iter-4 best; ep=10 kept -- proven equivalent to ep30, cheaper). Larger spatial support per filter. (4) HYPOTHESIS: img_kernel 5->9 lifts hr above 0.2758 because a wider spatial kernel lets each edge-preserving bilateral pool pixels further along the coherent streak direction, suppressing streak residual the 5-tap kernel can't reach; range sigma=0.05 keeps it edge-preserving. FALSIFIER: if hr flat/drops, spatial reach not binding (or sigma_spatial=0.5 caps effective reach) -> iter-9 raises img_sx/img_sy instead. (5) BUDGET: larger kernel = modestly more compute; ep10 base 236s -> est ~400s, under 20-min. (6) Loop continues; iter-9 on landing. turbo, save ckpt+recon, params_M logged."
+  },
+  "headroom_std": 0.009382003855316885,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2742369043196347,
+    "recomputed_val_ssim_mean": 0.9798404425382614,
+    "recomputed_val_psnr_mean": 38.58752630233764,
+    "recomputed_val_rmse_mean": 0.0038019833620637654
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9984180927276611,
   "val_psnr": 54.627647399902344,
   "val_rmse": 0.0006339018582366407,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0005037193769485401,
+  "val_psnr_std": 1.5482619990603441,
+  "val_rmse_std": 0.0001089614338309206,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,16 @@
     "grad_clip": 1.0,
     "seed": 44,
     "rationale": "iter-15 (breast ItNet v1). SIX-BOX: (1) PRIOR: SEED-NOISE DISCOVERY. Champion config (c16,tn800,ep60,k1,a0.02) at seed42 (iter-12) = 0.8852, at seed43 (iter-14) = 0.8699 -> a 0.0153 swing from SEED ALONE. This DWARFS the sub-0.001 deltas between iter-8/10/12 -> those were NOISE, not signal. The search is seed-noise-limited (~+-0.015 band). (2) FAILURE MODE: single-run hr is unreliable at the plateau; the honest reported number must be a MEAN over seeds. (3) ONE KNOB (from champion iter-12): seed 43 -> 44 (third replicate). All else identical. (4) HYPOTHESIS: seed44 lands within the [0.870, 0.885] band established by seeds 42/43, letting me estimate the plateau MEAN over 3 seeds. FALSIFIER: if seed44 is outside that band, the noise is even wider and more replicates are needed. (5) BUDGET: ep60/tn800 ~1140s, in budget. (6) Loop to iter-20; remaining iters extend the seed-replicate set for a plateau mean+-std."
+  },
+  "headroom_std": 0.013667574040170534,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.879845267330368,
+    "recomputed_val_ssim_mean": 0.997441234588623,
+    "recomputed_val_psnr_mean": 54.2660857963562,
+    "recomputed_val_rmse_mean": 0.0006337998554226943
   }
 }

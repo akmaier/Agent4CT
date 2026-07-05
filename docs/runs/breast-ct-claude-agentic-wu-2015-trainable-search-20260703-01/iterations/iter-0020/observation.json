@@ -11,9 +11,9 @@
   "val_ssim": 0.9493556022644043,
   "val_psnr": 39.58088302612305,
   "val_rmse": 0.0035839364863932133,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007320082255118507,
+  "val_psnr_std": 0.6339876091105681,
+  "val_rmse_std": 0.0002555146830319074,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,16 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-20 (FINAL, one knob vs iter-19 best). NUMBERS sigmoid_slope descent: 10->0.30880, 6->0.30889, 4->0.30972, 2.5->0.31130(iter-19 BEST). Monotone climbing as the Nyquist-boundary band roll-off shallows. FAILURE MODE: at the ultra-low-param ceiling but a softer band-overlap keeps lifting hr; peak not yet bracketed on the shallow side. ONE KNOB: wu_sigmoid_slope 2.5 -> 1.5 (INIT, NO param change, 12 params). HYPOTHESIS: if slope=1.5 gives hr > 0.31130 the shallow trend continues toward a broad max; if hr < 0.31130 the sigmoid_slope optimum brackets near 2.5 and iter-19 (hr=0.3113) is the campaign best. Either way this HARD-STOP iter-20 closes the six-box search with the slope axis characterized. Budget: ~735s."
+  },
+  "headroom_std": 0.01037206712450527,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.3181236654968475,
+    "recomputed_val_ssim_mean": 0.9447196945548058,
+    "recomputed_val_psnr_mean": 39.12959390640259,
+    "recomputed_val_rmse_mean": 0.0035740947001613676
   }
 }

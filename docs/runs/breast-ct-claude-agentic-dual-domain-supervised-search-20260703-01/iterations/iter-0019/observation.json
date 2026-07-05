@@ -11,9 +11,9 @@
   "val_ssim": 0.9991475939750671,
   "val_psnr": 55.695068359375,
   "val_rmse": 0.0005605975165963173,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00029780688131551564,
+  "val_psnr_std": 1.5659375509492137,
+  "val_rmse_std": 9.723310102983872e-05,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,16 @@
     "val_chunk": 10,
     "seed": 48,
     "rationale": "iter-19 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX at BEST config (c16/ep44/lr1e-3/lneg0.03/bs1/tn400). (1) PRIOR: 6 seed replicates -- 42=0.8915,43=0.8589,44=0.8317,45=0.8866,46=0.8844,47=0.7672 -> mean~0.850 sstd~0.047, spread 0.124. Seed variance is VERY large and dominant; 0.8915 (seed42) is an upper-tail outlier and 0.7672 (seed47) a low-tail one. (2) Failure mode: single-seed(=42) sweep was noise-confounded -- the iters1-13 knob deltas (~0.88-0.89) sit well within this +-0.05 band, so few are statistically distinguishable. (3) ONE KNOB: seed 48 (7th replicate). (4) HYPOTHESIS: n=7 keeps mean ~0.85+-0.045; honest config number is this mean, NOT the seed-42 peak; the primary reportable finding is the large seed variance itself. (5) BUDGET: ~941s. (6) iter-20 = final (8th) replicate. Artifacts saved."
+  },
+  "headroom_std": 0.012165758389167815,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8956331224235131,
+    "recomputed_val_ssim_mean": 0.9991232642531395,
+    "recomputed_val_psnr_mean": 55.49161752700806,
+    "recomputed_val_rmse_mean": 0.0005506987360422499
   }
 }

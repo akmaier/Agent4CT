@@ -11,9 +11,9 @@
   "val_ssim": 0.9890682697296143,
   "val_psnr": 43.82830047607422,
   "val_rmse": 0.002197807189077139,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0024465768890518753,
+  "val_psnr_std": 0.9189453177544133,
+  "val_rmse_std": 0.00023177673416432254,
   "kept": true,
   "status": "keep",
   "params_M": 0.303864,
@@ -42,5 +42,16 @@
     "val_chunk": 4,
     "seed": 44,
     "rationale": "iter-18 one-knob: seed 44 on the stable best config (I12/h32/ep10/lr8e-4/cosine/gc1.0/mse, iter-16 hr=0.6791). Replicates {42:0.6791, 43:0.5859} both healthy (no collapse -- contrast lr1.2e-3 which collapsed on seed45). HYPOTHESIS: seed 44 lands ~0.60-0.68 with no collapse, extending the stable set toward an honest mean+/-std. Time-neutral ~1800s."
+  },
+  "headroom_std": 0.02035305971204805,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.5840411958284354,
+    "recomputed_val_ssim_mean": 0.9880792900919915,
+    "recomputed_val_psnr_mean": 43.432088699340824,
+    "recomputed_val_rmse_mean": 0.0021845984569517896
   }
 }

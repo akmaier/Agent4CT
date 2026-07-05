@@ -11,9 +11,9 @@
   "val_ssim": 0.9990310668945312,
   "val_psnr": 55.23735046386719,
   "val_rmse": 0.0005909311585128307,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00035295517754081117,
+  "val_psnr_std": 1.795760770060814,
+  "val_rmse_std": 0.00011410004802288513,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,16 @@
     "grad_clip": 1.0,
     "seed": 45,
     "rationale": "iter-20 FINAL (breast ItNet v1). SIX-BOX: (1) PRIOR: matched-seed alpha pairs both favor a0.0: seed43 a0.0 0.8791 > a0.02 0.8699; seed44 a0.0 0.8819 > a0.02 0.8784. a0.0 (pure pretrained denoiser) is the canonical config; the tiny DC step is dispensable. Plateau ~0.881+-0.007. (2) FAILURE MODE: complete the 3rd matched-seed pair to finalize the a0.0>=a0.02 conclusion. (3) ONE KNOB (from iter-19): seed 44 -> 45 (a0.0 held). Pairs vs iter-16 (a0.02, seed45 = 0.8893). (4) HYPOTHESIS: a0.0 @ seed45 lands within +-0.007 of iter-16s 0.8893, giving a clean 3-pair a0.0-vs-a0.02 set that shows the two configs are statistically indistinguishable within seed noise (with a0.0 winning 2 of 2 matched pairs so far) -> report a0.0 as canonical. FALSIFIER: a large deviation would indicate residual seed sensitivity, already the headline finding. (5) BUDGET: ep60/tn800 ~1140s, in budget. (6) FINAL iter of the 20-iter search; compile report after."
+  },
+  "headroom_std": 0.015202427207095763,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8904356907354386,
+    "recomputed_val_ssim_mean": 0.9989991447329521,
+    "recomputed_val_psnr_mean": 55.097261638641356,
+    "recomputed_val_rmse_mean": 0.0005789281740726437
   }
 }

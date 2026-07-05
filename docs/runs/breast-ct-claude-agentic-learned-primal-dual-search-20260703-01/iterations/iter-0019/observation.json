@@ -11,9 +11,9 @@
   "val_ssim": 0.7076051235198975,
   "val_psnr": 16.10190200805664,
   "val_rmse": 0.05349452421069145,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011207612707329286,
+  "val_psnr_std": 0.25394844195417343,
+  "val_rmse_std": 0.0012315060400211425,
   "kept": false,
   "status": "discard",
   "params_M": 0.303864,
@@ -42,5 +42,16 @@
     "val_chunk": 4,
     "seed": 45,
     "rationale": "iter-19 one-knob: seed 45 (the COLLAPSE-TEST) on the stable best config (I12/h32/ep10/lr8e-4/cosine/gc1.0/mse, iter-16 hr=0.6791). Replicates {42:0.6791, 43:0.5859, 44:0.5785} = mean 0.615 +/- 0.046, ZERO collapses -- vs the lr1.2e-3 config s 0.4475 +/- 0.2663 with a full collapse on seed 45. HYPOTHESIS: lr8e-4/I12 at seed 45 stays HEALTHY (~0.55-0.68, no hr=0), decisively confirming the lower lr removes the divergence and completing the 4-seed stable replicate set for the honest reportable mean+/-std. Time-neutral ~1800s."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.702101599574089,
+    "recomputed_val_psnr_mean": 15.666289887428285,
+    "recomputed_val_rmse_mean": 0.05312726790085435
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9985297918319702,
   "val_psnr": 53.30415725708008,
   "val_rmse": 0.0007382383337244391,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.000495477330014467,
+  "val_psnr_std": 1.4739686224090283,
+  "val_rmse_std": 0.00012048037823323791,
   "kept": true,
   "status": "keep",
   "params_M": 7.024897,
@@ -37,5 +37,16 @@
     "max_train_s": 1000,
     "seed": 7,
     "rationale": "ITER-18. SIX-BOX (NUMBERS): (1) READ iter-17: the seed-123 rerun of the EXACT tn800 optimum gave hr=0.8006 -- 0.069 BELOW the seed-42 result 0.8696. My falsifier (>0.01 gap => seed/noise-sensitive) is strongly triggered. Caveat: iter-17 ran on a heavily-contended node (~100-130s/epoch) so the backstop capped it at ep12, AND seed=123 draws a different 800-scene training subset. The 0.87 vs 0.80 gap is too large for pure val-noise -> it reflects (a) a different/worse tn800 sample draw at seed=123 and (b) contention-driven epoch reduction. CONCLUSION: the 0.8696 best has meaningful run-to-run VARIANCE (seed + node-contention/epoch count). The optimum CONFIG is confirmed, but a single hr overstates precision. (2) FAILURE MODE / limiter: the search has CONVERGED on config; the remaining task is to CHARACTERIZE the spread of the optimum with a 3rd seed to get a defensible central estimate (seed42=0.8696, seed123=0.8006, seed7=?). (3) ONE KNOB: seed 123 -> 7 (3rd RNG seed; same exact iter-13 optimum config otherwise: tn800, c32, bs=1, ep=40, lr=2e-4, win=8, heads=8, grad_clip=1.0). (4) HYPOTHESIS: hr for seed=7 lands between the two extremes (~0.82-0.86), so the tn800 optimum's true mean is ~0.83-0.85 with a spread of a few points driven by sample-draw + epoch-count variance. This gives a mean+-spread rather than a single lucky/unlucky number. FALSIFIER: if seed=7 also lands ~0.87 (near seed42), then seed123 was the outlier (unlucky draw / that run's contention) and 0.87 is the robust optimum; if seed=7 lands ~0.80 (near seed123), then seed42's 0.87 was the lucky outlier and the honest optimum is ~0.80-0.81. (5) 20-min budget via max_train_s=1000 backstop; val_n=200; tn800; expandable_segments OOM-guard. (6) STRICT SERIAL: rm iter-18 obs pre-dispatch; iter_wait.sh gate before iter-19."
+  },
+  "headroom_std": 0.014595025331606844,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8619790113476821,
+    "recomputed_val_ssim_mean": 0.9984567803144455,
+    "recomputed_val_psnr_mean": 53.05334259033203,
+    "recomputed_val_rmse_mean": 0.0007277908311516513
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9989651441574097,
   "val_psnr": 54.88254165649414,
   "val_rmse": 0.0006155700539238751,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0003808843604369996,
+  "val_psnr_std": 1.7493467147077386,
+  "val_rmse_std": 0.00011640890045192823,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,16 @@
     "grad_clip": 1.0,
     "seed": 44,
     "rationale": "iter-19 (breast ItNet v1). SIX-BOX: (1) PRIOR: MATCHED-SEED alpha test at seed43 -> a0.0 (iter-18) 0.8791 BEATS a0.02 (iter-14) 0.8699 by +0.009, REVERSING the seed42 single-run (a0.02 0.8852 > a0.0 0.8842). So the a0.02 champion was a favorable-seed artifact; the tiny DC step is NOT reliably helpful. (2) FAILURE MODE: need a 2nd matched-seed pair to confirm a0.0 >= a0.02 generally (not just at seed43). (3) ONE KNOB (from iter-18): seed 43 -> 44 (a0.0 held). Pairs vs iter-15 (a0.02, seed44 = 0.8784). (4) HYPOTHESIS: a0.0 @ seed44 >= iter-15s 0.8784, confirming the pure denoiser (a0.0) is >= the tiny-DC config across seeds -> canonical config = a0.0 (simplest). FALSIFIER: a0.0 @ seed44 notably below 0.8784 -> the alpha effect is itself seed-dependent (no consistent winner) and both sit in the same 0.881+-0.007 plateau. (5) BUDGET: ep60/tn800 ~1140s, in budget. (6) iter-20 is the final replicate."
+  },
+  "headroom_std": 0.015345914950257581,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8856123393855345,
+    "recomputed_val_ssim_mean": 0.998930171430111,
+    "recomputed_val_psnr_mean": 54.71695251464844,
+    "recomputed_val_rmse_mean": 0.0006042439279553946
   }
 }

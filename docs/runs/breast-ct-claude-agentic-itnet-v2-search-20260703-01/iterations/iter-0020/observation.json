@@ -11,9 +11,9 @@
   "val_ssim": 0.9982295632362366,
   "val_psnr": 52.06993103027344,
   "val_rmse": 0.0008509577019140124,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0005876789104515292,
+  "val_psnr_std": 1.4059949613795297,
+  "val_rmse_std": 0.00013293749171627205,
   "kept": true,
   "status": "keep",
   "params_M": 0.928098,
@@ -37,5 +37,16 @@
     "val_n": 200,
     "seed": 47,
     "rationale": "ITER-20 champion seed replicate (seed 47), FINAL, ep=10 budget-safe. Champion c32/n2400/alpha0.0004 hr0.8853. 5th seed replicate -> 20 valid iters + mean+/-std."
+  },
+  "headroom_std": 0.01587760834989127,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8406382468262339,
+    "recomputed_val_ssim_mean": 0.9981435942649841,
+    "recomputed_val_psnr_mean": 51.79896453857422,
+    "recomputed_val_rmse_mean": 0.0008398137465701438
   }
 }

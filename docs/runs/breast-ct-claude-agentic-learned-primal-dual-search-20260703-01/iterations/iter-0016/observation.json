@@ -11,9 +11,9 @@
   "val_ssim": 0.9920519590377808,
   "val_psnr": 46.196876525878906,
   "val_rmse": 0.0016732501098886132,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.001984796247741167,
+  "val_psnr_std": 0.9877945864529508,
+  "val_rmse_std": 0.0001903652835549427,
   "kept": true,
   "status": "keep",
   "params_M": 0.303864,
@@ -42,5 +42,16 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "iter-16 one-knob: lr 1.2e-3->8e-4 at I=12 (seed 42, else champion). DECISIVE FINDING: the iter-6 champion (I12/lr1.2e-3) is UNSTABLE across seeds -- {42:0.669, 43:0.494, 44:0.628, 45:0.0} = mean 0.4475 +/- 0.2663, with a full collapse (hr=0) on seed 45. Cause: the large lr at depth I=12 amplifies gradient variance -> ~25% of seeds diverge. HYPOTHESIS: if I lower lr 1.2e-3->8e-4 at I=12, expect hr ~0.55-0.65 with NO collapse (all seeds stable), trading a little peak for reliability -- a defensible, reportable operating point. Seed 42 for direct compare to iter-6 (0.6685). Time-neutral ~1800s. If stable, iters 17-19 replicate THIS at seeds 43-45 for an honest stable mean+/-std."
+  },
+  "headroom_std": 0.017737714211971265,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.6836104993973828,
+    "recomputed_val_ssim_mean": 0.9912689185142517,
+    "recomputed_val_psnr_mean": 45.81175872802734,
+    "recomputed_val_rmse_mean": 0.0016625548881711437
   }
 }

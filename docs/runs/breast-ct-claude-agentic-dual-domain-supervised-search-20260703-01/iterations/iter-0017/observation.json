@@ -11,9 +11,9 @@
   "val_ssim": 0.9990568161010742,
   "val_psnr": 55.06336212158203,
   "val_rmse": 0.0006028875941410661,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00031500649990900015,
+  "val_psnr_std": 1.5035233326785498,
+  "val_rmse_std": 9.947443899308113e-05,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,16 @@
     "val_chunk": 10,
     "seed": 46,
     "rationale": "iter-17 dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX at BEST config (c16/ep44/lr1e-3/lneg0.03/bs1/tn400). (1) PRIOR: 4 seed replicates -- 42=0.8915,43=0.8589,44=0.8317,45=0.8866 -> mean~0.867, still spanning 0.832-0.892 (spread 0.060). Seed variance confirmed LARGE and dominant over the config-knob deltas. (2) Failure mode: single-seed(=42) sweep noise-confounded; n=4 mean still shifting as seed45 came in high. (3) ONE KNOB: seed 46 (5th replicate). (4) HYPOTHESIS: n=5 stabilizes the mean near ~0.865+-0.025; the honest config number is this mean, NOT the seed-42 0.8915 peak. (5) BUDGET: ~941s, inside 20-min. (6) Loop to iter-20 (iters 17-20 = replicates 5-8 to solidify mean+-std; the variance characterization is the primary finding). Artifacts saved."
+  },
+  "headroom_std": 0.012272932803028732,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8875966005224601,
+    "recomputed_val_ssim_mean": 0.999026637673378,
+    "recomputed_val_psnr_mean": 54.84068077087402,
+    "recomputed_val_rmse_mean": 0.0005927686895302031
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9816706776618958,
   "val_psnr": 43.152252197265625,
   "val_rmse": 0.002375702140852809,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.002922819617438282,
+  "val_psnr_std": 0.7820991707221172,
+  "val_rmse_std": 0.00020963800728387609,
   "kept": true,
   "status": "keep",
   "params_M": 0.007683,
@@ -40,5 +40,16 @@
     "vn_checkpoint": true,
     "max_train_s": 1080,
     "rationale": "iter-10 (one knob: lr 3e-4 -> 6e-4, best arch T3/f32/k7/lambda1e-2). All capacity bumps (T4, k9, f48) hurt; f32/k7 optimal. Training is wall-capped ~12 epochs, so faster convergence could help. Hypothesis: 2x lr converges the active filter bank+lambda better within the wall -> hr>0.523; if it destabilizes, 3e-4 stays."
+  },
+  "headroom_std": 0.01352596110970021,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.5490799684571404,
+    "recomputed_val_ssim_mean": 0.9798354867100716,
+    "recomputed_val_psnr_mean": 42.72463582992554,
+    "recomputed_val_rmse_mean": 0.00236606401798781
   }
 }

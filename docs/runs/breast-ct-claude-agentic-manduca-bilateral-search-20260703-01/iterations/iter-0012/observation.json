@@ -11,9 +11,9 @@
   "val_ssim": 0.9734212756156921,
   "val_psnr": 38.6546630859375,
   "val_rmse": 0.003987229894846678,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00437886977884806,
+  "val_psnr_std": 0.5875808529458312,
+  "val_rmse_std": 0.00026274164133260105,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,16 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-12 manduca_bilateral breast (train_n=400, val=200). SIX-BOX from BEST (iter-8 hr=0.2771, reproduced iter-11): (1) PRIOR: best hr=0.2771 (iter-8, also iter-11 proj_sr=2.5 FLAT -> proj-domain range INERT, matches Mayo; proj_n_bf 1->3 worse). Image tail fully mapped: img_sr peak 0.05, img_n_bf sat@6, img_kernel best 9, img spatial sigma 0.5 optimal (2.0 worse), epochs inert. Only lr (=5e-3 throughout) UNTESTED. (2) FAILURE MODE: supervised MSE may converge to a shallow local optimum of the 21 bilateral sigmas at lr=5e-3 (epochs-inert => settles fast, possibly prematurely); a lower lr could descend into a better basin. (3) ONE KNOB: lr 5e-3 -> 1e-3 (from iter-8 best config; 5x lower; ep=10 kept). (4) HYPOTHESIS: lr 5e-3->1e-3 lifts hr above 0.2771 because a gentler step lets the bilateral sigmas converge more precisely to a better denoising point rather than overshooting into the fast shallow basin at 5e-3. FALSIFIER: if flat/drops, the sigma optimum is lr-insensitive and the architecture is at its ceiling ~0.277 -> remaining iters consolidate/confirm best config. (5) BUDGET: ep10 base ~500s, under 20-min. (6) Loop continues; iter-13 on landing. turbo, save ckpt+recon, params_M logged."
+  },
+  "headroom_std": 0.007199437384974678,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.23303485107459931,
+    "recomputed_val_ssim_mean": 0.9709019699692726,
+    "recomputed_val_psnr_mean": 38.10757274627686,
+    "recomputed_val_rmse_mean": 0.004018713439581916
   }
 }

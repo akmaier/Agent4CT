@@ -11,9 +11,9 @@
   "val_ssim": 0.9491357207298279,
   "val_psnr": 39.503360748291016,
   "val_rmse": 0.0036160668823868036,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0067743447676222035,
+  "val_psnr_std": 0.5898873949187552,
+  "val_rmse_std": 0.00024013769977962297,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,16 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-15 (one knob vs iter-11 best). NUMBERS: soft_thresh sweep 0.0004->0.2943, 0.0008->0.3088 BEST, 0.0011->0.3067, 0.0015->0.3035; weight_decay=1e-4 tied (non-binding, wd=0 kept). Base = iter-11. FAILURE MODE: the 0.0004->0.0008 side of the soft_thresh peak is steep; the exact peak between 0.0004 and 0.0008 is unresolved. ONE KNOB: wu_soft_thresh 0.0008 -> 0.0006 (refine peak, NO param change, 12 params). HYPOTHESIS: if hr(0.0006) > 0.3088 the true peak sits just below 0.0008 and I adopt 0.0006; if hr < 0.3088 then 0.0008 is confirmed optimal and I move to sigmoid init / motion_range. Budget: ~735s."
+  },
+  "headroom_std": 0.009426258071215143,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.31157917825354314,
+    "recomputed_val_ssim_mean": 0.9444870930910111,
+    "recomputed_val_psnr_mean": 39.04643524169922,
+    "recomputed_val_rmse_mean": 0.0036072249442804603
   }
 }

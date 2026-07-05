@@ -11,9 +11,9 @@
   "val_ssim": 0.9498712420463562,
   "val_psnr": 39.53314971923828,
   "val_rmse": 0.0036036851815879345,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006737544196820689,
+  "val_psnr_std": 0.5927485083194065,
+  "val_rmse_std": 0.00024029246025541727,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,16 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-17 (one knob vs iter-11 best). NUMBERS: soft_thresh=0.0008 optimum; motion_range=8 confirmed (12->0.2875 worse). Plateau 0.3088. Base = iter-11. FAILURE MODE: motion + residual knobs exhausted; sigmoid_slope INIT (band roll-off steepness around the Nyquist boundary f.dR==offset) untested this campaign. TPE kept 10.0. ONE KNOB: wu_sigmoid_slope 10.0 -> 6.0 (INIT only; still trainable, NO param change, 12 params). HYPOTHESIS: if the band roll-off starts shallower (slope=6) I expect val hr >= 0.3088 because a smoother sigmoid transition lets adjacent radial-frequency bands overlap and the learnable per-band scales get more graceful control over the aliasing-free FBP; risk = too-soft transition blurs the alias-suppression selection (hr down) -> slope=10 confirmed. Budget: ~735s."
+  },
+  "headroom_std": 0.00934254208891385,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.3139444576888904,
+    "recomputed_val_ssim_mean": 0.9452908208966255,
+    "recomputed_val_psnr_mean": 39.07632123947143,
+    "recomputed_val_rmse_mean": 0.003594901675824076
   }
 }

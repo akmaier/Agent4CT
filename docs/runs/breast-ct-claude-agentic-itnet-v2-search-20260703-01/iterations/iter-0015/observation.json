@@ -43,6 +43,7 @@
     "n_cases": 200,
     "display_min": 0.0,
     "display_max": 0.05,
+    "headroom_std_available": true,
     "recomputed_headroom_mean": 0.8805091488904074,
     "recomputed_val_ssim_mean": 0.998864257633686,
     "recomputed_val_psnr_mean": 54.327804222106934,

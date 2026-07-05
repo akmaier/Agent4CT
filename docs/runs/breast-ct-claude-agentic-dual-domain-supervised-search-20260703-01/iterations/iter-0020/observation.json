@@ -11,9 +11,9 @@
   "val_ssim": 0.9991158843040466,
   "val_psnr": 55.492557525634766,
   "val_rmse": 0.0005738211912102997,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.000304776404162023,
+  "val_psnr_std": 1.5847427814316721,
+  "val_rmse_std": 9.981202318954891e-05,
   "kept": true,
   "status": "keep",
   "params_M": 0.465762,
@@ -37,5 +37,16 @@
     "val_chunk": 10,
     "seed": 49,
     "rationale": "iter-20 (FINAL) dual_domain_supervised, re-split Breast-CT val=200. SIX-BOX at BEST config (c16/ep44/lr1e-3/lneg0.03/bs1/tn400). (1) PRIOR: 7 seed replicates -- 42=0.8915,43=0.8589,44=0.8317,45=0.8866,46=0.8844,47=0.7672,48=0.8925 -> mean~0.862 sstd~0.043, spread 0.125. Seed variance is the DOMINANT effect; the seed-42 0.8915 that led the earlier sweep is an upper-tail draw (5 of 7 seeds cluster 0.86-0.89, one low outlier 0.767). (2) Failure mode: the single-seed(=42) knob sweep (iters1-13) was noise-confounded -- lr/lambda_neg deltas (~0.005-0.02) sit inside this +-0.04 seed band, so most are not statistically distinguishable from noise; epochs (10->44, +0.08) and the initial onboarding (clearing FBP) are the only effects clearly ABOVE the noise floor. (3) ONE KNOB: seed 49 (final 8th replicate). (4) HYPOTHESIS: n=8 gives the honest reportable config number ~0.86+-0.04, closing the run; the primary finding is the mean+-std characterization, not the 0.8915 peak. (5) BUDGET: ~941s, inside 20-min. (6) FINAL iter of the 20-iter search. Artifacts saved."
+  },
+  "headroom_std": 0.012538710428009083,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8931515313566257,
+    "recomputed_val_ssim_mean": 0.9990881228446961,
+    "recomputed_val_psnr_mean": 55.28905481338501,
+    "recomputed_val_rmse_mean": 0.0005638573536998592
   }
 }

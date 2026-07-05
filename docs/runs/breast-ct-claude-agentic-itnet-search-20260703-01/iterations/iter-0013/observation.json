@@ -11,9 +11,9 @@
   "val_ssim": 0.9979335069656372,
   "val_psnr": 54.94664001464844,
   "val_rmse": 0.0006110438262112439,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0005379892930143745,
+  "val_psnr_std": 1.464127454350545,
+  "val_rmse_std": 0.00010081009644544147,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,16 @@
     "grad_clip": 1.0,
     "seed": 42,
     "rationale": "iter-13 (breast ItNet v1). SIX-BOX: (1) PRIOR: iter-8 (a0.0) 0.8842; iter-12 (a0.02) 0.8852 -> a tiny DC step is neutral-to-marginally-POSITIVE with the strong tn800 denoiser (reverses the earlier tn400 finding that alpha=0 was best; a gentle nudge off a CLEAN x_denoised adds mild sinogram consistency without big streak re-injection). Plateau ~0.885. (2) FAILURE MODE: mapping a shallow interior alpha optimum; need >1 point to confirm 0.02 isnt noise. (3) ONE KNOB (from champion iter-12): itnet_alpha 0.02 -> 0.03. All else = iter-12 (c16,tn800,ep60,lr1e-3). (4) HYPOTHESIS: if the interior alpha optimum is >0.02, hr rises above 0.8852; if 0.02 was already past the peak, hr falls back toward 0.884 -> either way this LOCATES the optimum. (5) BUDGET: float change, ep60 = ~1140s, in budget. (6) Loop to iter-20."
+  },
+  "headroom_std": 0.01228306418872209,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8836860408332001,
+    "recomputed_val_ssim_mean": 0.9966026717424392,
+    "recomputed_val_psnr_mean": 54.539592819213865,
+    "recomputed_val_rmse_mean": 0.0006132227252237498
   }
 }

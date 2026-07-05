@@ -11,9 +11,9 @@
   "val_ssim": 0.9850606322288513,
   "val_psnr": 43.79016876220703,
   "val_rmse": 0.0022074771113693714,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00283016341496515,
+  "val_psnr_std": 0.8664328350408738,
+  "val_rmse_std": 0.00021642542171830323,
   "kept": true,
   "status": "keep",
   "params_M": 0.007683,
@@ -40,5 +40,16 @@
     "vn_checkpoint": true,
     "max_train_s": 1080,
     "rationale": "iter-12 (one knob: lr 1.2e-3 -> 2.4e-3). lr sweep still rising but flattening (6e-4->0.5444, 1.2e-3->0.5541). Push once more to bracket the peak. Hypothesis: 2.4e-3 either edges >0.5541 or turns over (peak ~1.2e-3)."
+  },
+  "headroom_std": 0.01572221716263314,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.5816691551317271,
+    "recomputed_val_ssim_mean": 0.9837435820698738,
+    "recomputed_val_psnr_mean": 43.378448219299315,
+    "recomputed_val_rmse_mean": 0.0021965515293413773
   }
 }

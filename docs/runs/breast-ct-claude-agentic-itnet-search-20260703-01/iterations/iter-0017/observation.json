@@ -11,9 +11,9 @@
   "val_ssim": 0.9986667633056641,
   "val_psnr": 55.047943115234375,
   "val_rmse": 0.0006039590225555003,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00045960011621252935,
+  "val_psnr_std": 1.5900772297887253,
+  "val_rmse_std": 0.00010559779259538929,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,16 @@
     "grad_clip": 1.0,
     "seed": 46,
     "rationale": "iter-17 (breast ItNet v1). SIX-BOX: (1) PRIOR: champion-config seed replicates: s42 0.8852, s43 0.8699, s44 0.8784, s45 0.8893 -> mean ~0.881, std ~0.007, range 0.019. Plateau firmly ~0.881+-0.007; single-run deltas < 0.015 are NOISE. (2) FAILURE MODE: n=4 -> extend to n=5 for the final reported plateau mean+-std. (3) ONE KNOB (from champion iter-12): seed 45 -> 46 (fifth replicate). All else identical. (4) HYPOTHESIS: seed46 lands in [0.870,0.890], completing an n=5 estimate of the plateau mean ~0.881. FALSIFIER: an outlier widens std but does not change the plateau conclusion. (5) BUDGET: ep60/tn800 ~1140s, in budget. (6) Loop to iter-20 (n=5 replicates done at iter-17; iters 18-20 = final plateau confirmations)."
+  },
+  "headroom_std": 0.013328053550268925,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8861547671666227,
+    "recomputed_val_ssim_mean": 0.9978230804204941,
+    "recomputed_val_psnr_mean": 54.7383540725708,
+    "recomputed_val_rmse_mean": 0.0006007386506826151
   }
 }

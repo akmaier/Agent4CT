@@ -11,9 +11,9 @@
   "val_ssim": 0.9982728958129883,
   "val_psnr": 52.50257110595703,
   "val_rmse": 0.0008096105302684009,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.000631737345958962,
+  "val_psnr_std": 1.579376811447484,
+  "val_rmse_std": 0.0001401628759950441,
   "kept": true,
   "status": "keep",
   "params_M": 7.024897,
@@ -37,5 +37,16 @@
     "max_train_s": 1000,
     "seed": 42,
     "rationale": "ITER-16. SIX-BOX (NUMBERS): (1) READ: the config is now highly optimized, each knob verified by a falsifying neighbor. Data-scaling peak (c32/bs1/lr2e-4): tn200 0.8464(ep40)/tn400 0.8615(ep26)/tn800 0.8696(ep13,BEST)/tn1600 0.8614(ep7). Batch: iter-15 tn800/BS2 hr=0.843799 (backstop ep13) < iter-13 tn800/bs1 0.8696 -> bs2's coarser gradients HURT even at the data optimum (confirms iter-7: bs1's dense gradients > modest epoch gains). So bs=1 CONFIRMED. (2) FAILURE MODE / limiter: the peak of the data-scaling curve is bracketed between tn400(ep26) and tn1600(ep7), with tn800(ep13) the best measured point. The TRUE optimum may sit slightly ABOVE 800 where the data/epoch balance is marginally better (800 beat 400 clearly; the 800->1600 drop was steep due to ep7). Refine the peak with a point just above 800. (3) ONE KNOB: train_n 800 -> 1000 (a moderate +25pct; gives ~ep10-11, between tn800's 13 and tn1600's 7); hold everything else at iter-13 BEST (c32, bs=1, ep=40, lr=2e-4, win=8, heads=8, grad_clip=1.0, seed=42). (4) HYPOTHESIS: the data-scaling peak is at or just above tn800; tn1000 edges out 0.8696 if the +200 scenes outweigh the ~3-epoch reduction (ep13->~ep10). This refines/confirms the peak location. FALSIFIER (NUMBERS): if hr <= 0.8696 at tn1000, tn800/ep13 is the confirmed peak of the data curve -> the optimum is LOCKED at iter-13's config (c32/bs1/lr2e-4/tn800), and iter-17+ do confirmation reruns (seed variation) or accept it as the campaign result. (5) 20-min budget via max_train_s=1000 backstop; val_n=200; tn1000<=2400; expandable_segments OOM-guard. (6) STRICT SERIAL: rm iter-16 obs pre-dispatch; iter_wait.sh gate before iter-17."
+  },
+  "headroom_std": 0.017571039109508826,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8493342379159108,
+    "recomputed_val_ssim_mean": 0.998192561864853,
+    "recomputed_val_psnr_mean": 52.3030562210083,
+    "recomputed_val_rmse_mean": 0.0007950485822220798
   }
 }

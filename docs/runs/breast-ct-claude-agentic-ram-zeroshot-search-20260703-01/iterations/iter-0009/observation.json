@@ -11,9 +11,9 @@
   "val_ssim": 0.9657702445983887,
   "val_psnr": 38.787452697753906,
   "val_rmse": 0.003926736768335104,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0039498005642707775,
+  "val_psnr_std": 0.4921637696137135,
+  "val_rmse_std": 0.00021823825389201163,
   "kept": true,
   "status": "keep",
   "params_M": 35.618953,
@@ -39,5 +39,16 @@
     "ram_post_fbp_blend": 0.42,
     "val_n": 200,
     "rationale": "iter-9: sigma=0.008 blend=0.42 factor=0.4 LOCKED (all continuous knobs peak at anchor; factor=0.2 collapsed to hr=0). Switch ram_input_norm adjoint_max->fbp_max (ONLY knob). Hypothesis: per-slice FBP-peak normalization places breast high-mu inputs in RAM's trained ~[0,1] range more faithfully than adjoint_max, hr>0.2925; if hr drops, try display_max next."
+  },
+  "headroom_std": 0.012082050535923884,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2501764964059132,
+    "recomputed_val_ssim_mean": 0.9626055583357811,
+    "recomputed_val_psnr_mean": 38.304644470214846,
+    "recomputed_val_rmse_mean": 0.0039261444110888985
   }
 }

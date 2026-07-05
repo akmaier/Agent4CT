@@ -11,9 +11,9 @@
   "val_ssim": 0.9975265264511108,
   "val_psnr": 50.328369140625,
   "val_rmse": 0.0010398863814771175,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0008259826802396199,
+  "val_psnr_std": 1.3427522060975947,
+  "val_rmse_std": 0.0001561329742848146,
   "kept": true,
   "status": "keep",
   "params_M": 7.024897,
@@ -37,5 +37,16 @@
     "max_train_s": 1000,
     "seed": 123,
     "rationale": "ITER-17. SIX-BOX (NUMBERS): (1) READ: the optimum is now LOCKED and every neighbor FALSIFIED. Best = iter-13 c32/bs1/lr2e-4/tn800 hr=0.8696 (ep13). Neighbors all worse: train_n 400(0.8615)/1000(iter-16 0.8447,ep10)/1600(0.8614,ep7); batch bs2(iter-15 0.8438); uswin_c c24(0.8464)/c48(0.8289); lr 3e-4(iter-11 CRASH 0.6059)/4e-4(0.8136). iter-16 tn1000 REGRESSED to 0.8447 (node contention -> only ep10) confirming tn800 is the data-curve peak. (2) FAILURE MODE / limiter: no untested knob remains that isn't already falsified -> the search has CONVERGED. The remaining risk is that 0.8696 is a favorable VAL-NOISE draw (val_n=200 has a finite spread). Confirm reproducibility of the optimum. (3) ONE KNOB: seed 42 -> 123 (rerun the EXACT iter-13 best config with a different RNG seed; changes train-sample draw + init + shuffle); everything else identical to iter-13 (tn800, c32, bs=1, ep=40, lr=2e-4, win=8, heads=8, grad_clip=1.0). (4) HYPOTHESIS: the tn800/bs1 optimum is robust; a different seed reproduces hr ~0.867-0.872 (within val-noise of 0.8696), confirming the campaign result is not a lucky draw. FALSIFIER (NUMBERS): if hr differs from 0.8696 by > ~0.01 (either way), the optimum is seed-sensitive / val-noise-limited and the reported best should be an average over seeds, not the single 0.8696. If hr > 0.8696 meaningfully, seed-42 was unlucky and the true optimum is a touch higher. (5) 20-min budget via max_train_s=1000 backstop; val_n=200; tn800; expandable_segments OOM-guard. (6) STRICT SERIAL: rm iter-17 obs pre-dispatch; iter_wait.sh gate before iter-18."
+  },
+  "headroom_std": 0.018100620560912255,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.804679285639571,
+    "recomputed_val_ssim_mean": 0.9973910820484161,
+    "recomputed_val_psnr_mean": 50.02547887802124,
+    "recomputed_val_rmse_mean": 0.0010288849085918629
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9988805651664734,
   "val_psnr": 54.41510009765625,
   "val_rmse": 0.000649605062790215,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0004027028978047622,
+  "val_psnr_std": 1.6731220529174526,
+  "val_rmse_std": 0.00011693937914760775,
   "kept": true,
   "status": "keep",
   "params_M": 0.928098,
@@ -37,5 +37,16 @@
     "val_n": 200,
     "seed": 44,
     "rationale": "ITER-17 champion seed replicate (seed 44). Champion c32/n2400/lr2.5e-4/alpha0.0004 hr0.8853. pretrain_epochs 15->10 for BUDGET-SAFETY on slow nodes (epochs proven dead: iter-14 showed ep15==ep30, loss floors by ep~6, so ep10 fully converges the denoiser -- scientifically equivalent for seed-variance). Seed replicate for mean+/-std."
+  },
+  "headroom_std": 0.01510084274369431,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8791000233407558,
+    "recomputed_val_ssim_mean": 0.99883854418993,
+    "recomputed_val_psnr_mean": 54.225518493652345,
+    "recomputed_val_rmse_mean": 0.0006382961389317643
   }
 }

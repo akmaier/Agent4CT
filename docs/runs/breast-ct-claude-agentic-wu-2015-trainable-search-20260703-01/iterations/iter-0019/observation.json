@@ -11,9 +11,9 @@
   "val_ssim": 0.9497327208518982,
   "val_psnr": 39.563621520996094,
   "val_rmse": 0.0035910659935325384,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0070081516372710465,
+  "val_psnr_std": 0.6133352407449171,
+  "val_rmse_std": 0.00024763233172382274,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,16 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-19 (one knob vs iter-18 best). NUMBERS sigmoid_slope: 10->0.30880, 6->0.30888, 4->0.30972(iter-18 BEST). Monotone improvement as the band roll-off shallows. FAILURE MODE: at ultra-low-param ceiling ~0.31; a shallower Nyquist-boundary sigmoid keeps lifting hr (softer band overlap -> the learnable per-band scales get finer spectral control). ONE KNOB: wu_sigmoid_slope 4.0 -> 2.5 (INIT, NO param change, 12 params). HYPOTHESIS: if slope=2.5 gives hr > 0.30972 the shallow-roll-off trend continues toward a broad optimum; if hr < 0.30972 the slope optimum brackets near 4 and iter-18 stands as the campaign best. Budget: ~735s."
+  },
+  "headroom_std": 0.009537459421175466,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.31655602884197787,
+    "recomputed_val_ssim_mean": 0.945135492682457,
+    "recomputed_val_psnr_mean": 39.109488849639895,
+    "recomputed_val_rmse_mean": 0.0035817720124032347
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9778947234153748,
   "val_psnr": 41.91044616699219,
   "val_rmse": 0.002740830183029175,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003332666667526523,
+  "val_psnr_std": 0.7062643206814675,
+  "val_rmse_std": 0.00021801462502448826,
   "kept": true,
   "status": "keep",
   "params_M": 0.011523,
@@ -40,5 +40,16 @@
     "vn_checkpoint": true,
     "max_train_s": 1080,
     "rationale": "iter-9 (one knob: vn_n_filters 32 -> 48, revert kernel to 7). k9 (iter-8) dropped to 0.482 -> larger kernel over-parameterizes at 200 samples; k7 optimal. Try capacity via a WIDER filter bank instead (historical breast note favors this). Hypothesis: 48 filters give the active regulariser more feature diversity -> hr>0.523; if underfits like k9, 32 stays."
+  },
+  "headroom_std": 0.01154554290897397,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.47908022088503716,
+    "recomputed_val_ssim_mean": 0.9757148233056069,
+    "recomputed_val_psnr_mean": 41.46942668914795,
+    "recomputed_val_rmse_mean": 0.0027318575920071454
   }
 }

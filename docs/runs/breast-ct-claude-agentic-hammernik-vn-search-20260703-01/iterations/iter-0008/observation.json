@@ -11,9 +11,9 @@
   "val_ssim": 0.9771055579185486,
   "val_psnr": 42.0372200012207,
   "val_rmse": 0.002701117657124996,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003570875084085828,
+  "val_psnr_std": 0.7373030260804015,
+  "val_rmse_std": 0.0002247938957878886,
   "kept": true,
   "status": "keep",
   "params_M": 0.010755,
@@ -40,5 +40,16 @@
     "vn_checkpoint": true,
     "max_train_s": 1080,
     "rationale": "iter-8 (one knob: vn_kernel 7 -> 9, hold lambda_init=1e-2 peak). lambda_init axis exhausted: concave peak at 1e-2 (hr 0.523). Now the regulariser is active, give it wider spatial support. Hypothesis: 9x9 filters model breast texture better -> hr>0.523; if flat/down, k7 stays optimal."
+  },
+  "headroom_std": 0.012906610823749982,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.48645642579290926,
+    "recomputed_val_ssim_mean": 0.9746558833122253,
+    "recomputed_val_psnr_mean": 41.59389852523804,
+    "recomputed_val_rmse_mean": 0.0026937696512322872
   }
 }

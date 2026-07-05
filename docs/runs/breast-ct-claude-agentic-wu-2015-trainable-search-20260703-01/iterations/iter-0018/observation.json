@@ -11,9 +11,9 @@
   "val_ssim": 0.9498545527458191,
   "val_psnr": 39.54372787475586,
   "val_rmse": 0.00359929958358407,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006825364885597626,
+  "val_psnr_std": 0.5997677210965695,
+  "val_rmse_std": 0.00024286120571442925,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,16 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-18 (one knob vs iter-17 best). NUMBERS: sigmoid_slope 10->0.30880(iter-11), 6->0.30888(iter-17 marginal BEST, +8e-5). Shallower band roll-off helps a hair. FAILURE MODE: at the ultra-low-param ceiling ~0.309; gains now sub-1e-3 (noise-floor territory). ONE KNOB: wu_sigmoid_slope 6.0 -> 4.0 (INIT, NO param change, 12 params). HYPOTHESIS: if slope=4 gives hr > 0.30888 the shallow-roll-off trend continues and I adopt it; if hr < 0.30888 the slope optimum is near 6 and the method has fully plateaued at hr~0.309 (12 params) -- consistent with the known ultra-low-param ceiling. Budget: ~735s."
+  },
+  "headroom_std": 0.009308686783808438,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.3148535869644889,
+    "recomputed_val_ssim_mean": 0.9452718433737755,
+    "recomputed_val_psnr_mean": 39.08783529281616,
+    "recomputed_val_rmse_mean": 0.0035903371183667334
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9987801909446716,
   "val_psnr": 55.43821716308594,
   "val_rmse": 0.0005774223827756941,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0005050262968202963,
+  "val_psnr_std": 1.7032378496626799,
+  "val_rmse_std": 0.0001081022355081402,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,16 @@
     "grad_clip": 1.0,
     "seed": 45,
     "rationale": "iter-16 (breast ItNet v1). SIX-BOX: (1) PRIOR: SEED REPLICATES of champion config (c16,tn800,ep60,k1,a0.02): seed42 0.8852, seed43 0.8699, seed44 0.8784 -> mean ~0.878, std ~0.008, range 0.015. Confirms plateau ~0.878+-0.008 and that iter-8/10/12 sub-0.001 deltas were noise. (2) FAILURE MODE: n=3 std is still coarse; extend to n=5 for a tighter plateau mean+-std (the reported number). (3) ONE KNOB (from champion iter-12): seed 44 -> 45 (fourth replicate). All else identical. (4) HYPOTHESIS: seed45 lands in [0.870,0.885], tightening the plateau mean estimate toward ~0.878. FALSIFIER: an outlier outside that band widens the std. (5) BUDGET: ep60/tn800 ~1140s, in budget. (6) Loop to iter-20 (n=5 seed replicates then final summary)."
+  },
+  "headroom_std": 0.014109650252525292,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8912967367989166,
+    "recomputed_val_ssim_mean": 0.9980556541681289,
+    "recomputed_val_psnr_mean": 55.15408393859863,
+    "recomputed_val_rmse_mean": 0.0005740266515931581
   }
 }

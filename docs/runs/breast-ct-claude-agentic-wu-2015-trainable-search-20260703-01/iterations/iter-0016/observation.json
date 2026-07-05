@@ -11,9 +11,9 @@
   "val_ssim": 0.9453272223472595,
   "val_psnr": 39.26871871948242,
   "val_rmse": 0.0037150827702134848,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007924356487481615,
+  "val_psnr_std": 0.6384865817379857,
+  "val_rmse_std": 0.00026720635046894464,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -45,5 +45,16 @@
     "val_chunk": 4,
     "seed": 42,
     "rationale": "ITER-16 (one knob vs iter-11 best). NUMBERS: soft_thresh optimum CONFIRMED at 0.0008 (0.0006->0.3065, 0.0008->0.3088 BEST, 0.0011->0.3067). lr(7e-5), epochs(12), lambda_neg, weight_decay all mapped -> plateau ~0.309. Base = iter-11. FAILURE MODE: continuous training knobs exhausted; remaining structural lever = wu_motion_range (span of the symmetric motion search in the feature-preserving residual interp). TPE=8; wider UNTESTED. ONE KNOB: wu_motion_range 8 -> 12 (structural int, NO new params, 12 params). HYPOTHESIS: if I widen motion_range to 12 I expect val hr >= 0.3088 because a larger displacement search lets the residual interpolation align more of the aliasing streak structure before back-projection; risk = spurious far matches inject noise into the residual (hr down) -> range=8 confirmed. Budget: motion search is per-pixel over the sino; +50pct range modestly raises cost, still <20min (base ~735s)."
+  },
+  "headroom_std": 0.012221627758418353,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2932411166207648,
+    "recomputed_val_ssim_mean": 0.9403690189123154,
+    "recomputed_val_psnr_mean": 38.818573265075685,
+    "recomputed_val_rmse_mean": 0.0037045820674393324
   }
 }

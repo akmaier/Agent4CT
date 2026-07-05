@@ -11,9 +11,9 @@
   "val_ssim": 0.9814375042915344,
   "val_psnr": 39.14255905151367,
   "val_rmse": 0.0037694370839744806,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0033378581614807003,
+  "val_psnr_std": 0.5639175699009383,
+  "val_rmse_std": 0.00023821540454246965,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,16 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-11 manduca_bilateral breast (train_n=400, val=200). SIX-BOX from BEST (iter-8 hr=0.2771; config proj_n_bf=1/img_n_bf=6/img_kernel=9/img_sr=0.05/img_sxy=0.5/ep10): (1) PRIOR: img spatial sigma 0.5->2.0 (iter-10) REGRESSED to 0.2468 (-0.030) -> revert img_sx/sy=0.5 (already optimal). proj_n_bf 1->3 (iter-9) regressed. proj_sr FIXED at 1.5 since iter-1 -- the PAPER'S KEY noise-adaptive lever, UNTESTED on breast. (2) FAILURE MODE: proj-domain range sigma on the sqrt-count sinogram (proj_sr=1.5) may be mistuned -- breast N0=1e5 so Q=sqrt(N0*exp(-P)) spans large values, and range sigma 1.5 sqrt-counts may UNDER-smooth sinogram noise (paper range 0.7-2.8; wider = more noise-adaptive averaging). A better proj_sr suppresses sinogram noise pre-FBP without the over-smoothing that a deeper cascade caused. (3) ONE KNOB: proj_sr 1.5 -> 2.5 (widen proj-domain noise-adaptive range bandwidth toward paper upper bound; img spatial sigma reverted to 0.5). (4) HYPOTHESIS: proj_sr 1.5->2.5 lifts hr above 0.2771 because a wider range sigma on the variance-stabilized sqrt-count sinogram averages more signal-dependent noise (edge-preserving via the range gate), reducing streak-generating inconsistencies before FBP -- the paper's intended mechanism. FALSIFIER: if flat (as on Mayo), proj-domain range inert on this substrate -> proj-domain exhausted, iter-12 consolidates best config / tests lr. (5) BUDGET: proj_n_bf=1 single pass, same cost as iter-8 ~500s, under 20-min. (6) Loop continues; iter-12 on landing. turbo, save ckpt+recon, params_M logged."
+  },
+  "headroom_std": 0.00938070657253447,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2742510216143948,
+    "recomputed_val_ssim_mean": 0.9798392021656036,
+    "recomputed_val_psnr_mean": 38.58769519805908,
+    "recomputed_val_rmse_mean": 0.0038019107922445984
   }
 }

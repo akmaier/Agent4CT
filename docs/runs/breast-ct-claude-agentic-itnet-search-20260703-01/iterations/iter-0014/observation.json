@@ -11,9 +11,9 @@
   "val_ssim": 0.9986164569854736,
   "val_psnr": 54.04016876220703,
   "val_rmse": 0.0006782596465200186,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0004873319808823803,
+  "val_psnr_std": 1.5364564355932904,
+  "val_rmse_std": 0.0001155081156922181,
   "kept": true,
   "status": "keep",
   "params_M": 0.232881,
@@ -37,5 +37,16 @@
     "grad_clip": 1.0,
     "seed": 43,
     "rationale": "iter-14 (breast ItNet v1). SIX-BOX: (1) PRIOR: ALPHA MAP (tn800): a0.0->0.8842, a0.02->0.8852 (champion, iter-12), a0.03->0.8828 (iter-13). Shallow interior optimum ~a0.02; architecture plateaus ~0.885 across ALL exhausted lever families (k, alpha, lr, width-hurts, data-diversity-saturates, compute-flat). (2) FAILURE MODE: none active; the task now is to CHARACTERIZE the ~0.885 plateaus run-to-run noise band (needed for honest reporting; the +-0.001 deltas between iter-8/10/12 are suspected GPU/seed noise, not signal). (3) ONE KNOB (from champion iter-12): seed 42 -> 43. All else = iter-12 (c16,tn800,ep60,k1,a0.02,lr1e-3). (4) HYPOTHESIS: a seed replicate of the champion lands within +-0.002 of 0.8852, confirming the recent sub-0.001 improvements are noise and the true plateau is ~0.885. FALSIFIER: if hr swings > 0.005 from 0.8852, the search is seed-noise-limited and single-run deltas are unreliable -> report the plateau as a mean over replicates. (5) BUDGET: ep60/tn800 = ~1140s, in budget. (6) Loop to iter-20 (seed replicates to finish per plateau)."
+  },
+  "headroom_std": 0.014453360352036896,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8726409441010864,
+    "recomputed_val_ssim_mean": 0.9981449854373932,
+    "recomputed_val_psnr_mean": 53.75956317901611,
+    "recomputed_val_rmse_mean": 0.0006717580293479842
   }
 }

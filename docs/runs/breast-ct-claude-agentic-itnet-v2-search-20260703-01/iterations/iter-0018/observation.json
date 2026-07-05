@@ -11,9 +11,9 @@
   "val_ssim": 0.9987806677818298,
   "val_psnr": 53.97274398803711,
   "val_rmse": 0.0006835452513769269,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0004394598136917365,
+  "val_psnr_std": 1.6444322245086966,
+  "val_rmse_std": 0.00012138928331109937,
   "kept": true,
   "status": "keep",
   "params_M": 0.928098,
@@ -37,5 +37,16 @@
     "val_n": 200,
     "seed": 45,
     "rationale": "ITER-18 champion seed replicate (seed 45), ep=10 budget-safe. Champion c32/n2400/alpha0.0004 hr0.8853. Seed replicate for mean+/-std."
+  },
+  "headroom_std": 0.015644011745751498,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.8730124861855855,
+    "recomputed_val_ssim_mean": 0.9987327250838279,
+    "recomputed_val_psnr_mean": 53.796499004364016,
+    "recomputed_val_rmse_mean": 0.0006702643378230277
   }
 }
