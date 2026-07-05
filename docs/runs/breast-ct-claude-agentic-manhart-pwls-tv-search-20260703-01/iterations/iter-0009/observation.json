@@ -11,9 +11,9 @@
   "val_ssim": 0.9907816052436829,
   "val_psnr": 40.195777893066406,
   "val_rmse": 0.0033389939926564693,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0016732377924869042,
+  "val_psnr_std": 0.5682804032273038,
+  "val_rmse_std": 0.00021263991422567477,
   "kept": true,
   "status": "keep",
   "params_M": 0.0,
@@ -35,5 +35,16 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-9 LAMBDA bisection. iter-7 (lambda=2e-3) hr=0.3552 BEST; iter-8 (lambda=4e-3) hr=0.3336 DROPPED (over-smoothed, fine breast structure lost) => interior lambda optimum bracketed in (2e-3, 4e-3). ONE knob: tv_lambda -> 0.003 (midpoint), iterations 1000, gamma=1.0. HYPOTHESIS: if hr>0.3552 the peak is near 3e-3; if hr<0.3552 the optimum is at/below 2e-3 and I test 1.5e-3 next. Budget: ~850s at 1000 iters, <1200s wall."
+  },
+  "headroom_std": 0.015624216526327481,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.3580595136086064,
+    "recomputed_val_ssim_mean": 0.9903377246856689,
+    "recomputed_val_psnr_mean": 39.65535259246826,
+    "recomputed_val_rmse_mean": 0.003362283693859354
   }
 }
