@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-05T15:21:56Z",
+ "updated": "2026-07-05T16:22:06Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -262,19 +262,19 @@
     "solver_key": "manhart-pwls-tv",
     "solver_name": "Manhart PWLS-TV (ray-weighted)",
     "run_id": "breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01",
-    "best_iter": 16,
+    "best_iter": 19,
     "params_M": 0.0,
     "params_source": "observation",
     "val_ssim": 0.9913056492805481,
-    "headroom": 0.36284940445662006,
-    "val_psnr": 40.23935317993164,
-    "val_rmse": 0.0033222839701920748,
-    "val_ssim_std": 0.001753353561319879,
-    "val_psnr_std": 0.5958039841330928,
-    "val_rmse_std": 0.0002222606827587547,
-    "headroom_std": 0.014770061058368566,
-    "elapsed_s": 827.9737975597382,
-    "image": "runs/breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01/iterations/iter-0016/comparison.png",
+    "headroom": 0.36285520927764003,
+    "val_psnr": 40.23943328857422,
+    "val_rmse": 0.0033222537022083998,
+    "val_ssim_std": 0.0017533336612843863,
+    "val_psnr_std": 0.5958034236115315,
+    "val_rmse_std": 0.00022225859243560063,
+    "headroom_std": 0.0147688470577763,
+    "elapsed_s": 827.8983790874481,
+    "image": "runs/breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01/iterations/iter-0019/comparison.png",
     "test_hr_mean": null,
     "test_hr_std": null,
     "test_ssim_mean": null,
@@ -284,7 +284,7 @@
     "test_rmse_mean": null,
     "test_rmse_std": null,
     "metric_basis": "val",
-    "rank_metric": 0.36284940445662006,
+    "rank_metric": 0.36285520927764003,
     "rank_tiebreak": 0.9913056492805481,
     "excluded_reason": null,
     "rank": 9
@@ -615,7 +615,7 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 16,
    "metric_basis": "val",
    "best_headroom": 0.590998115755097,
@@ -629,13 +629,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T14:38:00Z",
+   "started": "2026-07-05T15:34:01Z",
    "status": "ranked",
    "params_M": 0.007683,
    "excluded_reason": null,
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T14:38:00Z",
+   "ts": "2026-07-05T15:34:01Z",
    "curve": [
     [
      1,
@@ -711,6 +711,10 @@
     ],
     [
      19,
+     0.591
+    ],
+    [
+     20,
      0.591
     ]
    ],
@@ -1279,10 +1283,10 @@
    "name": "Manhart PWLS-TV (ray-weighted)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 18,
-   "best_iter": 16,
+   "n_iterations": 19,
+   "best_iter": 19,
    "metric_basis": "val",
-   "best_headroom": 0.36284940445662006,
+   "best_headroom": 0.36285520927764003,
    "best_ssim": 0.9913056492805481,
    "best_score": 0.9913056492805481,
    "test_hr_mean": null,
@@ -1293,13 +1297,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T14:45:42Z",
+   "started": "2026-07-05T15:28:06Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "manhart_pwls_tv-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T14:45:42Z",
+   "ts": "2026-07-05T15:28:06Z",
    "curve": [
     [
      1,
@@ -1372,9 +1376,13 @@
     [
      18,
      0.3628
+    ],
+    [
+     19,
+     0.3629
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01/iterations/iter-0016/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01/iterations/iter-0019/comparison.png",
    "test_image": null
   },
   {
@@ -1383,7 +1391,7 @@
    "name": "RAM (zero-shot)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 17,
+   "n_iterations": 18,
    "best_iter": 14,
    "metric_basis": "val",
    "best_headroom": 0.2950465497528084,
@@ -1397,13 +1405,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T15:16:22Z",
+   "started": "2026-07-05T16:16:23Z",
    "status": "ranked",
    "params_M": 35.618953,
    "excluded_reason": null,
    "agent": "ram_zeroshot-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T15:16:22Z",
+   "ts": "2026-07-05T16:16:23Z",
    "curve": [
     [
      1,
@@ -1471,6 +1479,10 @@
     ],
     [
      17,
+     0.295
+    ],
+    [
+     18,
      0.295
     ]
    ],
