@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-claude-agentic-dual-domain-bilateral-supervised-search-20260703-01",
+  "challenge": "breast_ct",
+  "slug_prefix": "breast-ct-claude-agentic-dual-domain-bilateral-supervised-search",
+  "started": "2026-07-05T16:27:44Z",
+  "agent": "dual_domain_bilateral_supervised-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

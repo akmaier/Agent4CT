@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-05T16:22:06Z",
+ "updated": "2026-07-05T19:27:28Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
@@ -22,9 +22,9 @@
    "challenge": "breast_ct",
    "label": "Breast-CT",
    "campaign": "calibrated+agentic",
-   "n_runs": 12,
-   "n_iterations": 236,
-   "n_solvers": 12,
+   "n_runs": 24,
+   "n_iterations": 357,
+   "n_solvers": 24,
    "champion_slug": "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01",
    "champion_name": "DD-UNet supervised L2",
    "champion_headroom": 0.8924881061449925,

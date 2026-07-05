@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260703-01",
+  "challenge": "breast_ct",
+  "slug_prefix": "breast-ct-claude-agentic-fastdiff-flow-pixel-constrained-search",
+  "started": "2026-07-05T18:17:44Z",
+  "agent": "fastdiff_flow_pixel_constrained-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "running",
+  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+}

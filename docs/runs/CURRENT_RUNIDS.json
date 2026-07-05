@@ -42,7 +42,14 @@
       "campaign": "calibrated+agentic",
       "note": "LIVE 20-iter agentic search (2026-07-03/04): 12 solvers, val-ranked (best-by-val-hr per solver, per-slice mean\u00b1std over the 200-case val split). Test-scored final board follows the search.",
       "run_ids": [
+        "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260703-01",
+        "breast-ct-claude-agentic-dual-domain-bilateral-supervised-search-20260703-01",
+        "breast-ct-claude-agentic-dual-domain-n2i-search-20260703-01",
         "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01",
+        "breast-ct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260703-01",
+        "breast-ct-claude-agentic-fastdiff-flow-pixel-unconstrained-search-20260703-01",
+        "breast-ct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260703-01",
+        "breast-ct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260703-01",
         "breast-ct-claude-agentic-hammernik-2017-search-20260703-01",
         "breast-ct-claude-agentic-hammernik-vn-search-20260703-01",
         "breast-ct-claude-agentic-itnet-search-20260703-01",
@@ -51,8 +58,13 @@
         "breast-ct-claude-agentic-learned-primal-dual-search-20260703-01",
         "breast-ct-claude-agentic-manduca-bilateral-search-20260703-01",
         "breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01",
+        "breast-ct-claude-agentic-naf-search-20260703-01",
+        "breast-ct-claude-agentic-r2gaussian-search-20260703-01",
         "breast-ct-claude-agentic-ram-zeroshot-search-20260703-01",
+        "breast-ct-claude-agentic-tv-iterative-search-20260703-01",
+        "breast-ct-claude-agentic-tv-iterative-supervised-search-20260703-01",
         "breast-ct-claude-agentic-uswin-search-20260703-01",
+        "breast-ct-claude-agentic-wu-2015-search-20260703-01",
         "breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01"
       ],
       "exclude_iters": {}
