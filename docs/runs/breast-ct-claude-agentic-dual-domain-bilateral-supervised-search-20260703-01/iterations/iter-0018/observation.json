@@ -11,9 +11,9 @@
   "val_ssim": 0.9832639098167419,
   "val_psnr": 38.88191604614258,
   "val_rmse": 0.003884263802319765,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0031373701107813836,
+  "val_psnr_std": 0.584386367014947,
+  "val_rmse_std": 0.0002547916905520766,
   "kept": true,
   "status": "keep",
   "params_M": 2.4e-05,
@@ -46,5 +46,16 @@
     "val_chunk": 10,
     "seed": 47,
     "rationale": "iter-18 dual_domain_bilateral_supervised, re-split Breast-CT val=200. SIX-BOX at BEST config (img_n_bf7/img_kernel7/lr1e-2/lneg1.0/train_n800). (1) PRIOR: 5 seed replicates -- 42=0.2561,43=0.2538,44=0.2538,45=0.2564,46=0.2542 -> mean~0.2549 std~0.0012. Seed variance is SMALL and stable; the ~0.255 BF optimum is robust. (2) Failure mode: n=5 good; adding seeds tightens the reported std. (3) ONE KNOB: seed 47 (6th replicate). (4) HYPOTHESIS: seed=47 lands ~0.253-0.257; mean stays ~0.255+-0.0012. (5) BUDGET: ~200s. (6) Loop to iter-20. Artifacts saved."
+  },
+  "headroom_std": 0.009450706784223486,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2523130106710017,
+    "recomputed_val_ssim_mean": 0.9820309716463089,
+    "recomputed_val_psnr_mean": 38.32899774551392,
+    "recomputed_val_rmse_mean": 0.003917441033991054
   }
 }

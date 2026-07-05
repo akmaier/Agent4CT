@@ -11,9 +11,9 @@
   "val_ssim": 0.9083917737007141,
   "val_psnr": 28.359363555908203,
   "val_rmse": 0.013044768013060093,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011864260145045708,
+  "val_psnr_std": 0.6865872030930786,
+  "val_rmse_std": 0.000978505544352699,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-10 REGIME-BOUND CONFIRMATION toward HARD iter-20 stop. All 4 orthogonal sampler levers mapped and FLAT on headroom: init_t (0.7->0.3: ssim 0.775->0.908, rmse flat), dc_relax (0.5->1.0: no gain), steps/NFE (8->16: no gain), eta (1.0->0.3: flat, falsifies stochastic drift). Best recon rmse ~0.0130 pinned at ~2.5x the 128-view breast FBP baseline rmse 0.00521 -> hr=0 INVARIANT. The cross-dataset Mayo-trained pixel flow prior cannot exceed the strong sparse-view breast FBP it samples around; the DC step only re-anchors it to that same FBP. BASE=iter-5 (init_t0.3, dc_relax0.5, steps8, eta0.3). Documenting the regime-bound ceiling, matching the Mayo fastdiff-flow-pixel-constrained sibling (search-20260620-01, also hr=0)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9035582605004311,
+    "recomputed_val_psnr_mean": 27.96861086845398,
+    "recomputed_val_rmse_mean": 0.012923440518788994
   }
 }
