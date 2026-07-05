@@ -11,9 +11,9 @@
   "val_ssim": 0.9913056492805481,
   "val_psnr": 40.23935317993164,
   "val_rmse": 0.0033222839701920748,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.001753353561319879,
+  "val_psnr_std": 0.5958039841330928,
+  "val_rmse_std": 0.0002222606827587547,
   "kept": true,
   "status": "keep",
   "params_M": 0.0,
@@ -35,5 +35,16 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-16 LAMBDA peak refinement. tv_init zeros (iter-15) collapsed hr->0.0 (FBP warm-start essential for TV-GD); revert to fbp. Lambda peak is shallow: 2e-3->0.3552, 3e-3->0.3596 (best), 4e-3->0.3336. ONE knob: tv_lambda 3e-3->2.5e-3 (best config otherwise: gamma=1, 1000it, gd, lr=0.01, decay=0.01, fbp init). HYPOTHESIS: if hr>0.3596 the true peak is between 2e-3 and 3e-3 (near 2.5e-3); if hr<0.3596 the peak is at/above 3e-3 and 0.3596 stands as the plain-TV optimum on breast. Budget: ~868s at 1000 iters, <1200s wall."
+  },
+  "headroom_std": 0.014770061058368566,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.3611078602799472,
+    "recomputed_val_ssim_mean": 0.9908666545152665,
+    "recomputed_val_psnr_mean": 39.69645303726196,
+    "recomputed_val_rmse_mean": 0.003347114904318005
   }
 }

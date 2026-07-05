@@ -11,9 +11,9 @@
   "val_ssim": 0.9912824630737305,
   "val_psnr": 40.210365295410156,
   "val_rmse": 0.0033333913888782263,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0018954230189804045,
+  "val_psnr_std": 0.6134600703013307,
+  "val_rmse_std": 0.00022989168550962264,
   "kept": true,
   "status": "keep",
   "params_M": 0.0,
@@ -35,5 +35,16 @@
     "tv_optimizer": "gd",
     "tv_init": "fbp",
     "rationale": "iter-17 LAMBDA peak refinement (fine). iter-16 (lambda=2.5e-3) hr=0.36285 NEW BEST, beating 3e-3 (0.3596) and 2e-3 (0.3552) => peak bracketed at 2.5e-3 (2e-3<2.5e-3>3e-3). ONE knob: tv_lambda 2.5e-3->2.25e-3 (test the low side of the bracket). HYPOTHESIS: if hr>0.36285 the peak is between 2e-3 and 2.5e-3; if hr<0.36285 the peak is at/above 2.5e-3 and 0.3628 stands as the plain-TV optimum. Also verifies the just-applied solver save-fix: recon_raw.npz should now have keys pred+truth+baseline with truth=real phantom (per-case mean ~0.13, not ~0.067). Best config otherwise: gamma=1, 1000it, gd, lr=0.01, decay=0.01, fbp init. Budget: ~830s at 1000 iters, <1200s wall."
+  },
+  "headroom_std": 0.014249159882153743,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.35898624787792244,
+    "recomputed_val_ssim_mean": 0.9908182802796364,
+    "recomputed_val_psnr_mean": 39.66748825073242,
+    "recomputed_val_rmse_mean": 0.0033587692154105754
   }
 }

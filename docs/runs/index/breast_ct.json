@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-05T13:18:45Z",
+ "updated": "2026-07-05T13:43:24Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -269,10 +269,10 @@
     "headroom": 0.36284940445662006,
     "val_psnr": 40.23935317993164,
     "val_rmse": 0.0033222839701920748,
-    "val_ssim_std": null,
-    "val_psnr_std": null,
-    "val_rmse_std": null,
-    "headroom_std": null,
+    "val_ssim_std": 0.001753353561319879,
+    "val_psnr_std": 0.5958039841330928,
+    "val_rmse_std": 0.0002222606827587547,
+    "headroom_std": 0.014770061058368566,
     "elapsed_s": 827.9737975597382,
     "image": "runs/breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01/iterations/iter-0016/comparison.png",
     "test_hr_mean": null,
@@ -503,7 +503,7 @@
    "name": "Hammernik VN (2017)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 6,
    "metric_basis": "val",
    "best_headroom": 0.6329364517665366,
@@ -517,13 +517,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T12:37:48Z",
+   "started": "2026-07-05T13:37:50Z",
    "status": "ranked",
    "params_M": 0.008965,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T12:37:48Z",
+   "ts": "2026-07-05T13:37:50Z",
    "curve": [
     [
      1,
@@ -595,6 +595,10 @@
     ],
     [
      18,
+     0.6329
+    ],
+    [
+     19,
      0.6329
     ]
    ],
@@ -931,7 +935,7 @@
    "name": "ITNet v3",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 12,
    "metric_basis": "val",
    "best_headroom": 0.8638244357780948,
@@ -945,13 +949,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T12:29:51Z",
+   "started": "2026-07-05T13:28:42Z",
    "status": "ranked",
    "params_M": 8.317706,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T12:29:51Z",
+   "ts": "2026-07-05T13:28:42Z",
    "curve": [
     [
      1,
@@ -1027,6 +1031,10 @@
     ],
     [
      19,
+     0.8638
+    ],
+    [
+     20,
      0.8638
     ]
    ],

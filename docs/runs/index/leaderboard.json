@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-05T13:18:45Z",
+ "updated": "2026-07-05T13:43:24Z",
  "ranking_metric": "per-dataset",
  "tiebreak": "per-dataset",
  "datasets": {
@@ -1083,10 +1083,10 @@
      "headroom": 0.36284940445662006,
      "val_psnr": 40.23935317993164,
      "val_rmse": 0.0033222839701920748,
-     "val_ssim_std": null,
-     "val_psnr_std": null,
-     "val_rmse_std": null,
-     "headroom_std": null,
+     "val_ssim_std": 0.001753353561319879,
+     "val_psnr_std": 0.5958039841330928,
+     "val_rmse_std": 0.0002222606827587547,
+     "headroom_std": 0.014770061058368566,
      "elapsed_s": 827.9737975597382,
      "image": "runs/breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01/iterations/iter-0016/comparison.png",
      "test_hr_mean": null,

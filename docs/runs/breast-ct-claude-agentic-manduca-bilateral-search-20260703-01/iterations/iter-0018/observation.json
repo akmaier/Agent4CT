@@ -11,9 +11,9 @@
   "val_ssim": 0.9814385175704956,
   "val_psnr": 39.14240264892578,
   "val_rmse": 0.003769505303353071,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003337632306538291,
+  "val_psnr_std": 0.5638718713339491,
+  "val_rmse_std": 0.00023819993578449297,
   "kept": true,
   "status": "keep",
   "params_M": 2.2e-05,
@@ -48,5 +48,16 @@
     "val_chunk": 10,
     "seed": 42,
     "rationale": "iter-18 manduca_bilateral breast CEILING CONFIRMATION toward HARD iter-20 stop (val=200). Ceiling hr=0.2771 reproduced 4x (iter-8/11/15/16); best hr=0.2781 (iter-14 train_n=1600). ALL levers exhausted: img_sr peak 0.05, img_n_bf sat@6, img_kernel best 9, img spatial 0.5 optimal, epochs inert, lr 5e-3 optimal (1e-3 worse), proj_n_bf worse, proj_sr flat, bowtie collapsed hr=0, train_n 4x=+0.001 (capacity-bound not data-bound). Firm 21-param image-bilateral ceiling; the sparse-view FBP + trainable bilateral tail sets ~0.278. ONE KNOB: none productive remains -- confirmation at best efficient config (train_n=400 seed=42). BUDGET ~470s. turbo, save ckpt+recon, params_M logged."
+  },
+  "headroom_std": 0.009381971802230054,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.27423771709611955,
+    "recomputed_val_ssim_mean": 0.9798404261469841,
+    "recomputed_val_psnr_mean": 38.58753610610962,
+    "recomputed_val_rmse_mean": 0.0038019791326951236
   }
 }
