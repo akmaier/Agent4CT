@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-05T07:09:29Z",
+ "updated": "2026-07-05T08:09:28Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -231,19 +231,19 @@
     "solver_key": "hammernik-vn",
     "solver_name": "Hammernik VN (MRI port)",
     "run_id": "breast-ct-claude-agentic-hammernik-vn-search-20260703-01",
-    "best_iter": 11,
+    "best_iter": 12,
     "params_M": 0.007683,
     "params_source": "observation",
-    "val_ssim": 0.9829810857772827,
-    "headroom": 0.554082401131172,
-    "val_psnr": 43.33910369873047,
-    "val_rmse": 0.0023251408711075783,
+    "val_ssim": 0.9850606322288513,
+    "headroom": 0.5766480623641392,
+    "val_psnr": 43.79016876220703,
+    "val_rmse": 0.0022074771113693714,
     "val_ssim_std": null,
     "val_psnr_std": null,
     "val_rmse_std": null,
     "headroom_std": null,
-    "elapsed_s": 958.5946061611176,
-    "image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0011/comparison.png",
+    "elapsed_s": 955.6766436100006,
+    "image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0012/comparison.png",
     "test_hr_mean": null,
     "test_hr_std": null,
     "test_ssim_mean": null,
@@ -253,8 +253,8 @@
     "test_rmse_mean": null,
     "test_rmse_std": null,
     "metric_basis": "val",
-    "rank_metric": 0.554082401131172,
-    "rank_tiebreak": 0.9829810857772827,
+    "rank_metric": 0.5766480623641392,
+    "rank_tiebreak": 0.9850606322288513,
     "excluded_reason": null,
     "rank": 8
    },
@@ -503,7 +503,7 @@
    "name": "Hammernik VN (2017)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 12,
+   "n_iterations": 13,
    "best_iter": 6,
    "metric_basis": "val",
    "best_headroom": 0.6329364517665366,
@@ -517,13 +517,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T06:37:31Z",
+   "started": "2026-07-05T07:39:14Z",
    "status": "ranked",
    "params_M": 0.008965,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T06:37:31Z",
+   "ts": "2026-07-05T07:39:14Z",
    "curve": [
     [
      1,
@@ -572,6 +572,10 @@
     [
      12,
      0.6329
+    ],
+    [
+     13,
+     0.6329
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-hammernik-2017-search-20260703-01/iterations/iter-0006/comparison.png",
@@ -583,12 +587,12 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 11,
-   "best_iter": 11,
+   "n_iterations": 12,
+   "best_iter": 12,
    "metric_basis": "val",
-   "best_headroom": 0.554082401131172,
-   "best_ssim": 0.9829810857772827,
-   "best_score": 0.9829810857772827,
+   "best_headroom": 0.5766480623641392,
+   "best_ssim": 0.9850606322288513,
+   "best_score": 0.9850606322288513,
    "test_hr_mean": null,
    "test_hr_std": null,
    "test_ssim_mean": null,
@@ -597,13 +601,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T06:26:11Z",
+   "started": "2026-07-05T07:26:09Z",
    "status": "ranked",
    "params_M": 0.007683,
    "excluded_reason": null,
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T06:26:11Z",
+   "ts": "2026-07-05T07:26:09Z",
    "curve": [
     [
      1,
@@ -648,9 +652,13 @@
     [
      11,
      0.5541
+    ],
+    [
+     12,
+     0.5766
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0011/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0012/comparison.png",
    "test_image": null
   },
   {
@@ -879,7 +887,7 @@
    "name": "ITNet v3",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 13,
+   "n_iterations": 14,
    "best_iter": 12,
    "metric_basis": "val",
    "best_headroom": 0.8638244357780948,
@@ -893,13 +901,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T06:27:48Z",
+   "started": "2026-07-05T07:31:29Z",
    "status": "ranked",
    "params_M": 8.317706,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T06:27:48Z",
+   "ts": "2026-07-05T07:31:29Z",
    "curve": [
     [
      1,
@@ -951,6 +959,10 @@
     ],
     [
      13,
+     0.8638
+    ],
+    [
+     14,
      0.8638
     ]
    ],
@@ -1075,7 +1087,7 @@
    "name": "Manduca proj-bilateral (trainable)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 11,
    "metric_basis": "val",
    "best_headroom": 0.2770939797843982,
@@ -1089,13 +1101,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T06:18:57Z",
+   "started": "2026-07-05T07:18:55Z",
    "status": "ranked",
    "params_M": 2.2e-05,
    "excluded_reason": null,
    "agent": "manduca_bilateral-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T06:18:57Z",
+   "ts": "2026-07-05T07:18:55Z",
    "curve": [
     [
      1,
@@ -1140,6 +1152,10 @@
     [
      11,
      0.2771
+    ],
+    [
+     12,
+     0.2771
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0011/comparison.png",
@@ -1151,7 +1167,7 @@
    "name": "Manhart PWLS-TV (ray-weighted)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 10,
+   "n_iterations": 11,
    "best_iter": 9,
    "metric_basis": "val",
    "best_headroom": 0.35964474138138125,
@@ -1165,13 +1181,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T06:25:07Z",
+   "started": "2026-07-05T07:25:29Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "manhart_pwls_tv-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T06:25:07Z",
+   "ts": "2026-07-05T07:25:29Z",
    "curve": [
     [
      1,
@@ -1211,6 +1227,10 @@
     ],
     [
      10,
+     0.3596
+    ],
+    [
+     11,
      0.3596
     ]
    ],
