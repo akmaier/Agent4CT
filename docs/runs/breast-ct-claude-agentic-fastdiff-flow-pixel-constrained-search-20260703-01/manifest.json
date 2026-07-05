@@ -5,6 +5,6 @@
   "started": "2026-07-05T18:17:44Z",
   "agent": "fastdiff_flow_pixel_constrained-claude-agentic",
   "model": "claude-opus-4-8-1m",
-  "status": "running",
-  "notes": "Claude-driven per-iter agentic search; bounds informed by user-provided hints."
+  "status": "stopped",
+  "notes": "20-iter agentic search complete; regime-bound hr=0 (cross-dataset Mayo pixel-flow prior cannot exceed the 128-view breast FBP; ~10x out_scale mismatch). All 4 sampler levers + DC-solve depth mapped."
 }

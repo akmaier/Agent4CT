@@ -11,9 +11,9 @@
   "val_ssim": 0.9101046323776245,
   "val_psnr": 27.730722427368164,
   "val_rmse": 0.014023884199559689,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.012345688528876738,
+  "val_psnr_std": 0.6337492309168067,
+  "val_rmse_std": 0.0009771169583008726,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-20 fastdiff_wdm_wavelet_constrained breast (search-20260703-01), val_n=200. SIX-BOX (NUMBERS): (1) TRAJECTORY 1-5 (ssim/psnr/rmse/hr): 1(relax0.5,it0.7,eta1,s8,cg5)->0.7220/27.35/1.465e-2/0; 2(relax1)->0.8199/27.62/1.420e-2/0; 3(it0.4)->0.8946/27.93/1.371e-2/0 [RMSE-min]; 4(it0.2)->0.9089/27.89/1.377e-2/0 [it FALSIFIER: RMSE up]; 5(eta0.5,it0.4)->0.8945/27.94/1.3696e-2/0 [eta INERT]. hr=0 STRUCTURAL: zero-shot Mayo wavelet prior (out_scale0.05 vs breast mu~0.5, 10x mismatch) recon -> as init_t->low + full DC the recon limits to a DC-cleaned FBP which cannot BEAT the breast FBP baseline (~36.3 PSNR) it is scored against. iters 6-20 bracket the recon-knob ceiling + confirm robustness. (2) FAILURE MODE: hr=0 structural (DC-cleaned-FBP floor); PSNR ~8.4dB under FBP baseline; dc_relax/init_t/eta primary axes explored iters1-5. (3) ONE KNOB: steps16+init_t0.3+eta0.5 (final best-combo); all else = the RMSE-min anchor (steps8,it0.4,eta1.0,cg5,relax1.0) unless the knob IS that field. (4) HYPOTHESIS/FALSIFIER: final iter: the combined mild-lever config at reduced DPS; the run's best-achievable recon-knob RMSE -> the terminal ceiling number for the fastdiff-family structural hr=0 verdict on 128-view breast. (5) BUDGET: <=~250s (200 val x few-step Euler + CG5, 512^2), inside 1200s/1800s kill; val=ALL 200 seed-20260703 cases. (6) Loop continues to iter-20 then final report."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9048724579811096,
+    "recomputed_val_psnr_mean": 27.309946918487547,
+    "recomputed_val_rmse_mean": 0.013935420294292272
   }
 }
