@@ -482,8 +482,15 @@ async function renderIteration(slug, row) {
     body.innerHTML = "";
     const compPath = `runs/${slug}/iterations/${iterId}/comparison.png`;
     const compDiv = el("div", { class: "compare" });
-    if (status === "crash" || status === "timeout") {
-      compDiv.appendChild(failedRunPlaceholder(status, `${slug} · ${iterId}`));
+    // A crashed/timed-out iteration never wrote a figure. A *discarded* iteration
+    // that diverged (no positive headroom) likewise has no reconstruction to show
+    // — proactively render the labeled placeholder instead of firing a 404 for a
+    // figure we know isn't there. Discards WITH a real score (headroom > 0) still
+    // attempt their figure (comparisonImg's onerror remains the final safety net).
+    const noFigure = (status === "crash" || status === "timeout" ||
+      ((status === "discard" || status === "fail" || status === "error") && !(row.headroom > 0)));
+    if (noFigure) {
+      compDiv.appendChild(failedRunPlaceholder(status || "discard", `${slug} · ${iterId}`));
     } else {
       compDiv.appendChild(comparisonImg(compPath, `${slug} · ${iterId} comparison`, status, `${slug} · ${iterId}`));
     }

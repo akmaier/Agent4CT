@@ -14,7 +14,25 @@ SSH="ssh -o BatchMode=yes -o ConnectTimeout=12"
 # 0. Populate per-case mean±std for any NEW iters from their saved recon_raw.npz
 #    (idempotent: skips iters that already have a numeric headroom_std). This is
 #    why the board shows ± std in every measure; new best-iters get std here.
-$SSH lme-bastion "cd $REPO_C && HDF5_USE_FILE_LOCKING=FALSE python3 scripts/rescore_val_std.py --all >/dev/null 2>&1" || true
+#    THREE things every future maintainer must keep, each a bug we hit:
+#      (a) MUST `source .venv/bin/activate` — rescore imports torch (SSIM); without
+#          it the step dies "No module named 'torch'" and hr-std silently never
+#          populates.
+#      (b) Iterate the ACTUAL current run dirs by glob, NOT `--all`. `--all` reads
+#          the CLUSTER's CURRENT_RUNIDS.json, which this laptop-side script edits
+#          only locally (step 3) and never pushes — so on the cluster it is stale
+#          (old run-ids) and `--all` would rescore the wrong runs, skipping every
+#          20260703 solver.
+#      (c) Log the output (not /dev/null) so a future failure is visible.
+mkdir -p docs/_debug   # local log dir must exist or the redirect below fails
+_rescore_log="docs/_debug/rescore_$(date -u +%Y%m%dT%H%M%SZ).log"
+$SSH lme-bastion "cd $REPO_C && source .venv/bin/activate && export HDF5_USE_FILE_LOCKING=FALSE && \
+  for d in docs/runs/breast-ct-claude-agentic-*-search-20260703-01; do \
+    python3 scripts/rescore_val_std.py --run \"\$(basename \$d)\"; \
+  done" \
+  > "$_rescore_log" 2>&1 \
+  && echo "rescore OK -> $_rescore_log" \
+  || echo "WARNING: rescore step failed (see $_rescore_log) — board may lag hr-std"
 
 # 1. Discover breast run dirs on the cluster.
 slugs=$($SSH lme-bastion "ls -d $REPO_C/docs/runs/breast-ct-claude-agentic-*-search-20260703-01 2>/dev/null | sed 's#.*/##'" 2>/dev/null)
