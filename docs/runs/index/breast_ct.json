@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-05T06:09:31Z",
+ "updated": "2026-07-05T07:09:29Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -231,19 +231,19 @@
     "solver_key": "hammernik-vn",
     "solver_name": "Hammernik VN (MRI port)",
     "run_id": "breast-ct-claude-agentic-hammernik-vn-search-20260703-01",
-    "best_iter": 10,
+    "best_iter": 11,
     "params_M": 0.007683,
     "params_source": "observation",
-    "val_ssim": 0.9816706776618958,
-    "headroom": 0.5443857155321561,
-    "val_psnr": 43.152252197265625,
-    "val_rmse": 0.002375702140852809,
+    "val_ssim": 0.9829810857772827,
+    "headroom": 0.554082401131172,
+    "val_psnr": 43.33910369873047,
+    "val_rmse": 0.0023251408711075783,
     "val_ssim_std": null,
     "val_psnr_std": null,
     "val_rmse_std": null,
     "headroom_std": null,
-    "elapsed_s": 957.430370092392,
-    "image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0010/comparison.png",
+    "elapsed_s": 958.5946061611176,
+    "image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0011/comparison.png",
     "test_hr_mean": null,
     "test_hr_std": null,
     "test_ssim_mean": null,
@@ -253,8 +253,8 @@
     "test_rmse_mean": null,
     "test_rmse_std": null,
     "metric_basis": "val",
-    "rank_metric": 0.5443857155321561,
-    "rank_tiebreak": 0.9816706776618958,
+    "rank_metric": 0.554082401131172,
+    "rank_tiebreak": 0.9829810857772827,
     "excluded_reason": null,
     "rank": 8
    },
@@ -355,19 +355,19 @@
     "solver_key": "manduca-bilateral",
     "solver_name": "Manduca proj-bilateral (trainable)",
     "run_id": "breast-ct-claude-agentic-manduca-bilateral-search-20260703-01",
-    "best_iter": 8,
+    "best_iter": 11,
     "params_M": 2.2e-05,
     "params_source": "observation",
-    "val_ssim": 0.9814385175704956,
-    "headroom": 0.27708013751888916,
-    "val_psnr": 39.14239501953125,
-    "val_rmse": 0.0037695092614740133,
+    "val_ssim": 0.9814375042915344,
+    "headroom": 0.2770939797843982,
+    "val_psnr": 39.14255905151367,
+    "val_rmse": 0.0037694370839744806,
     "val_ssim_std": null,
     "val_psnr_std": null,
     "val_rmse_std": null,
     "headroom_std": null,
-    "elapsed_s": 497.2898223400116,
-    "image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0008/comparison.png",
+    "elapsed_s": 491.0428433418274,
+    "image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0011/comparison.png",
     "test_hr_mean": null,
     "test_hr_std": null,
     "test_ssim_mean": null,
@@ -377,8 +377,8 @@
     "test_rmse_mean": null,
     "test_rmse_std": null,
     "metric_basis": "val",
-    "rank_metric": 0.27708013751888916,
-    "rank_tiebreak": 0.9814385175704956,
+    "rank_metric": 0.2770939797843982,
+    "rank_tiebreak": 0.9814375042915344,
     "excluded_reason": null,
     "rank": 12
    }
@@ -503,7 +503,7 @@
    "name": "Hammernik VN (2017)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 6,
    "metric_basis": "val",
    "best_headroom": 0.6329364517665366,
@@ -517,13 +517,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T04:31:36Z",
+   "started": "2026-07-05T06:37:31Z",
    "status": "ranked",
    "params_M": 0.008965,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T04:31:36Z",
+   "ts": "2026-07-05T06:37:31Z",
    "curve": [
     [
      1,
@@ -568,6 +568,10 @@
     [
      11,
      0.6329
+    ],
+    [
+     12,
+     0.6329
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-hammernik-2017-search-20260703-01/iterations/iter-0006/comparison.png",
@@ -579,12 +583,12 @@
    "name": "Hammernik VN (MRI port)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 10,
-   "best_iter": 10,
+   "n_iterations": 11,
+   "best_iter": 11,
    "metric_basis": "val",
-   "best_headroom": 0.5443857155321561,
-   "best_ssim": 0.9816706776618958,
-   "best_score": 0.9816706776618958,
+   "best_headroom": 0.554082401131172,
+   "best_ssim": 0.9829810857772827,
+   "best_score": 0.9829810857772827,
    "test_hr_mean": null,
    "test_hr_std": null,
    "test_ssim_mean": null,
@@ -593,13 +597,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T05:26:10Z",
+   "started": "2026-07-05T06:26:11Z",
    "status": "ranked",
    "params_M": 0.007683,
    "excluded_reason": null,
    "agent": "hammernik_vn-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T05:26:10Z",
+   "ts": "2026-07-05T06:26:11Z",
    "curve": [
     [
      1,
@@ -640,9 +644,13 @@
     [
      10,
      0.5444
+    ],
+    [
+     11,
+     0.5541
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0010/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-hammernik-vn-search-20260703-01/iterations/iter-0011/comparison.png",
    "test_image": null
   },
   {
@@ -871,7 +879,7 @@
    "name": "ITNet v3",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 12,
+   "n_iterations": 13,
    "best_iter": 12,
    "metric_basis": "val",
    "best_headroom": 0.8638244357780948,
@@ -885,13 +893,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T05:30:36Z",
+   "started": "2026-07-05T06:27:48Z",
    "status": "ranked",
    "params_M": 8.317706,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T05:30:36Z",
+   "ts": "2026-07-05T06:27:48Z",
    "curve": [
     [
      1,
@@ -939,6 +947,10 @@
     ],
     [
      12,
+     0.8638
+    ],
+    [
+     13,
      0.8638
     ]
    ],
@@ -1063,12 +1075,12 @@
    "name": "Manduca proj-bilateral (trainable)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 10,
-   "best_iter": 8,
+   "n_iterations": 11,
+   "best_iter": 11,
    "metric_basis": "val",
-   "best_headroom": 0.27708013751888916,
-   "best_ssim": 0.9814385175704956,
-   "best_score": 0.9814385175704956,
+   "best_headroom": 0.2770939797843982,
+   "best_ssim": 0.9814375042915344,
+   "best_score": 0.9814375042915344,
    "test_hr_mean": null,
    "test_hr_std": null,
    "test_ssim_mean": null,
@@ -1077,13 +1089,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T05:18:22Z",
+   "started": "2026-07-05T06:18:57Z",
    "status": "ranked",
    "params_M": 2.2e-05,
    "excluded_reason": null,
    "agent": "manduca_bilateral-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T05:18:22Z",
+   "ts": "2026-07-05T06:18:57Z",
    "curve": [
     [
      1,
@@ -1124,9 +1136,13 @@
     [
      10,
      0.2771
+    ],
+    [
+     11,
+     0.2771
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0008/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0011/comparison.png",
    "test_image": null
   },
   {
@@ -1135,7 +1151,7 @@
    "name": "Manhart PWLS-TV (ray-weighted)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_iter": 9,
    "metric_basis": "val",
    "best_headroom": 0.35964474138138125,
@@ -1149,13 +1165,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T05:24:42Z",
+   "started": "2026-07-05T06:25:07Z",
    "status": "ranked",
    "params_M": 0.0,
    "excluded_reason": null,
    "agent": "manhart_pwls_tv-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T05:24:42Z",
+   "ts": "2026-07-05T06:25:07Z",
    "curve": [
     [
      1,
@@ -1191,6 +1207,10 @@
     ],
     [
      9,
+     0.3596
+    ],
+    [
+     10,
      0.3596
     ]
    ],
