@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-05T02:09:30Z",
+ "updated": "2026-07-05T03:09:25Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -503,7 +503,7 @@
    "name": "Hammernik VN (2017)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_iter": 6,
    "metric_basis": "val",
    "best_headroom": 0.6329364517665366,
@@ -517,13 +517,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T00:37:41Z",
+   "started": "2026-07-05T02:37:52Z",
    "status": "ranked",
    "params_M": 0.008965,
    "excluded_reason": null,
    "agent": "hammernik_2017-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T00:37:41Z",
+   "ts": "2026-07-05T02:37:52Z",
    "curve": [
     [
      1,
@@ -559,6 +559,10 @@
     ],
     [
      9,
+     0.6329
+    ],
+    [
+     10,
      0.6329
     ]
    ],
@@ -635,7 +639,7 @@
    "name": "ITNet v1",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 18,
+   "n_iterations": 19,
    "best_iter": 16,
    "metric_basis": "val",
    "best_headroom": 0.8892614182392299,
@@ -649,13 +653,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T01:32:26Z",
+   "started": "2026-07-05T02:27:55Z",
    "status": "ranked",
    "params_M": 0.232881,
    "excluded_reason": null,
    "agent": "itnet-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T01:32:26Z",
+   "ts": "2026-07-05T02:27:55Z",
    "curve": [
     [
      1,
@@ -728,6 +732,10 @@
     [
      18,
      0.8893
+    ],
+    [
+     19,
+     0.8893
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-itnet-search-20260703-01/iterations/iter-0016/comparison.png",
@@ -739,7 +747,7 @@
    "name": "ITNet v2",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 17,
+   "n_iterations": 18,
    "best_iter": 14,
    "metric_basis": "val",
    "best_headroom": 0.885264095690599,
@@ -753,13 +761,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T01:26:44Z",
+   "started": "2026-07-05T02:24:18Z",
    "status": "ranked",
    "params_M": 0.928098,
    "excluded_reason": null,
    "agent": "itnet_v2-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T01:26:44Z",
+   "ts": "2026-07-05T02:24:18Z",
    "curve": [
     [
      1,
@@ -828,6 +836,10 @@
     [
      18,
      0.8853
+    ],
+    [
+     19,
+     0.8853
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-itnet-v2-search-20260703-01/iterations/iter-0014/comparison.png",
@@ -839,7 +851,7 @@
    "name": "ITNet v3",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 9,
+   "n_iterations": 10,
    "best_iter": 7,
    "metric_basis": "val",
    "best_headroom": 0.8469261441011989,
@@ -853,13 +865,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-04T23:28:57Z",
+   "started": "2026-07-05T02:24:41Z",
    "status": "ranked",
    "params_M": 8.317706,
    "excluded_reason": null,
    "agent": "itnet_v3-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-04T23:28:57Z",
+   "ts": "2026-07-05T02:24:41Z",
    "curve": [
     [
      1,
@@ -895,6 +907,10 @@
     ],
     [
      9,
+     0.8469
+    ],
+    [
+     10,
      0.8469
     ]
    ],
