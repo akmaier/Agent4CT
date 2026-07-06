@@ -1,19 +1,19 @@
 {
-  "ts": "2026-07-05T18:21:20Z",
+  "ts": "2026-07-06T20:21:22Z",
   "run_id": "breast-ct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260703-01",
   "iter": 1,
   "challenge": "breast_ct",
   "commit": "671da566",
   "change_class": "architecture",
-  "rationale": "fastdiff_flow_pixel_constrained-claude-agentic: image_size=512, pixel_spacing=0.3516, n_angles=128, n_det=1024, det_spacing=0.35754, sod=500.0, sdd=1000.0, display_min=0.0, display_max=0.5, train_n=400, val_n=200, noise_i0=100000.0, noise_sigma_e=10.0, seed=42, fd_recon_ckpt=/cluster/maier/Agent4CT/checkpoints/fast_diffusion_pixel_constrained.pt, fd_recon_steps=8, fd_recon_init=fbp, fd_recon_init_t=0.7, fd_recon_eta=1.0, fd_recon_dc=1, fd_recon_dc_n_cg=5, fd_recon_dc_relax=0.5, rationale=iter-1 ONBOARDING fastdiff_flow_pixel_constrained (per-image few-step DC-CONSTRAINED flow recon, solver_fast_recon.py) on re-split Breast-CT (train 3600/val 200/test 200, seed 20260703), val_n=200. Prior=Mayo fastdiff-flow-pixel-constrained search-20260620-01 whose iter-1 canonical defaults were steps8/init_t0.7/eta1.0/dc1/dc_relax0.5 (its best PSNR iter-4 used init_t0.5/dc_relax1.0). No breast-trained flow prior exists, so use the Mayo-trained checkpoint fast_diffusion_pixel_constrained.pt (cross-dataset transfer accepted per paper context). SIX-BOX: (1)PRIOR: none for this slug; nearest ref = Mayo constrained run (hr=0 regime-bound, PSNR-pinned ~1.84dB under LD-FBP floor on 2304-view dense Mayo). (2)Failure mode N/A onboarding; goal = does the DC-constrained flow recon RUN on breast 128-view 512^2 and clear the SPARSE-view FBP baseline (hr>0)? Breast is sparse (128 views), unlike dense Mayo, so FBP baseline is weak and there is real headroom for a DC-anchored prior to clear. (3)ONE KNOB: N/A baseline (canonical fast_recon constrained defaults). (4)HYPOTHESIS: an 8-step DC-constrained flow with the Mayo pixel prior + full 128-view CG data-consistency will clear the sparse-view breast FBP baseline (hr>0) because DC anchors it to the measured sinogram while the prior suppresses streaks; the cross-dataset prior is only a light denoiser here. (5)BUDGET: 200 slices x 8-step Euler + 5-iter CG each, breast single shared PYRO-NN projector (no per-sample-ps swap), 512^2. Mayo constrained at 214 slices/8 steps ran ~380-560s; breast (smaller det arc, same steps) fits well inside the HARD 20-min budget (30-min sbatch wall). (6)Loop continues; iter-2 self-dispatched on landing. Knobs reserved for iters 2-5: fd_recon_steps (NFE), fd_recon_dc_relax (DC strength), fd_recon_init_t, fd_recon_eta.",
-  "val_score": 0.7751684188842773,
+  "rationale": "fastdiff_flow_pixel_constrained-claude-agentic: image_size=512, pixel_spacing=0.3516, n_angles=128, n_det=1024, det_spacing=0.35754, sod=500.0, sdd=1000.0, display_min=0.0, display_max=0.5, train_n=400, val_n=200, noise_i0=100000.0, noise_sigma_e=10.0, seed=42, dataset_kind=breast_ct, fd_recon_ckpt=/cluster/maier/Agent4CT/checkpoints/fast_diffusion_pixel_breast.pt, fd_recon_steps=8, fd_recon_init=fbp, fd_recon_init_t=0.7, fd_recon_eta=1.0, fd_recon_dc=1, fd_recon_dc_n_cg=5, fd_recon_dc_relax=0.5, rationale=iter-1 BREAST-NATIVE PRIOR SANITY (corrected re-run overwriting the hr=0 Mayo-prior run). fastdiff_flow_pixel_constrained, DC ON (fd_recon_dc=1). Prior swapped: Mayo fast_diffusion_pixel_constrained.pt (out_scale 0.05) -> breast-native fast_diffusion_pixel_breast.pt (out_scale 0.5, n_train 3600, val-loss 0.0047, pixel/ch64). dataset_kind=breast_ct (128-view 512^2 breast geometry+FOV). Canonical fast_recon constrained defaults steps8/init_t0.7/eta1.0/dc1/n_cg5/relax0.5. GOAL: does the breast-native prior lift pixel-DC-on above the 128-view FBP baseline (hr>0)? The old run scored hr=0 because the Mayo prior (out_scale 0.05, ~10x mu mismatch) degraded the strong breast FBP; a matched-scale breast prior should denoise rather than repaint. If hr>0 here, prior-mismatch was the cause; if still 0, architectural/regime ceiling.",
+  "val_score": 0.42688921093940735,
   "headroom": 0.0,
-  "val_ssim": 0.7751684188842773,
-  "val_psnr": 27.964176177978516,
-  "val_rmse": 0.013651980087161064,
-  "val_ssim_std": 0.006213821810274981,
-  "val_psnr_std": 0.555986038576089,
-  "val_rmse_std": 0.0008312928203829915,
+  "val_ssim": 0.42688921093940735,
+  "val_psnr": 18.045860290527344,
+  "val_rmse": 0.04276726022362709,
+  "val_ssim_std": 0.011595384435406924,
+  "val_psnr_std": 0.819494092367533,
+  "val_rmse_std": 0.0038932023018043113,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -21,9 +21,9 @@
   "val_n": 200,
   "agent": "fastdiff_flow_pixel_constrained-claude-agentic",
   "model": "claude-opus-4-8-1m",
-  "advice_for_others": "fastdiff_flow_pixel_constrained-claude-agentic: image_size=512, pixel_spacing=0.3516, n_angles=128, n_det=1024, det_spacing=0.35754, sod=500.0, sdd=1000.0, display_min=0.0, display_max=0.5, train_n=400, val_n=200, noise_i0=100000.0, noise_sigma_e=10.0, seed=42, fd_recon_ckpt=/cluster/maier/Agent4CT/checkpoints/fast_diffusion_pixel_constrained.pt, fd_recon_steps=8, fd_recon_init=fbp, fd_recon_init_t=0.7, fd_recon_eta=1.0, fd_recon_dc=1, fd_recon_dc_n_cg=5, fd_recon_dc_relax=0.5, rationale=iter-1 ONBOARDING fastdiff_flow_pixel_constrained (per-image few-step DC-CONSTRAINED flow recon, solver_fast_recon.py) on re-split Breast-CT (train 3600/val 200/test 200, seed 20260703), val_n=200. Prior=Mayo fastdiff-flow-pixel-constrained search-20260620-01 whose iter-1 canonical defaults were steps8/init_t0.7/eta1.0/dc1/dc_relax0.5 (its best PSNR iter-4 used init_t0.5/dc_relax1.0). No breast-trained flow prior exists, so use the Mayo-trained checkpoint fast_diffusion_pixel_constrained.pt (cross-dataset transfer accepted per paper context). SIX-BOX: (1)PRIOR: none for this slug; nearest ref = Mayo constrained run (hr=0 regime-bound, PSNR-pinned ~1.84dB under LD-FBP floor on 2304-view dense Mayo). (2)Failure mode N/A onboarding; goal = does the DC-constrained flow recon RUN on breast 128-view 512^2 and clear the SPARSE-view FBP baseline (hr>0)? Breast is sparse (128 views), unlike dense Mayo, so FBP baseline is weak and there is real headroom for a DC-anchored prior to clear. (3)ONE KNOB: N/A baseline (canonical fast_recon constrained defaults). (4)HYPOTHESIS: an 8-step DC-constrained flow with the Mayo pixel prior + full 128-view CG data-consistency will clear the sparse-view breast FBP baseline (hr>0) because DC anchors it to the measured sinogram while the prior suppresses streaks; the cross-dataset prior is only a light denoiser here. (5)BUDGET: 200 slices x 8-step Euler + 5-iter CG each, breast single shared PYRO-NN projector (no per-sample-ps swap), 512^2. Mayo constrained at 214 slices/8 steps ran ~380-560s; breast (smaller det arc, same steps) fits well inside the HARD 20-min budget (30-min sbatch wall). (6)Loop continues; iter-2 self-dispatched on landing. Knobs reserved for iters 2-5: fd_recon_steps (NFE), fd_recon_dc_relax (DC strength), fd_recon_init_t, fd_recon_eta.",
+  "advice_for_others": "fastdiff_flow_pixel_constrained-claude-agentic: image_size=512, pixel_spacing=0.3516, n_angles=128, n_det=1024, det_spacing=0.35754, sod=500.0, sdd=1000.0, display_min=0.0, display_max=0.5, train_n=400, val_n=200, noise_i0=100000.0, noise_sigma_e=10.0, seed=42, dataset_kind=breast_ct, fd_recon_ckpt=/cluster/maier/Agent4CT/checkpoints/fast_diffusion_pixel_breast.pt, fd_recon_steps=8, fd_recon_init=fbp, fd_recon_init_t=0.7, fd_recon_eta=1.0, fd_recon_dc=1, fd_recon_dc_n_cg=5, fd_recon_dc_relax=0.5, rationale=iter-1 BREAST-NATIVE PRIOR SANITY (corrected re-run overwriting the hr=0 Mayo-prior run). fastdiff_flow_pixel_constrained, DC ON (fd_recon_dc=1). Prior swapped: Mayo fast_diffusion_pixel_constrained.pt (out_scale 0.05) -> breast-native fast_diffusion_pixel_breast.pt (out_scale 0.5, n_train 3600, val-loss 0.0047, pixel/ch64). dataset_kind=breast_ct (128-view 512^2 breast geometry+FOV). Canonical fast_recon constrained defaults steps8/init_t0.7/eta1.0/dc1/n_cg5/relax0.5. GOAL: does the breast-native prior lift pixel-DC-on above the 128-view FBP baseline (hr>0)? The old run scored hr=0 because the Mayo prior (out_scale 0.05, ~10x mu mismatch) degraded the strong breast FBP; a matched-scale breast prior should denoise rather than repaint. If hr>0 here, prior-mismatch was the cause; if still 0, architectural/regime ceiling.",
   "comparison_image": "runs/breast-ct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260703-01/iterations/iter-0001/comparison.png",
-  "elapsed_s": 216.11578130722046,
+  "elapsed_s": 190.43588304519653,
   "cfg_full": {
     "image_size": 512,
     "pixel_spacing": 0.3516,
@@ -39,7 +39,8 @@
     "noise_i0": 100000.0,
     "noise_sigma_e": 10.0,
     "seed": 42,
-    "fd_recon_ckpt": "/cluster/maier/Agent4CT/checkpoints/fast_diffusion_pixel_constrained.pt",
+    "dataset_kind": "breast_ct",
+    "fd_recon_ckpt": "/cluster/maier/Agent4CT/checkpoints/fast_diffusion_pixel_breast.pt",
     "fd_recon_steps": 8,
     "fd_recon_init": "fbp",
     "fd_recon_init_t": 0.7,
@@ -47,7 +48,7 @@
     "fd_recon_dc": 1,
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
-    "rationale": "iter-1 ONBOARDING fastdiff_flow_pixel_constrained (per-image few-step DC-CONSTRAINED flow recon, solver_fast_recon.py) on re-split Breast-CT (train 3600/val 200/test 200, seed 20260703), val_n=200. Prior=Mayo fastdiff-flow-pixel-constrained search-20260620-01 whose iter-1 canonical defaults were steps8/init_t0.7/eta1.0/dc1/dc_relax0.5 (its best PSNR iter-4 used init_t0.5/dc_relax1.0). No breast-trained flow prior exists, so use the Mayo-trained checkpoint fast_diffusion_pixel_constrained.pt (cross-dataset transfer accepted per paper context). SIX-BOX: (1)PRIOR: none for this slug; nearest ref = Mayo constrained run (hr=0 regime-bound, PSNR-pinned ~1.84dB under LD-FBP floor on 2304-view dense Mayo). (2)Failure mode N/A onboarding; goal = does the DC-constrained flow recon RUN on breast 128-view 512^2 and clear the SPARSE-view FBP baseline (hr>0)? Breast is sparse (128 views), unlike dense Mayo, so FBP baseline is weak and there is real headroom for a DC-anchored prior to clear. (3)ONE KNOB: N/A baseline (canonical fast_recon constrained defaults). (4)HYPOTHESIS: an 8-step DC-constrained flow with the Mayo pixel prior + full 128-view CG data-consistency will clear the sparse-view breast FBP baseline (hr>0) because DC anchors it to the measured sinogram while the prior suppresses streaks; the cross-dataset prior is only a light denoiser here. (5)BUDGET: 200 slices x 8-step Euler + 5-iter CG each, breast single shared PYRO-NN projector (no per-sample-ps swap), 512^2. Mayo constrained at 214 slices/8 steps ran ~380-560s; breast (smaller det arc, same steps) fits well inside the HARD 20-min budget (30-min sbatch wall). (6)Loop continues; iter-2 self-dispatched on landing. Knobs reserved for iters 2-5: fd_recon_steps (NFE), fd_recon_dc_relax (DC strength), fd_recon_init_t, fd_recon_eta."
+    "rationale": "iter-1 BREAST-NATIVE PRIOR SANITY (corrected re-run overwriting the hr=0 Mayo-prior run). fastdiff_flow_pixel_constrained, DC ON (fd_recon_dc=1). Prior swapped: Mayo fast_diffusion_pixel_constrained.pt (out_scale 0.05) -> breast-native fast_diffusion_pixel_breast.pt (out_scale 0.5, n_train 3600, val-loss 0.0047, pixel/ch64). dataset_kind=breast_ct (128-view 512^2 breast geometry+FOV). Canonical fast_recon constrained defaults steps8/init_t0.7/eta1.0/dc1/n_cg5/relax0.5. GOAL: does the breast-native prior lift pixel-DC-on above the 128-view FBP baseline (hr>0)? The old run scored hr=0 because the Mayo prior (out_scale 0.05, ~10x mu mismatch) degraded the strong breast FBP; a matched-scale breast prior should denoise rather than repaint. If hr>0 here, prior-mismatch was the cause; if still 0, architectural/regime ceiling."
   },
   "headroom_std": 0.0,
   "_val_std_rescored": {
@@ -56,8 +57,8 @@
     "display_max": 0.5,
     "headroom_std_available": true,
     "recomputed_headroom_mean": 0.0,
-    "recomputed_val_ssim_mean": 0.7606057950854301,
-    "recomputed_val_psnr_mean": 27.544831018447876,
-    "recomputed_val_rmse_mean": 0.013555422145873307
+    "recomputed_val_ssim_mean": 0.418586810529232,
+    "recomputed_val_psnr_mean": 17.660599279403687,
+    "recomputed_val_rmse_mean": 0.042389981374144556
   }
 }

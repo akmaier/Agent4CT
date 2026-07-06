@@ -1,0 +1,10 @@
+{
+  "slug": "breast-ct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260703-01",
+  "challenge": "breast_ct",
+  "slug_prefix": "breast-ct-claude-agentic-fastdiff-wdm-wavelet-constrained-search",
+  "started": "2026-07-05T18:31:50Z",
+  "agent": "fastdiff_wdm_wavelet_constrained-claude-agentic",
+  "model": "claude-opus-4-8-1m",
+  "status": "completed",
+  "notes": "Claude-driven per-iter agentic search (20 iters). fastdiff_wdm_wavelet_constrained (inference-only DC-constrained Haar-wavelet flow recon vs frozen Mayo-trained prior fast_diffusion_wavelet_constrained.pt). val=200 fixed seed-20260703 split; strict-serial per-JOBID sentinel gating. All 20 iters hr=0 (structural: zero-shot Mayo-prior recon is DC-cleaned-FBP-bounded on 128-view sparse breast, cannot beat the FBP baseline it is scored against). Best RMSE iter-13 (dc_n_cg=10) 1.2585e-2; best SSIM iter-20 0.9101."
+}
