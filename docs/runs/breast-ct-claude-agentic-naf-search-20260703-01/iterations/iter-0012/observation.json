@@ -11,9 +11,9 @@
   "val_ssim": 0.8350316882133484,
   "val_psnr": 22.008800506591797,
   "val_rmse": 0.026057807728648186,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.013653024823748928,
+  "val_psnr_std": 0.6798172545533402,
+  "val_rmse_std": 0.0020013967254806945,
   "kept": false,
   "status": "discard",
   "params_M": 67.115201,
@@ -39,5 +39,16 @@
     "seed": 42,
     "naf_hash_log2_size": 21,
     "rationale": "iter-12 breast-ct-claude-agentic-naf-search-20260703-01 (redone breast split train3600/val200/test200 seed20260703; val_n=12 CONSTANT for iters 2-20 per coordinator budget intervention 2026-07-05 -- first-12 of the 200-case breast val split, deterministic). SIX-BOX: (1) prior result: all iters so far hr=0 (iter-1 val_n=20 ssim0.355 PSNR6.26 in 970s, NOT a timeout -- a genuine converged fit). (2) failure mode: NAF per-scene INR recon is far below the 128-view breast LD-FBP baseline. (3) ONE knob changed: hash log2_size 19->21 (bigger table). (4) hypothesis: iter-11 (hash default) result informs this. KNOB: bigger hashmap 2^19->2^21 (fewer collisions at fine levels). HYPOTHESIS: hash collisions at 512px cap detail; a larger table sharpens the fit. Tests hash capacity. (5) wall: val_n=12 x per_scene 60.0s = ~720s < 20min. (6) serial, no user return."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 12,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8318360795577368,
+    "recomputed_val_psnr_mean": 21.828052679697674,
+    "recomputed_val_rmse_mean": 0.02596345419685046
   }
 }

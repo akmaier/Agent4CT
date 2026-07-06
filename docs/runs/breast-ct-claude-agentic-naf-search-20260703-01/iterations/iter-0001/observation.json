@@ -11,9 +11,9 @@
   "val_ssim": 0.35450854897499084,
   "val_psnr": 6.261971473693848,
   "val_rmse": 0.15969057381153107,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00012094457300061093,
+  "val_psnr_std": 0.20383017208604173,
+  "val_rmse_std": 0.0013792179654752723,
   "kept": false,
   "status": "discard",
   "params_M": 0.037633,
@@ -37,5 +37,16 @@
     "naf_per_scene_s": 48.0,
     "seed": 42,
     "rationale": "ITER-1 FEASIBILITY (breast-ct-claude-agentic-naf-search-20260703-01, REDONE breast split train3600/val200/test200 seed20260703). GOAL: does naf (Neural Attenuation Field, per-scene self-supervised INR -- one coordinate-MLP optimized PER breast slice against its OWN 128-view sinogram, no training set) run on the redone breast_ct staged val split and produce a FINITE val_score + comparison.png + recon_raw.npz WITHIN the HARD 20-min budget, scoring under the frozen calibrated-headroom metric (display 0..0.05, mu>=0 floor, FOV-masked)? BUDGET REASONING (load-bearing): NAF has NO training (train_n=0); the ENTIRE budget is the per-scene fit loop, total = val_n x per_scene. Per the user hint, naf is HEAVY so I use a SMALL val_n=20 (NOT 200) kept CONSTANT across all 20 iters so they are comparable (breast val load is deterministic first-20 of the 200-case val split). 1000s outer wall / 20 scenes = 48 s/scene (naf_per_scene_s=48), inside the 20-min compute budget with figure+IO headroom before the 30-min sbatch kill. breast is 512x512 at 128 views x det; each Adam step = a 512^2 MLP forward + 128-view fan-beam forward-project + backward. 48 s/scene buys HUNDREDS of steps -- a GENUINE NeRF-style per-scene fit, so hr=0 here would be a STRUCTURAL verdict, NOT budget starvation. naf_n_iter=5000 is a HIGH CAP so the PER-SCENE WALL (t_limit in fit_one_scene), NOT the iter count, is the governor. Leaner MLP than default (hidden 192->128, layers 5->4, n_freqs 10->8) for cheaper steps => more steps/scene; naf_lr 5e-3->1e-2 converges faster from the water-mu init in a bounded budget. naf_n_clip=0.05 (sigmoid head out_scale), naf_tv_weight=1e-4 defaults. HYPOTHESIS: NAF is STRUCTURALLY FBP-bounded on dense-view (128-angle) breast-CT -- docs/findings.md 2026-05-23 confirms NAF's sin/cos-posenc coordinate-MLP basis is too coarse for dense soft-tissue at 512^2/128-views and cannot beat the ~0.84 breast LD-FBP baseline (hr=0) even at 5x n_iter. Expect val_ssim that does NOT clear the FBP baseline (hr near 0). This iter ESTABLISHES that datapoint on the redone split under the frozen metric -- a real, valid finding (do NOT reduce val_n further or inflate to make NAF look better; hr=0 plateau documents the ceiling for paper section 5.4)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 20,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.3543821170926094,
+    "recomputed_val_psnr_mean": 6.047220516204834,
+    "recomputed_val_rmse_mean": 0.15968492329120637
   }
 }

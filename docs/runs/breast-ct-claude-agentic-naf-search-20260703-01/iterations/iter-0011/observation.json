@@ -11,9 +11,9 @@
   "val_ssim": 0.8308674693107605,
   "val_psnr": 22.05402374267578,
   "val_rmse": 0.025922494009137154,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.012778365460129944,
+  "val_psnr_std": 0.5397032352769338,
+  "val_rmse_std": 0.0017522022166579644,
   "kept": false,
   "status": "discard",
   "params_M": 16.783553,
@@ -38,5 +38,16 @@
     "naf_encoding": "hash",
     "seed": 42,
     "rationale": "iter-11 breast-ct-claude-agentic-naf-search-20260703-01 (redone breast split train3600/val200/test200 seed20260703; val_n=12 CONSTANT for iters 2-20 per coordinator budget intervention 2026-07-05 -- first-12 of the 200-case breast val split, deterministic). SIX-BOX: (1) prior result: all iters so far hr=0 (iter-1 val_n=20 ssim0.355 PSNR6.26 in 970s, NOT a timeout -- a genuine converged fit). (2) failure mode: NAF per-scene INR recon is far below the 128-view breast LD-FBP baseline. (3) ONE knob changed: encoding fourier->hash (Instant-NGP). (4) hypothesis: iters 2-10 (fourier variants) all hr=0. KNOB: swap the encoder to the paper's Instant-NGP multi-res HASH grid + small MLP (the NAF headline contribution, chest_50.yaml). HYPOTHESIS: the hash grid represents fine local detail far better than global sin/cos posenc -- this is the single most likely change to escape the basis ceiling. If ANY config beats FBP it is this one. (5) wall: val_n=12 x per_scene 60.0s = ~720s < 20min. (6) serial, no user return."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 12,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8277627527713776,
+    "recomputed_val_psnr_mean": 21.861599286397297,
+    "recomputed_val_rmse_mean": 0.0258465261819462
   }
 }

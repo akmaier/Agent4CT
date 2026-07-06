@@ -11,9 +11,9 @@
   "val_ssim": 0.8340286612510681,
   "val_psnr": 21.90463638305664,
   "val_rmse": 0.026372192427515984,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.010584299174213035,
+  "val_psnr_std": 0.7281462261121704,
+  "val_rmse_std": 0.002411903339384781,
   "kept": false,
   "status": "discard",
   "params_M": 20.978369,
@@ -39,5 +39,16 @@
     "seed": 42,
     "naf_hash_levels": 20,
     "rationale": "iter-14 breast-ct-claude-agentic-naf-search-20260703-01 (redone breast split train3600/val200/test200 seed20260703; val_n=12 CONSTANT for iters 2-20 per coordinator budget intervention 2026-07-05 -- first-12 of the 200-case breast val split, deterministic). SIX-BOX: (1) prior result: all iters so far hr=0 (iter-1 val_n=20 ssim0.355 PSNR6.26 in 970s, NOT a timeout -- a genuine converged fit). (2) failure mode: NAF per-scene INR recon is far below the 128-view breast LD-FBP baseline. (3) ONE knob changed: hash levels 16->20. (4) hypothesis: KNOB: more hash resolution levels 16->20 (denser multi-scale pyramid). HYPOTHESIS: extra levels bridge coarse-to-fine detail. Tests level count. (5) wall: val_n=12 x per_scene 60.0s = ~720s < 20min. (6) serial, no user return."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 12,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8312805195649465,
+    "recomputed_val_psnr_mean": 21.739563306172688,
+    "recomputed_val_rmse_mean": 0.02625331763798992
   }
 }

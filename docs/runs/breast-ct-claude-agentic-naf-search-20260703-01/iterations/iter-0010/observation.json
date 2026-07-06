@@ -11,9 +11,9 @@
   "val_ssim": 0.5064835548400879,
   "val_psnr": 20.178760528564453,
   "val_rmse": 0.0321691669523716,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.08897729313156413,
+  "val_psnr_std": 3.424076148157591,
+  "val_rmse_std": 0.009822502199835447,
   "kept": false,
   "status": "discard",
   "params_M": 0.037633,
@@ -38,5 +38,16 @@
     "naf_encoding": "fourier",
     "seed": 42,
     "rationale": "iter-10 breast-ct-claude-agentic-naf-search-20260703-01 (redone breast split train3600/val200/test200 seed20260703; val_n=12 CONSTANT for iters 2-20 per coordinator budget intervention 2026-07-05 -- first-12 of the 200-case breast val split, deterministic). SIX-BOX: (1) prior result: all iters so far hr=0 (iter-1 val_n=20 ssim0.355 PSNR6.26 in 970s, NOT a timeout -- a genuine converged fit). (2) failure mode: NAF per-scene INR recon is far below the 128-view breast LD-FBP baseline. (3) ONE knob changed: naf_n_clip 0.05->0.08. (4) hypothesis: KNOB: raise sigmoid-head out_scale 0.05->0.08 (wider mu range for bone/dense tissue in breast, mu can exceed 0.05). HYPOTHESIS: if the head saturates dense-tissue mu at the 0.05 cap, widening it recovers HU contrast -> better RMSE. Expect hr=0 but a real head-range test. (5) wall: val_n=12 x per_scene 60.0s = ~720s < 20min. (6) serial, no user return."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 12,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.5034349535902342,
+    "recomputed_val_psnr_mean": 20.847065289815266,
+    "recomputed_val_rmse_mean": 0.03070175345055759
   }
 }

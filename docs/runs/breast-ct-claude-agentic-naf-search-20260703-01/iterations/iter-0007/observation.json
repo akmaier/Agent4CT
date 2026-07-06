@@ -11,9 +11,9 @@
   "val_ssim": 0.35450929403305054,
   "val_psnr": 6.2663893699646,
   "val_rmse": 0.1596093773841858,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0001269633100316407,
+  "val_psnr_std": 0.2078534710795732,
+  "val_rmse_std": 0.0016800014389741125,
   "kept": false,
   "status": "discard",
   "params_M": 0.037633,
@@ -38,5 +38,16 @@
     "naf_encoding": "fourier",
     "seed": 42,
     "rationale": "iter-7 breast-ct-claude-agentic-naf-search-20260703-01 (redone breast split train3600/val200/test200 seed20260703; val_n=12 CONSTANT for iters 2-20 per coordinator budget intervention 2026-07-05 -- first-12 of the 200-case breast val split, deterministic). SIX-BOX: (1) prior result: all iters so far hr=0 (iter-1 val_n=20 ssim0.355 PSNR6.26 in 970s, NOT a timeout -- a genuine converged fit). (2) failure mode: NAF per-scene INR recon is far below the 128-view breast LD-FBP baseline. (3) ONE knob changed: naf_tv_weight 1e-4->0. (4) hypothesis: iters 5-6 (lr sweep) hr=0. KNOB: drop TV prior 1e-4->0 (pure data fit, no smoothing). HYPOTHESIS: TV may be over-smoothing already-blurry NAF output; removing it lets the field sharpen. Expect hr=0 -- NAF's problem is under-resolution, not over-smoothing. (5) wall: val_n=12 x per_scene 60.0s = ~720s < 20min. (6) serial, no user return."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 12,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.35437049716711044,
+    "recomputed_val_psnr_mean": 6.030902822812398,
+    "recomputed_val_rmse_mean": 0.1596012699107329
   }
 }

@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-06T13:17:50Z",
+ "updated": "2026-07-06T15:17:50Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -414,6 +414,37 @@
     "rank": 13
    },
    {
+    "solver_key": "param-efficient",
+    "solver_name": "Param-efficient (evolved)",
+    "run_id": "breast-ct-claude-agentic-param-efficient-search-20260703-01",
+    "best_iter": 1,
+    "params_M": 0.001933,
+    "params_source": "observation",
+    "val_ssim": 0.987461507320404,
+    "headroom": 0.263540794362072,
+    "val_psnr": 38.98122024536133,
+    "val_rmse": 0.003840107237920165,
+    "val_ssim_std": 0.0024836810725645227,
+    "val_psnr_std": 0.327474758489529,
+    "val_rmse_std": 0.00013258404021013081,
+    "headroom_std": 0.024661617912453374,
+    "elapsed_s": 1284.2200210094452,
+    "image": "runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0001/comparison.png",
+    "test_hr_mean": null,
+    "test_hr_std": null,
+    "test_ssim_mean": null,
+    "test_ssim_std": null,
+    "test_psnr_mean": null,
+    "test_psnr_std": null,
+    "test_rmse_mean": null,
+    "test_rmse_std": null,
+    "metric_basis": "val",
+    "rank_metric": 0.263540794362072,
+    "rank_tiebreak": 0.987461507320404,
+    "excluded_reason": null,
+    "rank": 14
+   },
+   {
     "solver_key": "dual-domain-bilateral-supervised",
     "solver_name": "DD-BF supervised L2",
     "run_id": "breast-ct-claude-agentic-dual-domain-bilateral-supervised-search-20260703-01",
@@ -442,7 +473,7 @@
     "rank_metric": 0.2564459635016073,
     "rank_tiebreak": 0.9836108088493347,
     "excluded_reason": null,
-    "rank": 14
+    "rank": 15
    },
    {
     "solver_key": "dual-domain-bilateral-n2i",
@@ -473,7 +504,7 @@
     "rank_metric": 0.2055215705216945,
     "rank_tiebreak": 0.960396409034729,
     "excluded_reason": null,
-    "rank": 15
+    "rank": 16
    },
    {
     "solver_key": "wu-2015",
@@ -504,7 +535,7 @@
     "rank_metric": 0.15470312403857656,
     "rank_tiebreak": 0.9577507376670837,
     "excluded_reason": null,
-    "rank": 16
+    "rank": 17
    },
    {
     "solver_key": "tv-iterative-supervised",
@@ -535,7 +566,7 @@
     "rank_metric": 0.1500951678079987,
     "rank_tiebreak": 0.9577618837356567,
     "excluded_reason": null,
-    "rank": 17
+    "rank": 18
    },
    {
     "solver_key": "dual-domain-n2i",
@@ -734,10 +765,10 @@
     "headroom": 0.0,
     "val_psnr": 21.444984436035156,
     "val_rmse": 0.027805376797914505,
-    "val_ssim_std": null,
-    "val_psnr_std": null,
-    "val_rmse_std": null,
-    "headroom_std": null,
+    "val_ssim_std": 0.017957358510596468,
+    "val_psnr_std": 1.118589843321031,
+    "val_rmse_std": 0.003866246481628285,
+    "headroom_std": 0.0,
     "elapsed_s": 732.9607827663422,
     "image": "runs/breast-ct-claude-agentic-naf-search-20260703-01/iterations/iter-0019/comparison.png",
     "test_hr_mean": null,
@@ -2551,7 +2582,7 @@
    "name": "NAF",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 19,
    "metric_basis": "val",
    "best_headroom": 0.0,
@@ -2565,13 +2596,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-06T13:10:04Z",
+   "started": "2026-07-06T13:31:59Z",
    "status": "excluded",
    "params_M": 33.562817,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-06T13:10:04Z",
+   "ts": "2026-07-06T13:31:59Z",
    "curve": [
     [
      1,
@@ -2648,9 +2679,49 @@
     [
      19,
      null
+    ],
+    [
+     20,
+     null
     ]
    ],
    "val_image": "runs/breast-ct-claude-agentic-naf-search-20260703-01/iterations/iter-0019/comparison.png",
+   "test_image": null
+  },
+  {
+   "slug": "breast-ct-claude-agentic-param-efficient-search-20260703-01",
+   "solver_key": "param-efficient",
+   "name": "Param-efficient (evolved)",
+   "challenge": "breast_ct",
+   "campaign": "search-20260703-01",
+   "n_iterations": 1,
+   "best_iter": 1,
+   "metric_basis": "val",
+   "best_headroom": 0.263540794362072,
+   "best_ssim": 0.987461507320404,
+   "best_score": 0.987461507320404,
+   "test_hr_mean": null,
+   "test_hr_std": null,
+   "test_ssim_mean": null,
+   "test_ssim_std": null,
+   "test_psnr_mean": null,
+   "test_psnr_std": null,
+   "test_rmse_mean": null,
+   "test_rmse_std": null,
+   "started": "2026-07-06T14:46:04Z",
+   "status": "ranked",
+   "params_M": 0.001933,
+   "excluded_reason": null,
+   "agent": "param_efficient-claude-agentic",
+   "model": "claude-opus-4-8-1m",
+   "ts": "2026-07-06T14:46:04Z",
+   "curve": [
+    [
+     1,
+     0.2635
+    ]
+   ],
+   "val_image": "runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0001/comparison.png",
    "test_image": null
   },
   {
