@@ -11,9 +11,9 @@
   "val_ssim": 0.9350098967552185,
   "val_psnr": 34.38856887817383,
   "val_rmse": 0.0065159243531525135,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.014114315852491897,
+  "val_psnr_std": 0.986506784400514,
+  "val_rmse_std": 0.0007117310125129624,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-17 SIX-BOX. (1) PRIOR: iter-16 hr=0.0, batch_size=2 warm-start gave rmse=0.00634 -- warm-start batch statistics do not matter; still at the plateau. Iters 1-16 all hr=0, rmse tightly in 0.00623-0.00657. (2) FAILURE MODE: plain-UNet N2I at the over-smoothed FBP-consistent plateau; no edge-preserving structural guard (bilateral sibling range kernel hr~0.21). (3) ONE KNOB: relative to iter-6 best reference (n_iter=50, lr=3e-4, c=16, batch_size=1), pretrain_steps 0 -> 100 (a HARD cap on total warm-start optimizer steps -- an alternative bound to pretrain_epochs that stops the amortised pre-pass after exactly 100 steps regardless of epoch boundaries). (4) HYPOTHESIS: capping the warm-start at 100 steps yields a LESS-converged (less over-smoothed) shared init than the full 3-epoch (~1200-step) pre-pass; if a fresher init lowers rmse, warm-start CONVERGENCE (not strength/batch) is the subtle lever. Per the ceiling, expect hr=0 -- any warm-start, however truncated, lands the per-image fits at the same over-smoothed plateau. (5) BUDGET: warm-start hard-capped at 100 steps (fast, ~40s) + 200*50-step fits + figure ~= 10 min << 30-min wall. (6) Loop continues; iter-18 self-dispatched. Reserved levers: warm_start off + n_iter=400 (pure per-image, max steps), per_scene_s explicit=10, n_iter=25 aggressive early-stop."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9304933756589889,
+    "recomputed_val_psnr_mean": 33.978039503097534,
+    "recomputed_val_rmse_mean": 0.0064910960732959214
   }
 }

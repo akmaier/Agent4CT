@@ -11,9 +11,9 @@
   "val_ssim": 0.9279898405075073,
   "val_psnr": 34.29449462890625,
   "val_rmse": 0.006586879026144743,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.015616138704860477,
+  "val_psnr_std": 0.995541230404835,
+  "val_rmse_std": 0.0007312317172134592,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-18 SIX-BOX. (1) PRIOR: iter-17 hr=0.0, pretrain_steps=100 cap gave rmse=0.00652 -- a truncated warm-start lands the per-image fits at the same plateau; warm-start convergence is not a lever. Iters 1-17 all hr=0. (2) FAILURE MODE: plain-UNet N2I at the over-smoothed FBP-consistent plateau; no edge-preserving structural guard (bilateral sibling range kernel hr~0.21). (3) ONE KNOB: relative to iter-6 best reference (warm_start=True, n_iter=50, lr=3e-4, c=16), warm_start True -> False, keeping n_iter=50 fixed. iter-4 tested warm_start off but CONFOUNDED it with n_iter=300; this cleanly ISOLATES the warm_start effect at the best-config n_iter=50 (each val scan optimized from a FRESH random init, no amortised pre-pass, no train split loaded). (4) HYPOTHESIS: a from-scratch 50-step per-image fit (random init) may retain different high-frequency content than a warm-started fit; comparing rmse to iter-6's warm-started 0.00628 at MATCHED n_iter isolates whether the warm-start helps, hurts, or is neutral. Per the ceiling, expect hr=0 -- 50 steps from random init is too few to beat the FBP target, likely rmse >= warm-started (warm-start at least provides a sane init). (5) BUDGET: no warm-start (saves ~130s) + 200*50-step fast fits + figure ~= 9 min << 30-min wall. (6) Loop continues; iter-19 self-dispatched. Reserved levers: warm_start off + n_iter=400 (pure per-image max steps), per_scene_s explicit=10 (guarantee full n_iter completes)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9227433052659034,
+    "recomputed_val_psnr_mean": 33.892380456924435,
+    "recomputed_val_rmse_mean": 0.006556566532235592
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9449787139892578,
   "val_psnr": 34.6331672668457,
   "val_rmse": 0.006334993056952953,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.010929475973211384,
+  "val_psnr_std": 0.9429750768708915,
+  "val_rmse_std": 0.0006553240948269009,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-19 SIX-BOX. (1) PRIOR: iter-18 hr=0.0, warm_start OFF at matched n_iter=50 gave rmse=0.00659 (WORST) -- vs iter-6's warm-started 0.00628 at the SAME n_iter, confirming the warm-start provides a materially better init (from-scratch 50 steps is under-fit). Iters 1-18 all hr=0. NOTE: verified the solver HARDCODES torch.optim.Adam (the `optimizer` cfg key is a no-op), so I do NOT test optimizer as it would be a fake lever. (2) FAILURE MODE: plain-UNet N2I at the over-smoothed FBP-consistent plateau; no edge-preserving structural guard (bilateral sibling range kernel hr~0.21). (3) ONE KNOB: relative to iter-6 best reference (warm_start=True, lr=3e-4, c=16), n_iter 50 -> 25 (extreme early-stop, below all prior 50/100/200/400). Extends the inner-step sweep to its minimal end: freeze the recon almost AT the warm-start init. (4) HYPOTHESIS: with only 25 per-image steps the recon stays closest to the warm-started init; if the warm-start init is the least-over-smoothed point and per-image steps only push toward the smooth mean, 25 steps should give the LOWEST rmse of the n_iter sweep. If it dips toward baseline, minimal-step early-stop is the lever. Per the ceiling, expect hr=0 -- the warm-start init is itself over-smoothed, so freezing near it just yields a blurry recon (rmse ~0.0063). (5) BUDGET: 25 steps/scene very fast; pretrain ep=3 + 200*25-step fits + figure ~= 8 min << 30-min wall. (6) Loop continues; iter-20 (FINAL) self-dispatched. Reserved final lever: per_scene_s explicit to guarantee full deep-fit completion, OR a confirmatory replicate of the best config."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9415629422664642,
+    "recomputed_val_psnr_mean": 34.2137021446228,
+    "recomputed_val_rmse_mean": 0.006313734860159456
   }
 }
