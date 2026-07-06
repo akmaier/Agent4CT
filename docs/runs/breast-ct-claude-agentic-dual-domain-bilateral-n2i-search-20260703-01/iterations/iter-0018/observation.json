@@ -11,9 +11,9 @@
   "val_ssim": 0.9595800638198853,
   "val_psnr": 38.889129638671875,
   "val_rmse": 0.0009307381114922464,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.010532241314649582,
+  "val_psnr_std": 0.9725347757339478,
+  "val_rmse_std": 0.00010115304758073762,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -39,5 +39,17 @@
     "outer_wall_s": 1000,
     "seed": 42,
     "rationale": "iter-18 dual_domain_bilateral_n2i, ONE-KNOB: pretrain_epochs 2->5 (richer warm-start init), on CHAMPION base (warm_start=True, img_sr=0.0002, lr=3e-3, n_iter=60; iter-15 hr=0.2056). warm_start REVERTED to True (iter-17 warm_start=False CRASHED to hr=0.0025, SSIM0.908 -> the warm-start pre-pass is ESSENTIAL: without a generic BF-sigma seed the 60-step per-scene fit from raw CONFIG init does not converge). HYPOTHESIS: since the warm-start init is CRITICAL, a BETTER init should help -- 5 warm-start epochs (vs 2) on the 400 train scenes give the generic BF sigmas more time to settle near the breast-optimal edge-preserving values, so each per-scene fit STARTS closer to its optimum and converges better in 60 steps -> hr above 0.2056. If FLAT/DROP, 2 warm-start epochs already saturate the generic init (the tiny 6-param BF learns its generic sigmas fast) and warm-start DEPTH is neutral -> 2 epochs is the efficient choice. WALL: pretrain 2->5 adds ~3x400=1200 warm steps ~ +90s; n_iter60 per-scene unchanged; outer_wall_s=1000, expect val_n~196-200 (report it). ONE knob: pretrain_epochs 2->5."
+  },
+  "headroom_std": 0.08117490261793137,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 196,
+    "batch_baseline_rmse": 0.0009711969178169966,
+    "recomputed_ssim_mean": 0.9403272867202759,
+    "stored_ssim": 0.9595800638198853,
+    "ssim_drift": 0.019252777099609375,
+    "recomputed_hr_aggregate": 0.08147174510141897,
+    "per_case_hr_mean": 0.1037200465798378,
+    "stored_hr": 0.040300288948978524
   }
 }

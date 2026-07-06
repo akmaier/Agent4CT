@@ -11,9 +11,9 @@
   "val_ssim": 0.9584285020828247,
   "val_psnr": 39.322200775146484,
   "val_rmse": 0.0008854701882228255,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.012977302074432373,
+  "val_psnr_std": 1.0907533168792725,
+  "val_rmse_std": 0.00011348623957019299,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -40,5 +40,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-6 dual_domain_bilateral_n2i, ONE-KNOB: projection-domain BF RANGE sigma proj_sr 0.02->0.0005 (edge-preserving), keeping the iter-5 WINNER img_sr=0.0005. BREAKTHROUGH PRIOR: iter-5 (img_sr 0.02->0.0005) hr=0.1257, SSIM0.9605, PSNR39.57, recon_rmse8.61e-4 < baseline9.84e-4 -- the FIRST recon to BEAT the 128-view FBP. Root cause: a TIGHT range sigma makes the image BF EDGE-PRESERVING (smooths flat noise, stops at fibroglandular edges) instead of over-smoothing. Iters 1-4 (wide sr=0.02, depth, n_iter) all floored at hr=0 = confirmed the wide-range BF was the over-smoothing culprit, not the N2I loss per se. HYPOTHESIS: the SAME edge-preserving fix in the PROJECTION domain (proj_sr 0.02->0.0005) suppresses sparse-view streak noise in the sinogram before FBP WITHOUT the view-inconsistency that a strong-but-wide proj filter causes (findings.md: keep proj filtering gentle/soft -- a tight RANGE sigma is soft-edged in intensity, exactly the recommended lever) -> hr climbs above 0.1257. If hr drops vs iter-5, proj-domain edge-preservation induces view inconsistency and the image domain alone is the safe lever. BUDGET: value change only, ~1020s like iter-5. ONE knob: proj_sr 0.02->0.0005."
+  },
+  "headroom_std": 0.09332339465618134,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 200,
+    "batch_baseline_rmse": 0.0009859224082902074,
+    "recomputed_ssim_mean": 0.9397878050804138,
+    "stored_ssim": 0.9584285020828247,
+    "ssim_drift": 0.01864069700241089,
+    "recomputed_hr_aggregate": 0.11474530254956627,
+    "per_case_hr_mean": 0.1336231380701065,
+    "stored_hr": 0.10028215356520953
   }
 }

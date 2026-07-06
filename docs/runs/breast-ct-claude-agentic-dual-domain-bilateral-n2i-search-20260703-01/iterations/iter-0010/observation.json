@@ -11,9 +11,9 @@
   "val_ssim": 0.9606124758720398,
   "val_psnr": 39.57415771484375,
   "val_rmse": 0.0008601538138464093,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.01476235967129469,
+  "val_psnr_std": 1.220029354095459,
+  "val_rmse_std": 0.00012339340173639357,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -40,5 +40,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-10 dual_domain_bilateral_n2i, ONE-KNOB: image BF KERNEL img_kernel 7->5 (tighter spatial window), on iter-7 CHAMPION base (img_sr=0.0002, img_sx=img_sy=1.5 default, n_iter=30). Spatial sigma REVERTED to default 1.5 (iter-9 widen 1.5->2.5 gave hr=0.1140 < champ 0.1261 -> widening blurs fibroglandular detail; spatial axis does NOT want to widen). CHAMPION = iter-7 hr=0.1261 SSIM0.9606 (val_n=200). HYPOTHESIS: iter-9 showed breast fine structure is DAMAGED by a wider spatial support -> the recon wants the SHARPEST possible spatial averaging. A 5x5 kernel (vs 7x7) confines the BF to immediate neighbours, denoising flat noise while preserving the finest fibroglandular edges better than 7x7 -> hr could edge above 0.1261. If FLAT/DROP, 7x7 is already fine (the tight range sigma, not the window, sets edge-preservation) and kernel is neutral. SECONDARY BENEFIT: 5x5 unfold is FASTER than 7x7 -> keeps the per-image loop under outer_wall_s=900 so val_n stays a clean 200 (iters 8/9 trimmed to 193 under heavier configs, confounding hr). BUDGET: smaller kernel -> ~700-900s, no wall trim expected. ONE knob: img_kernel 7->5."
+  },
+  "headroom_std": 0.103781558573246,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 200,
+    "batch_baseline_rmse": 0.0009859224082902074,
+    "recomputed_ssim_mean": 0.9415009617805481,
+    "stored_ssim": 0.9606124758720398,
+    "ssim_drift": 0.0191115140914917,
+    "recomputed_hr_aggregate": 0.1448169437533955,
+    "per_case_hr_mean": 0.16410523653030396,
+    "stored_hr": 0.12600588106777144
   }
 }

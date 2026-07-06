@@ -11,9 +11,9 @@
   "val_ssim": 0.9520886540412903,
   "val_psnr": 40.22265625,
   "val_rmse": 0.0007982724928297102,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.02543768659234047,
+  "val_psnr_std": 1.7533164024353027,
+  "val_rmse_std": 0.00019641626568045467,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -39,5 +39,17 @@
     "outer_wall_s": 1000,
     "seed": 42,
     "rationale": "iter-19 dual_domain_bilateral_n2i, ONE-KNOB: pretrain_epochs 2->1 (SHORTER warm-start), on CHAMPION base (img_sr=0.0002, lr=3e-3, n_iter=60; iter-15 hr=0.2056). warm-start DEPTH now shows a NON-MONOTONE sweet spot: 0 epochs (warm_start=False, iter-17) -> hr=0.0025 CRASH (no seed); 2 epochs (iter-15) -> 0.2056 PEAK; 5 epochs (iter-18) -> 0.0403 CRASH. The 5-epoch collapse = the AMORTISED warm-start ITSELF over-smooths (the N2I-over-smoothing bias operates in the warm-start pre-pass too, using the WIDE default sigmas), seeding a blurred init the tight per-scene img_sr cannot recover. So the warm-start must be SHORT: enough to seed, not enough to over-smooth. HYPOTHESIS: 1 epoch is even less over-smoothed than 2 while still providing the essential non-crash seed -> hr >= 0.2056 (possibly higher if 2 epochs already began mild over-smoothing). If hr < 0.2056, 2 epochs is the sweet spot (1 under-seeds). This MAPS the warm-start sweet spot precisely for the paper. WALL: pretrain 2->1 SAVES warm steps, ~950-1000s, val_n~196-200. ONE knob: pretrain_epochs 2->1."
+  },
+  "headroom_std": 0.10839782655239105,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 196,
+    "batch_baseline_rmse": 0.0009711969178169966,
+    "recomputed_ssim_mean": 0.936530351638794,
+    "stored_ssim": 0.9520886540412903,
+    "ssim_drift": 0.015558302402496338,
+    "recomputed_hr_aggregate": 0.1545506404661039,
+    "per_case_hr_mean": 0.2114844024181366,
+    "stored_hr": 0.17688781489739858
   }
 }

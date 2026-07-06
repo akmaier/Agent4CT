@@ -11,9 +11,9 @@
   "val_ssim": 0.9559089541435242,
   "val_psnr": 37.58477783203125,
   "val_rmse": 0.00450988719239831,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0065836334482765,
+  "val_psnr_std": 0.6623104040199286,
+  "val_rmse_std": 0.0003362933620409096,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-17 (breast_ct). OUTER-LR lower (finer convergence). iter-7 (lr=5e-2) drove step->0 faster (hr0 at dead lambda); now with active lambda=1.0, a LOWER lr may let the scalars settle into a finer lambda schedule minimum. ONE KNOB vs iter-12 (lr=5e-3, hr=0.1495): lr 5e-3->1e-3 (epochs=20 gives room to converge at the lower lr). HYPOTHESIS: finer optimisation steps find a slightly better per-iter lambda profile so hr edges above 0.1495. FALSIFIER: hr <=0.15 -> optimisation-converged, ceiling confirmed. BUDGET: iter-12 under wall."
+  },
+  "headroom_std": 0.008762221931599663,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.13514358535864454,
+    "recomputed_val_ssim_mean": 0.9516973486542701,
+    "recomputed_val_psnr_mean": 37.06427083969116,
+    "recomputed_val_rmse_mean": 0.004534465039614588
   }
 }

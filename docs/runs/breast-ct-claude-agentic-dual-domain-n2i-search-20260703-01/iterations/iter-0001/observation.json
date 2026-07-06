@@ -11,9 +11,9 @@
   "val_ssim": 0.9404124617576599,
   "val_psnr": 34.54658126831055,
   "val_rmse": 0.0063984589651227,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.010500652945268767,
+  "val_psnr_std": 0.9471545888442259,
+  "val_rmse_std": 0.0006720001406051625,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-1 ONBOARDING dual_domain_n2i (Noise2Inverse self-supervised DD-UNet: warm-start amortised N2I pre-pass on train, then PER-IMAGE N2I fine-tune of each val scan on its own 128-view sinogram split into two half-view subsets, GT-free) on the re-split Breast-CT (train 3600 / val 200 / test 200, seed 20260703), scoring val=200. SIX-BOX: (1) PRIOR: none for this slug; nearest reference = the OLD-split breast N2I run (search-20260618-01) which hit hr=0 on ALL 20 iters (val_ssim ~0.96 but never beat the 128-view sparse FBP baseline -> over-smoothing), the DOCUMENTED structural ceiling (docs/findings.md: N2I over-smooths dense breast at 128 views because the FBP is a poor self-supervision target). (2) Failure mode: N/A onboarding; goal = does N2I run under the HARD 20-min budget at the required val=200 and produce a legitimate hr (expected ~0 per the documented ceiling)? (3) ONE KNOB: N/A baseline (mirrors a known-good N2I breast config: warm_start ep=3, n_iter=200, c=16, lr=1e-3; only val_n 16->200 as the re-split requires, and outer_wall=900s so per_scene=4.5s keeps 200 per-image fits inside the 20-min budget). (4) HYPOTHESIS: N2I trains stably (grad_clip=1.0) but PLATEAUS at hr~0 -- it will land at val_ssim ~0.95-0.96 yet fail to beat the sparse-view FBP baseline (hr=0), reproducing the documented over-smoothing ceiling on the new val=200 split. If it clears hr>0 that is itself a finding. (5) BUDGET: breast uses a SINGLE shared PYRO-NN projector; warm-start ep=3 on 400 scenes + 200 per-image fits at per_scene=4.5s (n_iter=200 capped by the 4.5s wall on 512^2 c=16) + figure fits inside 20 min (30-min sbatch wall). (6) Loop continues; iter-2 self-dispatched on landing. Knobs reserved for iters 2-20: n_iter (inner steps), pretrain_epochs, unet_c (net depth/width), lr, warm_start on/off, outer_wall/per_scene budget -- genuinely different levers to document the ceiling."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 197,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9364641308784485,
+    "recomputed_val_psnr_mean": 34.12121800843834,
+    "recomputed_val_rmse_mean": 0.006382861479568451
   }
 }

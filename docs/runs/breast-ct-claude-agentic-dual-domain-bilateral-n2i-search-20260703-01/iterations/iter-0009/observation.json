@@ -11,9 +11,9 @@
   "val_ssim": 0.9619981646537781,
   "val_psnr": 39.70524215698242,
   "val_rmse": 0.0008472703630104661,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011293313466012478,
+  "val_psnr_std": 1.094692587852478,
+  "val_rmse_std": 0.00010767040657810867,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -41,5 +41,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-9 dual_domain_bilateral_n2i, ONE-KNOB: image BF SPATIAL sigma img_sx=img_sy 1.5->2.5 (isotropic widen), on iter-7 CHAMPION base (img_sr=0.0002, n_iter=30). n_iter REVERTED to 30 (iter-8 n_iter=100 gave hr=0.1160 on a wall-trimmed val_n=193/harder-baseline subset; SSIM/PSNR were actually higher 0.9620/39.72 but n_iter did not clearly help and it trims the val set -> keep 30 for a clean 200-scene comparison). CHAMPION = iter-7 hr=0.1261 (img_sr=0.0002). HYPOTHESIS: with the range kernel now EDGE-PRESERVING (tight img_sr), a WIDER spatial sigma lets each output pixel average over MORE same-tissue neighbours -> stronger flat-region noise suppression, while the tight range kernel still BLOCKS averaging across fibroglandular edges -> cleaner denoise WITHOUT new blur -> hr climbs above 0.1261. This is the direction that lifted the DEMO bilateral monotonically (1.5->2.5->3.5); the question is whether it transfers to breast NOW that range-edge-preservation is on (on the OLD-split breast it barely moved because range was not this tight). If hr FLAT/DROPS, breast's fine fibroglandular structure sits inside the widened window and even edge-guarded spatial widening blurs it -> spatial axis capped at 1.5. BUDGET: spatial-sigma cost is independent of VALUE (same 7x7 kernel unfold); ~700-1000s like iter-7. ONE knob: img_sx/img_sy 1.5->2.5."
+  },
+  "headroom_std": 0.09916464984416962,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 193,
+    "batch_baseline_rmse": 0.0009577127639204264,
+    "recomputed_ssim_mean": 0.9425519704818726,
+    "stored_ssim": 0.9619981646537781,
+    "ssim_drift": 0.019446194171905518,
+    "recomputed_hr_aggregate": 0.131863665702731,
+    "per_case_hr_mean": 0.14618776738643646,
+    "stored_hr": 0.11402760380948807
   }
 }

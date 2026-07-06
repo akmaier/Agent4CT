@@ -11,9 +11,9 @@
   "val_ssim": 0.9573974609375,
   "val_psnr": 37.697566986083984,
   "val_rmse": 0.004451703745871782,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00649699887686635,
+  "val_psnr_std": 0.6665051685717636,
+  "val_rmse_std": 0.0003338386011075145,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-9 (breast_ct). CLIMB the lambda axis (the productive lever, FOUND). iter-8 BREAKTHROUGH: tv_lambda_init 1e-3->0.05 gave hr=0.1195 (psnr 37.43>baseline 36.32, ssim 0.951>0.920) -- FIRST above-baseline. MECHANISM (diagnosed): step[k] still collapses to ~1.8e-6, but the optimiser GROWS lambda from 0.05 to ~0.30 across epochs so the product step*lambda*tv_grad stays non-zero and denoises the FBP sparse-view noise. So LAMBDA, not step, is the escape from the FBP attractor. iter-8 ended with lambda ~0.30, well above its 0.05 init -> the init was below the productive operating point. ONE KNOB: tv_lambda_init 0.05->0.2 (closer to where iter-8's lambda settled; step_init=1e-3, K=10, mse, per-iter, lr=5e-3). HYPOTHESIS: initialising lambda near its learned operating point (0.2) lets the 10-epoch budget spend more steps in the productive denoising regime rather than climbing from 0.05, so hr rises above 0.1195. FALSIFIER: if hr drops (0.2 over-smooths breast fine structure) the optimum lambda_init is between 0.05 and 0.2 and iter-10 bisects. BUDGET: K=10 mse ~750s, <1200s wall."
+  },
+  "headroom_std": 0.009059732363657532,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.1465742396449056,
+    "recomputed_val_ssim_mean": 0.9533299541473389,
+    "recomputed_val_psnr_mean": 37.179880123138425,
+    "recomputed_val_rmse_mean": 0.004474669836927205
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9436529278755188,
   "val_psnr": 34.69007873535156,
   "val_rmse": 0.006293622311204672,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.01094877081079817,
+  "val_psnr_std": 0.9364403405606202,
+  "val_rmse_std": 0.0006505749696630535,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 314,
     "rationale": "iter-12 SIX-BOX. (1) PRIOR: iter-11 hr=0.0, grad_clip OFF gave rmse=0.00635, ssim=0.942 -- no better than clipped; removing the grad-norm damp did not sharpen. Iters 1-11 all hr=0. (2) FAILURE MODE: plain-UNet N2I regresses to the over-smoothed FBP mean; no edge-preserving structural guard (bilateral sibling range kernel hr~0.21 is what this solver lacks). (3) ONE KNOB: relative to iter-6 best reference (lr=3e-4, n_iter=50, c=16, grad_clip=1.0), seed 42 -> 314. (4) HYPOTHESIS: VARIANCE CHECK -- re-running the best config under a different RNG seed (warm-start init + train permutation) tests whether hr=0 is robust to seed or a one-off. If rmse lands ~0.0062-0.0064 again (hr=0), the ceiling is seed-independent and structural; a large swing would signal seed sensitivity. The breast VAL SPLIT is fixed (staged h5, seed-20260703), so seed only perturbs training RNG, not the val cases. Per the ceiling, expect hr=0 again. (5) BUDGET: identical to iter-6 (n_iter=50 fast); ~12 min << 30-min wall. (6) Loop continues; iter-13 self-dispatched. Reserved levers: lr=1e-4 very gentle, n_iter=400 high, pretrain_steps cap, batch_size=2 warm-start, pretrain_epochs=1 minimal warm-start."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9401343479752541,
+    "recomputed_val_psnr_mean": 34.26250720977783,
+    "recomputed_val_rmse_mean": 0.00627789804013446
   }
 }

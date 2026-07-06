@@ -11,9 +11,9 @@
   "val_ssim": 0.9575998187065125,
   "val_psnr": 37.72936248779297,
   "val_rmse": 0.004435436800122261,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006469151955750896,
+  "val_psnr_std": 0.667000167935313,
+  "val_rmse_std": 0.0003328070237388689,
   "kept": true,
   "status": "keep",
   "params_M": 1.2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-20 (breast_ct). K LOW edge (final). Depth UP falsified twice (K30/K50 collapse). Test K DOWN: fewer TV passes = less smoothing, may retain more fine breast structure. ONE KNOB vs iter-12 (K=10, ep20, hr=0.1495): tv_K 10->6. HYPOTHESIS: if hr>0.1495 the K=10 smoothing was slightly too much and fewer passes preserve structure; if hr<0.1495 K=10 was optimal. Closes the K axis low edge. This is the HARD-STOP iter-20. BUDGET: K=6 < K=10 -> faster, under wall."
+  },
+  "headroom_std": 0.009106571006883115,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.14972632125184762,
+    "recomputed_val_ssim_mean": 0.9535489314794541,
+    "recomputed_val_psnr_mean": 37.21202909469604,
+    "recomputed_val_rmse_mean": 0.004458156026666984
   }
 }

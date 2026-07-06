@@ -11,9 +11,9 @@
   "val_ssim": 0.9082974791526794,
   "val_psnr": 38.553916931152344,
   "val_rmse": 0.0009673600434325635,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.026129281148314476,
+  "val_psnr_std": 1.5059130191802979,
+  "val_rmse_std": 0.0001941048540174961,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -38,5 +38,17 @@
     "outer_wall_s": 1000,
     "seed": 42,
     "rationale": "iter-17 dual_domain_bilateral_n2i, ONE-KNOB: warm_start True->False (pure per-image N2I, NO amortised pre-pass), on the CHAMPION base (img_sr=0.0002, lr=3e-3, n_iter=60; iter-15 hr=0.2056). n_iter held at 60 (iter-16 n_iter90 hr=0.2051 = TIED -> the 6-param BF converges by 60, saturated). HYPOTHESIS: the warm-start pre-pass captures a GENERIC BF-sigma init from the 400 train scenes; but the per-scene fit already tunes sigmas per image, so warm-start may add a generic-abdomen bias the tight img_sr must undo. With warm_start=False each scene fits from the CONFIG init (img_sr=0.0002 exactly) -> if hr >= 0.2056 the warm-start is UNNECESSARY (pure per-image N2I is self-sufficient AND drops the train-set dependency, a cleaner self-supervised story: train_n=0); if hr DROPS, the warm-start init genuinely helps the 60-step fit converge and should be kept. Either outcome is a clean methodological finding for the paper. WALL: skipping warm-start SAVES ~120s -> n_iter60 fits comfortably, val_n~200 (outer_wall_s=1000). ONE knob: warm_start True->False."
+  },
+  "headroom_std": 0.07417676597833633,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 196,
+    "batch_baseline_rmse": 0.0009711969178169966,
+    "recomputed_ssim_mean": 0.9115992784500122,
+    "stored_ssim": 0.9082974791526794,
+    "ssim_drift": 0.0033017992973327637,
+    "recomputed_hr_aggregate": 0.00673609574471401,
+    "per_case_hr_mean": 0.08071503043174744,
+    "stored_hr": 0.0025387993663684716
   }
 }

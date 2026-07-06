@@ -11,9 +11,9 @@
   "val_ssim": 0.9575257897377014,
   "val_psnr": 37.72827911376953,
   "val_rmse": 0.004435990937054157,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006473064164713474,
+  "val_psnr_std": 0.6669357127740575,
+  "val_rmse_std": 0.0003328083669296648,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-19 (breast_ct). EPOCHS edge (deeper convergence). epochs 10->20 lifted hr 0.1471->0.1495 (tiny). Test whether more epochs keep helping. ONE KNOB vs iter-12 (epochs=20): epochs 20->30. HYPOTHESIS: if hr keeps rising the schedule is still under-converged; if it saturates ~0.15 the plateau/ceiling is confirmed converged. BUDGET: epochs=30 at K=10 ~ 1.5x iter-12 train; iter-12 ran comfortably under wall so ~1100-1150s, watch the wall (fallback val_n cut if needed)."
+  },
+  "headroom_std": 0.009101849683524564,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.14963093399415028,
+    "recomputed_val_ssim_mean": 0.9534677183628082,
+    "recomputed_val_psnr_mean": 37.211054134368894,
+    "recomputed_val_rmse_mean": 0.004458653976907954
   }
 }

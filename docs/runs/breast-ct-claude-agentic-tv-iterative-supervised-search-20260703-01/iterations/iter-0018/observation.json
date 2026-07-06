@@ -11,9 +11,9 @@
   "val_ssim": 0.9577618837356567,
   "val_psnr": 37.73678970336914,
   "val_rmse": 0.004431644920259714,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006467075296533073,
+  "val_psnr_std": 0.6675008965046029,
+  "val_rmse_std": 0.00033276796878780685,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-18 (breast_ct). LAMBDA peak bisection (low side). Lambda axis mapped: 0.05->0.1195, 0.2->0.1462, 1.0->0.1495(ep20 best), 5.0->0.0015(over-smooth collapse). Peak bracketed between 0.2 and 5.0, near 1.0. ONE KNOB vs iter-12 (lambda=1.0, ep20, hr=0.1495): tv_lambda_init 1.0->0.5. HYPOTHESIS: if hr>0.1495 the peak is below 1.0 (test 0.7 next); if hr<0.1495 the peak is at/above 1.0. Refines the plateau location. FALSIFIER: hr~0.15 either way -> plateau flat, ceiling confirmed. BUDGET: iter-12 under wall."
+  },
+  "headroom_std": 0.009151694447920408,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.1504560830805396,
+    "recomputed_val_ssim_mean": 0.9537269377708435,
+    "recomputed_val_psnr_mean": 37.21949289321899,
+    "recomputed_val_rmse_mean": 0.004454345956910402
   }
 }

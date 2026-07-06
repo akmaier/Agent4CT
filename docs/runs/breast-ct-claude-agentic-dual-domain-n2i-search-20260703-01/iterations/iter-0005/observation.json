@@ -11,9 +11,9 @@
   "val_ssim": 0.9414029717445374,
   "val_psnr": 34.642417907714844,
   "val_rmse": 0.00632824981585145,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.012098980454888211,
+  "val_psnr_std": 0.9683381124362275,
+  "val_rmse_std": 0.00068037445496675,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-5 SIX-BOX. (1) PRIOR: iter-4 hr=0.0, warm_start OFF (pure per-image from scratch, n_iter=300) gave rmse=0.00651, ssim=0.938, 197/200 -- no better than warm-started iters. So the amortised warm-start is NOT what pulls scans to over-smooth; from-scratch fits reach the same FBP-consistent plateau. Iters 1-4 (budget, per-scene fit, capacity, warm-start on/off) ALL pinned at hr=0. (2) FAILURE MODE: structural over-smoothing set by the 128-view FBP self-supervision target, independent of budget/capacity/init. (3) ONE KNOB: lr 1e-3 -> 3e-4 (back to warm_start=True, c=16, n_iter=200 -- identical to iter-2 except lr). (4) HYPOTHESIS: a gentler per-image step size may let the N2I fit settle into a sharper local optimum instead of over-shooting into an over-smoothed mean; if hr rises, the over-smoothing was partly an optimization/step-size artifact. Per the documented ceiling, more likely lr just changes convergence speed and the SAME over-smoothed solution is reached (hr=0), since the target itself is the limiter. (5) BUDGET: identical compute profile to iter-2 (warm-start ep=3 + 200*7.0s + figure ~= 26 min < 30-min wall). (6) Loop continues; iter-6 self-dispatched. Reserved levers: lr up (3e-3), n_iter early-stop (50), pretrain_epochs up (10), unet_c=8, grad_clip variation."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 197,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9375864385348286,
+    "recomputed_val_psnr_mean": 34.22257395323158,
+    "recomputed_val_rmse_mean": 0.006310566987955782
   }
 }

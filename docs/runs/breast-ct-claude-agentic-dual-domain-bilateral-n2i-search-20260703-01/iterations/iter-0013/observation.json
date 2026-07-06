@@ -11,9 +11,9 @@
   "val_ssim": 0.9583393931388855,
   "val_psnr": 40.329742431640625,
   "val_rmse": 0.0007884909864515066,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.02558719366788864,
+  "val_psnr_std": 1.8433849811553955,
+  "val_rmse_std": 0.00019907303794752806,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -39,5 +39,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-13 dual_domain_bilateral_n2i, ONE-KNOB: lr 0.002->0.003 (bracket the lr peak on the HIGH side), on iter-11 CHAMPION base (img_sr=0.0002, n_iter=30). lr AXIS now bracketed: 5e-3->hr0.126, 2e-3->hr0.1835 (PEAK so far), 1e-3->hr0.0895 (iter-12: UNDER-converged, SSIM crashed to 0.930 -- 30 steps from warm-start too few at this low lr). So the optimum is a PEAK near 2e-3 with steep falloff BELOW it (under-convergence) and gentler falloff ABOVE it (overshoot-to-noise). HYPOTHESIS: 3e-3 sits between the 2e-3 peak and the 5e-3 mild-overshoot; if hr(3e-3) < 0.1835 the peak is at/below 2e-3 and I stop refining lr (2e-3 confirmed optimal); if hr(3e-3) ~ or > 0.1835 the ridge is broad on the high side and 2-3e-3 is a plateau. Either way this NAILS the lr optimum in one clean step (val_n=200). BUDGET: same steps, ~950s. ONE knob: lr 0.002->0.003."
+  },
+  "headroom_std": 0.11924386769533157,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 200,
+    "batch_baseline_rmse": 0.0009859224082902074,
+    "recomputed_ssim_mean": 0.9402238130569458,
+    "stored_ssim": 0.9583393931388855,
+    "ssim_drift": 0.018115580081939697,
+    "recomputed_hr_aggregate": 0.17854013379841727,
+    "per_case_hr_mean": 0.2342890352010727,
+    "stored_hr": 0.19882179919887932
   }
 }

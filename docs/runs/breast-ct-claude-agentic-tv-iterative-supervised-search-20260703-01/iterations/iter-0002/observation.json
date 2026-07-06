@@ -11,9 +11,9 @@
   "val_ssim": 0.9197966456413269,
   "val_psnr": 36.31389236450195,
   "val_rmse": 0.005220471881330013,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007003769642162695,
+  "val_psnr_std": 0.5815336614706137,
+  "val_rmse_std": 0.0003419393396743228,
   "kept": false,
   "status": "discard",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-2 (breast_ct). DIAGNOSIS of iter-1 (step_init=1e-2): hr=0.0, val_psnr=17.27 dB -- 19 dB WORSE than the LD-FBP baseline (36.32 dB), val_ssim 0.719 vs baseline 0.920. SLURM training log (job 772163) is the smoking gun: loss FROZEN at 0.004813 across ALL 10 epochs and every learned step[k]=0.01 / lambda[k]=0.001 PINNED at init (only step_9 drifted to 0.00937). FAILURE MODE (named): STEP-TOO-LARGE OVERSHOOT -> saturated-gradient training freeze. Mechanism (docs/findings.md 2026-05-23 + Mayo iter-3): the data gradient R^T(R f - g) uses the RAW unnormalized adjoint of the 128-view breast forward op; tv_step_init=0.01 (inherited from the classical sibling's tv_lr) is ~operator-norm too large, so f - 0.01*R^T(...) overshoots into a bad clamped basin at K=1, the clamp/divergence kills the gradient to the 20 log-scalars -> they never move -> recon diverges from FBP regardless of epochs. baseline FBP PSNR=36.32 confirms data/projector are fine; only the unrolled step scale is wrong. ONE KNOB: tv_step_init 1e-2 -> 1e-4 (100x smaller; keeps the unrolled iteration INSIDE the stable basin near FBP where gradients flow to the scalars). Historical breast iter-2 (findings 2026-05-23) used exactly step_init=1e-4 and the recon stayed near FBP (loss dropped, scalars departed init). All else IDENTICAL to iter-1 (K=10, train_n=400, epochs=10, bs=1, lambda_init=1e-3, lr=5e-3, val_n=200, grad_clip=1.0). HYPOTHESIS: at 100x smaller step the training UN-FREEZES -- loss DECREASES across epochs, step[k]/lambda[k] DEPART from init, and val_psnr recovers from 17.3 toward/above the FBP floor (36.3 dB) so hr rises above 0. FALSIFIER: if loss stays flat AND scalars stay pinned, the harness is deeper-broken (then iter-3 attacks init: drop FBP-init / zero-init, or deepen K). BUDGET: iter-1 ran 750s total (<1200s wall); identical compute -> ~750s."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9123943766951561,
+    "recomputed_val_psnr_mean": 35.79235239028931,
+    "recomputed_val_rmse_mean": 0.005246137322392315
   }
 }

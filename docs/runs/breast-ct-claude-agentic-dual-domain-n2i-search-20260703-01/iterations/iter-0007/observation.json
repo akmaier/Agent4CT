@@ -11,9 +11,9 @@
   "val_ssim": 0.93094801902771,
   "val_psnr": 34.31477355957031,
   "val_rmse": 0.006571519188582897,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.012117191096576314,
+  "val_psnr_std": 0.9451803474954881,
+  "val_rmse_std": 0.000685973793685257,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-7 SIX-BOX. (1) PRIOR: iter-6 hr=0.0, early-stop n_iter=50 (lr=3e-4) gave rmse=0.00628 (marginally best, still >> baseline 0.00521), ssim=0.942, 200/200. Stopping early froze a still-blurry recon -- the warm-started init is already over-smoothed. Iters 1-6 (budget, per-scene fit, capacity, warm-start, lr-down, early-stop) all hr=0. NOTE: the SIBLING solver dual_domain_bilateral_n2i (a DIFFERENT solver with a trainable bilateral post-filter) reached hr~0.20; that bilateral edge-preserving stage is exactly the structural element THIS plain-UNet N2I solver lacks -- documented as the likely reason for our ceiling, but out of scope to add (protocol fixes SOLVER=dual_domain_n2i). (2) FAILURE MODE: plain-UNet N2I regresses to the over-smoothed FBP-consistent mean; no edge-preserving prior to hold detail. (3) ONE KNOB: lr 3e-4 -> 3e-3 (keep n_iter=50, warm_start=True, c=16 -- identical to iter-6 except lr, an order-of-magnitude aggressive step). (4) HYPOTHESIS: a large step size with only 50 inner iters may jump the per-image fit into a sharper, higher-frequency basin the small-lr fits never reached, lowering rmse; if hr rises, the plateau was an optimization-basin artifact. Per the ceiling, more likely lr=3e-3 either destabilizes (grad_clip=1.0 catches it) or converges to the same over-smoothed solution (hr=0). (5) BUDGET: 50 inner steps/scene, fast; loop << 1400s wall; total ~13 min << 30-min wall. (6) Loop continues; iter-8 self-dispatched. Reserved levers: pretrain_epochs up (10), unet_c=8, n_iter mid (100), grad_clip off, seed change (variance check)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9258773046731948,
+    "recomputed_val_psnr_mean": 33.93217321395874,
+    "recomputed_val_rmse_mean": 0.006522168000228703
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9419757127761841,
   "val_psnr": 34.72379684448242,
   "val_rmse": 0.00626923656091094,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.01040919365453625,
+  "val_psnr_std": 0.924173168544248,
+  "val_rmse_std": 0.0006469846013434121,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-10 SIX-BOX (HALFWAY). (1) PRIOR: iter-9 hr=0.0, unet_c=8 (down) gave rmse=0.00629, ssim=0.945 (highest ssim) -- no clear from iter-3's c=32 (rmse 0.00654). With c=8, c=16, c=32 ALL at hr=0, capacity is CONCLUSIVELY not the lever. Iters 1-9 all hr=0. (2) FAILURE MODE: plain-UNet N2I regresses to the over-smoothed FBP mean; no edge-preserving structural guard (unlike the bilateral sibling's range kernel, hr~0.21). (3) ONE KNOB: relative to iter-6 best reference (lr=3e-4, c=16, ep=3), n_iter 50 -> 100. Completes the inner-step sweep (iter-2/5 used 200, iter-6 used 50; this fills 100). (4) HYPOTHESIS: 100 inner steps is a middle ground -- enough to refine past the warm init but maybe not so many that it collapses fully to the smooth mean; if there is a sweet spot in inner-step count, rmse dips here. Per the ceiling, more likely rmse sits between the 50-step (0.00628) and 200-step (0.00633) values, still far above baseline 0.00521 (hr=0), confirming inner-step count is monotone-flat and not a lever. (5) BUDGET: 100 steps/scene, moderate; pretrain ep=3 + 200*100-step fits + figure ~= 16 min < 30-min wall. (6) Loop continues; iter-11 self-dispatched. Reserved levers: grad_clip off (2.0/none), seed variance check (314), lr=1e-4 very gentle, pretrain_steps cap, n_iter=400 high."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 199,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.938058792346686,
+    "recomputed_val_psnr_mean": 34.2884127554582,
+    "recomputed_val_rmse_mean": 0.006258749761080472
   }
 }

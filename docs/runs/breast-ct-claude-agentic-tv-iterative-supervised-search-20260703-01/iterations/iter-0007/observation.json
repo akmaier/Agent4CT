@@ -11,9 +11,9 @@
   "val_ssim": 0.9198830723762512,
   "val_psnr": 36.32337188720703,
   "val_rmse": 0.005214777775108814,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006998465244753955,
+  "val_psnr_std": 0.5816076834577719,
+  "val_rmse_std": 0.0003415968674246979,
   "kept": false,
   "status": "discard",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-7 (breast_ct). OUTER-LR probe. iters 1-6: step/depth/loss/sharing all collapse step[k]->~0, recon=FBP, hr0, MSE floor 0.00624. At outer lr=5e-3 the log_step slides smoothly into the collapse basin. HYPOTHESIS: a 10x outer lr (5e-3->5e-2, matching the Mayo un-stick run) makes Adam take large jumps in log_step space that may overshoot PAST the collapse attractor into a regime where a non-zero step does net denoising before settling. ONE KNOB: lr 5e-3->5e-2 (step_init=1e-3, lambda_init=1e-3, K=10, mse, per-iter -- iter-3 base). FALSIFIER: if the larger lr just reaches the SAME step->0 collapse faster (hr0), outer-lr is not an escape and the attractor is optimiser-step-size-agnostic. BUDGET: K=10 mse ~750s, <1200s wall."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9124866744875908,
+    "recomputed_val_psnr_mean": 35.80187852859497,
+    "recomputed_val_rmse_mean": 0.005240389641840011
   }
 }

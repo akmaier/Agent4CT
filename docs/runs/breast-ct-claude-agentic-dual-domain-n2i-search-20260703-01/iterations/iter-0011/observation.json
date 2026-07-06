@@ -11,9 +11,9 @@
   "val_ssim": 0.9421713948249817,
   "val_psnr": 34.61840057373047,
   "val_rmse": 0.0063457731157541275,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011820114138622162,
+  "val_psnr_std": 0.9843053261512701,
+  "val_rmse_std": 0.0006923091136710043,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-11 SIX-BOX. (1) PRIOR: iter-10 hr=0.0, n_iter=100 gave rmse=0.00627 -- with 50/100/200-step fits at 0.00628/0.00627/0.00633, inner-step count is MONOTONE-FLAT and NOT a lever. Iters 1-10 all hr=0, rmse 0.00627-0.00657, all far above baseline 0.00521. (2) FAILURE MODE: plain-UNet N2I regresses to the over-smoothed FBP mean; no edge-preserving structural guard (the bilateral sibling's tight range kernel, hr~0.21, is exactly what this solver lacks). (3) ONE KNOB: relative to iter-6 best reference (lr=3e-4, n_iter=50, c=16), grad_clip 1.0 -> 0.0 (OFF). grad_clip has been pinned at 1.0 all run; breast's 128-view FBP adjoint is far milder than Mayo's 2304-view, so clipping may be needlessly damping the per-image updates. (4) HYPOTHESIS: removing grad-norm clipping lets full-magnitude gradients through, which on the well-conditioned 128-view breast geometry may drive the per-image fit to a sharper solution the clipped runs couldn't reach, lowering rmse. If hr rises, clipping was over-damping. Per the ceiling, more likely the unclipped fit reaches the same over-smoothed FBP-consistent solution (hr=0), since the over-smoothing is set by the TARGET not the step magnitude; grad_clip<=0 still skips nonfinite-grad steps so it stays stable. (5) BUDGET: identical to iter-6 (n_iter=50 fast); ~12 min << 30-min wall. (6) Loop continues; iter-12 self-dispatched. Reserved levers: seed variance check (314), lr=1e-4 very gentle, pretrain_steps cap, n_iter=400 high, batch_size up for warm-start."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9384299319982529,
+    "recomputed_val_psnr_mean": 34.202498798370364,
+    "recomputed_val_rmse_mean": 0.006325311136897653
   }
 }

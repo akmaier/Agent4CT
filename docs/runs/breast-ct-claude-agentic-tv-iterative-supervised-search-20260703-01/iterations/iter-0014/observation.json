@@ -11,9 +11,9 @@
   "val_ssim": 0.9203903079032898,
   "val_psnr": 36.33763122558594,
   "val_rmse": 0.005206225905567408,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007008857301698675,
+  "val_psnr_std": 0.5829172340711339,
+  "val_rmse_std": 0.0003418102127678464,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-14 (breast_ct). LAMBDA-INIT high edge (close the lambda box). Best = iter-12 (K=10, lambda_init=1.0, epochs=20) hr=0.1495. Lambda axis: 0.05->0.1195, 0.2->0.1462, 1.0->0.1471 (epochs10) / 0.1495 (epochs20). The learned lambda schedule front-loads to very high values (iter-12 lambda[1]~3400). ONE KNOB vs iter-12: tv_lambda_init 1.0->5.0 (epochs=20 kept). HYPOTHESIS: initialising lambda higher (5.0) starts the schedule closer to its front-loaded operating point so hr edges above 0.1495. FALSIFIER: hr <= 0.15 -> the lambda-denoising plateau (~0.15) is fully mapped and is the config-only ceiling; the step-collapse (data-consistency off) caps supervised-unrolled-TV here. BUDGET: iter-12 epochs=20 ran under wall (~1050s)."
+  },
+  "headroom_std": 0.00016464044771247744,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0015483892676393452,
+    "recomputed_val_ssim_mean": 0.9130352422595024,
+    "recomputed_val_psnr_mean": 35.81616445541382,
+    "recomputed_val_rmse_mean": 0.0052318297862075265
   }
 }

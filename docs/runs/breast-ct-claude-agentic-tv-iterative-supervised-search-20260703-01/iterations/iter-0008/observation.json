@@ -11,9 +11,9 @@
   "val_ssim": 0.9510245323181152,
   "val_psnr": 37.42939758300781,
   "val_rmse": 0.004591288510710001,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006558643815366916,
+  "val_psnr_std": 0.6476411685076728,
+  "val_rmse_std": 0.0003346227314061854,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-8 (breast_ct). LAMBDA-INIT edge probe. iters 1-7 confirm the FBP-init MSE attractor across step/depth/loss/sharing/outer-lr -- step[k] always ->0, recon=FBP, hr0. lambda has been pinned at 1e-3 (inert once step->0). This iter tests the lambda edge: init a STRONG TV prior (lambda_init=0.05, 50x) so the TV gradient term is large FROM THE START -- IF the recon takes even a few non-zero steps early (before step collapses) a strong TV could denoise the FBP streaks materially. ONE KNOB: tv_lambda_init 1e-3->0.05 (step_init=1e-3, K=10, mse, per-iter, lr=5e-3 -- iter-3 base). FALSIFIER: if step still ->0 first, lambda never gets to act (product step*lambda*tv_grad ->0) and hr stays 0 -> confirms step-collapse gates lambda entirely. This closes the lambda edge of the search box. BUDGET: K=10 mse ~750s, <1200s wall."
+  },
+  "headroom_std": 0.007303650432388982,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.11985584893767834,
+    "recomputed_val_ssim_mean": 0.9463425660133362,
+    "recomputed_val_psnr_mean": 36.91192798614502,
+    "recomputed_val_rmse_mean": 0.004614120981423184
   }
 }

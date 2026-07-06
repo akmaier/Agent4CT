@@ -11,9 +11,9 @@
   "val_ssim": 0.9196118116378784,
   "val_psnr": 36.293426513671875,
   "val_rmse": 0.005232788622379303,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007015163934294241,
+  "val_psnr_std": 0.581363088779872,
+  "val_rmse_std": 0.00034267267210561707,
   "kept": false,
   "status": "discard",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-3 (breast_ct). BRACKET the step regime. iter-1 (step=1e-2): OVERSHOOT -> diverged 19 dB below FBP, hr=0. iter-2 (step=1e-4): training un-froze BUT the optimiser drove step[k] DOWN to ~6e-7 (a near-no-op), so the recon converged to EXACTLY the LD-FBP init (val_psnr 36.31 vs baseline 36.32, ssim 0.9198 vs 0.9199) -> hr=0. NAMED failure mode: FBP-INIT ZERO-GRADIENT TRAP (findings 2026-05-23) -- since R+ ~= FBP, the data-gradient R^T(R*FBP - g) ~= 0 at init, so the supervised loss's only signal is stay-put; too-small a step lets it sit on FBP, too-large a step diverges. The productive regime is BETWEEN 1e-4 and 1e-2. ONE KNOB: tv_step_init 1e-4 -> 1e-3 (geometric midpoint of the bracket; 10x iter-2, 10x below the iter-1 overshoot). All else IDENTICAL to iter-2 (K=10, train_n=400, epochs=10, bs=1, lambda_init=1e-3, lr=5e-3, val_n=200). HYPOTHESIS: at step=1e-3 the unrolled TV iteration is large enough to move the recon OFF the FBP fixed point and do real denoising work, yet small enough to stay in the stable basin (no divergence), so val_psnr rises ABOVE the FBP floor (>36.3 dB) and hr clears 0. FALSIFIER: if step=1e-3 also diverges (like 1e-2) the stable band is narrow -> iter-4 bisects toward 3e-4; if it again collapses to FBP (step driven to ~0) the FBP fixed point is a strong attractor for the data term at ANY stable step -> iter-4 attacks it via tv_lambda_init UP (stronger TV prior gradient to pull off FBP). BUDGET: iter-2 ran ~750s (<1200s wall); identical compute."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9121970161795616,
+    "recomputed_val_psnr_mean": 35.771793899536135,
+    "recomputed_val_rmse_mean": 0.005258562734816223
   }
 }

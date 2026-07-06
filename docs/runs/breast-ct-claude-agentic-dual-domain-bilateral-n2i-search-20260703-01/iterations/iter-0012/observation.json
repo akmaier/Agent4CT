@@ -11,9 +11,9 @@
   "val_ssim": 0.9299665689468384,
   "val_psnr": 39.218719482421875,
   "val_rmse": 0.0008960822015069425,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.02959536202251911,
+  "val_psnr_std": 1.8119713068008423,
+  "val_rmse_std": 0.00022124830866232514,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -39,5 +39,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-12 dual_domain_bilateral_n2i, ONE-KNOB: per-scene Adam lr 0.002->0.001 (continue down the lr axis), on the iter-11 NEW CHAMPION base (img_sr=0.0002, n_iter=30, img_kernel=7). BREAKTHROUGH#2 PRIOR: iter-11 (lr 5e-3->2e-3) hr 0.126->0.1835 (+0.057!), PSNR 39.57->40.16, recon_rmse 8.60e-4->8.04e-4 -- CONFIRMED lr=5e-3 was OVERSHOOTING each 30-step per-scene fit toward the noisy 64-view half-target; a gentler lr settles at the edge-preserving denoised-but-sharp optimum. (SSIM dipped 0.9606->0.9537 but hr is RMSE-based and RMSE clearly improved -> real gain.) HYPOTHESIS: the lr axis is monotone-improving so far; lr=1e-3 damps the drift-toward-noise even more, converging tighter to the edge-preserving optimum -> hr climbs above 0.1835. RISK: too-low lr -> the 30-step fit UNDER-converges from the warm-start init (barely denoises) -> recon ~ warm-start-generic, hr regresses. This iter locates the lr optimum: if hr>0.1835 keep lowering (5e-4); if hr<0.1835 the optimum is ~2e-3 and I bracket (1.5e-3). BUDGET: same steps, ~940s, val_n=200. ONE knob: lr 0.002->0.001."
+  },
+  "headroom_std": 0.09791018068790436,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 200,
+    "batch_baseline_rmse": 0.0009859224082902074,
+    "recomputed_ssim_mean": 0.9231147766113281,
+    "stored_ssim": 0.9299665689468384,
+    "ssim_drift": 0.006851792335510254,
+    "recomputed_hr_aggregate": 0.08010163881039678,
+    "per_case_hr_mean": 0.15778809785842896,
+    "stored_hr": 0.08949938767956633
   }
 }

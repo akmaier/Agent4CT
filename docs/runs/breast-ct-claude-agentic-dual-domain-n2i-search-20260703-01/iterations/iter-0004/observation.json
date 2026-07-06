@@ -11,9 +11,9 @@
   "val_ssim": 0.9383020401000977,
   "val_psnr": 34.390289306640625,
   "val_rmse": 0.006514633074402809,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.013137069761623498,
+  "val_psnr_std": 0.9809265512543881,
+  "val_rmse_std": 0.0007034871974204068,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-4 SIX-BOX. (1) PRIOR: iter-3 hr=0.0, unet_c=32 (4x capacity) gave rmse=0.00654 (SLIGHTLY WORSE than c=16's 0.00638), ssim=0.932, 196/200. So higher denoiser capacity does NOT sharpen -- capacity is NOT the limiter. Iters 1-3 (budget, per-scene fit, capacity) all pinned at hr=0. (2) FAILURE MODE: structural over-smoothing from the poor 128-view FBP self-supervision target, independent of budget or capacity. (3) ONE KNOB: warm_start True -> False (back to c=16). Pure per-image N2I: each val scan is optimized FROM SCRATCH on its own sinogram with NO amortised train-set pre-pass init; n_iter raised to 300 to compensate for losing the warm init (this is the SAME knob -- turning off the amortised init -- expressed as the from-scratch regime it defines; no train split is loaded at all). (4) HYPOTHESIS: removing the amortised warm-start tests whether the pre-pass was pulling every scan toward an over-smoothed mean. If pure per-image N2I clears hr>0, warm-start was the culprit. Per the documented ceiling, more likely each from-scratch fit STILL converges to the same over-smoothed FBP-consistent solution (hr=0), because the ceiling is set by the self-supervision TARGET, not the initialization. (5) BUDGET: no warm-start pre-pass (SAVES ~130s), so the full 1400s outer wall goes to the 200 per-image fits at 7.0s each; c=16 + figure ~= 24 min < 30-min wall. (6) Loop continues; iter-5 self-dispatched. Reserved levers: pretrain_epochs (stronger warm-start), lr up/down, n_iter early-stop, unet_c=8."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 197,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9341239826328258,
+    "recomputed_val_psnr_mean": 33.99375234884659,
+    "recomputed_val_rmse_mean": 0.006479831828456845
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9605477452278137,
   "val_psnr": 39.570655822753906,
   "val_rmse": 0.0008605004986748099,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.014120560139417648,
+  "val_psnr_std": 1.1851730346679688,
+  "val_rmse_std": 0.0001194169235532172,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -39,5 +39,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-5 dual_domain_bilateral_n2i, ONE-KNOB: image-domain BF RANGE sigma img_sr 0.02->0.0005 (much tighter intensity bandwidth -> edge-preserving). Back to proj_n_bf=1/img_n_bf=1/n_iter=30 (iter-4 proj depth2 was hr=0 SSIM0.9563 recon_rmse9.85e-4 ~= base9.84e-4 -> projection axis also FBP-bounded). TRAJECTORY so far (all hr=0): depth (img & proj), n_iter/early-stop all asymptote to FBP from above, never below. HYPOTHESIS: the failure is edge-BLINDNESS -- a wide range sigma (0.02) lets the BF average across fibroglandular tissue edges (over-smooth). A TIGHT img_sr=0.0005 (the old-split breast N2I champion value) makes the range kernel edge-preserving: it smooths flat noise but STOPS at intensity edges, so the recon could retain detail AND denoise -> first real shot at recon_rmse < baseline (hr>0). If STILL hr=0, edge-preservation via range sigma does not unlock breast N2I either. FAILURE watched: too-tight img_sr -> BF becomes near-identity (no denoising) -> recon = raw noisy FBP (SSIM/PSNR ~ baseline, not below). BUDGET: img_sr is a VALUE change, same kernel/unfold cost as iter-3 (1047s); outer_wall_s tightened 1050->900 to keep total safely under the 30-min sbatch wall (iter-4 proj-depth2 ran 25 min). ONE knob: img_sr 0.02->0.0005."
+  },
+  "headroom_std": 0.10236502438783646,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 200,
+    "batch_baseline_rmse": 0.0009859224082902074,
+    "recomputed_ssim_mean": 0.9414548873901367,
+    "stored_ssim": 0.9605477452278137,
+    "ssim_drift": 0.019092857837677002,
+    "recomputed_hr_aggregate": 0.1447014048515003,
+    "per_case_hr_mean": 0.16229747235774994,
+    "stored_hr": 0.1256536179070813
   }
 }

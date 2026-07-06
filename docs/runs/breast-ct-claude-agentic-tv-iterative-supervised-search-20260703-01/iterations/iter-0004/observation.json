@@ -11,9 +11,9 @@
   "val_ssim": 0.919653594493866,
   "val_psnr": 36.29808807373047,
   "val_rmse": 0.005229981150478125,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007012590610984483,
+  "val_psnr_std": 0.581402847784286,
+  "val_rmse_std": 0.0003425061041110333,
   "kept": false,
   "status": "discard",
   "params_M": 0.0001,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-4 (breast_ct). DEPTH probe. iter-1/2/3 mapped the step axis: 1e-2 diverges (hr0), 1e-4 and 1e-3 both COLLAPSE the learned step to ~0 so the K=10 recon sits on the FBP init (psnr~36.3=baseline, hr0). NAMED failure: at K=10 the optimiser prefers step->0 because FBP-init already has MSE-optimal psnr 36.3 and 10 TV steps cannot out-denoise it, so staying put minimises the supervised MSE. KEY CONTRAST: the classical (non-learned) tv_iterative sibling BEATS FBP on this exact split (hr 0.16 at 200 iters -> 0.355 at 1000 iters) using the SAME TV iteration but with MANY iterations at fixed non-zero step/lambda -- it does real iterative denoising that K=10 cannot reach. HYPOTHESIS: the limiter is UNROLL DEPTH, not step scale -- with enough steps the TV iteration can denoise the FBP noise below FBP's own MSE, giving the optimiser a reason to KEEP step non-zero. ONE KNOB: tv_K 10 -> 50 (5x depth; step_init=1e-3, lambda_init=1e-3 kept from iter-3). All else identical. EXPECT: step[k] no longer collapses to 0, recon departs FBP with net denoising, val_psnr rises above 36.3 and hr clears 0. FALSIFIER: if step still collapses to 0 and hr stays 0, depth is NOT the limiter and the FBP fixed point is a hard supervised-MSE attractor at any K (matches findings 2026-05-23 verdict) -> iter-5 switches loss (l1) or attacks lambda. BUDGET: iter-3 ran ~750s at K=10; K=50 is 5x the unrolled fwd/bwd in BOTH train and val. Train ~5x, val ~5x -> est ~ (750-load)*~3 + load. Conservatively ~900-1100s; still under the 1200s wall. If it risks the wall iter-5 trims val_n or epochs."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9122417828440667,
+    "recomputed_val_psnr_mean": 35.776474189758304,
+    "recomputed_val_rmse_mean": 0.005255731483921409
   }
 }

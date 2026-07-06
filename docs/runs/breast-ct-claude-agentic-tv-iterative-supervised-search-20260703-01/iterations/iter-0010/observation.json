@@ -11,9 +11,9 @@
   "val_ssim": 0.9575462341308594,
   "val_psnr": 37.70637893676758,
   "val_rmse": 0.004447187762707472,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006488843797211239,
+  "val_psnr_std": 0.6667427465566982,
+  "val_rmse_std": 0.0003336374697557399,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-10 (breast_ct). CLIMB lambda further. Trajectory: lambda_init 0.05->hr0.1195 (settled ~0.30), 0.2->hr0.1462 (settled ~1.3). Lambda keeps climbing WELL above its init in both -> the productive operating point is higher than tested. step[k] stays ~1.8e-6 (irrelevant; lambda carries denoising). ONE KNOB: tv_lambda_init 0.2->1.0 (near where iter-9's lambda settled). HYPOTHESIS: starting lambda at ~1.0 spends the whole 10-epoch budget in the strong-TV denoising regime, so hr rises above 0.1462. FALSIFIER: if hr drops, 1.0 over-smooths breast fine structure and the optimum lambda_init is between 0.2 and 1.0 (iter-11 bisects to ~0.5). BUDGET: K=10 mse ~750s, <1200s wall."
+  },
+  "headroom_std": 0.009079984672907573,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.14738237138408755,
+    "recomputed_val_ssim_mean": 0.9534911760687828,
+    "recomputed_val_psnr_mean": 37.188112087249756,
+    "recomputed_val_rmse_mean": 0.004470439940923825
   }
 }

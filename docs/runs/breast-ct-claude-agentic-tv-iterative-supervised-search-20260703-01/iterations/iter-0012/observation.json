@@ -11,9 +11,9 @@
   "val_ssim": 0.957617461681366,
   "val_psnr": 37.73025131225586,
   "val_rmse": 0.004434981383383274,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006468967166784977,
+  "val_psnr_std": 0.6670528559271545,
+  "val_rmse_std": 0.0003327984879140795,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-12 (breast_ct). EPOCHS probe at the K=10 lambda-winner. Best so far = iter-10 (K=10, lambda_init=1.0, epochs=10) hr=0.1471. Depth FALSIFIED twice: iter-4 (K=50, dead lambda) and iter-11 (K=30, active lambda=1.0) both collapse to FBP -- the useful per-pass TV smoothing is fully delivered by K=10; more passes over-smooth back to FBP-RMSE. So hold K=10 and let the 20 scalars converge FURTHER. ONE KNOB: epochs 10->20 (K=10, lambda_init=1.0, step_init=1e-3, mse, per-iter, lr=5e-3, val_n back to 200). HYPOTHESIS: the lambda schedule was still climbing at epoch 10 in iter-9/10; doubling epochs lets it settle at a better per-iter lambda profile so hr rises above 0.1471. FALSIFIER: if hr saturates ~0.147, 10 epochs already converged the scalars and the ~0.147 plateau is the config-only ceiling for supervised-unrolled-TV on breast (step-collapse caps data-consistency; only TV-denoising of FBP is available). BUDGET: iter-10 K=10 epochs=10 ran ~750s; epochs=20 ~ +train ~ est ~1050s, under 1200s wall (val cost unchanged)."
+  },
+  "headroom_std": 0.009111322554456649,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.14981365620074288,
+    "recomputed_val_ssim_mean": 0.9535682705044747,
+    "recomputed_val_psnr_mean": 37.2129218673706,
+    "recomputed_val_rmse_mean": 0.004457699799677357
   }
 }

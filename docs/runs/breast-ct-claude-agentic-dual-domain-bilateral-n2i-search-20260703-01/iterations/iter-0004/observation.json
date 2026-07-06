@@ -11,9 +11,9 @@
   "val_ssim": 0.9562934637069702,
   "val_psnr": 38.393409729003906,
   "val_rmse": 0.000985402031801641,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011027626693248749,
+  "val_psnr_std": 0.9397286772727966,
+  "val_rmse_std": 0.00010454773291712627,
   "kept": false,
   "status": "discard",
   "params_M": 9e-06,
@@ -38,5 +38,17 @@
     "outer_wall_s": 1050,
     "seed": 42,
     "rationale": "iter-4 dual_domain_bilateral_n2i, ONE-KNOB: projection-domain BF DEPTH proj_n_bf 1->2 (vs iter-3 base: proj_n_bf=1, img_n_bf=1, n_iter=30). PRIOR trajectory: iter-1 (n_iter120) SSIM0.9567 recon_rmse9.80e-4 > base9.65e-4; iter-2 (img depth3) SSIM0.9560 WORSE; iter-3 (n_iter30 early-stop) SSIM0.9563 recon_rmse9.86e-4 ~= base9.84e-4 (early-stop reaches FBP PARITY but never beats it). All hr=0. So image-domain BF + optimization steps are exhausted; recon asymptotes to FBP from ABOVE. NEW AXIS: the projection (sinogram) domain has only ever been at depth 1. KNOB: proj_n_bf 1->2 (2 stacked projection BFs = extra 3 proj params). HYPOTHESIS: denoising the 64-view half-sinogram MORE before FBP could suppress the sparse-view streak noise that the image-domain BF cannot reach, so the N2I recon might finally dip recon_rmse BELOW baseline (hr>0). If hr stays 0, the projection domain is ALSO bounded by FBP on dense breast and the N2I ceiling is confirmed to hold across BOTH domains. FAILURE watched: findings.md warns projection BF that is too strong -> view inconsistency -> new artifacts (PSNR/SSIM drop). BUDGET: proj depth2 adds one sinogram unfold per half-pass; cheap; n_iter=30 -> ~1000s (iter-3 ran 1047s). ONE knob: proj_n_bf 1->2."
+  },
+  "headroom_std": 0.06391993910074234,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 200,
+    "batch_baseline_rmse": 0.0009859224082902074,
+    "recomputed_ssim_mean": 0.9372614622116089,
+    "stored_ssim": 0.9562934637069702,
+    "ssim_drift": 0.019032001495361328,
+    "recomputed_hr_aggregate": 0.03376115198366181,
+    "per_case_hr_mean": 0.07107091695070267,
+    "stored_hr": 0.0
   }
 }

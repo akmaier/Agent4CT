@@ -11,9 +11,9 @@
   "val_ssim": 0.9620240330696106,
   "val_psnr": 39.72456359863281,
   "val_rmse": 0.0008453876944258809,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011356047354638577,
+  "val_psnr_std": 1.0911306142807007,
+  "val_rmse_std": 0.00010730858775787055,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -39,5 +39,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-8 dual_domain_bilateral_n2i, ONE-KNOB: per-scene steps n_iter 30->100, on the iter-7 CHAMPION base (img_sr=0.0002, img_n_bf=proj_n_bf=1). CHAMPION = iter-7 hr=0.1261 SSIM0.9606 PSNR39.57 (img_sr 0.0005->0.0002 marginal +0.0004 over iter-5's 0.1257; range-sigma optimum is flat ~2e-4..5e-4). HYPOTHESIS: iter-1/iter-3 showed n_iter did NOT help when img_sr was WIDE (0.02) -- more steps just pulled the over-smoothing BF further toward the blurry 64-view half-target. But now img_sr is TIGHT/edge-preserving, so additional per-scene N2I steps should refine the edge-preserving denoiser toward better noise suppression WITHOUT over-blurring (the tight range kernel structurally cannot cross edges regardless of step count) -> hr climbs above 0.1261. If hr FLAT/DROPS, the edge-preserving BF converges fast (30 steps already enough) and n_iter is saturated -> revert to 30 and move to spatial sigma. FAILURE watched: even edge-preserving, too many steps could still creep the recon toward the noisy half-target mean (mild PSNR drop). BUDGET: n_iter 30->100 ~3.3x inner steps; iter-7 ran 692s at n_iter30 on a fast node but iter-1 n_iter120 was 1200s -> n_iter100 ~1000-1100s; outer_wall_s=900 caps it (may trim a few scenes). ONE knob: n_iter 30->100."
+  },
+  "headroom_std": 0.09876967966556549,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 193,
+    "batch_baseline_rmse": 0.0009577127639204264,
+    "recomputed_ssim_mean": 0.9425514936447144,
+    "stored_ssim": 0.9620240330696106,
+    "ssim_drift": 0.01947253942489624,
+    "recomputed_hr_aggregate": 0.13331977988717214,
+    "per_case_hr_mean": 0.14742974936962128,
+    "stored_hr": 0.11599626985746714
   }
 }

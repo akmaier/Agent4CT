@@ -11,9 +11,9 @@
   "val_ssim": 0.960568368434906,
   "val_psnr": 39.5748176574707,
   "val_rmse": 0.0008600883884355426,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.014734688214957714,
+  "val_psnr_std": 1.2094732522964478,
+  "val_rmse_std": 0.00012244292884133756,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -39,5 +39,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-7 dual_domain_bilateral_n2i, ONE-KNOB: image BF range sigma img_sr 0.0005->0.0002 (even tighter edge-preservation). proj_sr REVERTED to default 0.02 (iter-6 tightened proj_sr->0.0005 and hr DROPPED 0.1257->0.1003 = edge-hard projection filtering causes view inconsistency, findings.md confirmed; proj domain stays gentle). CHAMPION = iter-5 (img_sr=0.0005) hr=0.1257 SSIM0.9605 PSNR39.57. HYPOTHESIS: the image-domain range sigma is the live lever; 0.02->0.0005 gained +0.126 hr by making the BF stop at intensity edges. A yet-tighter 0.0002 preserves MORE fibroglandular edge detail -> hr climbs further, UNLESS the kernel becomes near-identity (range so tight the BF barely averages -> no denoising -> recon regresses toward the raw noisy FBP, hr back toward 0). This iter locates which side of the sweet spot 0.0005 is on: if hr>0.1257 keep tightening (0.0001); if hr<0.1257 the optimum is at/above 0.0005 (next: 0.001). BUDGET: value change, ~1000s. ONE knob: img_sr 0.0005->0.0002."
+  },
+  "headroom_std": 0.10277719795703888,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 200,
+    "batch_baseline_rmse": 0.0009859224082902074,
+    "recomputed_ssim_mean": 0.9414998292922974,
+    "stored_ssim": 0.960568368434906,
+    "ssim_drift": 0.019068539142608643,
+    "recomputed_hr_aggregate": 0.1445300152591643,
+    "per_case_hr_mean": 0.1636493057012558,
+    "stored_hr": 0.12607235920622262
   }
 }

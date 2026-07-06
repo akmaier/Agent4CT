@@ -11,9 +11,9 @@
   "val_ssim": 0.960396409034729,
   "val_psnr": 40.53019714355469,
   "val_rmse": 0.0007705028401687741,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.021466048434376717,
+  "val_psnr_std": 1.6632953882217407,
+  "val_rmse_std": 0.00017412958550266922,
   "kept": true,
   "status": "keep",
   "params_M": 6e-06,
@@ -39,5 +39,17 @@
     "outer_wall_s": 900,
     "seed": 42,
     "rationale": "iter-15 dual_domain_bilateral_n2i, ONE-KNOB: n_iter 30->60 at the NAILED optimal lr=3e-3 (iter-13 champion hr=0.1988; iter-14 lr3.5e-3 was 0.1973 = ridge top confirmed at 3e-3). img_sr=0.0002, kernel=7, spatial=1.5 all fixed at their tested optima. HYPOTHESIS: iter-8 (n_iter 30->100) DROPPED hr, BUT that was at the OVERSHOOTING lr=5e-3 where extra steps drift the fit toward the noisy 64-view half-target. Now at the GENTLE lr=3e-3 the per-scene fit does NOT overshoot, so MORE steps (60) should let the edge-preserving BF converge FURTHER on genuine denoising -> hr climbs above 0.1988. This is the lr x n_iter interaction: gentle-lr + more-steps is the classic well-damped-convergence regime. If hr FLAT/DROPS, 30 steps already converge the 6-param BF (tiny model converges fast) and n_iter is saturated at the optimal lr -> the ~0.199 hr is the edge-preserving N2I ceiling. RISK: 60 steps x 200 scenes may approach outer_wall_s=900 -> possible val_n trim; iter-13 ran 694s at n_iter30 on a fast node, n_iter60 ~1100-1300s could trim a few scenes (noted if so). ONE knob: n_iter 30->60."
+  },
+  "headroom_std": 0.11518307030200958,
+  "_val_std_rescored": {
+    "method": "batch_consistent_evaluate_calibrated",
+    "n_cases": 196,
+    "batch_baseline_rmse": 0.0009711969178169966,
+    "recomputed_ssim_mean": 0.9419363737106323,
+    "stored_ssim": 0.960396409034729,
+    "ssim_drift": 0.01846003532409668,
+    "recomputed_hr_aggregate": 0.1849692143307332,
+    "per_case_hr_mean": 0.22708380222320557,
+    "stored_hr": 0.2055215705216945
   }
 }

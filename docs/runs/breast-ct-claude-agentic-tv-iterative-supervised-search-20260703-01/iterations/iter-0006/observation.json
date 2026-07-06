@@ -11,9 +11,9 @@
   "val_ssim": 0.9196151494979858,
   "val_psnr": 36.293540954589844,
   "val_rmse": 0.005232718773186207,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007015216143584984,
+  "val_psnr_std": 0.5813713957385293,
+  "val_rmse_std": 0.0003426730558305572,
   "kept": false,
   "status": "discard",
   "params_M": 2e-06,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-6 (breast_ct). SHARED-STEP probe (parametrisation family). iters 1-5: step (1e-2/1e-4/1e-3), depth (K=50), loss (l1) ALL collapse the K independent step[k]->~0 -> recon = FBP init, hr0. NAMED failure: with K INDEPENDENT step/lambda scalars the optimiser can zero out every step to sit on the MSE-optimal FBP fixed point. HYPOTHESIS: tv_share_steps=true collapses the 20 scalars to 2 (ONE step + ONE lambda shared across all K=10 iters). A single shared step cannot be selectively zeroed per-iter; to reduce the supervised loss AT ALL via TV it must commit to one non-zero step that does denoising across all 10 iters -- which may find a net-beneficial smoothing the per-iter version escaped. ONE KNOB: tv_share_steps false->true (step_init=1e-3, lambda_init=1e-3, K=10, mse -- all reverted to the iter-3 base to isolate the sharing knob). FALSIFIER: if the single shared step ALSO -> 0 and hr stays 0, the FBP fixed point is a parametrisation-agnostic MSE attractor -> confirms the structural ceiling (findings 2026-05-23). BUDGET: K=10 mse ~750s like iter-3, <1200s wall."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9122006943821908,
+    "recomputed_val_psnr_mean": 35.771907787322995,
+    "recomputed_val_rmse_mean": 0.005258494133595377
   }
 }

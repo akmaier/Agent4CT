@@ -11,9 +11,9 @@
   "val_ssim": 0.957617461681366,
   "val_psnr": 37.73025131225586,
   "val_rmse": 0.004434981383383274,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006468967166784977,
+  "val_psnr_std": 0.6670528559271545,
+  "val_rmse_std": 0.0003327984879140795,
   "kept": true,
   "status": "keep",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 10.0,
     "rationale": "tv_iterative_supervised iter-16 (breast_ct). GRAD_CLIP loosen. The 20 log-scalars are trained under grad_clip=1.0 which may throttle the lambda schedule's growth (lambda climbs to ~3400 -- large log-space moves that clipping could slow). ONE KNOB vs iter-12 (hr=0.1495): grad_clip 1.0->10.0. HYPOTHESIS: looser clipping lets the lambda schedule reach its operating point faster/further within the epoch budget so hr rises above 0.1495. FALSIFIER: hr ~0.15 -> clipping wasn't the limiter, ceiling confirmed. BUDGET: iter-12 under wall."
+  },
+  "headroom_std": 0.009111322554456649,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.14981365620074288,
+    "recomputed_val_ssim_mean": 0.9535682705044747,
+    "recomputed_val_psnr_mean": 37.2129218673706,
+    "recomputed_val_rmse_mean": 0.004457699799677357
   }
 }

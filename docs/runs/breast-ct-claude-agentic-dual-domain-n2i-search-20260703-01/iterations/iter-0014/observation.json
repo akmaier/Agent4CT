@@ -11,9 +11,9 @@
   "val_ssim": 0.9432809352874756,
   "val_psnr": 34.771881103515625,
   "val_rmse": 0.006234627217054367,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.01113376495272543,
+  "val_psnr_std": 0.9732801157191046,
+  "val_rmse_std": 0.0006677587299146486,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-14 SIX-BOX. (1) PRIOR: iter-13 hr=0.0, very-gentle lr=1e-4 gave rmse=0.00637 -- gentle steps neither escape nor worsen the over-smoothed basin. lr sweep (1e-4/3e-4/1e-3/3e-3 -> 0.00637/0.00628/0.00633/0.00657) shows lr is not a lever. Iters 1-13 all hr=0. (2) FAILURE MODE: plain-UNet N2I regresses to the over-smoothed FBP mean; no edge-preserving structural guard (bilateral sibling range kernel hr~0.21). (3) ONE KNOB: relative to iter-6 best reference (lr=3e-4, c=16), n_iter 50 -> 400 (8x). Completes the inner-step sweep at the HIGH end (iter-6=50, iter-10=100, iter-2/5=200, now 400). (4) HYPOTHESIS: the classic N2I pathology is that MANY inner steps over-smooth MORE (the denoiser regresses ever closer to the low-frequency FBP-consistent mean). If rmse RISES above the 50-step 0.00628, that directly demonstrates the over-smoothing mechanism -- the more we optimize the N2I self-sup loss, the further from the truth we get. This is the strongest single-lever evidence for WHY the ceiling exists. (5) BUDGET: n_iter=400 is per-scene-wall-capped at 7.0s (per_scene = outer_wall/200); on 512^2 c=16 that fits maybe ~90-120 of the 400 steps/scene, so all 200 scans still complete inside 1400s + figure ~= 25 min < 30-min wall. (6) Loop continues; iter-15 self-dispatched. Reserved levers: pretrain_epochs=1 minimal, pretrain_steps cap, batch_size=2 warm-start, warm_start off + n_iter high, per_scene_s explicit."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 198,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9395095913699179,
+    "recomputed_val_psnr_mean": 34.3441223761048,
+    "recomputed_val_rmse_mean": 0.006222203453871036
   }
 }

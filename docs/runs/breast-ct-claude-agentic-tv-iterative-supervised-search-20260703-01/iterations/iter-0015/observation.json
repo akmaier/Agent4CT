@@ -11,9 +11,9 @@
   "val_ssim": 0.9199217557907104,
   "val_psnr": 36.323062896728516,
   "val_rmse": 0.00521496357396245,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007000693470002712,
+  "val_psnr_std": 0.5817375125366129,
+  "val_rmse_std": 0.0003416884744414407,
   "kept": false,
   "status": "discard",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-15 (breast_ct). STEP x active-lambda interaction. With lambda now ACTIVE (the productive lever), re-test a larger step to see if ANY data-consistency update survives alongside the TV denoising. Earlier step probes (iters 2/3) were at DEAD lambda=1e-3 where step->0; now lambda=1.0 carries denoising and a larger step MIGHT add data-consistency instead of collapsing. ONE KNOB vs iter-12 (K=10, lambda=1.0, epochs=20, step=1e-3, hr=0.1495): tv_step_init 1e-3->3e-3. HYPOTHESIS: at 3e-3 the per-iter data-gradient update is large enough to refine data-consistency (not just TV-smooth) so hr rises above 0.1495; iter-1 showed 1e-2 diverges, so 3e-3 is the untested middle. FALSIFIER: if step still collapses to ~0 (hr~0.15) OR diverges (hr drops), data-consistency is structurally unavailable and TV-denoising ~0.15 is the ceiling. BUDGET: iter-12 epochs=20 under wall."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.912528823018074,
+    "recomputed_val_psnr_mean": 35.80156257629395,
+    "recomputed_val_rmse_mean": 0.005240585447754711
   }
 }

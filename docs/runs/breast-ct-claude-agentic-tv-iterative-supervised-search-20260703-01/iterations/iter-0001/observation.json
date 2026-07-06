@@ -11,9 +11,9 @@
   "val_ssim": 0.7194686532020569,
   "val_psnr": 17.2680721282959,
   "val_rmse": 0.04677360877394676,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.010242889460729074,
+  "val_psnr_std": 0.1987965760924969,
+  "val_rmse_std": 0.0006440343720307544,
   "kept": false,
   "status": "discard",
   "params_M": 2e-05,
@@ -40,5 +40,16 @@
     "loss_base": "mse",
     "grad_clip": 1.0,
     "rationale": "tv_iterative_supervised iter-1 (breast_ct, 128-view sparse, mu up to 0.081), FEASIBILITY baseline on the new seed-20260703 val/test split, val_n=200 (full frozen breast val). NO prior iter this run. Unrolled K=10 TV-GD with per-iter learnable step+lambda (20 trainable scalars), supervised-L2 vs clean phantom, init from LD-FBP. Seeded to REPRODUCE the historical breast iter-1 corner (docs/findings.md 2026-05-23: K=10, step_init=1e-2, lambda_init=1e-3, fbp init) so iter-2+ can genuinely explore off a known point. Documented RISK (findings 2026-05-23): FBP init makes the data-fidelity gradient R^T(R*FBP-g)~0, so the learned TV does ~nothing and recon stays at FBP -> hr can plateau at/near 0. The classical (non-learned) tv_iterative sibling reaches hr~0.16 (200 iters) up to 0.355 (1000 iters, lambda~2.5e-3) on this split, so the FBP ceiling is NOT 0 here -- genuine room to explore (init, lambda, K, step, epochs). HYPOTHESIS: a learned per-iter step+lambda schedule lands at or slightly above the FBP baseline (hr>0); if it collapses to ~FBP (hr~0) the FBP-init zero-gradient trap is active and iter-2 attacks it (step size / drop-fbp-init / deeper K). BUDGET (HARD 20-min train+score): train = 400 samples x 10 epochs x K=10 fwd+bwd; val = 200 slices x K=10 unrolled, val_chunk=5. Classical tv breast iter-1 ran 196s at 200 GD iters over 200 val slices; this variant's train adds ~4-6 min -> est ~8-10 min total, ~2x margin under 1200s wall."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.712851550579071,
+    "recomputed_val_psnr_mean": 16.82494071006775,
+    "recomputed_val_rmse_mean": 0.04648476418107748
   }
 }

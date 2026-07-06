@@ -11,9 +11,9 @@
   "val_ssim": 0.9404169917106628,
   "val_psnr": 34.579402923583984,
   "val_rmse": 0.0063743265345692635,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011828408905987407,
+  "val_psnr_std": 0.9566283820246719,
+  "val_rmse_std": 0.0006749493660483605,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-13 SIX-BOX. (1) PRIOR: iter-12 hr=0.0, seed 42->314 variance check gave rmse=0.00629 (vs seed-42 ~0.00628) -- the ceiling is SEED-INDEPENDENT, confirming it is structural not a one-off RNG artifact. Iters 1-12 all hr=0. (2) FAILURE MODE: plain-UNet N2I regresses to the over-smoothed FBP mean; no edge-preserving structural guard (bilateral sibling range kernel hr~0.21). (3) ONE KNOB: relative to iter-6 best reference (n_iter=50, c=16, seed=42), lr 3e-4 -> 1e-4. Extends the lr sweep to its gentle end (iter-7=3e-3 up, iter-5/6=3e-4, now 1e-4). (4) HYPOTHESIS: a very gentle step size with the warm-started init may barely move off the (already over-smoothed) init in 50 steps, so rmse ~= the warm-start's own rmse; tests whether even minimal per-image adjustment can help. Per the ceiling, expect rmse ~0.0063 (hr=0) -- gentle steps neither escape nor worsen the over-smoothed basin. If unexpectedly lower, gentle-lr early-stop would be a lever worth a follow-up. (5) BUDGET: identical to iter-6 (n_iter=50 fast); ~12 min << 30-min wall. (6) Loop continues; iter-14 self-dispatched. Reserved levers: n_iter=400 high, pretrain_epochs=1 minimal, pretrain_steps cap, batch_size=2 warm-start, warm_start off + high n_iter."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9366007566452026,
+    "recomputed_val_psnr_mean": 34.15573553085327,
+    "recomputed_val_rmse_mean": 0.0063572794222272935
   }
 }

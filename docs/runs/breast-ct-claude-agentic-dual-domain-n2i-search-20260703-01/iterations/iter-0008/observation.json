@@ -11,9 +11,9 @@
   "val_ssim": 0.9379792809486389,
   "val_psnr": 34.59112548828125,
   "val_rmse": 0.006365731358528137,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.01044838888550924,
+  "val_psnr_std": 0.8868908727076625,
+  "val_rmse_std": 0.0006279061114307785,
   "kept": false,
   "status": "discard",
   "params_M": 0.465762,
@@ -40,5 +40,16 @@
     "val_n": 200,
     "seed": 42,
     "rationale": "iter-8 SIX-BOX. (1) PRIOR: iter-7 hr=0.0, aggressive lr=3e-3 (n_iter=50) gave rmse=0.00657 (WORST of the run), ssim=0.931 -- the big step destabilized/over-smoothed. Best config remains iter-6: lr=3e-4, n_iter=50, rmse=0.00628. (2) FAILURE MODE: plain-UNet N2I regresses to the over-smoothed FBP mean; large lr worsens it. (3) ONE KNOB: relative to the BEST reference config (iter-6: warm_start=True, lr=3e-4, n_iter=50, pretrain_epochs=3), change ONLY pretrain_epochs 3 -> 10 (revert lr to iter-6's 3e-4). A stronger amortised warm-start = a better generic init for the 50-step per-image fits. (4) HYPOTHESIS: 10 warm-start epochs on the 400-scene train split give the denoisers a stronger, more detail-aware initialization, so the short 50-step per-image fit starts from a sharper point and lands at lower rmse. If hr rises, the warm-start init quality was the lever. Per the documented ceiling, more likely the amortised N2I warm-start ALSO converges to an over-smoothed mean (same GT-free FBP target), so a stronger warm-start just entrenches the blur (hr=0). (5) BUDGET: pretrain ep=10 (~430s) + 200*50-step fast fits (~400s) + figure ~= 15 min < 30-min wall. (6) Loop continues; iter-9 self-dispatched. Reserved levers: unet_c=8 (smaller), n_iter=100 mid, grad_clip off, seed variance check, pretrain_steps cap."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9336446022987366,
+    "recomputed_val_psnr_mean": 34.145906105041504,
+    "recomputed_val_rmse_mean": 0.006359283588826656
   }
 }
