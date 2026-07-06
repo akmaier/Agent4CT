@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-06T00:17:28Z",
+ "updated": "2026-07-06T01:16:18Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -763,7 +763,7 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 17,
+   "n_iterations": 19,
    "best_iter": 15,
    "metric_basis": "val",
    "best_headroom": 0.2055215705216945,
@@ -777,13 +777,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-06T00:05:05Z",
+   "started": "2026-07-06T00:54:03Z",
    "status": "ranked",
    "params_M": 6e-06,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-06T00:05:05Z",
+   "ts": "2026-07-06T00:54:03Z",
    "curve": [
     [
      1,
@@ -851,6 +851,14 @@
     ],
     [
      17,
+     0.2055
+    ],
+    [
+     18,
+     0.2055
+    ],
+    [
+     19,
      0.2055
     ]
    ],
@@ -975,7 +983,7 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 7,
+   "n_iterations": 8,
    "best_iter": 6,
    "metric_basis": "val",
    "best_headroom": 0.0,
@@ -989,13 +997,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T23:36:25Z",
+   "started": "2026-07-06T00:34:16Z",
    "status": "excluded",
    "params_M": 0.465762,
    "excluded_reason": "discard",
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T23:36:25Z",
+   "ts": "2026-07-06T00:34:16Z",
    "curve": [
     [
      1,
@@ -1023,6 +1031,10 @@
     ],
     [
      7,
+     null
+    ],
+    [
+     8,
      null
     ]
    ],
@@ -2487,7 +2499,7 @@
    "name": "NAF",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 5,
+   "n_iterations": 6,
    "best_iter": 5,
    "metric_basis": "val",
    "best_headroom": 0.0,
@@ -2501,13 +2513,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-05T23:25:29Z",
+   "started": "2026-07-06T00:25:33Z",
    "status": "excluded",
    "params_M": 0.037633,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-05T23:25:29Z",
+   "ts": "2026-07-06T00:25:33Z",
    "curve": [
     [
      1,
@@ -2527,6 +2539,10 @@
     ],
     [
      5,
+     null
+    ],
+    [
+     6,
      null
     ]
    ],
