@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-06T01:16:18Z",
+ "updated": "2026-07-06T02:16:46Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -541,19 +541,19 @@
     "solver_key": "dual-domain-n2i",
     "solver_name": "DD-UNet N2I (per-image)",
     "run_id": "breast-ct-claude-agentic-dual-domain-n2i-search-20260703-01",
-    "best_iter": 6,
-    "params_M": 0.465762,
+    "best_iter": 9,
+    "params_M": 0.117298,
     "params_source": "observation",
-    "val_ssim": 0.9424485564231873,
+    "val_ssim": 0.9451594352722168,
     "headroom": 0.0,
-    "val_psnr": 34.70803451538086,
-    "val_rmse": 0.006280622910708189,
+    "val_psnr": 34.70185089111328,
+    "val_rmse": 0.006285094190388918,
     "val_ssim_std": null,
     "val_psnr_std": null,
     "val_rmse_std": null,
     "headroom_std": null,
-    "elapsed_s": 1245.2898063659668,
-    "image": "runs/breast-ct-claude-agentic-dual-domain-n2i-search-20260703-01/iterations/iter-0006/comparison.png",
+    "elapsed_s": 850.8449213504791,
+    "image": "runs/breast-ct-claude-agentic-dual-domain-n2i-search-20260703-01/iterations/iter-0009/comparison.png",
     "test_hr_mean": null,
     "test_hr_std": null,
     "test_ssim_mean": null,
@@ -564,7 +564,7 @@
     "test_rmse_std": null,
     "metric_basis": "val",
     "rank_metric": 0.0,
-    "rank_tiebreak": 0.9424485564231873,
+    "rank_tiebreak": 0.9451594352722168,
     "excluded_reason": "discard",
     "rank": null
    },
@@ -763,7 +763,7 @@
    "name": "DD-BF N2I (per-image)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 19,
+   "n_iterations": 20,
    "best_iter": 15,
    "metric_basis": "val",
    "best_headroom": 0.2055215705216945,
@@ -777,13 +777,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-06T00:54:03Z",
+   "started": "2026-07-06T01:21:32Z",
    "status": "ranked",
    "params_M": 6e-06,
    "excluded_reason": null,
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-06T00:54:03Z",
+   "ts": "2026-07-06T01:21:32Z",
    "curve": [
     [
      1,
@@ -859,6 +859,10 @@
     ],
     [
      19,
+     0.2055
+    ],
+    [
+     20,
      0.2055
     ]
    ],
@@ -983,12 +987,12 @@
    "name": "DD-UNet N2I (per-image)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 8,
-   "best_iter": 6,
+   "n_iterations": 9,
+   "best_iter": 9,
    "metric_basis": "val",
    "best_headroom": 0.0,
-   "best_ssim": 0.9424485564231873,
-   "best_score": 0.9424485564231873,
+   "best_ssim": 0.9451594352722168,
+   "best_score": 0.9451594352722168,
    "test_hr_mean": null,
    "test_hr_std": null,
    "test_ssim_mean": null,
@@ -997,13 +1001,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-06T00:34:16Z",
+   "started": "2026-07-06T01:27:53Z",
    "status": "excluded",
-   "params_M": 0.465762,
+   "params_M": 0.117298,
    "excluded_reason": "discard",
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-06T00:34:16Z",
+   "ts": "2026-07-06T01:27:53Z",
    "curve": [
     [
      1,
@@ -1036,9 +1040,13 @@
     [
      8,
      null
+    ],
+    [
+     9,
+     null
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-dual-domain-n2i-search-20260703-01/iterations/iter-0006/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-dual-domain-n2i-search-20260703-01/iterations/iter-0009/comparison.png",
    "test_image": null
   },
   {
@@ -2499,7 +2507,7 @@
    "name": "NAF",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 6,
+   "n_iterations": 7,
    "best_iter": 5,
    "metric_basis": "val",
    "best_headroom": 0.0,
@@ -2513,13 +2521,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-06T00:25:33Z",
+   "started": "2026-07-06T01:25:38Z",
    "status": "excluded",
    "params_M": 0.037633,
    "excluded_reason": "discard",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-06T00:25:33Z",
+   "ts": "2026-07-06T01:25:38Z",
    "curve": [
     [
      1,
@@ -2543,6 +2551,10 @@
     ],
     [
      6,
+     null
+    ],
+    [
+     7,
      null
     ]
    ],
