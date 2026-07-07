@@ -11,9 +11,9 @@
   "val_ssim": 0.8760147094726562,
   "val_psnr": 35.192047119140625,
   "val_rmse": 0.005940216593444347,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.00517805484126801,
+  "val_psnr_std": 0.20262076675151183,
+  "val_rmse_std": 0.00010127380835911327,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-8 INIT_T asymptote pin (near prior-off), breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: init_t@relax1.0: 0.1->25.2,0.05->28.9,0.02->33.7dB/RMSE7.06e-3. Still climbing, now only ~2.6dB below baseline 36.3dB/5.21e-3. hr=0. (2) FAILURE MODE: the recon asymptotes to (near-clean FBP embed + full CG-DC) as init_t->0; it approaches but has not crossed the plain-Hann-FBP baseline. (3) ONE KNOB: init_t 0.02->0.005 (essentially prior-off; FBP embedded almost clean). (4) HYPOTHESIS: near-flat vs iter-7 or a small further gain -> pins the true init_t->0 asymptote. If it saturates at ~34-35dB just under 36.3, the DC-on wavelet recon is FBP-bounded (the CG-DC-projected near-FBP never beats the plain FBP baseline; the wavelet prior adds no value on sparse breast). (5) BUDGET ~90s. (6) iter-9 tests dc_n_cg-up at this init_t (does a stronger LSQ CG solve finally cross the baseline?)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8659325537085533,
+    "recomputed_val_psnr_mean": 34.68901302337647,
+    "recomputed_val_rmse_mean": 0.005944680082611739
   }
 }

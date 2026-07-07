@@ -11,9 +11,9 @@
   "val_ssim": 0.7217198014259338,
   "val_psnr": 26.950355529785156,
   "val_rmse": 0.015342170372605324,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.01090533820075039,
+  "val_psnr_std": 0.852057949210922,
+  "val_rmse_std": 0.0014777161864004775,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-5: DC-off breast-prior. Fix init_t=0.4 (best). ONE KNOB eta 1.0->0.5. FAILURE MODE at iter-4: eta=3.0 DESTABILIZED the sampler (PSNR crashed 24.6->12.8, RMSE 2.0e-2->7.9e-2) - the adaptive DPS step (eta/||r||)*grad OVERSHOOTS at large eta with no hard-DC to re-anchor => divergence. So cranking soft guidance does NOT substitute for the hard CG DC projection. HYPOTHESIS: a GENTLER eta=0.5 is more stable and may edge past the eta=1.0 result (PSNR24.6) by taking smaller, non-overshooting fidelity steps. Brackets the eta optimum around 1.0 (1.0 vs 0.5 vs the failed 3.0)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.7059044766426087,
+    "recomputed_val_psnr_mean": 26.554873161315918,
+    "recomputed_val_rmse_mean": 0.015233221258968114
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.8859085440635681,
   "val_psnr": 36.34321212768555,
   "val_rmse": 0.0052028801292181015,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0072867057605945475,
+  "val_psnr_std": 0.30735916994261797,
+  "val_rmse_std": 0.00015249998593846025,
   "kept": true,
   "status": "keep",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-16 NFE (steps=2) lever, breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: steps sweep @n_cg18/init_t0.005: 16->hr0, 8->0.0768, 4->0.1304(BEST). STRONGLY monotonic: fewer steps = far better (each Euler step re-embeds noise + net-harmful prior -> accumulated drift). (2) FAILURE MODE: prior + deterministic re-embed noise accumulate over steps. (3) ONE KNOB: fd_recon_steps 4 -> 2 (minimal Euler/re-embed count). (4) HYPOTHESIS: steps=2 continues the trend -> hr>0.1304 (recon approaches embed-once + strong CG-DC, minimal prior damage). FALSIFIER: if hr drops vs steps4, 2 steps under-apply the interleaved DC schedule -> 4 is optimal; then try steps=3 / steps=1. (5) BUDGET ~1min. (6) iter-17 on landing."
+  },
+  "headroom_std": 0.031182087605645784,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.023572657179371865,
+    "recomputed_val_ssim_mean": 0.8765344551205635,
+    "recomputed_val_psnr_mean": 35.849017505645755,
+    "recomputed_val_rmse_mean": 0.0052030182699672875
   }
 }

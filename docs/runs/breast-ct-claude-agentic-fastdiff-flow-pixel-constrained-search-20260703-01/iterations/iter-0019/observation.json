@@ -11,9 +11,9 @@
   "val_ssim": 0.9778560996055603,
   "val_psnr": 42.63446807861328,
   "val_rmse": 0.002521628513932228,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.004297053994220412,
+  "val_psnr_std": 0.5504896014680055,
+  "val_rmse_std": 0.0001631336615557759,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 20,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-19 CHAMPION CONFIRMATION toward the HARD iter-20 stop. Locks the best config found: init_t0.01, n_cg20, relax1.0, steps8, eta1.0 (iter-15, hr=0.5164, rmse0.002522, psnr42.63, ssim0.978 - HALF the FBP baseline rmse0.00521). SEARCH SUMMARY: the breast-native prior + few-step flow with a deep-but-not-over-converged CG data-consistency step (DC-ON constrained variant) CLEARS the strong 128-view breast FBP baseline by a wide margin. Two levers dominate: init_t (optimum ~0.01: near-FBP embed so the prior lightly denoises without repainting; higher init_t catastrophically repaints, lower loses the prior's denoise) and dc_n_cg (SEMI-CONVERGENCE peak at ~20: enough CG to beat the analytic Hann FBP on sparse data, but not so many that CG re-amplifies measurement noise). dc_relax=1.0 (full projection) best; eta/steps near-neutral. This confirms the FAIR TEST: prior-mismatch (Mayo out_scale0.05 vs breast0.5) WAS the cause of the old hr=0; a matched breast-native prior lifts pixel-DC-on to hr~0.52. Confirmation run reproduces the champion (deterministic seed=42)."
+  },
+  "headroom_std": 0.022850675515486474,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.5154862456927389,
+    "recomputed_val_ssim_mean": 0.9757847034931183,
+    "recomputed_val_psnr_mean": 42.17246067047119,
+    "recomputed_val_rmse_mean": 0.002516358746215701
   }
 }

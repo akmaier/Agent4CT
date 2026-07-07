@@ -11,9 +11,9 @@
   "val_ssim": 0.9263087511062622,
   "val_psnr": 38.75321578979492,
   "val_rmse": 0.003942245617508888,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.005893668439445844,
+  "val_psnr_std": 0.3993514476116442,
+  "val_rmse_std": 0.00017104875132280584,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 30,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-13 EXPLORATORY single knob init_t 0.01->0.005 at the peak n_cg30. SIX-BOX: (1)PRIOR: TWO levers now locked. n_cg: peak at 30 (iter-12 n_cg45 CRASHED to rmse0.01038/hr0 - the DC semi-convergence peak does NOT shift right at low init_t; over-converging CG amplifies MEASUREMENT noise regardless). init_t: near-plateau 0.02->0.01 gave hr0.3531->0.3605. Best=iter-11 (init_t0.01,n_cg30,rlx1.0,hr0.3605). (2)FAILURE: init_t0.01 may not be the exact plateau bottom. (3)ONE KNOB: init_t 0.01->0.005. (4)HYPOTHESIS: even less prior embed edges hr above 0.3605 or confirms the init_t plateau (~0.36 is the near-pure-DC ceiling for n_cg30). (5)BUDGET: n_cg30 ~5.5min. (6)Serial."
+  },
+  "headroom_std": 0.05375498300618993,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.23988570492638372,
+    "recomputed_val_ssim_mean": 0.9200615599751473,
+    "recomputed_val_psnr_mean": 38.2718264579773,
+    "recomputed_val_rmse_mean": 0.003938524505356327
   }
 }

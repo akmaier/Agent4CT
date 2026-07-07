@@ -11,9 +11,9 @@
   "val_ssim": 0.9750758409500122,
   "val_psnr": 37.618221282958984,
   "val_rmse": 0.004492557607591152,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0030151108939748678,
+  "val_psnr_std": 0.5464772963051884,
+  "val_rmse_std": 0.0002747447774383456,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-15: DC-off breast-prior. ONE KNOB init_t 0.02->0.01. BREAKTHROUGH at iter-14: init_t0.02 gave hr=0.2085 (PSNR38.36 > FBP baseline 36.32; RMSE4.13e-3 < baseline 5.21e-3) - the breast prior CLEARED the baseline! MECHANISM: at init_t~0.02 the FBP is embedded at ~2% noise and the prior acts as a learned FBP-DENOISER (well-conditioned 128-view breast: FBP has removable noise; the prior's light denoise + whisper of DPS drops RMSE below raw FBP). So the DC-off prior DOES contribute (21% headroom recovered) as a denoiser, NOT just recovering FBP. HYPOTHESIS: init_t=0.01 - is hr still rising (even lighter touch) or did the peak pass at 0.02? Brackets the hr peak. Also a robustness check that iter-14's cross was not a fluke."
+  },
+  "headroom_std": 0.01880917649755242,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.1386639934571823,
+    "recomputed_val_ssim_mean": 0.9731061449646949,
+    "recomputed_val_psnr_mean": 37.1676861000061,
+    "recomputed_val_rmse_mean": 0.0044766647496726365
   }
 }

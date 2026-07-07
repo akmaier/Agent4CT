@@ -11,9 +11,9 @@
   "val_ssim": 0.8709304332733154,
   "val_psnr": 35.149620056152344,
   "val_rmse": 0.005969300866127014,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0083419219912633,
+  "val_psnr_std": 0.6166787956823148,
+  "val_rmse_std": 0.0004152048065583838,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 30,
     "fd_recon_dc_relax": 0.75,
     "rationale": "iter-9 EXPLORATORY single knob dc_relax 1.0->0.75 at the peak base (init_t0.05, n_cg30, the hr=0.0557 winner). SIX-BOX: (1)PRIOR: n_cg curve fully mapped as an inverted-U (rmse): 5=0.00669, 20=0.005327, 30=0.004924(PEAK,hr0.0557), 40=0.005385, 60=0.00992 -> DC CG semi-converges, argmax n_cg30. All the >0 mass is at n_cg30. (2)FAILURE / next lever: at relax1.0 the CG projection is FULLY applied each step; the semi-convergence (noise re-amplification past the peak) suggests the projection is slightly too aggressive. A partial blend (relax<1) mixes the CG solution with the prior's clean estimate, acting as implicit regularization. (3)ONE KNOB: dc_relax 1.0->0.75 (n_cg30/init_t0.05/steps8/eta1.0 held). (4)HYPOTHESIS: a 0.75 blend tempers the noise-amplifying part of the deep CG while keeping most of the data-consistency gain, possibly lifting hr above 0.0557. (5)BUDGET: n_cg30 ~ iter-5 (~5.5min), inside 20-min. (6)Serial."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8618136358261108,
+    "recomputed_val_psnr_mean": 34.69436557769775,
+    "recomputed_val_rmse_mean": 0.005954596968367695
   }
 }

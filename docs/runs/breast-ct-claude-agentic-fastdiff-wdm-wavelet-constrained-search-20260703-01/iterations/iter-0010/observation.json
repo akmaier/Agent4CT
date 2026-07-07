@@ -11,9 +11,9 @@
   "val_ssim": 0.8707011342048645,
   "val_psnr": 36.70737838745117,
   "val_rmse": 0.004989252891391516,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.004895160515367046,
+  "val_psnr_std": 0.18837764508525773,
+  "val_rmse_std": 7.057131694666326e-05,
   "kept": true,
   "status": "keep",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-10 DC-STRENGTH (n_cg up further), breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: BREAKTHROUGH iter-9 (init_t0.005/n_cg15) hr=0.0695 (PSNR 36.95/RMSE 4.85e-3) CLEARED baseline 36.32/5.21e-3 -- more CG iters crossed it (iter-8 n_cg5 was RMSE 5.94e-3, hr=0). Direction confirmed: low init_t (prior-light) + strong CG-DC. (2) FAILURE MODE at iter-8: under-converged CG (n_cg5) left the recon just below the FBP; n_cg15 converged enough to beat it. (3) ONE KNOB: fd_recon_dc_n_cg 15 -> 25 (drive CG closer to the exact 128-view LSQ solution). (4) HYPOTHESIS: more CG iters lower RMSE further (the LSQ solution beats the regularized FBP) -> hr rises above 0.0695. FALSIFIER: if hr plateaus/drops, the CG has converged and 128-view LSQ noise amplification caps the gain -> pivot to raising init_t slightly so the wavelet prior can regularize the LSQ noise (prior+DC synergy). (5) BUDGET: n_cg25 ~4x CG cost of base, still well inside 20min. (6) iter-11 on landing."
+  },
+  "headroom_std": 0.041030455097409935,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.05241274170873203,
+    "recomputed_val_ssim_mean": 0.8601194652915001,
+    "recomputed_val_psnr_mean": 36.20783041000366,
+    "recomputed_val_rmse_mean": 0.004990776549093425
   }
 }

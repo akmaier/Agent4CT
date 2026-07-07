@@ -11,9 +11,9 @@
   "val_ssim": 0.9778562188148499,
   "val_psnr": 42.634246826171875,
   "val_rmse": 0.0025216916110366583,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.004297106207667864,
+  "val_psnr_std": 0.5502058817741182,
+  "val_rmse_std": 0.0001630614319503259,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 20,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-15 EXPLORATORY dc_n_cg 25->20 at init_t0.01, continuing DOWN the n_cg axis. SIX-BOX: (1)PRIOR: BIG JUMP - at init_t0.01 the n_cg semi-convergence peak is LOWER than the init_t0.05 peak: n_cg30 hr0.3605 -> n_cg25 hr0.5018 (rmse0.003335->0.002598, psnr40.2->42.4, ssim0.950->0.974). Fewer CG iters = less measurement-noise amplification at low init_t. (Earlier n_cg20 at init_t0.05 was hr0 because high init_t injected prior-noise; at init_t0.01 that's gone.) (2)FAILURE: n_cg25 may not be the argmax; the peak could be lower. (3)ONE KNOB: dc_n_cg 25->20. (4)HYPOTHESIS: n_cg20 continues the climb (peak still left) OR drops (peak was 25). Brackets the true argmax at the winning init_t. (5)BUDGET: 20 CG faster than 25, ~4min. (6)Serial."
+  },
+  "headroom_std": 0.022844181674357703,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.5154724889290052,
+    "recomputed_val_ssim_mean": 0.9757847046852112,
+    "recomputed_val_psnr_mean": 42.17220769882202,
+    "recomputed_val_rmse_mean": 0.0025164268468506634
   }
 }

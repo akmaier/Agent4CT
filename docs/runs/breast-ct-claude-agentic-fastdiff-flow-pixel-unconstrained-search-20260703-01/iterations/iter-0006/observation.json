@@ -11,9 +11,9 @@
   "val_ssim": 0.7967538237571716,
   "val_psnr": 28.120433807373047,
   "val_rmse": 0.013408580794930458,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011352686025133627,
+  "val_psnr_std": 0.873896000279772,
+  "val_rmse_std": 0.0013240545175851682,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-6: DC-off breast-prior. Fix init_t=0.4. ONE KNOB eta 0.5->0.2. TREND (eta at init_t0.4): eta3.0 PSNR12.8 (diverged) > eta1.0 PSNR24.6 > eta0.5 PSNR27.0 (BEST) - monotonic: LOWER eta = more stable = better, because the soft DPS step overshoots when large and there is no hard DC to re-anchor. HYPOTHESIS: eta=0.2 continues the gain (even gentler guidance, FBP-init+prior dominate) -> PSNR edges higher toward the FBP baseline (36.3). Tests whether eta->0 (near pure prior-denoise of the FBP init, minimal measurement pull) is optimal for the DC-free variant."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.7829679861664772,
+    "recomputed_val_psnr_mean": 27.737651386260985,
+    "recomputed_val_rmse_mean": 0.013298075920902193
   }
 }

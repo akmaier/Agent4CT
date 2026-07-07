@@ -11,9 +11,9 @@
   "val_ssim": 0.9758946299552917,
   "val_psnr": 42.238197326660156,
   "val_rmse": 0.002639335347339511,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0037656833008678373,
+  "val_psnr_std": 0.4681756468461509,
+  "val_rmse_std": 0.00014340414977916924,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 15,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-16 dc_n_cg 20->15 at init_t0.01, continuing DOWN the n_cg axis if iter-15 (n_cg20) still climbing. Maps the argmax further left."
+  },
+  "headroom_std": 0.024367968956019535,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.4922380558590913,
+    "recomputed_val_ssim_mean": 0.9736200404167176,
+    "recomputed_val_psnr_mean": 41.765703125,
+    "recomputed_val_rmse_mean": 0.0026354348275344818
   }
 }

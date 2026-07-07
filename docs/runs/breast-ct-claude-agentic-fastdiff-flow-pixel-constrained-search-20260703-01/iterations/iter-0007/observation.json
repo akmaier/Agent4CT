@@ -11,9 +11,9 @@
   "val_ssim": 0.8781355023384094,
   "val_psnr": 36.13764953613281,
   "val_rmse": 0.005327483173459768,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.008402443516338556,
+  "val_psnr_std": 0.5606699526820803,
+  "val_rmse_std": 0.00034025634974540423,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 20,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-7 EXPLORATORY single knob dc_n_cg 30->20 (map LEFT of the peak). SIX-BOX: (1)PRIOR: KEY FINDING - the DC CG solve shows SEMI-CONVERGENCE on the noisy sparse-view data: n_cg5 rmse0.00669 hr0; n_cg30 rmse0.004924 hr=0.0557 (BEST, beats FBP0.00521); n_cg60 rmse0.00992 hr0 (WORSE - too-deep CG re-amplifies sparse-view/measurement noise, classic ill-posed LS semi-convergence). The optimum is near n_cg~30. (2)FAILURE: n_cg is a one-dimensional peak; 30 may not be the exact argmax. (3)ONE KNOB: dc_n_cg 30->20 (probe left of peak; init_t0.05/relax1.0/steps8/eta1.0 held). (4)HYPOTHESIS: n_cg20 lands between n_cg5(hr0) and n_cg30(hr0.0557) - if hr(20) < hr(30) it confirms 30 is near-optimal from the left; if hr(20) > hr(30) the peak is lower. Refines the argmax hr. (5)BUDGET: 20 CG < 30 CG, faster than iter-5 (~4min). (6)Serial."
+  },
+  "headroom_std": 0.021294817626476788,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.011965840684500094,
+    "recomputed_val_ssim_mean": 0.8686163628101349,
+    "recomputed_val_psnr_mean": 35.67503234863281,
+    "recomputed_val_rmse_mean": 0.005316665237769485
   }
 }

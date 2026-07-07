@@ -11,9 +11,9 @@
   "val_ssim": 0.8298014402389526,
   "val_psnr": 28.281818389892578,
   "val_rmse": 0.013161749579012394,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011313467349782159,
+  "val_psnr_std": 0.9101134795651007,
+  "val_rmse_std": 0.001352547747370835,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-8: DC-off breast-prior. Switch lever to STEPS (NFE). Hold near-best init_t=0.4, eta=0.1 (eta plateaued: iter-6 eta0.2 PSNR28.1, iter-7 eta0.05 PSNR28.5 - diminishing, so eta~0.1 is the practical floor). ONE KNOB steps 8->16. PRIOR: eta sweep found lower=better but flattening; init_t optimum ~0.4. HYPOTHESIS: doubling Euler steps 8->16 gives finer flow-ODE integration -> the prior denoises the FBP-init more accurately -> PSNR edges up. NOTE eta=0.1 is a small config move vs iter-7's 0.05 but the PRIMARY knob is steps; eta 0.05->0.1 is within the plateaued flat region (rounding to a stable midpoint), so steps remains the interpretable single lever. Best PSNR so far 28.5 is still 7.8dB under the 128-view FBP baseline (36.3) - hr=0 firmly, as expected for DC-off."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8177832806110382,
+    "recomputed_val_psnr_mean": 27.907287693023683,
+    "recomputed_val_rmse_mean": 0.013046430312097073
   }
 }

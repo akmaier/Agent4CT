@@ -11,9 +11,9 @@
   "val_ssim": 0.6474815011024475,
   "val_psnr": 28.900611877441406,
   "val_rmse": 0.012256708927452564,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006128966012456079,
+  "val_psnr_std": 0.20464584628957283,
+  "val_rmse_std": 0.00020919430669469915,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-6 INIT_T limit probe, breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: init_t@relax1.0: 0.7->PSNR16.5, 0.4->19.4, 0.2->22.0, 0.1->25.2 (RMSE 1.88e-2). MONOTONIC toward baseline PSNR36.3/RMSE5.21e-3 as init_t->0. hr=0 throughout. (2) FAILURE MODE: the wavelet prior injects net-harmful structure; the recon improves as prior influence shrinks. (3) ONE KNOB: fd_recon_init_t 0.1 -> 0.05 (near prior-off; recon ~ light-denoised FBP + full CG-DC). (4) HYPOTHESIS: continues the trend; establishes the init_t->0 asymptote (does DC-anchored near-FBP clear the baseline, or is even the CG-DC-projected FBP below the plain Hann FBP baseline?). This localizes whether ANY init_t can clear hr>0. FALSIFIER: if PSNR plateaus below 36 as init_t->0, the DC-on wavelet recon is structurally FBP-bounded on sparse breast (the CG-DC/prior chain never beats the plain FBP baseline) -> spend remaining iters confirming via steps/n_cg then conclude. (5) BUDGET ~90s. (6) iter-7 on landing."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.6333182561397552,
+    "recomputed_val_psnr_mean": 28.40131832122803,
+    "recomputed_val_rmse_mean": 0.012260628803633154
   }
 }

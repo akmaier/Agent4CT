@@ -11,9 +11,9 @@
   "val_ssim": 0.7665520906448364,
   "val_psnr": 29.576740264892578,
   "val_rmse": 0.011338810436427593,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.009341712071913054,
+  "val_psnr_std": 0.7062242386744998,
+  "val_rmse_std": 0.0008958789914988379,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-11: DC-off breast-prior. Fine init_t sweep at low eta=0.1, steps=8. ONE KNOB init_t 0.25->0.2. PRIOR: iter-10 init_t0.25 PSNR29.20 (best) > iter-9 init_t0.3 PSNR28.98 - init_t peak still descending at low eta. HYPOTHESIS: init_t=0.2 continues toward the peak (at eta=0.1 the low-init_t degradation seen at eta=1.0/iter-3 does NOT apply since guidance is gentle); if PSNR turns down, peak is ~0.25. Completes the init_t fine-grid at the tuned operating point."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.7517469173669815,
+    "recomputed_val_psnr_mean": 29.141539764404296,
+    "recomputed_val_rmse_mean": 0.011293603484518825
   }
 }

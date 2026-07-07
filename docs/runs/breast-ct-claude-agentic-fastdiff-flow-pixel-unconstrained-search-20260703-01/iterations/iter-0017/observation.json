@@ -11,9 +11,9 @@
   "val_ssim": 0.9746328592300415,
   "val_psnr": 38.35905838012695,
   "val_rmse": 0.0041252626106143,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0039009071560641316,
+  "val_psnr_std": 0.5539180509414369,
+  "val_rmse_std": 0.0002592273941328338,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-17: DC-off breast-prior. ROBUSTNESS check of the champion (iter-14: init_t0.02/eta0.1/steps8, hr0.2085). ONE KNOB seed 42->123 (different val-slice draw + sampler noise). PRIOR: hr peak firmly at init_t~0.02 (3 KEEPs 14/15/16). README caveat: don't over-trust a single hr number - confirm the cross is seed-robust, not val-draw luck. HYPOTHESIS: hr stays ~0.20 at seed=123 => the DC-off breast prior's baseline-clearing is REAL and reproducible, not a favourable-draw artefact. If hr collapses, the cross was seed-fragile (would qualify the finding)."
+  },
+  "headroom_std": 0.019937219642968507,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.20926494537751478,
+    "recomputed_val_ssim_mean": 0.9728044289350509,
+    "recomputed_val_psnr_mean": 37.911173038482666,
+    "recomputed_val_rmse_mean": 0.004109730465570465
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.8898441791534424,
   "val_psnr": 36.045108795166016,
   "val_rmse": 0.005384546238929033,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.010087891488755454,
+  "val_psnr_std": 0.6419798080047012,
+  "val_rmse_std": 0.0003956894759839537,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 40,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-8 EXPLORATORY single knob dc_n_cg 30->40 (map RIGHT shoulder of the DC semi-convergence peak). SIX-BOX: (1)PRIOR: n_cg curve now resolved (init_t0.05,relax1.0): n_cg5 rmse0.00669 hr0 -> n_cg20 rmse0.005327 hr0 (just above FBP0.00521) -> n_cg30 rmse0.004924 hr=0.0557 (PEAK, below FBP) -> n_cg60 rmse0.00992 hr0 (over-converged, noise-amplified). Clean inverted-U in rmse: DC CG semi-converges, optimum ~n_cg30. (2)FAILURE: 30 may not be the exact argmax; the right shoulder (30->60) decay is uncharted. (3)ONE KNOB: dc_n_cg 30->40. (4)HYPOTHESIS: n_cg40 rmse should sit between n_cg30(0.004924) and n_cg60(0.00992); if still < FBP0.00521 then hr>0 and the >0 plateau spans ~30-40; if > FBP the peak is tight at 30. Pinpoints the argmax hr. (5)BUDGET: 40 CG ~ iter-5 x1.3 (~7min), inside 20-min. (6)Serial."
+  },
+  "headroom_std": 0.01787017001173463,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.008197154378174764,
+    "recomputed_val_ssim_mean": 0.8816482090950012,
+    "recomputed_val_psnr_mean": 35.593985614776614,
+    "recomputed_val_rmse_mean": 0.005370105558540672
   }
 }

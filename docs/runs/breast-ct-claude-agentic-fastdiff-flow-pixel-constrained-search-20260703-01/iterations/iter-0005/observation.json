@@ -11,9 +11,9 @@
   "val_ssim": 0.9022442698478699,
   "val_psnr": 36.82191467285156,
   "val_rmse": 0.004923893138766289,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.009649589721691464,
+  "val_psnr_std": 0.6868064328514202,
+  "val_rmse_std": 0.0003878539443442436,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 30,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-5 EXPLORATORY DC-strength combo (dc_n_cg 5->30 + dc_relax 0.5->1.0) on the near-FBP init_t0.05 base. SIX-BOX: (1)PRIOR: init_t axis fully mapped and MONOTONIC to the FBP floor: 0.7->0.05 gave rmse 0.0428->0.0264->0.0144->0.00669 (ssim 0.427->0.915), converging TO the 128-view breast FBP (rmse0.00521, ssim0.920) from ABOVE. hr=0 throughout: the breast-native prior cannot EXCEED the near-oracle sparse-view FBP. (2)FAILURE / OPEN QUESTION: at init_t0.05 the prior barely acts, so recon ~ DC-projected FBP. The ONLY way to beat the FBP is if a DEEP data-consistency CG solve finds a lower-rmse data-consistent image than the analytic FBP. In the Mayo sibling dc_n_cg was the ONLY lever that moved rmse. (3)ONE KNOB (DC-strength, combined): dc_n_cg 5->30 AND dc_relax 0.5->1.0 (full deep CG projection). (4)HYPOTHESIS: if full deep DC at near-FBP init STILL cannot push rmse below 0.00521, the regime-bound ceiling is PROVEN at the DC limit: the data-consistent solution the constrained flow converges to IS the FBP; a prior has no sparse-view-noise headroom to exploit at 128 views. (5)BUDGET: 30 CG x 8 steps x 200 slices, CG cheap fwd/back-proj, inside 20-min. (6)Serial."
+  },
+  "headroom_std": 0.048040269304557355,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.06080694680162609,
+    "recomputed_val_ssim_mean": 0.8945276173949241,
+    "recomputed_val_psnr_mean": 36.37774621963501,
+    "recomputed_val_rmse_mean": 0.004908677546773106
   }
 }

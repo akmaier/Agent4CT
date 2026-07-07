@@ -11,9 +11,9 @@
   "val_ssim": 0.9271124005317688,
   "val_psnr": 39.039085388183594,
   "val_rmse": 0.0038146106526255608,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0035435661257262317,
+  "val_psnr_std": 0.2519492110542341,
+  "val_rmse_std": 8.932202310794366e-05,
   "kept": true,
   "status": "keep",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-19 re-optimize n_cg AT the steps=5 peak, breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: BEST is iter-17 steps5/n_cg18/init_t0.005/relax1.0 hr0.2658 (PSNR39.0/RMSE3.83e-3). n_cg was tuned at steps=8 (opt~18-20); the steps<->n_cg schedules interact, so the n_cg optimum may shift at steps=5. (2) FAILURE MODE: n_cg18 may be slightly under/over-converged at the steps=5 schedule. (3) ONE KNOB: fd_recon_dc_n_cg 18 -> 22 (test if a stronger CG solve helps more at the sharper steps=5 schedule). (4) HYPOTHESIS: at steps=5 fewer DC applications occur, so each may want more CG iters -> n_cg22 could beat 0.2658; if it drops, 18 remains optimal and I lock steps5/n_cg18. (5) BUDGET ~2.5min. (6) iter-20 (final): the better of a dc_relax0.9 nudge or n_cg16 at steps5."
+  },
+  "headroom_std": 0.036011261242236726,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2696020985911487,
+    "recomputed_val_ssim_mean": 0.9203165155649186,
+    "recomputed_val_psnr_mean": 38.541840629577635,
+    "recomputed_val_rmse_mean": 0.0038154370931442827
   }
 }

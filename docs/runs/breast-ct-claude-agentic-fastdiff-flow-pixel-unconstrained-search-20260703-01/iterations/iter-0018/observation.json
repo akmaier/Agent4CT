@@ -11,9 +11,9 @@
   "val_ssim": 0.9760755896568298,
   "val_psnr": 38.948265075683594,
   "val_rmse": 0.0038547050207853317,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0028312919459315597,
+  "val_psnr_std": 0.4951394946275317,
+  "val_rmse_std": 0.00021677350970811477,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-18: DC-off breast-prior. At the hr-peak init_t=0.02, fine-tune eta. ONE KNOB eta 0.1->0.05 (seed 42). PRIOR: champion init_t0.02/eta0.1 = hr0.2085 (seed42) / 0.2089 (seed123, robust). Earlier eta sweep at HIGH init_t0.4 found lower eta = better up to ~0.05-0.1. HYPOTHESIS: at the low-init_t peak, eta=0.05 (even gentler DPS) may edge hr slightly above 0.209 by denoising with minimal measurement overshoot; if flat/lower, eta~0.1 is the joint optimum. Fine 2-lever refinement (init_t x eta) around the champion."
+  },
+  "headroom_std": 0.0172750063818138,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.26025779405955074,
+    "recomputed_val_ssim_mean": 0.9742928075790406,
+    "recomputed_val_psnr_mean": 38.48978851318359,
+    "recomputed_val_rmse_mean": 0.003843345228815451
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.9038277864456177,
   "val_psnr": 37.53828430175781,
   "val_rmse": 0.004534091800451279,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.005571268767339705,
+  "val_psnr_std": 0.25195067786216657,
+  "val_rmse_std": 0.00010664798363541632,
   "kept": true,
   "status": "keep",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-15 NFE (fewer steps) lever, breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: steps16 (iter-14) DROPPED to hr0 (RMSE5.82e-3) vs steps8 hr0.0768 -- more Euler steps HURT (each step re-embeds noise + evaluates the near-off prior -> accumulated drift). (2) FAILURE MODE: extra steps compound the deterministic re-embed noise injection and prior drift. Direction: fewer steps. (3) ONE KNOB: fd_recon_steps 8 -> 4 (halve the Euler/DC re-embed count), n_cg18/init_t0.005 fixed. (4) HYPOTHESIS: fewer steps = less accumulated re-embed drift while the strong CG-DC (n_cg18) still pins the data -> RMSE <= steps8 (hr>=0.0768). If flat/slightly worse, steps=8 is optimal. FALSIFIER: if hr drops, too few DC applications under-constrain -> 8 is the sweet spot. (5) BUDGET ~1.5min. (6) iter-16 on landing."
+  },
+  "headroom_std": 0.04881131657433595,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.13200766814290668,
+    "recomputed_val_ssim_mean": 0.8956306320428848,
+    "recomputed_val_psnr_mean": 37.041290225982664,
+    "recomputed_val_rmse_mean": 0.004534946300555021
   }
 }

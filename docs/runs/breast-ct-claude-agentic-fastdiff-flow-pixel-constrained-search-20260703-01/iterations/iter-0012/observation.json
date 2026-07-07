@@ -11,9 +11,9 @@
   "val_ssim": 0.7203750610351562,
   "val_psnr": 30.345901489257812,
   "val_rmse": 0.010377897880971432,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.008585612426865596,
+  "val_psnr_std": 0.31083436079298843,
+  "val_rmse_std": 0.0003496355066324941,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 45,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-12 RE-MAP n_cg at the winning low init_t: n_cg 30->45 (init_t0.01, the hr0.3605 best). SIX-BOX: (1)PRIOR: init_t is near-plateaued (0.05->0.02->0.01: hr 0.0557->0.3531->0.3605). At init_t~0.01 the recon is near-pure FBP+deep-CG-DC (light prior). Earlier the n_cg semi-convergence peak sat at 30 (measured at init_t0.05 where prior-noise amplified past 30). (2)FAILURE: at high init_t the CG over-converged past n_cg30 because it amplified PRIOR-injected noise; at init_t0.01 that prior-noise is minimal, so the peak may shift RIGHT - more CG could keep helping. (3)ONE KNOB: dc_n_cg 30->45 at init_t0.01. (4)HYPOTHESIS: with minimal prior-noise, n_cg45 drives the data-consistent LS solution further, lowering rmse below 0.003335 and lifting hr above 0.3605; re-maps the argmax n_cg at the winning init_t. (5)BUDGET: 45 CG ~ iter-8 x1.1 (~8min), inside 20-min. (6)Serial."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.7073768177628517,
+    "recomputed_val_psnr_mean": 29.857805547714232,
+    "recomputed_val_rmse_mean": 0.010372232664376497
   }
 }

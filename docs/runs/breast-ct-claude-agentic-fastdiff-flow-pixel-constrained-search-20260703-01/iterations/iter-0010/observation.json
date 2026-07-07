@@ -11,9 +11,9 @@
   "val_ssim": 0.9529603123664856,
   "val_psnr": 40.10704803466797,
   "val_rmse": 0.0033732771407812834,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.007638188376545331,
+  "val_psnr_std": 0.6659564629775574,
+  "val_rmse_std": 0.0002588524251272227,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 30,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-10 EXPLORATORY single knob init_t 0.05->0.02 at the peak (n_cg30,relax1.0). SIX-BOX: (1)PRIOR: at the peak (init_t0.05,n_cg30,relax1.0) hr=0.0557 (best). iter-9 tempered DC (relax0.75) got WORSE (rmse0.004924->0.005969), i.e. reducing the DC lets the prior's perturbation back in -> the gain is DC-dominated, prior slightly HURTS. (2)FAILURE: init_t0.05 still embeds a little prior-noise; at init_t->0 the recon is FBP + pure CG-DC, minimizing prior perturbation. (3)ONE KNOB: init_t 0.05->0.02 (relax1.0/n_cg30/steps8/eta1.0 held). (4)HYPOTHESIS: less prior at init_t0.02 should let the deep CG DC dominate even more cleanly, lowering rmse below 0.004924 and lifting hr above 0.0557. If it plateaus, hr~0.056 is the DC-limit for this config. (5)BUDGET: n_cg30 ~5.5min, inside 20-min. (6)Serial."
+  },
+  "headroom_std": 0.03834374862479287,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.3525531722386397,
+    "recomputed_val_ssim_mean": 0.9488515952229499,
+    "recomputed_val_psnr_mean": 39.66016195297241,
+    "recomputed_val_rmse_mean": 0.0033633716020267457
   }
 }

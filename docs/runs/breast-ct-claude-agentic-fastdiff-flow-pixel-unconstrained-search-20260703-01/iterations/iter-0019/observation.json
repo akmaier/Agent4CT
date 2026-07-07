@@ -11,9 +11,9 @@
   "val_ssim": 0.9758236408233643,
   "val_psnr": 39.06795120239258,
   "val_rmse": 0.0038019539788365364,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.0024257312557969834,
+  "val_psnr_std": 0.44496397290619405,
+  "val_rmse_std": 0.00019060982980320773,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-19: DC-off breast-prior. At hr-peak init_t=0.02, continue eta fine-tune. ONE KNOB eta 0.05->0.02. PRIOR: at init_t0.02, eta0.1->hr0.209, eta0.05->hr0.261(best) - gentler DPS = better denoise, less overshoot. HYPOTHESIS: eta=0.02 (near-minimal guidance) edges hr higher still, OR flattens => eta~0.02-0.05 is the joint optimum with init_t0.02. As eta->0 the recon becomes pure prior-denoise of the FBP-init with ~no measurement pull; the question is whether the whisper of DPS still adds value at the peak. Locates the eta floor at the champion init_t."
+  },
+  "headroom_std": 0.019194820496196974,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.26975081880757523,
+    "recomputed_val_ssim_mean": 0.9739758959412574,
+    "recomputed_val_psnr_mean": 38.60256362915039,
+    "recomputed_val_rmse_mean": 0.0037925376347266136
   }
 }

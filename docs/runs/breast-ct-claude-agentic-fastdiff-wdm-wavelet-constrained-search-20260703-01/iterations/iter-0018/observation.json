@@ -11,9 +11,9 @@
   "val_ssim": 0.8885961771011353,
   "val_psnr": 37.27105712890625,
   "val_rmse": 0.004675752948969603,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.005531415129777912,
+  "val_psnr_std": 0.2053819067575442,
+  "val_rmse_std": 7.175562642294414e-05,
   "kept": true,
   "status": "keep",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-18 NFE bracket (steps=6), breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: steps@n_cg18/init_t0.005: 2->0.002, 4->0.130, 5->0.2658(BEST), 8->0.0768, 16->0. Non-monotone/sharp: steps=5 nearly 2x steps4. (2) FAILURE MODE: the interleaved DC re-embed schedule is sharply sensitive to step count; 5 hits a sweet spot, 8 falls off. (3) ONE KNOB: fd_recon_steps 5 -> 6. (4) HYPOTHESIS: steps=6 lands between 0.266(5) and 0.077(8); if >0.266 peak is 6, else steps=5 optimal. (5) BUDGET ~2min. (6) iter-19 on landing (steps=7 or refine around 5)."
+  },
+  "headroom_std": 0.052754116451402475,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.10523640100188443,
+    "recomputed_val_ssim_mean": 0.879244085252285,
+    "recomputed_val_psnr_mean": 36.771573333740236,
+    "recomputed_val_rmse_mean": 0.004677228478249163
   }
 }

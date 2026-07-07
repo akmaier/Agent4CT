@@ -11,9 +11,9 @@
   "val_ssim": 0.9502614140510559,
   "val_psnr": 40.206912994384766,
   "val_rmse": 0.0033347145654261112,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.005631613347202798,
+  "val_psnr_std": 0.4945338981335328,
+  "val_rmse_std": 0.00019624977088553375,
   "kept": true,
   "status": "keep",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 30,
     "fd_recon_dc_relax": 1.0,
     "rationale": "iter-11 EXPLORATORY single knob init_t 0.02->0.01 continuing the WINNING direction (n_cg30,relax1.0). SIX-BOX: (1)PRIOR: BIG JUMP - init_t 0.05->0.02 leaped hr 0.0557->0.3531 (rmse0.004924->0.003373, psnr36.82->40.11, ssim0.902->0.953). Less prior perturbation lets the deep CG DC dominate and clear the FBP baseline by a wide margin. init_t is the dominant lever AT the peak n_cg. (2)FAILURE: init_t0.02 may still embed a little prior-noise; lower could be better. (3)ONE KNOB: init_t 0.02->0.01. (4)HYPOTHESIS: pushing init_t toward 0 further reduces prior perturbation, letting the DC-CG solution get even cleaner; hr should rise above 0.3531 or plateau (marking the near-pure-DC limit). (5)BUDGET: n_cg30 ~5.5min. (6)Serial."
+  },
+  "headroom_std": 0.03253498308520526,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.358706619933059,
+    "recomputed_val_ssim_mean": 0.9458518603444099,
+    "recomputed_val_psnr_mean": 39.738872051239014,
+    "recomputed_val_rmse_mean": 0.0033289631409570575
   }
 }

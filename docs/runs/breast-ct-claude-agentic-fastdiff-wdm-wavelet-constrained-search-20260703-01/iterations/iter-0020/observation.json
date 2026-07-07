@@ -11,9 +11,9 @@
   "val_ssim": 0.9293705821037292,
   "val_psnr": 39.13778305053711,
   "val_rmse": 0.0037715102080255747,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.003374615461279479,
+  "val_psnr_std": 0.25755289288217215,
+  "val_rmse_std": 9.204824835853468e-05,
   "kept": true,
   "status": "keep",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 0.9,
     "dataset_kind": "breast_ct",
     "rationale": "iter-20 FINAL: dc_relax nudge at the optimum, breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: BEST iter-19 steps5/n_cg22/init_t0.005/relax1.0 hr0.2684 (PSNR39.04/RMSE3.81e-3); n_cg plateau 18-22 ~0.266-0.268. All other levers characterized: init_t must be ~0 (prior net-harmful, monotone), steps=5 is a sharp peak, dc_relax=1.0 has been fixed since iter-2. (2) FAILURE MODE: dc_relax=1.0 fully replaces the warm-start each step; a slight blend-back (0.9) might retain useful FBP structure the CG-LSQ drops. (3) ONE KNOB: fd_recon_dc_relax 1.0 -> 0.9 (retain 10% warm-start FBP). (4) HYPOTHESIS: 0.9 blends a little regularized-FBP structure into the CG-LSQ solution -> could edge above 0.2684; if it drops, relax=1.0 (full DC) is confirmed optimal and iter-19 is the champion. (5) BUDGET ~2.5min. (6) FINAL iter -- loop concludes at 20 per protocol."
+  },
+  "headroom_std": 0.03375746398337493,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.2779333308532996,
+    "recomputed_val_ssim_mean": 0.9227576738595963,
+    "recomputed_val_psnr_mean": 38.64046361923218,
+    "recomputed_val_rmse_mean": 0.0037724506284575908
   }
 }

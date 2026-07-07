@@ -11,9 +11,9 @@
   "val_ssim": 0.7844355702400208,
   "val_psnr": 28.976985931396484,
   "val_rmse": 0.01214941032230854,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.010007875285035685,
+  "val_psnr_std": 0.7623415327246312,
+  "val_rmse_std": 0.0010402878156404462,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-9: DC-off breast-prior. Back to steps=8 (iter-8 steps=16 gave NO PSNR gain, 28.3 vs 28.5, 2x slower => NFE saturated at 8). Fine-tune the DOMINANT lever init_t. ONE KNOB init_t 0.4->0.3 (eta=0.1, steps=8). PRIOR coarse init_t sweep: 0.7->19.0, 0.4->24.6(eta1.0)/best-region, 0.2->24.2 - optimum bracketed near 0.3-0.4. HYPOTHESIS: init_t=0.3 (between the 0.2 and 0.4 coarse points, at the now-tuned low eta=0.1) may edge past the 0.4/eta0.1 PSNR (~28.5) by injecting slightly less noise while retaining enough flow-time for the prior to denoise. Fine-grid refinement of the init_t peak."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.7703572836518288,
+    "recomputed_val_psnr_mean": 28.564745664596558,
+    "recomputed_val_rmse_mean": 0.012075945953838527
   }
 }

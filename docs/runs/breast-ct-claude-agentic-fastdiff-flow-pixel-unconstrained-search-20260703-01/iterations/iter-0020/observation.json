@@ -11,9 +11,9 @@
   "val_ssim": 0.3557876646518707,
   "val_psnr": 6.867376327514648,
   "val_rmse": 0.1548943668603897,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.022619106164639146,
+  "val_psnr_std": 0.9699724124153905,
+  "val_rmse_std": 0.017273191805620928,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-20 (FINAL): DC-off breast-prior. Architecturally-DISTINCT family for STOP-protocol edge coverage. ONE KNOB init fbp->noise (pure unconditional generation from the prior, ZERO FBP anchor; init_t ignored when init=noise so t starts at 1.0; eta back to 1.0 and steps=16 since full-trajectory generation needs guidance+NFE). PRIOR: the FBP-anchored regime peaks at hr0.271 (init_t0.02) - the entire gain came from lightly denoising the FBP init. HYPOTHESIS: with NO FBP init, the DC-off sampler must reconstruct ENTIRELY from the prior + soft DPS on 128-view sparse data -> hr~0 (cannot match FBP), quantifying that the FBP INIT (not the generative prior per se) is what carries the DC-off variant. This is the honest lower bound: the breast prior as a pure generator (no measurement warm-start) does NOT reconstruct sparse-view breast CT. Completes 20 iters + >=3 distinct families (init_t sweep, eta sweep, NFE, seed-robustness, noise-init)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.3497100679576397,
+    "recomputed_val_psnr_mean": 6.32950355052948,
+    "recomputed_val_rmse_mean": 0.15656696569174527
   }
 }

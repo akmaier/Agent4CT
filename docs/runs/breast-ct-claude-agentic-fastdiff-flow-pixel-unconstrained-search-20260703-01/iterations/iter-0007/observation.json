@@ -11,9 +11,9 @@
   "val_ssim": 0.8220860362052917,
   "val_psnr": 28.511886596679688,
   "val_rmse": 0.01281769946217537,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.01157279006743089,
+  "val_psnr_std": 0.8003544987751579,
+  "val_rmse_std": 0.0011770518297119453,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-7: DC-off breast-prior. Fix init_t=0.4. ONE KNOB eta 0.2->0.05. MONOTONIC eta trend (init_t0.4): eta1.0 PSNR24.6, eta0.5 PSNR27.0, eta0.2 PSNR28.1 (best) - lower eta = better because less overshooting measurement pull, recon converges to the prior-denoised FBP init. HYPOTHESIS: eta=0.05 (near-zero guidance) approaches pure prior-denoise of the FBP init -> PSNR edges further toward baseline, locating the eta floor. Since removing measurement guidance ENTIRELY would make it pure unconditional generation from FBP-noised init, a tiny eta is the DC-free sweet spot: it keeps a whisper of sinogram consistency without the overshoot instability. Then switch lever to steps."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8099028268456459,
+    "recomputed_val_psnr_mean": 28.117937288284303,
+    "recomputed_val_rmse_mean": 0.012719287183135747
   }
 }

@@ -11,9 +11,9 @@
   "val_ssim": 0.8362066745758057,
   "val_psnr": 33.69291305541992,
   "val_rmse": 0.0070592560805380344,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.004341262593877879,
+  "val_psnr_std": 0.22062543990200298,
+  "val_rmse_std": 0.00013812586854162402,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-7 INIT_T asymptote pin, breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: init_t@relax1.0: 0.7->16.5,0.4->19.4,0.2->22.0,0.1->25.2,0.05->28.9dB (RMSE 1.23e-2). Monotonic, still below baseline 36.3dB/5.21e-3. hr=0. (2) FAILURE MODE: prior net-harmful; recon = light-denoised-FBP+CG-DC and rises toward but has not reached baseline. (3) ONE KNOB: init_t 0.05->0.02 (essentially prior-off). (4) HYPOTHESIS: near-flat vs iter-6 -> pins the init_t->0 asymptote. If PSNR ~29-31 and still <36, confirms the DC-on wavelet recon at NFE8/CG5 is FBP-bounded on sparse breast. (5) BUDGET ~90s. (6) iter-8 pivots to the OTHER DC lever (dc_n_cg up: does a stronger least-squares CG solve at this low init_t finally reach/beat FBP?)."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8241924765706062,
+    "recomputed_val_psnr_mean": 33.19294784545898,
+    "recomputed_val_rmse_mean": 0.007062385524623096
   }
 }
