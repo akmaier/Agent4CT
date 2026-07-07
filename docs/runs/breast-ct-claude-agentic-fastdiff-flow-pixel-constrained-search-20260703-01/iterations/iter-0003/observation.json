@@ -11,9 +11,9 @@
   "val_ssim": 0.6764799952507019,
   "val_psnr": 27.48645782470703,
   "val_rmse": 0.014423864893615246,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.006009147090491427,
+  "val_psnr_std": 0.557248007783716,
+  "val_rmse_std": 0.0009041199927594013,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-3 EXPLORATORY single knob fd_recon_init_t 0.3->0.15 from iter-2 base. SIX-BOX: (1)PRIOR: init_t axis is MONOTONIC so far: 0.7 (iter-1 rmse0.0428 psnr18.0 ssim0.427) -> 0.3 (iter-2 rmse0.0264 psnr22.2 ssim0.454). Lower init_t preserves the strong 128-view breast FBP; the breast prior at high init_t repaints/darkens (pred mean 0.036 vs truth 0.126). All hr=0 (FBP baseline rmse~0.00521 very strong). (2)FAILURE: even init_t0.3 lets the prior perturb the FBP enough to leave rmse 5x baseline. (3)ONE KNOB: init_t 0.3->0.15 (embed even closer to FBP; steps/DC/eta held). (4)HYPOTHESIS: pushing init_t toward 0 keeps the recon almost at the FBP while the prior only lightly denoises + DC re-anchors, dropping rmse further toward baseline; maps whether the init_t axis reaches hr>0 or asymptotes above the FBP floor. (5)BUDGET: fewer effective steps, fast. (6)Serial."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.6623604327440262,
+    "recomputed_val_psnr_mean": 27.024827489852907,
+    "recomputed_val_rmse_mean": 0.01439209472388029
   }
 }

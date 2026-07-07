@@ -11,9 +11,9 @@
   "val_ssim": 0.40248602628707886,
   "val_psnr": 19.387470245361328,
   "val_rmse": 0.036646366119384766,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011600332317422135,
+  "val_psnr_std": 0.528390751205956,
+  "val_rmse_std": 0.002127206673087297,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-3 INIT_T lever, breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: iter-1 (init_t0.7/relax0.5) SSIM 0.326/PSNR 17.1/RMSE 4.75e-2; iter-2 (init_t0.7/relax1.0) SSIM 0.354/PSNR 16.5/RMSE 5.12e-2 -- full DC did NOT rescue, both ~9x worse than baseline (PSNR 36.3/RMSE 5.21e-3), hr=0. (2) FAILURE MODE: init_t=0.7 embeds the FBP at high flow-time where most FBP structure is replaced by noise; 8 Euler steps of the 512^2 wavelet prior cannot rebuild breast detail from that, and even full CG DC can't fix a trajectory that started from mostly-noise. The dominant lever is init_t, not dc_relax (the archived Mayo-prior curve's big SSIM gains 0.82->0.91 came from lowering init_t 0.7->0.2). (3) ONE KNOB: fd_recon_init_t 0.7 -> 0.4 (embed FBP closer to clean, far less prior drift), keeping dc_relax=1.0 from iter-2. (4) HYPOTHESIS: at init_t=0.4 the FBP is embedded near-clean so the wavelet prior only lightly denoises the sparse-view streaks while full CG DC pins the measured rays -> RMSE drops sharply toward the sparse-FBP floor and may clear hr>0 (this is the archived best region). FALSIFIER: if still PSNR<<36, even light prior injection + DC can't beat the strong 128-view FBP baseline here -> iter-4 pushes init_t lower (0.2) and/or raises dc_n_cg. (5) BUDGET: ~90s/iter, init_t is free. (6) Loop continues; iter-4 self-dispatched on landing."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.39785880744457247,
+    "recomputed_val_psnr_mean": 19.09444432258606,
+    "recomputed_val_rmse_mean": 0.0358534437417984
   }
 }

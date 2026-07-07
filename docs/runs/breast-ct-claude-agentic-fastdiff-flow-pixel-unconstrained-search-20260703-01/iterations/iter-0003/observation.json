@@ -11,9 +11,9 @@
   "val_ssim": 0.572429358959198,
   "val_psnr": 24.176288604736328,
   "val_rmse": 0.021114952862262726,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.005979901127676225,
+  "val_psnr_std": 0.4886164811872943,
+  "val_rmse_std": 0.0011362307358037788,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-3: DC-off breast-prior. ONE KNOB init_t 0.4->0.2. TREND: iter-1 (init_t0.7) PSNR19.0/RMSE3.8e-2; iter-2 (init_t0.4) PSNR24.6/RMSE2.0e-2 - monotonic fidelity gain as init_t drops (less injected noise, sampler stays nearer the measured FBP). Both hr=0 (sparse-FBP baseline PSNR36.3/RMSE5.2e-3 is a very strong bar for a DC-free prior sampler). HYPOTHESIS: init_t=0.2 pushes PSNR further toward the FBP baseline because the DC-free sampler reduces to a light prior-denoise of the FBP init; tests whether the breast prior ALONE can approach (not just trail) the baseline. If PSNR keeps rising monotonically, the prior contributes fidelity only insofar as it preserves the FBP - the DC step (absent here) is what would let it EXCEED baseline."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.5567367440462112,
+    "recomputed_val_psnr_mean": 23.7057723903656,
+    "recomputed_val_rmse_mean": 0.021079726656898855
   }
 }
