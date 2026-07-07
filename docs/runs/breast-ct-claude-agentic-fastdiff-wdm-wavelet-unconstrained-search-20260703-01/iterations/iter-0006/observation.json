@@ -11,9 +11,9 @@
   "val_ssim": 0.9037923812866211,
   "val_psnr": 29.269485473632812,
   "val_rmse": 0.011747085489332676,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.010906021625626362,
+  "val_psnr_std": 1.0574003067845048,
+  "val_rmse_std": 0.0014523182731518733,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 0.5,
     "dataset_kind": "breast_ct",
     "rationale": "iter-6 ETA DOWN, breast-native wdm-wavelet UNCONSTRAINED (DC OFF). SIX-BOX: (1) PRIOR: eta=2.0 (iter-5) BLEW UP rmse to 0.03027 (ssim0.454) vs eta=1.0 (iter-4) rmse0.01360 at same t=0.5. Stronger DPS-soft-gradient WITHOUT the hard CG projection over-corrects and diverges -- DPS-alone is an unprojected gradient step, not a proper solve. (2) Failure mode: too-strong soft guidance destabilizes; the sweet spot is LOW eta where the prior mostly denoises the FBP warm-start. (3) ONE KNOB: fd_recon_eta 1.0->0.5 at locked t=0.5, steps=8. (4) HYPOTHESIS: lower eta lets the recon stay near the FBP warm-start -> rmse at/below the eta=1.0 value (0.01360). Maps the eta minimum. If even the best (t,eta,steps) cannot clear hr>0, it confirms prior+DPS WITHOUT hard-CG DC is structurally below the calibrated FBP baseline on sparse breast. (5) BUDGET: <5min. (6) Loop continues."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8965322217345237,
+    "recomputed_val_psnr_mean": 28.948948726654052,
+    "recomputed_val_rmse_mean": 0.01159351871581748
   }
 }
