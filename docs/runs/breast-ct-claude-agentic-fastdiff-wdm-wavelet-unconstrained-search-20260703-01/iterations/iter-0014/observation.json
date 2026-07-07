@@ -11,9 +11,9 @@
   "val_ssim": 0.935730516910553,
   "val_psnr": 29.59722137451172,
   "val_rmse": 0.011312108486890793,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.01215589540731905,
+  "val_psnr_std": 0.9848037894993265,
+  "val_rmse_std": 0.001195095024279591,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 0.5,
     "dataset_kind": "breast_ct",
     "rationale": "iter-14 ETA=0.1 fine-check between eta0(rmse0.01130) and eta0.2(0.01141) at t0.5; confirms eta~0 flat optimum. DC OFF. hr expected 0."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9315476921200753,
+    "recomputed_val_psnr_mean": 29.253931951522826,
+    "recomputed_val_rmse_mean": 0.011180876139551401
   }
 }
