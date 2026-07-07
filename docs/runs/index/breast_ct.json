@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-07T03:09:05Z",
+ "updated": "2026-07-07T04:12:26Z",
  "leaderboard": {
   "ranking_metric": "headroom",
   "tiebreak": "val_ssim",
@@ -2694,7 +2694,7 @@
    "name": "Param-efficient (evolved)",
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
-   "n_iterations": 11,
+   "n_iterations": 12,
    "best_iter": 11,
    "metric_basis": "val",
    "best_headroom": 0.43447393005762225,
@@ -2708,13 +2708,13 @@
    "test_psnr_std": null,
    "test_rmse_mean": null,
    "test_rmse_std": null,
-   "started": "2026-07-07T02:51:27Z",
+   "started": "2026-07-07T03:55:17Z",
    "status": "ranked",
    "params_M": 1.3e-05,
    "excluded_reason": null,
    "agent": "param_efficient-claude-agentic",
    "model": "claude-opus-4-8-1m",
-   "ts": "2026-07-07T02:51:27Z",
+   "ts": "2026-07-07T03:55:17Z",
    "curve": [
     [
      1,
@@ -2758,6 +2758,10 @@
     ],
     [
      11,
+     0.4345
+    ],
+    [
+     12,
      0.4345
     ]
    ],
