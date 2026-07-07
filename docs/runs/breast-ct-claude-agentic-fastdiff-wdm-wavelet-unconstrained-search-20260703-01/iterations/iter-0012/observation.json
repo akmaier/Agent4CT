@@ -11,9 +11,9 @@
   "val_ssim": 0.937083899974823,
   "val_psnr": 29.621994018554688,
   "val_rmse": 0.011279888451099396,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.012166297741485138,
+  "val_psnr_std": 0.9899549499454231,
+  "val_rmse_std": 0.0011985021107185794,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 0.5,
     "dataset_kind": "breast_ct",
     "rationale": "iter-12 INIT_T 0.45 bracket at eta=0, breast-native wdm-wavelet UNCONSTRAINED (DC OFF). SIX-BOX: (1) PRIOR: at eta=0 init_t: 0.5 rmse0.01130 (BEST), 0.6 rmse0.01160 (worse). Bracket the low side. All hr=0. (2) Failure mode: prior-denoise plateau ~0.0113. (3) ONE KNOB: fd_recon_init_t 0.5->0.45 at eta=0.0 steps=8. (4) HYPOTHESIS: t=0.45 rmse >= t=0.5 (confirming 0.5 optimum) or marginally < (refining it). Pins the eta=0 init_t optimum for the final seed-variance config. (5) BUDGET: <5min. (6) Loop continues."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.933044988811016,
+    "recomputed_val_psnr_mean": 29.277095584869386,
+    "recomputed_val_rmse_mean": 0.011151796421036125
   }
 }
