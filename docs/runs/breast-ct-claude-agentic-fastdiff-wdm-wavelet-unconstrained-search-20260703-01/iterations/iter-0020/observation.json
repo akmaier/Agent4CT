@@ -11,9 +11,9 @@
   "val_ssim": 0.9372475743293762,
   "val_psnr": 29.627578735351562,
   "val_rmse": 0.01127263717353344,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.012362279258288726,
+  "val_psnr_std": 1.003913530690114,
+  "val_rmse_std": 0.0012113966408817244,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 0.5,
     "dataset_kind": "breast_ct",
     "rationale": "iter-20 FINAL seed 48 at converged best config (t0.45 eta0 steps8 DC-off); closes the 20-iter search. hr expected 0 -- prior WITHOUT DC cannot clear the sparse-view calibrated FBP baseline."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9332249853014946,
+    "recomputed_val_psnr_mean": 29.28513991355896,
+    "recomputed_val_rmse_mean": 0.011143266228027643
   }
 }
