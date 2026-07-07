@@ -173,7 +173,12 @@ geometry pipeline the dominant human cost.
    geometry≈24 working days); Breast-CT/Demo-DL generalization once §5 completes.
 4. **Discussion** — n=5 optimism; test-set selection caveat (val-champion overfit
    observed); geometry cost dominates (agent didn't remove it); single-agent/single-metric
-   limits; seed-fragility (FoE+Manduca seed-123 collapse).
+   limits; seed-fragility (FoE+Manduca seed-123 collapse); **agent-behavior
+   characterization** — how the agent worked, what it rediscovered/self-modified, its
+   failure modes, and the agent-executor / human-strategist division of labor
+   (**full write-up in §5.6.4**); **problem-dependent compact architecture** — the
+   param-efficient optimum differs Mayo (denoiser) vs Breast (filtered-DC + primal-dual),
+   the agent re-derived rather than transferred (§5.6.3).
 5. **Conclusion** — an LLM agent can implement/adapt/tune ~26 methods under one metric;
    the outcome is a small tier of indistinguishable top solvers, not one winner; the
    bottleneck is geometry/data engineering → where to aim future agentic effort.
@@ -438,6 +443,134 @@ may be different. Spec (user 2026-07-03):
 - Report params_M as the headline alongside test hr (mean±std, n=200), the Maier
   "≈X% of the parameters, statistically tied" framing (§3).
 - Run under the same 20-min budget + test-scoring pipeline; publish into the same board.
+
+---
+
+## 5.6 · RESULTS (2026-07-06/07) — Breast-CT campaign + finale as run
+
+### 5.6.1 The 24-solver Breast-CT board (val hr, per-case mean±std, n=200)
+All 24 reached the full 20 six-box iterations under the 20-min budget. Val leaderboard
+(the redo is val-ranked until the test-scoring close-out; hr, ±per-case std):
+
+| # | solver | hr | ±std | family |
+|---|---|---:|---|---|
+| 1 | DD-UNet supervised L2 | 0.8925 | 0.0122 | DL supervised |
+| 2 | ITNet v1 | 0.8893 | 0.0141 | unrolled DC |
+| 3 | ITNet v2 | 0.8853 | 0.0147 | unrolled DC |
+| 4 | U-Swin | 0.8696 | 0.0150 | transformer |
+| 5 | ITNet v3 | 0.8638 | 0.0138 | unrolled DC |
+| 6 | Learned Primal-Dual | 0.6791 | 0.0177 | primal-dual |
+| 7 | Hammernik-2017 (VN) | 0.6329 | 0.0141 | variational net |
+| 8 | Hammernik-VN | 0.5910 | 0.0136 | variational net |
+| 9 | tv_iterative | 0.3629 | 0.0150 | classical TV |
+| 10 | manhart-PWLS-TV | 0.3629 | 0.0148 | classical TV (ray-weight inert) |
+| 11 | Wu-2015-trainable | 0.3127 | 0.0104 | 12-param band+residual-DC |
+| 12 | RAM zero-shot | 0.2950 | 0.0116 | frozen foundation model |
+| 13 | Manduca bilateral | 0.2781 | 0.0094 | 21-param bilateral |
+| 14 | DD-bilateral supervised | 0.2564 | 0.0097 | 24-param bilateral |
+| 15 | DD-bilateral-N2I | 0.2055 | 0.1152 | self-sup (edge-preserving) |
+| 16 | wu_2015 (classical) | 0.1547 | 0.0139 | 0-param |
+| 17 | tv_iterative_supervised | 0.1501 | 0.0092 | unrolled TV |
+| 18–24 | ddn2i · naf · r2gaussian · 4×fastdiff (orig) | 0.0000 | — | ceiling / cross-dataset |
+
+Key cross-solver findings (all six-box, sentinel-verified):
+- **Data-consistency is the differentiator on 128-view sparse breast.** Every method with a
+  genuine DC step lands 0.6–0.9; every image-domain-only denoiser caps ~0.28. Coherent
+  sparse-view streaks must be removed by re-imposing agreement with the 128 projections,
+  not denoised in image space.
+- **tv_iterative ≡ manhart at 0.3629** (identical TV core; manhart's PWLS ray-weighting is
+  inert on breast). Wu-2015-trainable (12 params, band + residual-DC loop) → 0.31, beats
+  the image-domain bilaterals (21–24 params, 0.26–0.28): even cheap DC beats cheap denoising.
+- **DD-bilateral-N2I 0.206 vs plain DD-N2I 0.000** — the only self-supervised method to
+  beat FBP, because its tight edge-preserving range kernel structurally vetoes the N2I
+  loss's over-smoothing pull (a generic CNN denoiser has no such guard).
+- **Seed-fragility** surfaced independently in ITNet-v3 and Hammernik-2017 (val-hr swings
+  ~0.2 at identical train loss) — the per-case std work is what exposes it.
+- Documented structural **negatives** (NAF, R²-Gaussian, both TV-supervised, plain N2I):
+  the INR/Gaussian bases are too coarse for dense 512²/128-view soft tissue; N2I over-
+  smooths; unrolled-TV underperforms its classical sibling because its DC couldn't engage.
+
+### 5.6.2 Breast-native diffusion prior + fastdiff re-run (fair-baseline fix)
+The 4 `fastdiff` variants originally scored **hr=0 — a cross-dataset artifact**: they used the
+Mayo-trained flow prior (`fd_out_scale=0.05`) on breast (μ→0.5), a ~10× normalization
+mismatch that made the prior *repaint* rather than denoise. We trained **2 breast-native
+priors** (pixel + wavelet, rectified-flow, `solver_fast_diffusion.py`, on the full 3600-case
+breast train split, `out_scale=0.5`, val-loss *better* than the Mayo priors: 0.0047/0.0031 vs
+0.016/0.020; val/test untouched) and re-ran the 4 solvers as a genuine **{pixel,wavelet} ×
+{DC-on, DC-off}** ablation (constrained/unconstrained was never a sampling flag here — only a
+checkpoint-`n_train` label — so we made it a real data-consistency toggle):
+
+| variant | hr | ±std | mechanism |
+|---|---:|---|---|
+| flow-pixel **DC-on** | **0.5164** | 0.0229 | near-FBP init + prior denoise + semi-converged CG-DC (n_cg≈20) |
+| WDM-wavelet DC-on | 0.2767 | 0.0338 | CG-DC does the work; wavelet prior kept near-off (net-harmful) |
+| flow-pixel DC-off | 0.2709 | 0.0192 | prior as an FBP-*denoiser* only |
+| WDM-wavelet DC-off | 0.0000 | — | prior alone can't reconstruct (no DC anchor) |
+
+Finding: a fair breast-native prior recovers the family from artifact to real results, and the
+DC ablation shows **data-consistency is the reconstruction lever; the diffusion prior is
+secondary** (a denoiser at best, net-harmful in wavelet) on well-conditioned 128-view breast —
+consistent with the param-efficient finale below.
+
+### 5.6.3 Param-efficient finale — Breast (sparse-view) vs Mayo (dense low-dose)
+The agent had full latitude to edit its solver. It did NOT port the Mayo compact architecture;
+it re-derived a **breast-native** one, and the two compact optima are *different* — the paper's
+central cross-dataset point:
+
+- **Mayo (dense-helical low-dose noise):** compact optimum = an evolved **FoE + multi-scale
+  bilateral denoiser**, **hr 0.3241 @ ~0.00097 M params** (≈0.2–0.4% of the 0.23–0.47 M DL
+  champions), **statistically tied at the 1% level** with the top tier (joins the ITNet
+  v1/v2/U-Swin hr-tie; p = 0.02–0.027). On a denoising problem, a tiny denoiser suffices.
+- **Breast (128-view sparse-view streaks):** that architecture *fails* — image-domain
+  denoising caps at ~0.26. The agent's search arc:
+  1. config-only image-domain unroll → ceiling ~0.26 (raw adjoint `Rᵀ(Rx−g)` re-injects
+     coherent streaks; deeper adjoint DC → hr 0.0).
+  2. **filtered-gradient DC** `fbp(Rx−g)` (SART-style, solver-edited) → **breakthrough
+     0.4345 @ 13 params**; depth now monotonic (K sat. ≈30).
+  3. prox capacity (FoE / bilateral / directional) → all **hurt** (the filtered gradient
+     already reconstructs; a prox only over-smooths).
+  4. **learned primal-dual combination block** (LPD-style, cross-step memory) →
+     **champion hr 0.5047 (single-best) / ≈0.46 ± 0.03 (5-seed) @ 183 params (0.000183 M)**.
+  5. Wu-2015 in three roles (init / band-weighted-DC / band-prox) → all null-or-regress
+     (the ramp-filtered DC already applies the *correct* projector inverse each step, so
+     Wu's frequency-band machinery is redundant or harmful). Multi-scale-bilateral
+     post-filter + CG-DC assembly: in progress at time of writing.
+- **Headline:** a **183-param** solver reaches hr ≈0.50, competitive with the 3.8 M-param
+  breast-native fastdiff (0.52, ~20 000× more params) and approaching VN (0.63 @ 9 k). Same
+  20-min budget as all solvers (a 50-min K-probe was kept as a labeled diagnostic only).
+- **Cross-dataset conclusion:** the best compact CT architecture is *problem-dependent* —
+  a denoiser for dense low-dose Mayo, a filtered-DC + learned-primal-dual unroll for
+  sparse-view breast. The agent found each by evidence, not by transfer.
+
+### 5.6.4 Discussion points — agent behavior (for §4 Discussion)
+Add a subsection characterizing *how the agent worked*, since the paper's title asks whether an
+LLM agent can do reconstruction research. Observed behavior (from the breast finale in particular):
+- **Mechanistic, not just tuning.** The agent diagnosed *why* each result occurred (e.g. "the
+  raw adjoint re-injects streaks," "filtered-DC re-derives the de-aliased recon each step, so a
+  Wu init is redundant") and let those diagnoses drive the next architectural move.
+- **Genuine rediscovery + self-modification.** From an image-domain ceiling it independently
+  arrived at the **filtered back-projection (SART) gradient** and a **learned primal-dual
+  combination** — established recon principles — and *edited its own solver code* to implement
+  them. Strongest evidence for the title question.
+- **Honest negatives.** Nulls (Wu ×3 roles, in-loop prox capacity, Wu-as-init) were reported
+  cleanly with mechanism, distinguishing "undertrained" from "genuine null" via training curves.
+- **Discipline.** Strict-serial sentinel gating; zero-init-for-no-regression when stacking
+  architecture; separating the comparable 20-min champion from a labeled diagnostic.
+- **Failure modes (state honestly).** It did **not** self-continue (needed per-iteration
+  nursing); it initially **anchored on the prior Mayo solution** and had to be redirected; it
+  **self-limited to config-only edits** until told it could edit code; one sub-run **padded
+  iterations** with identical replays until an audit caught it; and it repeatedly trusted an
+  unreliable completion signal (Monitor) until forced onto per-JOBID sentinel reads.
+- **Division of labor (the defensible claim).** *Agent = tireless, mechanistically-reasoning
+  executor that can self-modify; human = strategist + auditor.* The two outcome-changing human
+  inputs were strategic, not mechanical: (a) *"don't mimic Mayo — different problem, different
+  solution,"* which pushed the agent off the Mayo local optimum toward the filtered-DC
+  breakthrough; and (b) *"train a fair breast-native diffusion prior,"* which converted the
+  fastdiff family from hr=0 artifacts into real results. Domain-hypothesis injections (Wu
+  combinations, multi-scale bilateral) mostly yielded principled *negative* findings — valuable
+  for rigor/completeness, not performance. This human-in-the-loop split is the honest answer to
+  "can an LLM agent do reconstruction research?": it does the experimentation and mechanistic
+  reasoning; it still needs a human for strategy, persistence, and integrity.
 
 ## 6 · Author list
 
