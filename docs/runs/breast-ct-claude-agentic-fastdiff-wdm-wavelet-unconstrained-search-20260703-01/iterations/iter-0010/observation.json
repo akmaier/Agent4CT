@@ -11,9 +11,9 @@
   "val_ssim": 0.8257167339324951,
   "val_psnr": 18.232759475708008,
   "val_rmse": 0.04185685142874718,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.02450481942752996,
+  "val_psnr_std": 1.365236956041466,
+  "val_rmse_std": 0.006315425887040983,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 0.5,
     "dataset_kind": "breast_ct",
     "rationale": "iter-10 INIT=noise (fully generative), breast-native wdm-wavelet UNCONSTRAINED (DC OFF). SIX-BOX: (1) PRIOR: steps 8 vs 16 identical (rmse0.01130 vs 0.01131) -> NFE not the limiter, prior is the ceiling. Best t=0.5 eta=0.0 steps=8. All hr=0; DC-off floor ~0.0113. (2) Failure mode: FBP-warm-start recons plateau; unknown = how much the FBP init contributes vs the prior alone. (3) ONE KNOB: fd_recon_init fbp->noise (start from pure N(0,I) at t=1, no FBP warm-start), eta=0.0 steps=8. (4) HYPOTHESIS: with NO FBP anchor and eta=0 (no DPS), the recon is UNCONDITIONAL prior sampling -> rmse MUCH worse (the prior draws a plausible breast, not THIS one). This bounds the pure-generative extreme and shows the FBP warm-start is what keeps DC-off recon near-usable. Confirms the prior alone cannot solve the inverse problem. (5) BUDGET: noise-init 8-step still <10min. (6) Loop continues."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.8193140915036201,
+    "recomputed_val_psnr_mean": 17.960680832862852,
+    "recomputed_val_rmse_mean": 0.041274797720834616
   }
 }

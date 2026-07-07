@@ -11,9 +11,9 @@
   "val_ssim": 0.9407914280891418,
   "val_psnr": 29.60144805908203,
   "val_rmse": 0.011306601576507092,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.012491781038319619,
+  "val_psnr_std": 0.9964979682547348,
+  "val_rmse_std": 0.0012077611273119315,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 0.5,
     "dataset_kind": "breast_ct",
     "rationale": "iter-9 STEPS (NFE) lever, breast-native wdm-wavelet UNCONSTRAINED (DC OFF). SIX-BOX: (1) PRIOR: eta minimized at 0.0 (pure prior denoise): t=0.5 eta0.0 rmse0.01130 (BEST, ssim0.938). eta sweep done; init_t min ~0.5. All hr=0; DC-off floor ~0.0113 vs calibrated FBP floor ~0.0044. (2) Failure mode: recon plateaus above baseline -- prior-denoised FBP retains sparse-view streak residual the prior does not fully remove without a projection. (3) ONE KNOB: fd_recon_steps 8->16 at t=0.5, eta=0.0. (4) HYPOTHESIS: more Euler steps = finer flow integration of the denoising trajectory -> marginally lower rmse; tests whether NFE (not just prior/DPS balance) is the limiter. If 16 steps ~= 8 steps, the ceiling is the prior itself, not integration granularity. (5) BUDGET: 16-step over 200 val still <10min. (6) Loop continues."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9371862521767617,
+    "recomputed_val_psnr_mean": 29.261716117858885,
+    "recomputed_val_rmse_mean": 0.011172407257836312
   }
 }
