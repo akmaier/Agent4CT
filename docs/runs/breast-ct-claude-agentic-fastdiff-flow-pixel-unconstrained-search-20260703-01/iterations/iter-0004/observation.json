@@ -11,9 +11,9 @@
   "val_ssim": 0.4060579538345337,
   "val_psnr": 12.757911682128906,
   "val_rmse": 0.07861562073230743,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.009863910209255313,
+  "val_psnr_std": 0.30207562499466223,
+  "val_rmse_std": 0.0022330619925006595,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -48,5 +48,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-4: DC-off breast-prior. Fix init_t=0.4 (iter-2 sweet spot: PSNR24.6, best so far). ONE KNOB eta 1.0->3.0 (DPS guidance scale). TREND: init_t sweep plateaued - iter-2 init_t0.4 PSNR24.6 > iter-3 init_t0.2 PSNR24.2, so ~0.4 is the init_t optimum. FAILURE MODE: with DC off, the ONLY data-fidelity term is the soft DPS gradient (eta/||r||)*grad; at eta=1.0 it under-corrects, leaving the recon 11.7dB below the FBP baseline. HYPOTHESIS: raising eta to 3.0 strengthens the sinogram-consistency pull each Euler step -> PSNR/RMSE improve toward baseline. This directly tests whether cranking the SOFT guidance can substitute for the absent HARD CG DC projection (the constrained sibling's anchor). Expect partial recovery but NOT reaching baseline - that residual gap = the value of the DC step."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.4033304958045483,
+    "recomputed_val_psnr_mean": 12.406195693016052,
+    "recomputed_val_rmse_mean": 0.07733712323009968
   }
 }

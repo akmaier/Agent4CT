@@ -11,9 +11,9 @@
   "val_ssim": 0.9152635931968689,
   "val_psnr": 34.15509033203125,
   "val_rmse": 0.00669344887137413,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.014342495874176723,
+  "val_psnr_std": 0.8176637888674794,
+  "val_rmse_std": 0.0006181383438350071,
   "kept": false,
   "status": "discard",
   "params_M": 3.822787,
@@ -49,5 +49,16 @@
     "fd_recon_dc_n_cg": 5,
     "fd_recon_dc_relax": 0.5,
     "rationale": "iter-4 EXPLORATORY single knob fd_recon_init_t 0.15->0.05 from iter-3 base. SIX-BOX: (1)PRIOR: init_t axis strongly MONOTONIC: 0.7 rmse0.0428/ssim0.427 -> 0.3 rmse0.0264/ssim0.454 -> 0.15 rmse0.0144/ssim0.676. Recon approaches the 128-view breast FBP (rmse0.00521,ssim0.920) as init_t->0. All hr=0. (2)FAILURE: recon still 2.8x FBP rmse at init_t0.15; the breast prior perturbs the near-oracle FBP rather than improving it. (3)ONE KNOB: init_t 0.15->0.05 (embed almost AT the FBP). (4)HYPOTHESIS: at init_t~0 the recon converges TO the FBP so rmse->0.00521 and hr->0 from below (equal to baseline, cannot exceed). This maps the init_t asymptote: if rmse bottoms at the FBP floor, it PROVES the sparse-view breast FBP is already near-oracle (128 views is not very sparse at this geometry) and a prior has no noise headroom to exploit -> regime-bound ceiling, distinct from the Mayo prior-mismatch cause. (5)BUDGET: minimal steps, fast. (6)Serial."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.5,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9105706024169922,
+    "recomputed_val_psnr_mean": 33.73248341560364,
+    "recomputed_val_rmse_mean": 0.006664866930805147
   }
 }

@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-07T00:39:48Z",
+ "updated": "2026-07-07T01:10:58Z",
  "ranking_metric": "per-dataset",
  "tiebreak": "per-dataset",
  "datasets": {
@@ -1166,6 +1166,37 @@
      "rank": 11
     },
     {
+     "solver_key": "param-efficient",
+     "solver_name": "Param-efficient (evolved)",
+     "run_id": "breast-ct-claude-agentic-param-efficient-search-20260703-01",
+     "best_iter": 9,
+     "params_M": 1.3e-05,
+     "params_source": "observation",
+     "val_ssim": 0.9710379838943481,
+     "headroom": 0.3352416310332519,
+     "val_psnr": 39.87091827392578,
+     "val_rmse": 0.003466238733381033,
+     "val_ssim_std": 0.00314364082458696,
+     "val_psnr_std": 0.5285213234751927,
+     "val_rmse_std": 0.0002045914883858948,
+     "headroom_std": 0.007075449965718759,
+     "elapsed_s": 1049.4690194129944,
+     "image": "runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0009/comparison.png",
+     "test_hr_mean": null,
+     "test_hr_std": null,
+     "test_ssim_mean": null,
+     "test_ssim_std": null,
+     "test_psnr_mean": null,
+     "test_psnr_std": null,
+     "test_rmse_mean": null,
+     "test_rmse_std": null,
+     "metric_basis": "val",
+     "rank_metric": 0.3352416310332519,
+     "rank_tiebreak": 0.9710379838943481,
+     "excluded_reason": null,
+     "rank": 12
+    },
+    {
      "solver_key": "wu-2015-trainable",
      "solver_name": "Wu 2015 trainable",
      "run_id": "breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01",
@@ -1194,7 +1225,7 @@
      "rank_metric": 0.3126694505397546,
      "rank_tiebreak": 0.9493556022644043,
      "excluded_reason": null,
-     "rank": 12
+     "rank": 13
     },
     {
      "solver_key": "ram-zeroshot",
@@ -1225,7 +1256,7 @@
      "rank_metric": 0.2950465497528084,
      "rank_tiebreak": 0.9790410995483398,
      "excluded_reason": null,
-     "rank": 13
+     "rank": 14
     },
     {
      "solver_key": "manduca-bilateral",
@@ -1256,7 +1287,7 @@
      "rank_metric": 0.27814241976554055,
      "rank_tiebreak": 0.9815382361412048,
      "excluded_reason": null,
-     "rank": 14
+     "rank": 15
     },
     {
      "solver_key": "fastdiff-wdm-wavelet-constrained",
@@ -1287,7 +1318,7 @@
      "rank_metric": 0.27669639419700076,
      "rank_tiebreak": 0.9293705821037292,
      "excluded_reason": null,
-     "rank": 15
+     "rank": 16
     },
     {
      "solver_key": "fastdiff-flow-pixel-unconstrained",
@@ -1317,37 +1348,6 @@
      "metric_basis": "val",
      "rank_metric": 0.27085786056266214,
      "rank_tiebreak": 0.9758236408233643,
-     "excluded_reason": null,
-     "rank": 16
-    },
-    {
-     "solver_key": "param-efficient",
-     "solver_name": "Param-efficient (evolved)",
-     "run_id": "breast-ct-claude-agentic-param-efficient-search-20260703-01",
-     "best_iter": 1,
-     "params_M": 0.001933,
-     "params_source": "observation",
-     "val_ssim": 0.987461507320404,
-     "headroom": 0.263540794362072,
-     "val_psnr": 38.98122024536133,
-     "val_rmse": 0.003840107237920165,
-     "val_ssim_std": 0.0024836810725645227,
-     "val_psnr_std": 0.327474758489529,
-     "val_rmse_std": 0.00013258404021013081,
-     "headroom_std": 0.024661617912453374,
-     "elapsed_s": 1284.2200210094452,
-     "image": "runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0001/comparison.png",
-     "test_hr_mean": null,
-     "test_hr_std": null,
-     "test_ssim_mean": null,
-     "test_ssim_std": null,
-     "test_psnr_mean": null,
-     "test_psnr_std": null,
-     "test_rmse_mean": null,
-     "test_rmse_std": null,
-     "metric_basis": "val",
-     "rank_metric": 0.263540794362072,
-     "rank_tiebreak": 0.987461507320404,
      "excluded_reason": null,
      "rank": 17
     },

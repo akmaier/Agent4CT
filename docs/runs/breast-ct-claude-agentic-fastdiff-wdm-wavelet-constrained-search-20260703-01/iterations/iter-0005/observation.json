@@ -11,9 +11,9 @@
   "val_ssim": 0.5276275277137756,
   "val_psnr": 25.19988250732422,
   "val_rmse": 0.018767667934298515,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.005485740063189612,
+  "val_psnr_std": 0.1983120418390078,
+  "val_rmse_std": 0.00023707781778925825,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 1.0,
     "dataset_kind": "breast_ct",
     "rationale": "iter-5 INIT_T lever (push lower), breast-native wavelet CONSTRAINED, val=200. SIX-BOX: (1) PRIOR: init_t sweep at relax1.0: 0.7->PSNR16.5, 0.4->19.4, 0.2->22.0, RMSE 5.12e-2->3.66e-2->2.70e-2. STRICTLY MONOTONIC: every init_t drop helps. baseline PSNR36.3/RMSE5.21e-3, hr=0 so far. (2) FAILURE MODE: even at init_t=0.2 the wavelet-prior embed still degrades the strong 128-view breast FBP; the prior is not yet a near-identity light denoiser. (3) ONE KNOB: fd_recon_init_t 0.2 -> 0.1 (FBP embedded very close to clean; prior barely perturbs it). (4) HYPOTHESIS: init_t=0.1 continues the RMSE-down trend toward the FBP floor; at very low init_t the recon approaches (light-denoised FBP -> CG-DC), which should approach or clear the baseline. FALSIFIER: if PSNR still <<36 even at init_t=0.1, the 8-step wavelet prior CANNOT match the 128-view breast FBP (it always injects net-harmful structure), meaning this DC-on wavelet variant is FBP-bounded here regardless of init_t -> pivot iters to steps/n_cg and then conclude. (5) BUDGET: ~90s/iter. (6) Loop continues; iter-6 on landing."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.517376912087202,
+    "recomputed_val_psnr_mean": 24.699524269104003,
+    "recomputed_val_rmse_mean": 0.01877477513626218
   }
 }
