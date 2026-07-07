@@ -11,9 +11,9 @@
   "val_ssim": 0.9315074682235718,
   "val_psnr": 29.52541160583496,
   "val_rmse": 0.011406014673411846,
-  "val_ssim_std": null,
-  "val_psnr_std": null,
-  "val_rmse_std": null,
+  "val_ssim_std": 0.011941652230904456,
+  "val_psnr_std": 1.0540031091383883,
+  "val_rmse_std": 0.001396384578310376,
   "kept": false,
   "status": "discard",
   "params_M": 3.824908,
@@ -37,5 +37,16 @@
     "fd_recon_dc_relax": 0.5,
     "dataset_kind": "breast_ct",
     "rationale": "iter-7 ETA lower still, breast-native wdm-wavelet UNCONSTRAINED (DC OFF). SIX-BOX: (1) PRIOR: eta sweep at t=0.5 MONOTONIC DOWN: eta2.0 rmse0.03027, eta1.0 rmse0.01360, eta0.5 rmse0.01175 (BEST, ssim0.904). Less DPS = better because DPS-without-hard-CG over-corrects. (2) Failure mode: any nonzero DPS soft-gradient perturbs the FBP warm-start off-manifold; the prior alone denoising the FBP is the strongest DC-off mode. (3) ONE KNOB: fd_recon_eta 0.5->0.2 at t=0.5, steps=8. (4) HYPOTHESIS: eta=0.2 rmse below 0.01175, approaching the pure-prior-denoise limit (eta->0). Tests whether even the optimal DC-off recon (prior-denoised FBP, minimal DPS) clears the calibrated FBP baseline. (5) BUDGET: <5min. (6) Loop continues."
+  },
+  "headroom_std": 0.0,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.0,
+    "recomputed_val_ssim_mean": 0.9268949797749519,
+    "recomputed_val_psnr_mean": 29.20774339675903,
+    "recomputed_val_rmse_mean": 0.01125415675342083
   }
 }
