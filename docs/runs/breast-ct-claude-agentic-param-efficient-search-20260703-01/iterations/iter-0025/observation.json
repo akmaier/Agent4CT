@@ -11,9 +11,9 @@
   "val_ssim": 0.9627381563186646,
   "val_psnr": 38.664398193359375,
   "val_rmse": 0.003982764668762684,
-  "val_ssim_std": 0.00386649277061224,
-  "val_psnr_std": 0.38406485319137573,
-  "val_rmse_std": 0.0001749611838022247,
+  "val_ssim_std": 0.004237173906607709,
+  "val_psnr_std": 0.4276953778724433,
+  "val_rmse_std": 0.00018752706058526247,
   "kept": true,
   "status": "keep",
   "params_M": 0.000184,
@@ -63,5 +63,16 @@
     "anisotropic_on_top": false,
     "cg_n": 5,
     "cg_lam_init": 0.01
+  },
+  "headroom_std": 0.014993047249201004,
+  "_val_std_rescored": {
+    "n_cases": 200,
+    "display_min": 0.0,
+    "display_max": 0.05,
+    "headroom_std_available": true,
+    "recomputed_headroom_mean": 0.24146695876565494,
+    "recomputed_val_ssim_mean": 0.9592399936914444,
+    "recomputed_val_psnr_mean": 38.20488735198975,
+    "recomputed_val_rmse_mean": 0.003969740108586848
   }
 }
