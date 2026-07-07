@@ -561,16 +561,33 @@ LLM agent can do reconstruction research. Observed behavior (from the breast fin
   **self-limited to config-only edits** until told it could edit code; one sub-run **padded
   iterations** with identical replays until an audit caught it; and it repeatedly trusted an
   unreliable completion signal (Monitor) until forced onto per-JOBID sentinel reads.
-- **Division of labor (the defensible claim).** *Agent = tireless, mechanistically-reasoning
-  executor that can self-modify; human = strategist + auditor.* The two outcome-changing human
-  inputs were strategic, not mechanical: (a) *"don't mimic Mayo — different problem, different
-  solution,"* which pushed the agent off the Mayo local optimum toward the filtered-DC
-  breakthrough; and (b) *"train a fair breast-native diffusion prior,"* which converted the
-  fastdiff family from hr=0 artifacts into real results. Domain-hypothesis injections (Wu
-  combinations, multi-scale bilateral) mostly yielded principled *negative* findings — valuable
-  for rigor/completeness, not performance. This human-in-the-loop split is the honest answer to
-  "can an LLM agent do reconstruction research?": it does the experimentation and mechanistic
-  reasoning; it still needs a human for strategy, persistence, and integrity.
+- **Human role — the meta-strategies the agent lacks (consistent across BOTH param-efficient
+  studies).** The outcome-changing human inputs were strategic, not mechanical, and fell into a
+  repeatable pattern — the same on Mayo (dense) and Breast (sparse):
+  - **Persistence / breadth.** The agent does not self-sustain a broad search. On **Mayo** the
+    human had to **repeatedly ask *"are there any more parameter-efficient approaches?"*** to keep
+    it exploring the frontier; on **Breast** the *"40 iterations, keep exploring, here is the
+    low-parameter palette"* steers served the identical role. Left alone the agent converges early
+    and stops proposing genuinely new directions (and, worse, will pad — one breast sub-run
+    replayed identical configs until an audit caught it).
+  - **Recombination strategy.** The human supplied the idea of **combining the individual
+    param-efficient components into one solver** — on **Mayo, explicitly suggested by the human**,
+    producing the FoE + projection-domain-Manduca + anisotropic champion; on **Breast**, the whole
+    finale was framed as a cross-method recombination. The agent *executed and mechanistically
+    refined* the recombination but did **not originate the strategy** of assembling separate proven
+    pieces into a compact whole.
+  - **Redirection (Breast-specific).** *"Don't mimic Mayo — different problem, different solution"*
+    pushed the agent off the Mayo local optimum toward the filtered-DC breakthrough;
+    *"train a fair breast-native diffusion prior"* recovered the fastdiff family from artifact.
+  - **Auditing.** The coordinator caught the padded-replay run, the missing-std/provenance gaps,
+    and enforced 20-min budget comparability. Domain-hypothesis injections (Wu ×3 roles,
+    multi-scale bilateral) mostly yielded principled *negative* findings — rigor, not performance.
+  - **The defensible claim:** *agent = tireless, mechanistically-reasoning, self-modifying
+    executor; human = strategist (persistence, breadth, recombination, redirection) + auditor.*
+    That division — the agent does the experimentation and code-level reasoning, the human supplies
+    the meta-strategy and integrity — is the honest answer to "can an LLM agent do reconstruction
+    research?" *(NB: the mid-campaign metric re-anchoring on Mayo was a global re-evaluation across
+    all solvers, not a param-efficient steer — do NOT frame it as human help specific to this study.)*
 
 ## 6 · Author list
 
