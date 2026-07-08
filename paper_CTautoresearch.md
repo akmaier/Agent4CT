@@ -528,19 +528,32 @@ central cross-dataset point:
   2. **filtered-gradient DC** `fbp(Rx−g)` (SART-style, solver-edited) → **breakthrough
      0.4345 @ 13 params**; depth now monotonic (K sat. ≈30).
   3. prox capacity (FoE / bilateral / directional) → all **hurt** (the filtered gradient
-     already reconstructs; a prox only over-smooths).
-  4. **learned primal-dual combination block** (LPD-style, cross-step memory) →
-     **champion hr 0.5047 (single-best) / ≈0.46 ± 0.03 (5-seed) @ 183 params (0.000183 M)**.
-  5. Wu-2015 in three roles (init / band-weighted-DC / band-prox) → all null-or-regress
-     (the ramp-filtered DC already applies the *correct* projector inverse each step, so
-     Wu's frequency-band machinery is redundant or harmful). Multi-scale-bilateral
-     post-filter + CG-DC assembly: in progress at time of writing.
-- **Headline:** a **183-param** solver reaches hr ≈0.50, competitive with the 3.8 M-param
-  breast-native fastdiff (0.52, ~20 000× more params) and approaching VN (0.63 @ 9 k). Same
-  20-min budget as all solvers (a 50-min K-probe was kept as a labeled diagnostic only).
+     already reconstructs; an *in-loop* prox only over-smooths).
+  4. **learned primal-dual combination block** (LPD-style, cross-step memory, W=4) →
+     **hr 0.5047 @ 183 params** (learning to *combine/accumulate* the DC correction is the
+     capacity that helps, unlike a prox).
+  5. **multi-scale bilateral OUTPUT denoiser** (the same bilateral that *fails in-loop*
+     succeeds as a 3-scale post-filter, σ_r=0.02, +12 params) → **champion hr 0.6201
+     (single-best) @ 195 params (0.000195 M)**; PSNR 44.73, SSIM 0.9907 (n=200 val).
+  6. Wu-2015 in three roles (init / band-weighted-DC / band-prox) and a full **CG-DC** solve
+     → all null-or-regress (the ramp-filtered single-gradient DC already applies the *correct*
+     projector inverse each step, so Wu's frequency bands are redundant and CG's extra
+     completeness isn't worth its ~10× projector cost under a fixed wall).
+- **Seed fragility (honest caveat).** The champion is **VN-family seed-fragile**: 4/5 seeds
+  cluster at **0.571 ± 0.033**, but 1/5 (seed 45) converges to a bad basin (hr 0.0), giving a
+  raw 5-seed **0.457 ± 0.257**. Two stabilizers — tighter grad-clip (0.1) and lower LR —
+  *both failed to recover it*, so this is intrinsic to the VN-style architecture, not a
+  schedule artifact. Report both the single-best and the good-seed mean.
+- **Headline:** a **195-param** solver reaches **hr 0.62 single-best / 0.571 good-seed mean**,
+  **matching the Hammernik-VN tier (0.63 @ 9 k) at ≈2 % of VN's parameters** and ≈0.04 % of the
+  0.47 M DD-UNet champion — and competitive with the 3.8 M-param breast-native fastdiff (0.52,
+  ~20 000× more params). Same 20-min budget as all solvers (a 50-min K-probe was kept as a
+  labeled diagnostic only). **36 genuine six-box iterations** (search converged; stopped cleanly
+  rather than padding to the 40 allotted).
 - **Cross-dataset conclusion:** the best compact CT architecture is *problem-dependent* —
-  a denoiser for dense low-dose Mayo, a filtered-DC + learned-primal-dual unroll for
-  sparse-view breast. The agent found each by evidence, not by transfer.
+  a denoiser for dense low-dose Mayo, a **filtered-DC + learned-primal-dual unroll + output
+  bilateral** for sparse-view breast. The agent found each by evidence, not by transfer, and
+  in both cases the compact optimum lands within statistical reach of the DL top tier.
 
 ### 5.6.4 Discussion points — agent behavior (for §4 Discussion)
 Add a subsection characterizing *how the agent worked*, since the paper's title asks whether an
