@@ -1,0 +1,31 @@
+{
+  "schema": "param_efficient_finale_v1",
+  "run_id": "breast-ct-claude-agentic-param-efficient-search-20260703-01",
+  "solver_key": "param_efficient",
+  "champion_iter": 28,
+  "architecture": "filtered-DC fbp(Rx-g) K=30 + LPD-combine W=4 (learned cross-step primal update + memory) + 3-scale bilateral POST-filter sigma_r=0.02",
+  "params": 195,
+  "params_M": 0.000195,
+  "val_hr_single_best": 0.6201,
+  "val_psnr_best": 44.73,
+  "val_ssim_best": 0.9907,
+  "val_rmse_best": 0.00198,
+  "val_hr_good_seed_mean": 0.5712,
+  "val_hr_good_seed_std": 0.0331,
+  "good_seed_n": 4,
+  "val_hr_raw5_mean": 0.457,
+  "val_hr_raw5_std": 0.2571,
+  "raw5_n": 5,
+  "seeds": {
+    "42": 0.6201,
+    "43": 0.5586,
+    "44": 0.5593,
+    "45": 0.0,
+    "46": 0.5469
+  },
+  "seed_fragility": "1 of 5 seeds (seed45) bad-basin collapse to hr 0.0; grad-clip 0.1 and LR 2e-3 both failed to recover -> intrinsic VN-family fragility",
+  "search_converged_iters": 36,
+  "recon_npz": "docs/runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0028/recon_raw.npz",
+  "comparison_png": "docs/runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0028/champion_comparison.png",
+  "frontier_context": "VN-tier hr (0.62 vs VN 0.63 at 9k params) at about 2 percent of VN params; about 0.04 percent of DD-UNet 0.47M"
+}
