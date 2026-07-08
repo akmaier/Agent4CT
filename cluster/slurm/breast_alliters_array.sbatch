@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=lme49,lme50,lme51,lme52,lme170   # same exclude as the Mayo scorers (too-small / down / blacklisted nodes)
+#SBATCH --exclude=lme49,lme170   # only genuinely down nodes (lme49 unk, lme170 drain). The 11GB gtx1080ti nodes lme50/51/52 are ALLOWED for test-scoring: node choice does not affect the deterministic metric, and the otherwise-idle cluster is wasted. Heavy-solver OOM on 11GB is handled by a final resubmit onto big nodes.
 #SBATCH --mem=32G
 #SBATCH --time=00:30:00
 #SBATCH --output=/cluster/maier/Agent4CT/results/slurm/%x-%A_%a.out
