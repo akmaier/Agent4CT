@@ -198,6 +198,93 @@ matrix for the top tier; (5 optional) Breast-CT/Demo-DL results.
 
 ---
 
+## 4.1 · Introduction — full prose draft (v1, Maier funnel)
+
+*Drafted in the first-author voice per §3. Numbers keyed to §1 (Mayo) and §5.6
+(Breast). Placeholders `[Fig N]` / `[cite]` to be resolved at LaTeX time.*
+
+Deep learning has reshaped medical image reconstruction. In computed tomography (CT)
+the transformation is by now unmistakable: a decade of work has produced a large and
+still-growing zoo of learned reconstructors — unrolled iterative networks, learned
+primal–dual schemes, model-based deep priors, image- and projection-domain denoisers,
+score-based and rectified-flow diffusion priors, and, most recently, implicit-neural and
+Gaussian-splatting scene representations. Each promises to recover a diagnostic image
+from fewer views or a lower dose than classical filtered back-projection allows, and the
+best of them deliver [cite]. It is, at first glance, *obviously* a solved research
+program: pick the strongest network, train it on enough data, and reconstruct.
+
+Yet a purely data-driven reconstructor learns a mapping unconstrained by the physics
+that produced the measurement, and an unconstrained mapping is free to *hallucinate* —
+to synthesize plausible-looking anatomy that the projection data do not support [Fig 1].
+This is not a tuning detail but a structural risk, and it is why the field's most durable
+answer has been to put the physics back into the network: to embed the **known operator**
+— the differentiable CT forward- and back-projector, together with the scanner geometry —
+directly into the learned pipeline. Known-operator learning trades a black box for a
+hybrid, and the trade is quantified: constraining the network with an exact operator
+*provably lowers the maximum error bound*, and in practice reduces the number of trainable
+parameters and the amount of training data required, easing the synthetic-to-real transfer
+that medical imaging so often depends on [cite]. All models are wrong, the aphorism goes,
+but some are useful — and a model that knows its own forward operator is useful for a
+principled reason.
+
+There is, however, a second black box in this story, and it sits one level up. The *method
+zoo itself* is the product of a slow, human-iteration-bound craft: to compare or advance
+any of these reconstructors, a researcher must implement a solver, wire it to the data and
+geometry, launch a compute job, read a metric, form a hypothesis about the failure, change
+one thing, and repeat — for days per method. This is the loop that recent "autoresearch"
+proposals imagine automating, and large language model (LLM) agents that write, run, and
+revise code now make the question concrete rather than speculative. *Can an LLM agent do
+reconstruction research?* Not merely tune a hyper-parameter, but implement an unfamiliar
+method from its description, diagnose why a reconstruction fails, edit its own solver code
+to fix it, and benchmark the result fairly against two dozen alternatives — if we ground it
+in the same two things that discipline a human in this field: a differentiable physics
+projector as the known operator, and a fair, calibrated metric that cannot be gamed by a
+display window or a favorable case.
+
+We built exactly such a loop and let an LLM agent run it. Across two clinically distinct
+problems — Mayo low-dose CT (dense, helical, noise-limited) and a 128-view sparse-view
+breast-CT task (streak-limited) — the agent implemented, adapted, and tuned **26 reconstruction
+methods** spanning classical iterative, unrolled, learned-primal–dual, diffusion-prior, and
+scene-representation families. Every method was scored by a single frozen **calibrated-headroom**
+metric, `hr = max(0, 1 − RMSE/RMSE_LD-FBP)`, computed inside the field-of-view against the
+same low-dose FBP baseline, with the top solver selected per iteration on a held-out test
+split and reported as a mean ± standard deviation over the test cases. The agent operated
+under a fixed **20-minute compute budget per iteration** for strict comparability, edited its
+own `solver.py` between iterations, and self-dispatched cluster jobs, with every reconstruction,
+configuration, and metric preserved as provenance under `docs/runs`.
+
+Three findings organize the paper. First, the outcome of an honest benchmark is not a single
+winner but a *small tier of statistically indistinguishable top solvers*: on Mayo, ITNet, its
+variants, and U-Swin form a three-way tie at the 5% level (a fourth, our param-efficient
+solver, joins at 1%), and the dominant human cost was not any one method but the
+helical-to-fan **geometry pipeline** — roughly 24 active working days the agent did *not*
+remove. Second, the role of the human shifts from implementer to *strategist*: the agent
+supplied mechanism, discipline, and genuine self-modification, while the human supplied
+persistence, breadth ("are there other parameter-efficient options?"), the idea to
+*recombine* components, and auditing — a division of labor we characterize explicitly.
+Third, and as the paper's parameter-efficiency hook, the agent assembled a **compact
+reconstructor at roughly 1–2% of the top networks' parameters that lands within statistical
+reach of the champion tier on both problems** — and, tellingly, the compact optimum is
+*problem-dependent*: a small denoiser suffices for dense low-dose Mayo, whereas sparse-view
+breast demands a filtered data-consistency unroll with a learned primal–dual combination and
+an output bilateral filter, an architecture the agent *re-derived from evidence rather than
+transferred* from Mayo. Prior knowledge, once again, buys parameter efficiency — here without
+a human writing the network.
+
+Our contributions are: **(i)** an agentic CT-reconstruction research loop grounded in a
+differentiable physics projector and a frozen, FOV-masked calibrated-headroom metric, with
+full provenance; **(ii)** an autonomous implementation and fair benchmark of 26 methods across
+a dense-low-dose and a sparse-view CT problem, reported with per-case mean ± std under a uniform
+compute budget; **(iii)** a parameter-efficient, evidence-derived compact solver that is
+problem-dependent yet competitive with the top tier at ~1–2% of its parameters; and **(iv)** a
+characterization of what an LLM agent can and cannot do as a reconstruction researcher —
+mechanistic diagnosis and self-modification on one side, and, on the other, the geometry/data
+engineering bottleneck it did not move and the human strategy it still required. The thesis we
+test throughout is simple: *does agentic autoresearch move the bottleneck of reconstruction
+research, or merely automate the part that was never the bottleneck?*
+
+---
+
 ## 5 · TODO — Breast-CT experiments (next session)
 
 **Read first:** `README.md` → `solver_plan.md` (onboarding recipe + six-box checklist)

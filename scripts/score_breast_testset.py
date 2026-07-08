@@ -171,7 +171,7 @@ def _score_recon_per_case(npz_path: Path, cfg: dict) -> dict:
     The batch aggregate cannot give headroom_std; scoring case-by-case can."""
     import numpy as np
     import torch
-    from ddssl_ldct.metrics import evaluate_calibrated
+    from ddssl_ldct.metrics import evaluate_calibrated, ssim as _ssim_fn, psnr as _psnr_fn
 
     d = np.load(str(npz_path))
     pred = torch.from_numpy(np.ascontiguousarray(d["pred"])).float()
@@ -193,6 +193,16 @@ def _score_recon_per_case(npz_path: Path, cfg: dict) -> dict:
     dmin = float(cfg.get("display_min", 0.0))
     dmax = float(cfg.get("display_max", 0.5))
 
+    # BATCH-WIDE SSIM/PSNR data_range — matches the frozen live board metric,
+    # which computes dr = max(truth.max()-truth.min(), 1e-6) over the WHOLE batch
+    # (ddssl_ldct/metrics.py:228). Calling evaluate_calibrated per single case
+    # (n=1) would use that one case's own range as dr, so mean(per-case SSIM/PSNR)
+    # would NOT match the board's val_ssim/val_psnr. RMSE and headroom are
+    # data_range-independent, so we keep those straight from evaluate_calibrated
+    # (with the correct per-case baseline); only SSIM/PSNR are recomputed here
+    # against batch_dr on the calibrated, FOV-masked tensors it returns.
+    batch_dr = max(float(truth.max() - truth.min()), 1e-6)
+
     hr, ss, ps, rm = [], [], [], []
     for i in range(n):
         b_i = baseline[i:i + 1] if baseline is not None else None
@@ -205,8 +215,18 @@ def _score_recon_per_case(npz_path: Path, cfg: dict) -> dict:
         finally:
             if env_bak is not None:
                 os.environ["AGENT4CT_SAVE_RECON"] = env_bak
-        ss.append(m.get("val_ssim"))
-        ps.append(m.get("val_psnr"))
+        # Recompute SSIM/PSNR with the BATCH data_range on the calibrated,
+        # FOV-masked case (evaluate_calibrated returns pred_cal UNMASKED plus the
+        # fov_mask it used). This is the only line that differs from the board's
+        # own per-case values; RMSE/headroom below are taken as-is.
+        _pcal = m["pred_cal"]
+        _fmask = m.get("fov_mask")
+        _tcase = truth[i:i + 1].to(_pcal.device)
+        if _fmask is not None:
+            _pcal = _pcal * _fmask
+            _tcase = _tcase * _fmask
+        ss.append(float(_ssim_fn(_pcal, _tcase, data_range=batch_dr).cpu()))
+        ps.append(float(_psnr_fn(_pcal, _tcase, data_range=batch_dr).cpu()))
         rm.append(m.get("val_rmse"))
         # headroom_case is present only when a baseline was supplied; recompute
         # explicitly against the per-case baseline_rmse so it is always defined.
