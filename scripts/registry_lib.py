@@ -53,7 +53,7 @@ DATASET_LABELS = {
 #     no patients; the redo added a train/val/test split, paper §5.0). Its
 #     final.json (breast_testset_final_v1) carries the same test_*_mean/std keys.
 # ---------------------------------------------------------------------------
-TEST_RANKED_DATASETS = {"mayo_ldct"}  # breast val-ranked during live search; re-add at test-scoring finale
+TEST_RANKED_DATASETS = {"mayo_ldct", "breast_ct"}  # both test-selected (breast finale 2026-07-09: 200-case per-case mean±std)
 
 
 def metric_basis(challenge: str | None) -> str:

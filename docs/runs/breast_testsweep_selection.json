@@ -1,0 +1,252 @@
+[
+  {
+    "solver": "dual-domain-supervised",
+    "run_id": "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 20,
+    "test_best_hr_mean": 0.8947838666483249,
+    "test_best_hr_std": 0.01270369392112385,
+    "test_best_ssim_mean": 0.9992152264714241
+  },
+  {
+    "solver": "itnet",
+    "run_id": "breast-ct-claude-agentic-itnet-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 19,
+    "test_best_iter": 16,
+    "test_best_hr_mean": 0.8926499276041183,
+    "test_best_hr_std": 0.014983342121000973,
+    "test_best_ssim_mean": 0.9990538534522057
+  },
+  {
+    "solver": "itnet-v2",
+    "run_id": "breast-ct-claude-agentic-itnet-v2-search-20260703-01",
+    "n_iters": 19,
+    "n_scored": 19,
+    "test_best_iter": 15,
+    "test_best_hr_mean": 0.8893202617874553,
+    "test_best_hr_std": 0.015118212732640818,
+    "test_best_ssim_mean": 0.9991133844852448
+  },
+  {
+    "solver": "itnet-v3",
+    "run_id": "breast-ct-claude-agentic-itnet-v3-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 12,
+    "test_best_hr_mean": 0.8748792204125369,
+    "test_best_hr_std": 0.015672625839515515,
+    "test_best_ssim_mean": 0.9989201584458351
+  },
+  {
+    "solver": "uswin",
+    "run_id": "breast-ct-claude-agentic-uswin-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 19,
+    "test_best_iter": 20,
+    "test_best_hr_mean": 0.8586408313828781,
+    "test_best_hr_std": 0.015289944183760586,
+    "test_best_ssim_mean": 0.9986153957247734
+  },
+  {
+    "solver": "learned-primal-dual",
+    "run_id": "breast-ct-claude-agentic-learned-primal-dual-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 12,
+    "test_best_hr_mean": 0.7233177013872334,
+    "test_best_hr_std": 0.014302240487836342,
+    "test_best_ssim_mean": 0.9961784264445305
+  },
+  {
+    "solver": "hammernik-2017",
+    "run_id": "breast-ct-claude-agentic-hammernik-2017-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 12,
+    "test_best_hr_mean": 0.6265020535071644,
+    "test_best_hr_std": 0.013504089169336876,
+    "test_best_ssim_mean": 0.9901797065138817
+  },
+  {
+    "solver": "param-efficient",
+    "run_id": "breast-ct-claude-agentic-param-efficient-search-20260703-01",
+    "n_iters": 36,
+    "n_scored": 31,
+    "test_best_iter": 28,
+    "test_best_hr_mean": 0.6212057612713447,
+    "test_best_hr_std": 0.007619191787020001,
+    "test_best_ssim_mean": 0.9911722460389137
+  },
+  {
+    "solver": "hammernik-vn",
+    "run_id": "breast-ct-claude-agentic-hammernik-vn-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 16,
+    "test_best_hr_mean": 0.5787294285529597,
+    "test_best_hr_std": 0.01194617004123142,
+    "test_best_ssim_mean": 0.986472314298153
+  },
+  {
+    "solver": "fastdiff-flow-pixel-constrained",
+    "run_id": "breast-ct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 15,
+    "test_best_hr_mean": 0.5119377621088875,
+    "test_best_hr_std": 0.02107365483193454,
+    "test_best_ssim_mean": 0.979174302816391
+  },
+  {
+    "solver": "ram-zeroshot",
+    "run_id": "breast-ct-claude-agentic-ram-zeroshot-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 19,
+    "test_best_iter": 6,
+    "test_best_hr_mean": 0.36934335257553463,
+    "test_best_hr_std": 0.010704560827695353,
+    "test_best_ssim_mean": 0.9787384071946144
+  },
+  {
+    "solver": "tv-iterative",
+    "run_id": "breast-ct-claude-agentic-tv-iterative-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 8,
+    "test_best_hr_mean": 0.36014903261433234,
+    "test_best_hr_std": 0.014064731478296138,
+    "test_best_ssim_mean": 0.9918481773138046
+  },
+  {
+    "solver": "manhart-pwls-tv",
+    "run_id": "breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 19,
+    "test_best_hr_mean": 0.3601452930931596,
+    "test_best_hr_std": 0.01406678280820535,
+    "test_best_ssim_mean": 0.9918481782078743
+  },
+  {
+    "solver": "wu-2015-trainable",
+    "run_id": "breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 20,
+    "test_best_hr_mean": 0.31563203059683825,
+    "test_best_hr_std": 0.009943624610055692,
+    "test_best_ssim_mean": 0.9536797580122948
+  },
+  {
+    "solver": "manduca-bilateral",
+    "run_id": "breast-ct-claude-agentic-manduca-bilateral-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 14,
+    "test_best_hr_mean": 0.2763372957236417,
+    "test_best_hr_std": 0.008912885056610802,
+    "test_best_ssim_mean": 0.9830213233828544
+  },
+  {
+    "solver": "fastdiff-flow-pixel-unconstrained",
+    "run_id": "breast-ct-claude-agentic-fastdiff-flow-pixel-unconstrained-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 19,
+    "test_best_hr_mean": 0.2693045084683372,
+    "test_best_hr_std": 0.017827388955340306,
+    "test_best_ssim_mean": 0.9775520750880241
+  },
+  {
+    "solver": "fastdiff-wdm-wavelet-constrained",
+    "run_id": "breast-ct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 20,
+    "test_best_hr_mean": 0.2692917146126529,
+    "test_best_hr_std": 0.033513100328910465,
+    "test_best_ssim_mean": 0.9339555355906487
+  },
+  {
+    "solver": "dual-domain-bilateral-supervised",
+    "run_id": "breast-ct-claude-agentic-dual-domain-bilateral-supervised-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 20,
+    "test_best_hr_mean": 0.2546087986419895,
+    "test_best_hr_std": 0.008737681982496267,
+    "test_best_ssim_mean": 0.984759738445282
+  },
+  {
+    "solver": "wu-2015",
+    "run_id": "breast-ct-claude-agentic-wu-2015-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 20,
+    "test_best_hr_mean": 0.15166368210564085,
+    "test_best_hr_std": 0.0134060140781349,
+    "test_best_ssim_mean": 0.9611412900686264
+  },
+  {
+    "solver": "tv-iterative-supervised",
+    "run_id": "breast-ct-claude-agentic-tv-iterative-supervised-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 19,
+    "test_best_iter": 18,
+    "test_best_hr_mean": 0.15131201220126064,
+    "test_best_hr_std": 0.009474363909483008,
+    "test_best_ssim_mean": 0.9612921553850174
+  },
+  {
+    "solver": "dual-domain-bilateral-n2i",
+    "run_id": "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 8,
+    "test_best_hr_mean": 0.0001251812764975041,
+    "test_best_hr_std": 0.0014005172621148222,
+    "test_best_ssim_mean": 0.9583047103881835
+  },
+  {
+    "solver": "dual-domain-n2i",
+    "run_id": "breast-ct-claude-agentic-dual-domain-n2i-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 10,
+    "test_best_hr_mean": 5.036029747583049e-05,
+    "test_best_hr_std": 0.0007122021569546282,
+    "test_best_ssim_mean": 0.9460639229416847
+  },
+  {
+    "solver": "fastdiff-wdm-wavelet-unconstrained",
+    "run_id": "breast-ct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": 9,
+    "test_best_hr_mean": 0.0,
+    "test_best_hr_std": 0.0,
+    "test_best_ssim_mean": 0.9447808548808098
+  },
+  {
+    "solver": "naf",
+    "run_id": "breast-ct-claude-agentic-naf-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": null,
+    "test_best_hr_mean": null,
+    "test_best_hr_std": null,
+    "test_best_ssim_mean": null
+  },
+  {
+    "solver": "r2gaussian",
+    "run_id": "breast-ct-claude-agentic-r2gaussian-search-20260703-01",
+    "n_iters": 20,
+    "n_scored": 20,
+    "test_best_iter": null,
+    "test_best_hr_mean": null,
+    "test_best_hr_std": null,
+    "test_best_ssim_mean": null
+  }
+]
