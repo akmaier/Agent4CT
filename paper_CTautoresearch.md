@@ -222,6 +222,57 @@ note):
    methods. Agentic autoresearch makes such multi-condition benchmarking cheap enough to be
    routine. That is its real payoff for the field.
 
+**EQUATIONS for Materials and Methods (user directive 2026-07-09 — the Methods section
+MUST show math).** Keep notation light. Precede each with one intuition sentence, follow
+with one plain-English sentence. Target ~6 numbered display equations:
+
+1. **Forward model / known operator.** The scanner is a linear operator. Intuition: "the
+   sinogram is line integrals of the image." Then
+   $$ \mathbf{g} = \mathbf{A}\,\mathbf{x} + \boldsymbol{\varepsilon}, $$
+   with $\mathbf{x}$ the image, $\mathbf{A}$ the discrete fan-beam projector (PYRO-NN,
+   differentiable), $\mathbf{g}$ the measured projections, $\boldsymbol{\varepsilon}$ noise
+   ($\boldsymbol{\varepsilon}=\mathbf{0}$ for the noiseless Sidky breast data). Reconstruction
+   = recover $\mathbf{x}$ from $\mathbf{g}$; sparse-view makes $\mathbf{A}$ under-determined.
+
+2. **Unrolled reconstruction with data consistency.** Intuition: "walk toward images that
+   agree with the measurements, then clean up." $K$ unrolled steps
+   $$ \mathbf{x}_{k+1} = \mathbf{x}_k - \alpha_k\,\mathbf{D}(\mathbf{A}\mathbf{x}_k-\mathbf{g})
+      + \mathcal{R}_\theta(\mathbf{x}_k), $$
+   where the **data-consistency map** $\mathbf{D}$ is the paper's key lever: the raw adjoint
+   $\mathbf{D}=\mathbf{A}^{\!\top}$ re-injects sparse-view streaks, whereas the **filtered**
+   $\mathbf{D}=\mathrm{FBP}(\cdot)$ (ramp/Hann-filtered back-projection, SART-style) does not —
+   this is the breast breakthrough. $\mathcal{R}_\theta$ is the learned regularizer.
+
+3. **Learned primal–dual block (the compact + the noisy champion).** Intuition: "learn how to
+   combine the correction, in image *and* measurement space." Sinogram-space dual $\mathbf{h}$
+   and image-space primal $\mathbf{x}$:
+   $$ \mathbf{h}_{k+1}=\Gamma_\phi(\mathbf{h}_k,\ \mathbf{A}\mathbf{x}_k-\mathbf{g}),\qquad
+      \mathbf{x}_{k+1}=\Lambda_\theta\!\big(\mathbf{x}_k,\ \mathrm{FBP}(\mathbf{h}_{k+1})\big), $$
+   with tied small convs $\Gamma_\phi,\Lambda_\theta$ (zero-init final layer ⇒ identity at
+   init, no regression). This is `learned-primal-dual`, the noisy-board champion.
+
+4. **Calibrated-headroom metric.** Intuition: "score how far a method closes the gap between
+   low-dose FBP and truth." With a two-point intensity calibration $\mathcal{C}$ and FOV mask
+   $\mathbf{M}$,
+   $$ \mathrm{hr}=\max\!\Big(0,\ 1-\tfrac{\mathrm{RMSE}(\mathbf{M}\!\odot\!\mathcal{C}\hat{\mathbf{x}},\,\mathbf{M}\!\odot\!\mathbf{x})}{\mathrm{RMSE}(\mathbf{M}\!\odot\!\mathbf{x}_{\mathrm{FBP}},\,\mathbf{M}\!\odot\!\mathbf{x})}\Big). $$
+   $\mathrm{hr}=0$ = no better than FBP; $\mathrm{hr}\to1$ = near-perfect. Report mean ± std
+   over cases; SSIM/PSNR use a batch-wide data range.
+
+5. **Poisson noise model (robustness experiment).** Intuition: "fewer photons ⇒ noisier line
+   integrals." For a line integral $p$ and incident photons $I_0$,
+   $$ N\sim\mathrm{Poisson}(I_0 e^{-p}),\qquad \hat p=-\log\!\big(\max(N,1)/I_0\big). $$
+   $I_0=10^5$ (high dose, ~1–2% at the thickest ray). Applied to the test sinograms only; the
+   truth stays clean; models are **not retrained**.
+
+6. **Statistics — effect size, not just p.** Intuition: "with n=200, everything is
+   'significant'; report how big the difference is." Paired $t$ over shared cases, plus
+   Cohen's $d_z=\bar d/s_d$ (mean of paired differences over their SD). Lead with $d_z$.
+
+*(Optional, if space: state the known-operator error-bound result qualitatively — embedding
+the exact operator $\mathbf{A}$ cannot raise, and generally lowers, the maximum error bound
+vs. a fully-learned map — and cite Maier et al., Nature Mach. Intell. 2019. One sentence, no
+proof.)*
+
 > **10-PAGE DISCIPLINE (hard limit).** §5.6 is a lab notebook, not the paper. The main
 > text carries ~5–7 figures + ~3 tables and the distilled narrative above; the full
 > per-solver boards, all agent-behavior detail, the param-efficient search arc, and the
