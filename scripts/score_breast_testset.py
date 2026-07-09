@@ -174,7 +174,11 @@ def _score_recon_per_case(npz_path: Path, cfg: dict) -> dict:
     from ddssl_ldct.metrics import evaluate_calibrated, ssim as _ssim_fn, psnr as _psnr_fn
 
     d = np.load(str(npz_path))
-    pred = torch.from_numpy(np.ascontiguousarray(d["pred"])).float()
+    # Most solvers save the raw recon under "pred" (metrics.py AGENT4CT_SAVE_RECON),
+    # but a few solver-side save blocks (dual-domain-bilateral-n2i, wu-2015-trainable)
+    # use "recon". Accept either so those solvers score instead of KeyError'ing.
+    _pred_key = "pred" if "pred" in d.files else ("recon" if "recon" in d.files else "pred")
+    pred = torch.from_numpy(np.ascontiguousarray(d[_pred_key])).float()
     truth = torch.from_numpy(np.ascontiguousarray(d["truth"])).float()
     baseline = (torch.from_numpy(np.ascontiguousarray(d["baseline"])).float()
                 if "baseline" in d.files else None)
