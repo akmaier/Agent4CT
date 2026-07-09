@@ -111,15 +111,79 @@ for a, b, r in adj:
     md.append(f"| {a} → {b} | {r['mean_diff']:+.4f} | {r['dz']:.2f} | {r['p']:.2e} | "
               f"{'yes' if r['p']<0.05 else 'NO (tie)'} |")
 
-# tie tier vs champion
+# ---- per-metric significance vs champion (all four measures) ----
+# RMSE/PSNR are "lower/higher is better"; we test separation regardless of sign.
+md.append(f"\n## Champion vs each — ALL metrics (paired p; dz in parens)\n")
+md.append("Sign of Δ is champion − solver (hr/SSIM/PSNR: + = champion better; RMSE: − = champion better).\n")
+md.append("| Solver | Δhr (dz) p | ΔSSIM (dz) p | ΔPSNR (dz) p | ΔRMSE (dz) p |")
+md.append("|---|---|---|---|---|")
+def cell(r):
+    return f"{r['mean_diff']:+.4f} ({r['dz']:.2f}) {stars(r['p'])}"
+for k in order[1:]:
+    pm = permetric[k]
+    md.append(f"| {k} | {cell(pm['hr'])} | {cell(pm['ssim'])} | {cell(pm['psnr'])} | "
+              f"{cell(pm['rmse'])} |")
+md.append("\n*Legend: n.s. = p≥.05, `*` = p<.05, `**` = p<1e-2, `***` = p<1e-4.*\n")
+
+# per-metric tie tiers vs champion
+md.append("\n### Per-metric statistical tie tier (n.s. vs champion at 5%)\n")
+for m in ("hr", "ssim", "psnr", "rmse"):
+    tiem = [champ] + [k for k in order[1:] if permetric[k][m]["p"] >= 0.05]
+    md.append(f"- **{m.upper()}**: {', '.join(tiem)} ({len(tiem)} method(s))")
+# also flag metrics where a solver is n.s. on one measure but separated on another
+disc = []
+for k in order[1:]:
+    verd = {m: (permetric[k][m]["p"] >= 0.05) for m in ("hr", "ssim", "psnr", "rmse")}
+    if len(set(verd.values())) > 1:
+        ns = [m for m, v in verd.items() if v]
+        disc.append(f"{k} (tied on {','.join(ns) or 'none'})")
+md.append("\n**Metric-discordant solvers** (tied to champion on some measures, separated on others): "
+          + (", ".join(disc) if disc else "none — every solver has the same verdict across all four metrics") + ".\n")
+
+# tie tier vs champion (hr, kept for the summary)
 tie = [champ] + [k for (k, r) in rows if r["p"] >= 0.05]
-md.append(f"\n## Statistical tie tier (not separable from champion at 5%)\n")
+md.append(f"\n## Statistical tie tier — hr (not separable from champion at 5%)\n")
 md.append(f"**{', '.join(tie)}** — {len(tie)} method(s).\n")
 neg = [(k, r) for (k, r) in rows if r["p"] < 0.05 and abs(r["dz"]) < 0.2]
 if neg:
     md.append("\n**Significant-but-negligible (p<0.05 yet |dz|<0.2 — the n=200 power caveat):** "
               + ", ".join(f"{k} (dz={r['dz']:.2f})" for k, r in neg) + ".\n")
 
+md.append("""
+## Findings — all four metrics, and the n=5 (Mayo) vs n=200 (Breast) contrast
+
+1. **All four measures agree — total separation.** Every top-10 method separates from the
+   champion at p<1e-4 on **hr, SSIM, PSNR AND RMSE simultaneously**; the per-metric tie tier
+   is the **champion alone** for every metric, and there are **zero metric-discordant
+   solvers**. This is stronger than — and opposite to — **Mayo (n=5)**, where the metrics
+   *disagreed* (SSIM alone separated ITNet-v1 from the v2/U-Swin tie) and the top 3–4 were an
+   unbreakable hr-tie. Same frozen framework; the flip is driven purely by sample size (5→200).
+
+2. **p-values don't rank the top tier — effect size does.** By Cohen's dz / raw Δhr, three
+   practical bands: **top cluster** dual-domain-sup (0.8948), itnet (0.8926, dz 0.64), itnet-v2
+   (0.8893), itnet-v3 (0.8749), uswin (0.8586) — all within Δhr ≤ 0.036; **large practical gap
+   ↓** to learned-primal-dual (0.7233, dz 15.6); **mid-tier** hammernik-2017 (0.6265),
+   param-efficient (0.6183), hammernik-vn (0.5787), fastdiff (0.5119).
+
+3. **SSIM is the most sensitive discriminator at the ceiling.** For itnet vs champion the SSIM
+   effect (dz 1.80) exceeds the hr effect (dz 0.64) — because top SSIM is saturated (0.9991 vs
+   0.9992) with tiny variance, so a minuscule mean gap is a large standardized effect. RMSE and
+   hr track each other (hr is RMSE-derived). No metric changes the *ordering*, but SSIM
+   sharpens the very top and RMSE/hr sharpen the mid-tier.
+
+4. **Param-efficient (195 params) — mid-tier, but the tightest and closest-to-DL.** Its nearest
+   neighbour is a full DL method, hammernik-2017, at Δhr 0.008 (dz 0.80) — the smallest-effect
+   mid-tier pair — and it has the **smallest per-case std of all solvers (±0.0076 hr)**: the
+   most *consistent* reconstructor across the 200 cases, at ~2% of a full network's parameters.
+
+5. **Methodological takeaway.** The identical significance machinery yields "everyone ties"
+   (Mayo n=5) and "everyone separates on every metric" (Breast n=200). Raw significance is
+   sample-size-bound and not cross-dataset-comparable; **effect size (dz) and raw Δ are** — lead
+   with effect size, treat p as secondary.
+
+Figures: `breast_topsolver_significance.png` (Δhr vs champion, 95% CI — all red = all separated
+at 1%); `breast_significance_matrix.png` (pairwise −log10 p, no n.s. cells).
+""")
 (REPO / "docs/runs/breast_significance_stats.md").write_text("\n".join(md))
 print("wrote docs/runs/breast_significance_stats.md")
 print("TIE TIER:", tie)

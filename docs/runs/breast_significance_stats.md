@@ -58,39 +58,70 @@ Statistical comparison of the **test-selected** Breast-CT leaderboard (each solv
 | param-efficient → hammernik-vn | +0.0396 | 4.51 | 1.94e-134 | yes |
 | hammernik-vn → fastdiff-flow-pixel-constrained | +0.0668 | 2.31 | 8.86e-82 | yes |
 
-## Statistical tie tier (not separable from champion at 5%)
+## Champion vs each — ALL metrics (paired p; dz in parens)
+
+Sign of Δ is champion − solver (hr/SSIM/PSNR: + = champion better; RMSE: − = champion better).
+
+| Solver | Δhr (dz) p | ΔSSIM (dz) p | ΔPSNR (dz) p | ΔRMSE (dz) p |
+|---|---|---|---|---|
+| itnet | +0.0021 (0.64) *** | +0.0002 (1.80) *** | +0.1520 (0.56) *** | -0.0000 (-0.66) *** |
+| itnet-v2 | +0.0055 (1.61) *** | +0.0001 (1.51) *** | +0.4206 (1.71) *** | -0.0000 (-1.56) *** |
+| itnet-v3 | +0.0199 (5.18) *** | +0.0003 (2.26) *** | +1.4999 (7.82) *** | -0.0001 (-4.09) *** |
+| uswin | +0.0361 (9.84) *** | +0.0006 (3.37) *** | +2.5768 (12.09) *** | -0.0002 (-6.82) *** |
+| learned-primal-dual | +0.1715 (15.64) *** | +0.0030 (4.76) *** | +8.4500 (10.25) *** | -0.0009 (-12.93) *** |
+| hammernik-2017 | +0.2683 (42.42) *** | +0.0090 (6.08) *** | +11.0621 (13.92) *** | -0.0014 (-15.54) *** |
+| param-efficient | +0.2765 (25.58) *** | +0.0080 (6.53) *** | +11.2547 (11.52) *** | -0.0014 (-27.35) *** |
+| hammernik-vn | +0.3161 (44.46) *** | +0.0127 (6.92) *** | +12.1097 (14.02) *** | -0.0016 (-17.21) *** |
+| fastdiff-flow-pixel-constrained | +0.3828 (13.06) *** | +0.0200 (5.40) *** | +13.3834 (10.41) *** | -0.0020 (-16.29) *** |
+
+*Legend: n.s. = p≥.05, `*` = p<.05, `**` = p<1e-2, `***` = p<1e-4.*
+
+
+### Per-metric statistical tie tier (n.s. vs champion at 5%)
+
+- **HR**: dual-domain-supervised (1 method(s))
+- **SSIM**: dual-domain-supervised (1 method(s))
+- **PSNR**: dual-domain-supervised (1 method(s))
+- **RMSE**: dual-domain-supervised (1 method(s))
+
+**Metric-discordant solvers** (tied to champion on some measures, separated on others): none — every solver has the same verdict across all four metrics.
+
+
+## Statistical tie tier — hr (not separable from champion at 5%)
 
 **dual-domain-supervised** — 1 method(s).
 
-## Findings — the n=5 (Mayo) vs n=200 (Breast) contrast
 
-1. **At n=200 the paired test is so powerful that everything separates.** Every one of
-   the top-10 is significantly different from the champion at the **1% level, Holm-robust**
-   — and *every adjacent rank* separates too (rank-1 vs rank-2: Δhr=+0.0021, p=2e-16).
-   The statistical "tie tier" is the **champion alone**. This is the exact **opposite of
-   Mayo** (n=5), where weak power made the top **3–4 methods an unbreakable tie**. Same
-   frozen framework, opposite verdict — driven purely by sample size.
+## Findings — all four metrics, and the n=5 (Mayo) vs n=200 (Breast) contrast
 
-2. **Therefore p-values do not rank the top tier; effect size does.** Grouped by Cohen's
-   dz / raw Δhr, three practical bands emerge:
-   - **Top cluster (dz small→large, Δhr ≤ 0.036):** dual-domain-supervised (0.8948),
-     itnet (0.8926, dz 0.64), itnet-v2 (0.8893), itnet-v3 (0.8749), uswin (0.8586).
-     A tight practical cluster — the champion's lead over itnet is 0.2% headroom.
-   - **Large practical gap ↓** to learned-primal-dual (0.7233, dz 15.6 vs champion).
-   - **Mid-tier:** hammernik-2017 (0.6265), param-efficient (0.6183), hammernik-vn
-     (0.5787), fastdiff-pixel (0.5119).
+1. **All four measures agree — total separation.** Every top-10 method separates from the
+   champion at p<1e-4 on **hr, SSIM, PSNR AND RMSE simultaneously**; the per-metric tie tier
+   is the **champion alone** for every metric, and there are **zero metric-discordant
+   solvers**. This is stronger than — and opposite to — **Mayo (n=5)**, where the metrics
+   *disagreed* (SSIM alone separated ITNet-v1 from the v2/U-Swin tie) and the top 3–4 were an
+   unbreakable hr-tie. Same frozen framework; the flip is driven purely by sample size (5→200).
 
-3. **Param-efficient (195 params) sits in the mid-tier and is the tightest solver.** It is
-   statistically far below the top-5 (expected), but its nearest neighbour is a full DL
-   method — hammernik-2017 — at **Δhr = 0.008, dz = 0.80** (the smallest-effect mid-tier
-   pair): a **195-parameter** solver essentially matching a full learned method at ~2% of
-   its parameters. It also has the **smallest per-case std of all (±0.0076)** — the most
-   consistent reconstructor across the 200 cases.
+2. **p-values don't rank the top tier — effect size does.** By Cohen's dz / raw Δhr, three
+   practical bands: **top cluster** dual-domain-sup (0.8948), itnet (0.8926, dz 0.64), itnet-v2
+   (0.8893), itnet-v3 (0.8749), uswin (0.8586) — all within Δhr ≤ 0.036; **large practical gap
+   ↓** to learned-primal-dual (0.7233, dz 15.6); **mid-tier** hammernik-2017 (0.6265),
+   param-efficient (0.6183), hammernik-vn (0.5787), fastdiff (0.5119).
 
-4. **Methodological takeaway for the paper.** The same significance machinery yields
-   "everyone ties" (Mayo, n=5) and "everyone separates" (Breast, n=200). Raw significance
-   is sample-size-bound and not cross-dataset-comparable; **effect size (dz) and raw Δhr
-   are.** Report both; lead with effect size.
+3. **SSIM is the most sensitive discriminator at the ceiling.** For itnet vs champion the SSIM
+   effect (dz 1.80) exceeds the hr effect (dz 0.64) — because top SSIM is saturated (0.9991 vs
+   0.9992) with tiny variance, so a minuscule mean gap is a large standardized effect. RMSE and
+   hr track each other (hr is RMSE-derived). No metric changes the *ordering*, but SSIM
+   sharpens the very top and RMSE/hr sharpen the mid-tier.
 
-Figures: `breast_topsolver_significance.png` (Δhr vs champion, 95% CI — all points red =
-all separated at 1%), `breast_significance_matrix.png` (pairwise −log10 p, no n.s. cells).
+4. **Param-efficient (195 params) — mid-tier, but the tightest and closest-to-DL.** Its nearest
+   neighbour is a full DL method, hammernik-2017, at Δhr 0.008 (dz 0.80) — the smallest-effect
+   mid-tier pair — and it has the **smallest per-case std of all solvers (±0.0076 hr)**: the
+   most *consistent* reconstructor across the 200 cases, at ~2% of a full network's parameters.
+
+5. **Methodological takeaway.** The identical significance machinery yields "everyone ties"
+   (Mayo n=5) and "everyone separates on every metric" (Breast n=200). Raw significance is
+   sample-size-bound and not cross-dataset-comparable; **effect size (dz) and raw Δ are** — lead
+   with effect size, treat p as secondary.
+
+Figures: `breast_topsolver_significance.png` (Δhr vs champion, 95% CI — all red = all separated
+at 1%); `breast_significance_matrix.png` (pairwise −log10 p, no n.s. cells).
