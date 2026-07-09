@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-09T17:51:22Z",
+ "updated": "2026-07-09T18:18:55Z",
  "ranking_metric": "per-dataset",
  "tiebreak": "per-dataset",
  "datasets": {
@@ -1639,6 +1639,37 @@
      "rank": 1
     },
     {
+     "solver_key": "manduca-bilateral",
+     "solver_name": "Manduca proj-bilateral (trainable)",
+     "run_id": "breast-ct-claude-agentic-manduca-bilateral-search-20260703-01",
+     "best_iter": 14,
+     "params_M": 2.2e-05,
+     "params_source": "observation",
+     "val_ssim": null,
+     "headroom": null,
+     "val_psnr": null,
+     "val_rmse": null,
+     "val_ssim_std": null,
+     "val_psnr_std": null,
+     "val_rmse_std": null,
+     "headroom_std": null,
+     "elapsed_s": 1764.9290957450867,
+     "image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0014/comparison.png",
+     "test_hr_mean": 0.8420173675879634,
+     "test_hr_std": 0.006283613711526653,
+     "test_ssim_mean": 0.9537499612569809,
+     "test_ssim_std": 0.0045475552810321845,
+     "test_psnr_mean": 37.365173931121824,
+     "test_psnr_std": 0.48303062296258115,
+     "test_rmse_mean": 0.004853453666437417,
+     "test_rmse_std": 0.0002681470287528899,
+     "metric_basis": "test",
+     "rank_metric": 0.8420173675879634,
+     "rank_tiebreak": 0.9537499612569809,
+     "excluded_reason": null,
+     "rank": 2
+    },
+    {
      "solver_key": "dual-domain-bilateral-n2i",
      "solver_name": "DD-BF N2I (per-image)",
      "run_id": "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260703-01",
@@ -1667,7 +1698,7 @@
      "rank_metric": 0.7927377730415806,
      "rank_tiebreak": 0.9531936559081078,
      "excluded_reason": null,
-     "rank": 2
+     "rank": 3
     },
     {
      "solver_key": "hammernik-2017",
@@ -1698,7 +1729,7 @@
      "rank_metric": 0.7015602869856657,
      "rank_tiebreak": 0.7177720820903778,
      "excluded_reason": null,
-     "rank": 3
+     "rank": 4
     },
     {
      "solver_key": "itnet-v3",
@@ -1729,7 +1760,7 @@
      "rank_metric": 0.7007246308276064,
      "rank_tiebreak": 0.7563898852467537,
      "excluded_reason": null,
-     "rank": 4
+     "rank": 5
     },
     {
      "solver_key": "fastdiff-flow-pixel-unconstrained",
@@ -1760,7 +1791,7 @@
      "rank_metric": 0.6619840835896746,
      "rank_tiebreak": 0.705751656293869,
      "excluded_reason": null,
-     "rank": 5
+     "rank": 6
     },
     {
      "solver_key": "ram-zeroshot",
@@ -1791,7 +1822,7 @@
      "rank_metric": 0.6381839580367977,
      "rank_tiebreak": 0.6578472626209259,
      "excluded_reason": null,
-     "rank": 6
+     "rank": 7
     },
     {
      "solver_key": "uswin",
@@ -1822,7 +1853,7 @@
      "rank_metric": 0.5915000390104183,
      "rank_tiebreak": 0.6407698294520379,
      "excluded_reason": null,
-     "rank": 7
+     "rank": 8
     },
     {
      "solver_key": "itnet",
@@ -1853,7 +1884,7 @@
      "rank_metric": 0.578365657311381,
      "rank_tiebreak": 0.6294672268629075,
      "excluded_reason": null,
-     "rank": 8
+     "rank": 9
     },
     {
      "solver_key": "hammernik-vn",
@@ -1884,7 +1915,7 @@
      "rank_metric": 0.5529289958694413,
      "rank_tiebreak": 0.5962351167201996,
      "excluded_reason": null,
-     "rank": 9
+     "rank": 10
     },
     {
      "solver_key": "itnet-v2",
@@ -1915,7 +1946,7 @@
      "rank_metric": 0.5480435854644196,
      "rank_tiebreak": 0.6201288479566575,
      "excluded_reason": null,
-     "rank": 10
+     "rank": 11
     },
     {
      "solver_key": "param-efficient",
@@ -1946,7 +1977,7 @@
      "rank_metric": 0.5152565671733735,
      "rank_tiebreak": 0.5770784458518028,
      "excluded_reason": null,
-     "rank": 11
+     "rank": 12
     },
     {
      "solver_key": "manhart-pwls-tv",
@@ -1977,7 +2008,7 @@
      "rank_metric": 0.5067934198964514,
      "rank_tiebreak": 0.6163687017560006,
      "excluded_reason": null,
-     "rank": 12
+     "rank": 13
     },
     {
      "solver_key": "tv-iterative",
@@ -2008,7 +2039,7 @@
      "rank_metric": 0.5067909017851028,
      "rank_tiebreak": 0.6163674145936966,
      "excluded_reason": null,
-     "rank": 13
+     "rank": 14
     },
     {
      "solver_key": "wu-2015",
@@ -2039,7 +2070,7 @@
      "rank_metric": 0.3700495675638626,
      "rank_tiebreak": 0.5243812471628189,
      "excluded_reason": null,
-     "rank": 14
+     "rank": 15
     },
     {
      "solver_key": "wu-2015-trainable",
@@ -2070,7 +2101,7 @@
      "rank_metric": 0.2591213618315681,
      "rank_tiebreak": 0.43997726976871493,
      "excluded_reason": null,
-     "rank": 15
+     "rank": 16
     },
     {
      "solver_key": "tv-iterative-supervised",
@@ -2101,7 +2132,7 @@
      "rank_metric": 0.10705015273404614,
      "rank_tiebreak": 0.4567089141905308,
      "excluded_reason": null,
-     "rank": 16
+     "rank": 17
     },
     {
      "solver_key": "dual-domain-bilateral-supervised",
@@ -2132,7 +2163,7 @@
      "rank_metric": 0.1002933686588086,
      "rank_tiebreak": 0.452400324344635,
      "excluded_reason": null,
-     "rank": 17
+     "rank": 18
     },
     {
      "solver_key": "fastdiff-wdm-wavelet-unconstrained",
@@ -2287,37 +2318,6 @@
      "rank_metric": null,
      "rank_tiebreak": null,
      "excluded_reason": "discard",
-     "rank": null
-    },
-    {
-     "solver_key": "manduca-bilateral",
-     "solver_name": "Manduca proj-bilateral (trainable)",
-     "run_id": "breast-ct-claude-agentic-manduca-bilateral-search-20260703-01",
-     "best_iter": 14,
-     "params_M": 2.2e-05,
-     "params_source": "observation",
-     "val_ssim": null,
-     "headroom": null,
-     "val_psnr": null,
-     "val_rmse": null,
-     "val_ssim_std": null,
-     "val_psnr_std": null,
-     "val_rmse_std": null,
-     "headroom_std": null,
-     "elapsed_s": 1764.9290957450867,
-     "image": "runs/breast-ct-claude-agentic-manduca-bilateral-search-20260703-01/iterations/iter-0014/comparison.png",
-     "test_hr_mean": null,
-     "test_hr_std": null,
-     "test_ssim_mean": null,
-     "test_ssim_std": null,
-     "test_psnr_mean": null,
-     "test_psnr_std": null,
-     "test_rmse_mean": null,
-     "test_rmse_std": null,
-     "metric_basis": "test",
-     "rank_metric": null,
-     "rank_tiebreak": null,
-     "excluded_reason": "pending-test",
      "rank": null
     },
     {
