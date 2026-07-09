@@ -537,7 +537,9 @@ may be different. Spec (user 2026-07-03):
 
 ### 5.6.1 The 24-solver Breast-CT board (val hr, per-case mean±std, n=200)
 All 24 reached the full 20 six-box iterations under the 20-min budget. Val leaderboard
-(the redo is val-ranked until the test-scoring close-out; hr, ±per-case std):
+below; **the test-scoring close-out is now done — see §5.6.5 for the final TEST-ranked
+board + significance** (test ≈ val, champion dual-domain-supervised 0.8948). Val hr,
+±per-case std:
 
 | # | solver | hr | ±std | family |
 |---|---|---:|---|---|
@@ -688,6 +690,105 @@ LLM agent can do reconstruction research. Observed behavior (from the breast fin
     the meta-strategy and integrity — is the honest answer to "can an LLM agent do reconstruction
     research?" *(NB: the mid-campaign metric re-anchoring on Mayo was a global re-evaluation across
     all solvers, not a param-efficient steer — do NOT frame it as human help specific to this study.)*
+
+### 5.6.5 TEST-ranked Breast-CT board + significance (the finale, 2026-07-09)
+
+Closed out the frozen paradigm on breast: re-partitioned split (train 3600 / val 200 /
+**test 200**, seed 20260703, disjoint), scored **every iter of every solver on the 200
+held-out test cases** (best-by-test-hr selection, exactly like Mayo), and flipped the board
+to **test-ranked, per-case mean ± std over n=200**. Pipeline: `score_breast_alliters.py`
+(515-task array) → `breast_testsweep_selection.json` → `build_registry.py` (breast_ct added
+to `TEST_RANKED_DATASETS`). All 25 rows carry a backing figure; validate gate PASS.
+
+**Test-selected leaderboard (hr mean ± std, n=200):**
+
+| # | solver | test hr | ±std | best iter |
+|---|---|---:|---|---:|
+| 1 | **dual-domain-supervised** | **0.8948** | 0.0127 | 20 |
+| 2 | itnet | 0.8926 | 0.0150 | 16 |
+| 3 | itnet-v2 | 0.8893 | 0.0151 | 15 |
+| 4 | itnet-v3 | 0.8749 | 0.0157 | 12 |
+| 5 | uswin | 0.8586 | 0.0153 | 20 |
+| 6 | learned-primal-dual | 0.7233 | 0.0143 | 12 |
+| 7 | hammernik-2017 | 0.6265 | 0.0135 | 12 |
+| 8 | **param-efficient (195 p)** | **0.6212** | **0.0076** | 28 |
+| 9 | hammernik-vn | 0.5787 | 0.0119 | 16 |
+| 10 | fastdiff-flow-pixel-constrained | 0.5119 | 0.0211 | 15 |
+| 11–23 | ram · tv-iterative · manhart · wu-trainable · manduca · fastdiff-* · dd-bilateral-sup · wu-2015 · tv-iter-sup · dd-bilateral-n2i · dd-n2i · fastdiff-wdm-unconstr | 0.37 → 0.00 | — | — |
+| DNF | **naf, r2gaussian** | — (per-scene INR/splatting: incompatible with amortized 20-min test-scoring; 14/200 cases in 857 s) | — | — |
+
+**Test ≈ val (no overfit to the selection set):** every solver's test-best hr is within ±0.01
+of its val-best (uswin/hammernik-vn/hammernik-2017 are *lower* on test), and param-efficient
+test 0.6212 ≈ val single-best 0.6201.
+
+**Significance analysis (paired t-test, n=200 test cases; `docs/runs/breast_significance_stats.md`,
+`breast_topsolver_significance.png`, `breast_significance_matrix.png`).** The exact
+**mirror image of Mayo**:
+- **n=200 → everything separates.** Every top-10 method separates from the champion at the
+  **1% level, Holm-robust, on ALL four metrics (hr/SSIM/PSNR/RMSE) simultaneously**; every
+  *adjacent* rank separates too; the statistical tie tier is the **champion alone**; zero
+  metric-discordant solvers. Opposite of Mayo (n=5), where weak power gave a 3–4-way tie and
+  metrics *disagreed* (SSIM alone split the top).
+- **So p ranks nothing here — effect size does.** Three practical bands: top cluster
+  (dual-domain-sup / itnet / v2 / v3 / uswin, all Δhr ≤ 0.036, dz small→large), a **large gap**
+  ↓ to LPD (0.723, dz 15.6), then the mid-tier. SSIM is the sharpest discriminator at the
+  saturated ceiling (itnet dz 1.80 on SSIM vs 0.64 on hr).
+- **Methodological point for the paper:** the identical machinery yields "everyone ties"
+  (n=5) and "everyone separates on every metric" (n=200) — raw significance is sample-size-
+  bound and **not** cross-dataset-comparable; **effect size (Cohen dz) and raw Δ are.** Lead
+  with effect size.
+- **param-efficient (195 params):** mid-tier, but its nearest neighbour is a full DL method
+  (hammernik-2017) at Δhr 0.008 / dz 0.80 (smallest-effect mid-tier pair), and it has the
+  **tightest per-case std of all (±0.0076)** — the most *consistent* reconstructor, at ~2% of
+  a full network's parameters. The parameter-efficiency hook, now on held-out test data.
+
+### 5.6.6 The breast task is NOISELESS ideal data (crucial caveat) + leakage audit
+
+**Breast-CT (Sidky DL-Sparse-View) is entirely noise-free by design.** Sidky & Pan pose it as
+"accurate recovery from **ideal noiseless projection data** … the floor of [RMSE] is zero at
+which point one can say that the CT inverse problem is solved." The phantom *model* is stochastic
+(realizations for train/val/test) but the *measurement* has no noise; our fetch/stage adds none.
+**Consequence — breast and Mayo probe different regimes and their absolute hr are NOT on a
+comparable scale:**
+
+| | Breast (Sidky) | Mayo |
+|---|---|---|
+| data | noiseless, ideal | real low-dose, quantum noise |
+| bottleneck | **data incompleteness** (128 of ~1000 views) | **noise / dose** (+ helical→fan rebin) |
+| RMSE floor | 0 (exactly solvable) | > 0 (noise-limited) |
+| best hr | ~0.89 (→1 possible) | ~0.38 (capped) |
+| dominant lever | **data-consistency / known operator** | **denoising** |
+
+This *reinforces* the cross-dataset thesis: on **noiseless** breast the agent's breakthrough was
+**filtered data-consistency** (enforce the physics — 0.066→0.43), while on **noisy** Mayo the
+compact optimum was a **denoiser**. Same agent, opposite mechanism, dictated by whether the
+problem is incompleteness- or noise-limited. It also explains the razor-sharp n=200 significance
+(noiseless → low per-case variance). **State this prominently so readers don't misread breast
+0.89 as "better than Mayo 0.38".**
+
+**Train/test leakage audit (breast looked "too good" — ruled out three ways):** (1) *mechanism* —
+the `AGENT4CT_EVAL_SPLIT=test` redirect fires only for `split=="val"` (inference); training loads
+`split=="train"`, never redirected; (2) *pixel-hash disjointness* — `TEST∩TRAIN=0`, `TEST∩VAL=0`,
+`VAL∩TRAIN=0` over all 3600/200/200 truth images; (3) *behavioral* — test-hr ≈ val-hr for every
+solver (several lower on test), the opposite of a memorization signature. High hr is the dataset
+(noiseless, well-posed), not a leak.
+
+### 5.6.7 PLANNED — noise-robustness re-evaluation (no retraining)
+
+**Open question (user, 2026-07-09):** does the noiseless-trained ranking survive *mild input
+noise*? Idea: a **second** test evaluation that injects Poisson photon noise (**I0 ≈ 100 000
+photons/pixel — high-dose, mild**) into the 200 test **sinograms**, then reconstructs with the
+**already-trained** models — **no retraining** — and re-ranks. Hypothesis: the noiseless-challenge
+winners (supervised streak-removers, dual-domain-sup / itnet) may be **brittle** to a distribution
+they never saw, while **regularized / data-consistency / per-scene** methods (TV, PWLS, filtered-DC,
+param-efficient) may be **more robust** → a potential reordering. This is exactly the "realistic
+model M_phys = M + ǫ" extension Sidky flags but does not study. Method: add `AGENT4CT_TEST_NOISE_I0`
+to the loader (Poisson on N=I0·e^{−p}); reuse saved `model_ckpt.pt` (load + skip-train) for
+supervised solvers and re-fit per-scene solvers on the noisy sinogram; recompute the FBP baseline
+from the *same* noisy data (truth stays clean); report noisy-test hr mean±std and the rank delta
+vs the noiseless board. Deliverable: a "noiseless vs high-dose-noisy" leaderboard pair + the
+robustness ranking. *(Scope: inference-only, no 20-min-budget retraining — a generalization probe,
+not a new campaign.)*
 
 ## 6 · Author list
 
