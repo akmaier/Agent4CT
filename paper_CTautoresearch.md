@@ -983,9 +983,18 @@ should point at it.)*
 
 ## 6 · Author list
 
-**Andreas Maier · Lucas Kachelriess · Moritz Zaiss.**
-(Confirm affiliations, ORCIDs, corresponding author, and author-order/contributions
-before submission.)
+**Author list (user-confirmed 2026-07-09):**
+1. **Andreas Maier** — Friedrich-Alexander-Universität Erlangen-Nürnberg (FAU), Pattern
+   Recognition Lab. *(corresponding author — assumed; confirm.)*
+2. **Lukas Kachelrieß** — FAU / Universitätsklinikum Erlangen (UKER).
+3. **Siming Bayer** — FAU.
+4. **Yixing Huang** — Peking University.
+5. **Yan Xia** — Universitätsklinikum Erlangen (UKER).
+6. **Amber Simpson** — University of Alberta.
+7. **Moritz Zaiss** — Universitätsklinikum Erlangen (UKER).
+
+*(Confirm exact spellings/diacritics, ORCIDs, per-author contributions (CRediT), and the
+final author order before submission.)*
 
 ---
 

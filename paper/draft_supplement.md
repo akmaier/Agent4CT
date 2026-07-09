@@ -1,0 +1,204 @@
+<!--
+SUPPLEMENTARY MATERIAL — draft v1, 2026-07-09. Overflow from draft_main.md.
+Medical Physics allows unlimited SI. Same short-sentence style. Numbers from the live
+registry (docs/runs/index) 2026-07-09.
+-->
+
+# Supplementary Material — *Agentic Autoresearch for CT Reconstruction*
+
+---
+
+## S1. Solver taxonomy and per-method configuration (Table 1, full)
+
+We place the 26 methods on two axes. Axis A is physics engagement (how the operator
+$\mathbf{A}$ is used at inference). Axis B is the prior source $\mathcal{R}$.
+
+| Family | Representative solver(s) | Data-consistency $\mathbf{D}$ | Prior $\mathcal{R}$ | Axis A | Axis B |
+|---|---|---|---|---|---|
+| Classical iterative | tv-iterative, manhart-PWLS-TV | filtered / SART grad | total variation | in-loop | hand-crafted |
+| Image-domain denoiser | manduca-bilateral, DD-UNet supervised | none (post-FBP) | bilateral / U-Net | none | hand-crafted / supervised |
+| Unrolled learned-iterative | ITNet v1/v2/v3, U-Swin | in-loop DC | learned CNN / transformer | in-loop | supervised |
+| Variational network | Hammernik-2017, Hammernik-VN | in-loop DC | field-of-experts | in-loop | supervised |
+| Learned primal-dual | learned-primal-dual (LPD) | filtered + learned dual | learned combination | in-loop | supervised |
+| Dual-domain | DD-supervised, DD-bilateral, DD-N2I | image + sinogram | supervised / bilateral / self-sup | single/in-loop | supervised / self-sup |
+| Generative prior | fastdiff flow/wavelet ×4 | DC + diffusion | rectified-flow prior | in-loop | generative |
+| Per-scene implicit | NAF, R²-Gaussian | per-scene fit | implicit representation | per-scene | implicit |
+| Foundation zero-shot | RAM | single DC | frozen foundation model | single | foundation |
+| Band decomposition | Wu-2015, Wu-2015-trainable | band-weighted DC | frequency-band residual | in-loop | hand-crafted/supervised |
+| **Recombination (ours)** | **param-efficient** | **filtered + LPD combine** | **bilateral post-filter** | **in-loop** | **hybrid** |
+
+*Full per-solver CONFIG defaults, parameter counts, and design notes are in each solver's
+design doc under `pentathlon/demo_dl_reference/` and the observation records under
+`docs/runs/`.*
+
+---
+
+## S2. Mayo-LDCT — data, split, and the geometry pipeline
+
+Real helical low-dose CT. We rebinned helical to fan-beam. This pipeline was the dominant
+human cost of the whole study (~24 active working days; three travel gaps excluded). We use
+a fixed patient split: train L145/186/209/219, validation L277, test L014/056/058/075/123.
+Test scores are the per-patient mean ± std over the five test patients (n=5). Geometry
+details, rebinning validation, and the effort timeline figure are in the repository
+(`docs/runs/mayo_effort_timeline.png`).
+
+---
+
+## S3. Breast split and the train/test leakage audit
+
+**Split.** We re-partitioned the public 4000-case Sidky train pool into train (3600),
+validation (200), and test (200). The split is deterministic (seed 20260703) and disjoint.
+The official challenge val/test truths are withheld, so we cannot use them; our test split is
+drawn from the public pool.
+
+**Leakage audit (three independent checks).**
+1. *Mechanism.* Training loads the `train` split. The test redirect fires only for the
+   evaluation load. Training never sees test.
+2. *Pixel-hash disjointness.* Over all 3600 train, 200 val, and 200 test truth images:
+   TEST∩TRAIN = 0, TEST∩VAL = 0, VAL∩TRAIN = 0.
+3. *Behavioral.* Test-hr tracks val-hr for every method, within ±0.01, and several methods
+   score *lower* on test than val. Training on test would make test-hr much higher. It does
+   not. The high absolute hr is the dataset (noiseless, well-posed), not a leak.
+
+**Why breast hr is high, and not comparable to Mayo.** The Sidky data is noiseless by design;
+its RMSE floor is zero. Breast is incompleteness-limited (128 of ~1000 views). Mayo is
+noise-limited (real quantum noise). The two absolute hr scales are therefore not comparable.
+
+| | Breast (Sidky) | Mayo |
+|---|---|---|
+| data | noiseless, ideal | real low-dose, quantum noise |
+| bottleneck | data incompleteness | noise / dose |
+| RMSE floor | 0 | > 0 |
+| best hr | ~0.89 | ~0.38 |
+| dominant lever | data-consistency / known operator | denoising |
+
+---
+
+## S4. Mayo test board and significance
+
+Champion ITNet v1, test hr 0.376 (n=5). The top tier is a statistical tie: ITNet v1 / ITNet
+v2 / U-Swin at the 5 % level; the compact param-efficient solver joins at the 1 % level
+(p = 0.02–0.027). At n=5 the paired t-test has low power (a Wilcoxon test cannot even reach
+p<0.05). Full per-solver table, per-patient hr, and the pairwise significance matrix are in
+`docs/runs/mayo_significance_stats.md` and the forest/matrix figures.
+
+---
+
+## S5. The parameter-efficient recombination study (search arc)
+
+The agent recombined the method parts into a minimal-parameter solver. The climb was made of
+genuine six-box iterations. Key steps on breast (128-view sparse), all under the 20-min budget:
+
+| step | architecture | params | val hr |
+|---|---|---:|---:|
+| image-domain unroll (any config) | Mayo-style FoE denoiser | ~1930 | ≤ 0.26 (ceiling) |
+| **filtered data-consistency** `FBP(Ax−g)` | K=30 | **13** | **0.4345** |
+| + learned primal-dual combination | W=4 | 183 | 0.5047 |
+| **+ 3-scale bilateral output filter** | σ_r=0.02 | **195** | **0.6201** (single best) |
+
+Findings, each earned by an iteration: the image-domain denoiser caps at ~0.26; deeper
+*adjoint* data-consistency lowers hr (it re-injects streaks); the *filtered* gradient breaks
+the ceiling at 13 parameters; an in-loop prox hurts (the filtered gradient already
+reconstructs); a learned cross-step combination helps; a full conjugate-gradient DC solve
+does not beat the single filtered gradient under a fixed wall; and Wu-2015 band machinery adds
+nothing here. The champion is seed-fragile in the variational-network manner: 4 of 5 seeds
+cluster at 0.571 ± 0.033, one collapses; two stabilizers did not recover it. On the held-out
+test set the compact solver scores hr 0.6212 ± 0.0076 — the tightest per-case std of any
+solver.
+
+**Mayo vs breast contrast.** On Mayo the compact optimum is an evolved field-of-experts plus
+multi-scale bilateral denoiser (hr 0.324 at ~0.00097 M params), statistically tied with the
+top tier at the 1 % level. On a denoising problem, a tiny denoiser suffices. On sparse-view
+breast, that same denoiser fails; data-consistency is the differentiator. The agent
+re-derived each optimum; it did not transfer.
+
+**Human role in this study.** The recombination *strategy* was a human idea, on both datasets.
+On Mayo the human repeatedly asked whether more parameter-efficient approaches existed and
+explicitly suggested combining the pieces. On breast the finale was framed as a cross-method
+recombination and steered away from copying Mayo. The agent executed and mechanistically
+refined; it did not originate the recombination strategy.
+
+---
+
+## S6. Breast boards — noiseless and noisy (full)
+
+### S6.1 Noiseless test board (n=200, hr mean ± std)
+
+| # | solver | test hr | ±std | best iter |
+|---|---|---:|---|---:|
+| 1 | dual-domain-supervised | 0.8948 | 0.0127 | 20 |
+| 2 | itnet | 0.8926 | 0.0150 | 16 |
+| 3 | itnet-v2 | 0.8893 | 0.0151 | 15 |
+| 4 | itnet-v3 | 0.8749 | 0.0157 | 12 |
+| 5 | uswin | 0.8586 | 0.0153 | 20 |
+| 6 | learned-primal-dual | 0.7233 | 0.0143 | 12 |
+| 7 | hammernik-2017 | 0.6265 | 0.0135 | 12 |
+| 8 | param-efficient (195 p) | 0.6212 | 0.0076 | 28 |
+| 9 | hammernik-vn | 0.5787 | 0.0119 | 16 |
+| 10 | fastdiff-flow-pixel-constrained | 0.5119 | 0.0211 | 15 |
+| 11–23 | ram · tv-iterative · manhart-PWLS-TV · wu-2015-trainable · manduca-bilateral · fastdiff-* · dd-bilateral-sup · wu-2015 · tv-iter-sup · dd-bilateral-n2i · dd-n2i | 0.37 → 0.00 | — | — |
+| DNF | naf, r2gaussian | — (per-scene; ~14–20/200 cases under budget) | — | — |
+
+### S6.2 Noisy test board (I₀ = 10⁵, same models, no retraining)
+
+| # | solver | noisy hr | noisy SSIM | noiseless hr | change |
+|---|---|---:|---:|---:|---|
+| 1 | learned-primal-dual | 0.9349 | 0.9905 | 0.7233 | ↑ (6→1) |
+| 2 | manduca-bilateral | 0.8420 | 0.9537 | 0.276 | ↑↑ |
+| 3 | dual-domain-bilateral-n2i | 0.7927 | 0.9532 | 0.206 | ↑↑ |
+| 4 | hammernik-2017 | 0.7016 | 0.7178 | 0.6265 | ↑ |
+| 5 | itnet-v3 | 0.7007 | 0.7564 | 0.8749 | ↓ |
+| 6 | fastdiff-flow-pixel-unconstrained | 0.6620 | 0.7058 | 0.269 | ↑ |
+| 7 | ram-zeroshot | 0.6382 | 0.6578 | 0.295 | ↑ |
+| 8 | uswin | 0.5915 | 0.6408 | 0.8586 | ↓ |
+| 9 | itnet | 0.5784 | 0.6295 | 0.8926 | ↓ |
+| 10 | hammernik-vn | 0.5529 | 0.5962 | 0.5787 | ≈ |
+| 11 | itnet-v2 | 0.5480 | 0.6201 | 0.8893 | ↓ |
+| 12 | param-efficient (195 p) | 0.5153 | 0.5771 | 0.6212 | ↓ (holds) |
+| 13–14 | manhart-PWLS-TV, tv-iterative | 0.5068 | 0.6164 | 0.360 | ↑ |
+| 15–18 | wu-2015, wu-2015-trainable, tv-iter-sup, dd-bilateral-sup | 0.37 → 0.10 | — | — | — |
+| DNF/low | dual-domain-supervised | 0.0000 | 0.3483 | **0.8948** | **↓↓ (1 → last)** |
+| DNF/low | fastdiff-wdm-* constrained, fastdiff-flow-pixel-constrained | 0.00–0.64 | — | — | some incomplete |
+| DNF | naf, r2gaussian | — | — | — | per-scene, incomplete |
+
+**Reading the reversal by framework axes.** Robust: in-loop physics (learned-primal-dual) or
+hand-crafted smoothing priors (bilateral, total variation). Brittle: supervised image-domain
+maps trained on clean FBP (dual-domain-supervised; the constrained fastdiff variants). The hr
+metric is fair *within* the noisy board — all methods share the same noisy FBP baseline. The
+absolute SSIM/PSNR columns confirm the ranking is genuine, not baseline-gaming.
+
+### S6.3 Noise model and no-retrain protocol
+Poisson photon noise per Eq. (6), $I_0=10^5$, applied to the 200 test sinograms with a fixed
+seed (deterministic; every method sees the identical noisy input). RMS of the sinogram
+perturbation ≈ 0.012 (line-integral units), ~1.8 % at the thickest ray. Supervised methods
+load their noiseless checkpoint and skip training; per-scene/classical methods re-fit on the
+noisy input. The FBP baseline is recomputed from the noisy sinogram.
+
+---
+
+## S7. Agent-behavior — extended account
+
+**Strengths.** Fast paper→code; strong hyper-parameter optimization; strict fixed-budget
+discipline; scales evaluation across many parallel benchmarks; follows well-decomposed
+instructions.
+
+**Weaknesses.** Does not invent new methods. Must be forced to recombine (converges early and
+pads if unsupervised — one breast sub-run replayed identical configs until an audit caught it).
+CT-image vision misses obvious artifacts, so numbers are the source of truth. Long tasks must
+be decomposed or even a 1M-token context is exhausted. Overfits to the task/metric (not only an
+agent trait).
+
+**Human meta-strategies (repeatable, same on both datasets).** Persistence/breadth (keep asking
+for more directions); recombination (the idea to assemble pieces); redirection (do not mimic the
+other dataset); auditing (catch padding, enforce budget, fix provenance). The defensible claim:
+agent = tireless, mechanistically reasoning, self-modifying executor; human = strategist +
+auditor.
+
+---
+
+## S8. Additional figures (supplement)
+- S-Fig 1: per-iteration val-vs-test hr trajectory (selection honesty).
+- S-Fig 2: Mayo significance forest plot + solver×metric matrix.
+- S-Fig 3: breast noiseless vs noisy example panels for all top-10 solvers.
+- S-Fig 4: parameter-efficient climb (params-vs-hr Pareto), both datasets.
+- S-Fig 5: effect-size (Cohen dz) vs. raw Δhr, illustrating the n=5 vs n=200 contrast.
