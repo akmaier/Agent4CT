@@ -137,6 +137,13 @@ lightweight consistent notation (θ, L(θ), η; operators g, u; error terms e_f)
 the **parameter-efficiency headline as a number** (his style: "<6% of the parameters,
 1% inferior AUC").
 
+**Readability rule (OVERRIDES verbosity — user directive 2026-07-09).** Write **short,
+simple sentences**. Aim for one idea per sentence. The audience includes many **non-native
+English speakers**, so keep vocabulary plain and syntax flat. Prefer "we do X. This shows Y."
+over long subordinate clauses. The Maier "we/let us" voice stays, but each sentence must be
+easy to parse on first read. This applies everywhere, especially the Discussion. *(§5.6.8/5.6.9
+are already drafted this way — match that cadence.)*
+
 **Four DO-THIS rules for our paper:**
 1. Intro funnel, pivot on "Yet"; frame our differentiable projector as the *known
    operator*.
@@ -150,20 +157,17 @@ the **parameter-efficiency headline as a number** (his style: "<6% of the parame
 
 ## 4 · Paper outline (Medical Physics)
 
-**Title — the 2026-07-03 title is TOO LONG; shortlist below (user to pick).**
-The old title (*"Can an LLM Agent Do Reconstruction Research? Autonomous Implementation
-and Benchmarking of 26 CT Reconstruction Methods"*, 15 words) reads as a two-sentence
-subtitle. Med Phys favors one concise descriptive line. Proposed (≤ ~11 words), now that
-the **noise-robustness reversal** is a co-headline result:
-1. **(recommended)** *Agentic Benchmarking of CT Reconstruction: Ideal-Data Rankings
-   Mispredict Noise Robustness.* — co-headlines both contributions, descriptive, ~10 words.
-2. *Can an LLM Agent Benchmark CT Reconstruction?* — punchy question, agent-forward,
-   drops the reversal (use the reversal as the abstract hook).
-3. *Ideal-Data Rankings Fail Under Noise: An Agentic Benchmark of 26 CT Reconstruction
-   Methods.* — science-forward lead.
-4. *An LLM Agent Benchmarks 26 CT Reconstruction Methods Across Two Regimes.* — plain,
-   safe, ~9 words.
-Keep a short **running head** (≤ ~50 chars), e.g. *"Agentic CT-reconstruction benchmark."*
+**Title — SHORT + MEMORABLE, focused on agentic autoresearch for CT (user directive
+2026-07-09).** The old 15-word title is out. Keep it to ~4–7 words. Center on two words:
+*agents/autoresearch* and *CT reconstruction*. Do NOT try to pack the noise result into the
+title — that is the abstract hook and the conclusion, not the title. Shortlist:
+1. **(recommended)** *Agentic Autoresearch for CT Reconstruction* — 5 words, memorable
+   ("autoresearch" is distinctive), exactly on-focus.
+2. *Can Agents Do CT Reconstruction Research?* — memorable question, 6 words.
+3. *Autonomous Agents for CT Reconstruction* — 5 words, plainest.
+4. Optional subtitle variant if a hook is wanted: *Agentic Autoresearch for CT
+   Reconstruction: Scaling Benchmarks, Testing Robustness.*
+Running head (≤ ~50 chars): *"Agentic autoresearch for CT reconstruction."*
 
 **Keywords (5–8, required):** CT reconstruction; sparse-view; low-dose; known operators;
 deep learning; benchmarking; LLM agent; noise robustness.
@@ -200,15 +204,23 @@ note):
 3. **Results** — Mayo test board + top-tier tie; breast test board (champion 0.89) with
    the noiseless caveat; the ~195-param compact solver; **the noise-robustness reversal
    (the headline figure)**; effort/timeline (geometry ≈ 24 working days).
-4. **Discussion** — ideal-data rank ⇏ robustness (the reversal, its mechanism: physics-
-   regularized rise, supervised denoisers collapse); problem-dependent compact optimum
-   (agent re-derived, didn't transfer); n=5-vs-n=200 significance caveat; the **agent-as-
-   researcher** characterization (mechanistic self-modifier) + the human meta-strategy it
-   required (persistence, breadth, recombination, auditing); limitations (single agent/
-   metric, geometry bottleneck unremoved, seed fragility, naf/r2gaussian DNF).
-5. **Conclusions** — an LLM agent can implement/adapt/tune/benchmark 26 methods under one
-   metric; the honest outcome is a tier, not a winner; **ideal-data leaderboards mislead
-   about robustness**; the remaining bottleneck is geometry/data engineering.
+4. **Discussion** — the **agent capability scorecard (full text in §5.6.8, write it in short
+   sentences).** Strengths: fast paper→code; strong HPO; respects a fixed compute budget;
+   scales evaluation; follows good instructions. Weaknesses: does **not** invent new methods;
+   had to be **forced to recombine** to climb the board; **CT-image vision fails** (misses
+   obvious artifacts → numbers are the source of truth); long tasks must be **decomposed** or
+   even 1M-token context is exhausted; **overfits to the task** (not only an agent problem).
+   Human = strategist + auditor. Then the two science points: **problem-dependent compact
+   optimum** (Mayo ≠ breast, re-derived not transferred) and **the noise reversal** (mild
+   noise inverts the breast board). Limitations: single agent/metric, geometry bottleneck
+   unremoved, seed fragility, naf/r2gaussian DNF.
+5. **Conclusions (§5.6.9) — the storyline.** Agentic autoresearch is a powerful tool to
+   **scale** CT-reconstruction evaluation. Using it exposed that **ideal-data leaderboards
+   reward brittle methods**: a small, realistic noise perturbation reordered almost the whole
+   breast board. Take-home: **we must build better benchmarks** — include noise, dose
+   variation, and other realistic perturbations by default, so leaderboards reward *robust*
+   methods. Agentic autoresearch makes such multi-condition benchmarking cheap enough to be
+   routine. That is its real payoff for the field.
 
 > **10-PAGE DISCIPLINE (hard limit).** §5.6 is a lab notebook, not the paper. The main
 > text carries ~5–7 figures + ~3 tables and the distilled narrative above; the full
@@ -822,6 +834,62 @@ from the *same* noisy data (truth stays clean); report noisy-test hr mean±std a
 vs the noiseless board. Deliverable: a "noiseless vs high-dose-noisy" leaderboard pair + the
 robustness ranking. *(Scope: inference-only, no 20-min-budget retraining — a generalization probe,
 not a new campaign.)*
+
+### 5.6.8 Agent capability scorecard — the honest Discussion (user assessment, 2026-07-09)
+
+This is the core of the Discussion. Write it plainly. Short sentences. The paper's value is
+the candid account of what the agent did and did not do.
+
+**Where the agent is strong.**
+- **Fast from paper to code.** It turns a method description into a working solver quickly.
+  This is the main speed-up. It is why 26 methods across two datasets was feasible at all.
+- **Strong at hyper-parameter optimization.** Given a fixed search space, it tunes well.
+- **Respects a fixed compute budget.** It kept the 20-min-per-iteration budget for fair
+  comparison. This discipline is hard for humans and easy for the agent.
+- **Scales evaluation.** It is a very useful tool to run many benchmarks in parallel. This is
+  the strongest practical use case.
+- **Follows instructions well — if instructed well.** Clear, decomposed instructions give good
+  results. Vague ones do not.
+
+**Where the agent is weak.**
+- **It does not invent new methods.** It implements, tunes, and recombines known methods. It
+  did not propose a genuinely new reconstruction principle.
+- **It had to be forced to mix and match.** Recombining proven pieces into one compact solver
+  was a **human** idea, on both Mayo and breast. The agent executed it well. It did not
+  originate the strategy. Left alone, it converges early and stops exploring.
+- **CT-image vision is unreliable.** The vision module keeps missing very clear artifacts in CT
+  slices and sinograms. Numbers, not images, had to be the source of truth. (This is a hard
+  project rule; state it as a finding.)
+- **Long tasks must be decomposed.** A big task must be broken into sub-tasks. Otherwise even a
+  1M-token context is used up very quickly. Task decomposition is the main operational skill.
+- **It overfits to the task.** It tunes hard to the given metric and split. *Caveat:* this is
+  probably not only an agent problem — human researchers overfit to benchmarks too.
+
+**What this means for the human role.** The human is the strategist. The human forces breadth,
+supplies the recombination idea, redirects across problems, decomposes the work, and audits for
+padding and provenance. The agent is the tireless, budget-respecting, self-modifying executor.
+
+**The two scientific findings that frame the conclusion.**
+- **The compact optimum is problem-dependent.** The Mayo parameter-efficient solution is very
+  different from the breast one (a denoiser vs a filtered-DC + primal-dual + bilateral unroll).
+  The agent re-derived each from evidence. It did not transfer.
+- **A little noise broke the whole breast leaderboard.** Adding mild high-dose noise (I0=100k),
+  with no retraining, nearly inverted the ranking. The noiseless champion collapsed to last;
+  physics-regularized methods rose to the top.
+
+### 5.6.9 Conclusion / storyline — benchmarks must change to reward robustness
+
+The paper's storyline and conclusion: **agentic autoresearch is a powerful tool to *scale*
+CT-reconstruction evaluation — and using it exposed a problem with how we benchmark.** Our
+ideal-data leaderboard rewarded methods that are brittle. A small, realistic noise perturbation
+reordered almost everything. The methods that won on clean data were the least robust.
+
+So the message is forward-looking, not just "an agent can help." **We must design better
+benchmarks.** Benchmarks should include noise, dose variation, and other realistic perturbations
+by default, so that leaderboards reward *robust* methods rather than methods that overfit ideal
+data. Agentic autoresearch makes such richer, multi-condition benchmarking cheap enough to do —
+that is its real payoff for the field. *(This is the paper's take-home; the title and abstract
+should point at it.)*
 
 ## 6 · Author list
 
