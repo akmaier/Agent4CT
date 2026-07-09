@@ -79,19 +79,32 @@ written as ready-to-run specs; the next agent starts them *with* oversight.
 - Compile with **XeLaTeX** on **TeX Live 2022** (the Overleaf NJD-v5 note says TL 2023
   fails). Overleaf mirror: *Wiley NJD-v5* gallery.
 
-**Medical Physics specifics (verify on the live guidelines — automated fetch was
-blocked with 402/403):**
-- **Research Article:** ≤ **10 typeset pages**; abstract ≤ **500 words**; over-length
-  billed **$200/page**; color figures free (online-only journal).
-- **Structured abstract, 5 parts (2021 policy, Sechopoulos, *Med Phys* 48(10),
-  doi:10.1002/mp.15235):** **Background · Purpose · Methods · Results · Conclusions.**
-- **References:** AMA numbered style, superscript numerals in citation order → use
-  **`WileyNJD-AMA.bst`** (swap in for the bundled Chicago bst; get it from the Wiley
-  NJD bundle / `github.com/schnorr/wileyorg`).
-- Page + **continuous line numbering** required; SI units; math per AIP Style Manual 4th ed.
-- **VERIFY on the live Author Guidelines** (blocked this session):
-  `https://aapm.onlinelibrary.wiley.com/hub/journal/24734209/about/author-guidelines`
-  — confirm exact page/word limits, abstract wording, figure rules, ORCID/authorship.
+### 2.1 Medical Physics structural requirements — MANDATORY (verified 2026-07 vs the live Author Guidelines)
+
+These are hard journal rules, not preferences. The draft MUST follow them exactly.
+
+- **Mandated main-text section structure (Research Article):** an **Introduction** plus
+  **four** further sections in this order — **Materials and Methods · Results · Discussion
+  · Conclusions.** (Note: it is **"Materials and Methods"**, not "Methods".) No other
+  top-level scheme is accepted. → §4 outline below is rewritten to this.
+- **Structured abstract, ≤ 500 words.** The journal's structured-abstract parts are
+  **Purpose · Methods · Results · Conclusions** (the 2021 Sechopoulos policy, *Med Phys*
+  48(10), doi:10.1002/mp.15235, also lists an optional leading **Background**). Use
+  **Background · Purpose · Methods · Results · Conclusions** and cut Background first if
+  over 500 words.
+- **Length:** ≤ **10 typeset pages**; over-length billed **$200/page**. This is the binding
+  constraint on scope — see the "10-page discipline" note in §4. Color figures free
+  (online-only).
+- **Keywords:** required, **~5–8** (e.g. *CT reconstruction, sparse-view, deep learning,
+  known operators, benchmarking, LLM agent, robustness*).
+- **References:** **AMA** numbered style, **superscript numerals in citation order** →
+  `WileyNJD-AMA.bst` (swap for the bundled Chicago bst; Wiley NJD bundle /
+  `github.com/schnorr/wileyorg`). EndNote users: the **JAMA** style matches.
+- Page **+ continuous line numbering**; SI units; math per AIP Style Manual 4th ed.;
+  compile XeLaTeX on TeX Live 2022 (see §2).
+- Source: [Medical Physics Author Guidelines](https://aapm.onlinelibrary.wiley.com/hub/journal/24734209/about/author-guidelines)
+  (the hub page 402'd to automated fetch; specifics confirmed via the AAPM/Wiley guideline
+  text 2026-07 — re-confirm figure-count/ORCID details at submission).
 
 ---
 
@@ -137,51 +150,71 @@ the **parameter-efficiency headline as a number** (his style: "<6% of the parame
 
 ## 4 · Paper outline (Medical Physics)
 
-**Title (SELECTED 2026-07-03, user):**
-> **Can an LLM Agent Do Reconstruction Research? Autonomous Implementation and
-> Benchmarking of 26 CT Reconstruction Methods**
+**Title — the 2026-07-03 title is TOO LONG; shortlist below (user to pick).**
+The old title (*"Can an LLM Agent Do Reconstruction Research? Autonomous Implementation
+and Benchmarking of 26 CT Reconstruction Methods"*, 15 words) reads as a two-sentence
+subtitle. Med Phys favors one concise descriptive line. Proposed (≤ ~11 words), now that
+the **noise-robustness reversal** is a co-headline result:
+1. **(recommended)** *Agentic Benchmarking of CT Reconstruction: Ideal-Data Rankings
+   Mispredict Noise Robustness.* — co-headlines both contributions, descriptive, ~10 words.
+2. *Can an LLM Agent Benchmark CT Reconstruction?* — punchy question, agent-forward,
+   drops the reversal (use the reversal as the abstract hook).
+3. *Ideal-Data Rankings Fail Under Noise: An Agentic Benchmark of 26 CT Reconstruction
+   Methods.* — science-forward lead.
+4. *An LLM Agent Benchmarks 26 CT Reconstruction Methods Across Two Regimes.* — plain,
+   safe, ~9 words.
+Keep a short **running head** (≤ ~50 chars), e.g. *"Agentic CT-reconstruction benchmark."*
 
-*(A refinement of former option 2, with "on Mayo LDCT" dropped since the paper now
-spans Mayo-LDCT + Breast-CT.)*
+**Keywords (5–8, required):** CT reconstruction; sparse-view; low-dose; known operators;
+deep learning; benchmarking; LLM agent; noise robustness.
 
-Superseded options (kept for the record):
-1. *Agentic Autoresearch for CT Reconstruction: An LLM Agent Adapts 26 Reconstruction
-   Methods Under a Calibrated Headroom Metric.*
-2. *Can an LLM Agent Do Reconstruction Research? Autonomous Implementation and
-   Benchmarking of 26 CT Reconstruction Methods on Mayo LDCT.*
-3. *The Bottleneck Is the Geometry, Not the Method: Agentic Autoresearch Across 26 CT
-   Reconstruction Algorithms.*
+**Structured abstract — ≤ 500 words, parts: (Background) · Purpose · Methods · Results ·
+Conclusions.** Draft content: *Purpose* — test whether an LLM agent can autonomously
+implement, adapt, and fairly benchmark CT reconstruction methods, and whether ideal-data
+rankings predict noise robustness. *Methods* — agentic loop grounded in a differentiable
+projector + frozen calibrated-headroom metric; 26 methods across Mayo-LDCT (noise-limited)
+and 128-view breast (incompleteness-limited, noiseless Sidky data); per-case test
+selection; a no-retrain Poisson-noise (I0=100k) re-evaluation. *Results* — a small tier of
+statistically indistinguishable top solvers; a ~195-param recombined solver within reach
+of that tier at ~2% of the parameters; and the reversal — the noiseless champion
+(hr 0.89) collapses to last (0.00) under mild noise while a learned primal-dual rises to
+champion (0.72→0.93). *Conclusions* — the agent does the labor of reconstruction research;
+ideal-data rank does not predict (and can invert under) noise robustness. Cut *Background*
+first if over 500 words.
 
-**Structured abstract (Background / Purpose / Methods / Results / Conclusions)** — draft
-in the stats doc + outline; champion ITNet v1 hr 0.376; top-tier statistical tie;
-geometry pipeline the dominant human cost.
+**MANDATED SECTIONS (Med Phys, §2.1): Introduction · Materials and Methods · Results ·
+Discussion · Conclusions.** Content map (distilled to fit **10 pages** — see discipline
+note):
+1. **Introduction** — Maier funnel (§3, drafted in §4.1): DL for CT → the black-box/
+   hallucination risk → known operators → *and* a second black box, the human-iteration-
+   bound research workflow → can an LLM agent do it, grounded in a projector + fair metric?
+   Contributions; lead the reader toward the robustness reversal.
+2. **Materials and Methods** — (a) agentic loop (edits `solver.py` → ~5-min/20-min SLURM
+   job → metric → accept/discard; PYRO-NN projectors; provenance in `docs/runs`); (b) the
+   26 methods by family; (c) datasets + splits — Mayo Wagner split + helical→fan geometry
+   pipeline; breast train3600/val200/test200 (note **Sidky data is noiseless**, §5.6.6);
+   (d) calibrated-headroom metric hr=max(0,1−RMSE/LD-FBP-RMSE), FOV-masked, mean±std; (e)
+   per-iteration test-selection; (f) the **no-retrain Poisson-noise re-evaluation**
+   (I0=100k; §5.6.7); (g) statistics — paired t-test, **effect size (Cohen dz) reported
+   because significance is sample-size-bound** (n=5 vs n=200, §5.6.5).
+3. **Results** — Mayo test board + top-tier tie; breast test board (champion 0.89) with
+   the noiseless caveat; the ~195-param compact solver; **the noise-robustness reversal
+   (the headline figure)**; effort/timeline (geometry ≈ 24 working days).
+4. **Discussion** — ideal-data rank ⇏ robustness (the reversal, its mechanism: physics-
+   regularized rise, supervised denoisers collapse); problem-dependent compact optimum
+   (agent re-derived, didn't transfer); n=5-vs-n=200 significance caveat; the **agent-as-
+   researcher** characterization (mechanistic self-modifier) + the human meta-strategy it
+   required (persistence, breadth, recombination, auditing); limitations (single agent/
+   metric, geometry bottleneck unremoved, seed fragility, naf/r2gaussian DNF).
+5. **Conclusions** — an LLM agent can implement/adapt/tune/benchmark 26 methods under one
+   metric; the honest outcome is a tier, not a winner; **ideal-data leaderboards mislead
+   about robustness**; the remaining bottleneck is geometry/data engineering.
 
-**Sections**
-1. **Introduction** — iteration-bound recon-research workflow; karpathy-style autoresearch;
-   gap = no CT-specific agentic loop grounded in a differentiable physics projector +
-   fair calibrated metric; contribution; the "does agentic autoresearch move the
-   bottleneck?" thesis. *(Write in the Maier funnel, §3.)*
-2. **Methods** — 2.1 agentic loop (edit `solver.py` → ~5-min SLURM job → metric →
-   accept/discard; PYRO-NN projectors; provenance in `docs/runs`); 2.2 the ~26 methods
-   by family; 2.3 datasets + Wagner split (train L145/186/209/219, val L277, TEST
-   L014/056/058/075/123) + the helical→fan geometry pipeline as a first-class artifact;
-   2.4 calibrated-headroom metric hr = max(0,1−RMSE/LD-FBP-RMSE), FOV-masked, no upper
-   clamp, mean±std over 5 patients; 2.5 per-iteration **test-selection** (best-by-test-hr;
-   state it is an optimistic upper bound); 2.6 statistics (paired t-test, n=5, tie defn).
-3. **Results** — 3.1 test-selected leaderboard (champion 0.376); 3.2 significance + top
-   tier (3-way tie; param-efficient joins at 1%); 3.3 effort/timeline (methods=days,
-   geometry≈24 working days); Breast-CT/Demo-DL generalization once §5 completes.
-4. **Discussion** — n=5 optimism; test-set selection caveat (val-champion overfit
-   observed); geometry cost dominates (agent didn't remove it); single-agent/single-metric
-   limits; seed-fragility (FoE+Manduca seed-123 collapse); **agent-behavior
-   characterization** — how the agent worked, what it rediscovered/self-modified, its
-   failure modes, and the agent-executor / human-strategist division of labor
-   (**full write-up in §5.6.4**); **problem-dependent compact architecture** — the
-   param-efficient optimum differs Mayo (denoiser) vs Breast (filtered-DC + primal-dual),
-   the agent re-derived rather than transferred (§5.6.3).
-5. **Conclusion** — an LLM agent can implement/adapt/tune ~26 methods under one metric;
-   the outcome is a small tier of indistinguishable top solvers, not one winner; the
-   bottleneck is geometry/data engineering → where to aim future agentic effort.
+> **10-PAGE DISCIPLINE (hard limit).** §5.6 is a lab notebook, not the paper. The main
+> text carries ~5–7 figures + ~3 tables and the distilled narrative above; the full
+> per-solver boards, all agent-behavior detail, the param-efficient search arc, and the
+> significance tables move to **Supplementary Material** (Med Phys allows unlimited SI).
+> Draft main text to ~8 pages, leaving 2 for figures/refs. Cut ruthlessly.
 
 **Figures:** (1) agentic-loop schematic; (2) helical→fan rebin + FOV-masked test slice;
 (3) per-iter val-vs-test hr trajectory (val-champion overfit); (4) test-selected
