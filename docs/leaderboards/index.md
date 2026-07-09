@@ -26,6 +26,8 @@ baseline tables, open the dataset board linked under "Full standings".
 <div data-leaderboard="mayo_ldct">loading leaderboard…</div>
 <h3>Breast-CT</h3>
 <div data-leaderboard="breast_ct">loading leaderboard…</div>
+<h3>BreastCT-Noise <small>(high-dose robustness re-eval, I0 = 100k photons)</small></h3>
+<div data-leaderboard="breast_ct_noise">loading leaderboard…</div>
 <h3>Demo-DL</h3>
 <div data-leaderboard="demo_dl">loading leaderboard…</div>
 
@@ -39,7 +41,8 @@ The complete per-dataset rankings — **all 19 solvers**, with every column
 are the single source of truth and list **every** solver (no truncated summary):
 
 - **[Mayo-LDCT — all 19 solvers →](mayo_ldct.html)** &nbsp; _(live `search-20260619-01`, auto-regenerated every wave)_
-- **[Breast-CT — all 19 solvers →](breast_ct.html)**
+- **[Breast-CT — all solvers →](breast_ct.html)**
+- **[BreastCT-Noise — no-retrain robustness re-eval →](breast_ct_noise.html)** &nbsp; _(same models, Poisson-noised inputs)_
 - **[Demo-DL — all 19 solvers →](demo_dl.html)**
 
 ## Methodology
