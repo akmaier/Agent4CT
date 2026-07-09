@@ -342,27 +342,20 @@ def main(out_dir: Path, cfg_override: dict | None = None) -> dict:
     baseline_psnr, baseline_rmse = metrics["baseline_psnr"], metrics["baseline_rmse"]
     headroom = metrics["headroom"]
 
-    # Ensure ONLY the primary evaluate_calibrated call (pred vs phantom, with
-    # baseline=val_fbp) writes recon_raw.npz. The shared metrics save block dumps
-    # on EVERY evaluate_calibrated call when AGENT4CT_SAVE_RECON is set, so the
-    # secondary vs-FBP call below (no baseline, truth=val_ref≈FBP) would otherwise
-    # overwrite the good primary dump — losing the real phantom truth + baseline
-    # and making per-case hr-std unrecoverable. Pop the env var here so the
-    # secondary call is a no-op for saving. (Scoped to this solver only.)
-    import os as _os_saverecon
-    _os_saverecon.environ.pop("AGENT4CT_SAVE_RECON", None)
-
-    # Secondary: against noiseless FBP (practical denoising metric, also calibrated)
-    # Restore pre-calibration ReLU clamp (CONVENTIONS.md rule 2):
-    # negative outliers in the raw pred would otherwise pull the bg mean
-    # negative inside evaluate_calibrated and bias the linear calibration.
+    # Secondary vs-noiseless-FBP diagnostics. Computed DIRECTLY (psnr/ssim on the
+    # FBP-calibrated pred) rather than via a SECOND evaluate_calibrated call, so
+    # there is NO second AGENT4CT_SAVE_RECON dump that could overwrite the primary
+    # pred/phantom/baseline recon. The earlier env-pop guard proved unreliable on
+    # the test-scoring path, leaving recon_raw.npz with truth=val_ref(FBP) and no
+    # baseline -> test_hr uncomputable. One evaluate_calibrated call = one clean save.
+    from ddssl_ldct.metrics import intensity_calibrate as _ical
     pred = pred.clamp_min(0.0)
     val_fbp = val_fbp.clamp_min(0.0)
-    metrics_fbp = evaluate_calibrated(
-        pred, val_ref,
-        display_min=cfg["display_min"], display_max=cfg["display_max"])
-    val_psnr_fbp = metrics_fbp["val_psnr"]
-    val_ssim_fbp = metrics_fbp["val_ssim"]
+    _dr_fbp = float(val_ref.max() - val_ref.min())
+    _dr_fbp = _dr_fbp if _dr_fbp > 1e-6 else 1e-6
+    _pred_fbpcal = _ical(pred, val_ref, display_max=cfg["display_max"]).clamp_min(0.0)
+    val_psnr_fbp = float(psnr(_pred_fbpcal, val_ref, data_range=_dr_fbp).cpu())
+    val_ssim_fbp = float(ssim(_pred_fbpcal, val_ref, data_range=_dr_fbp).cpu())
     baseline_rmse_fbp = float(((val_fbp - val_ref) ** 2).mean().sqrt().cpu())
     headroom_fbp = max(0.0, 1.0 - val_rmse / max(baseline_rmse_fbp, 1e-12))
 
