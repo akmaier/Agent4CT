@@ -190,11 +190,14 @@ _TEST_N_BY_CHALLENGE = {"mayo_ldct": 5, "breast_ct": 200}
 
 
 def _itertest_base(slug: str) -> Path:
-    """Per-iter TEST-sweep namespace for a run. Mayo param-efficient (code-evolving)
-    was scored into pe-iter-testeval/; every other solver (Mayo or breast) into
-    <slug>-itertest/ by scripts/score_mayo_alliters.py / score_breast_alliters.py."""
-    return DOCS_RUNS / ("pe-iter-testeval" if "param-efficient" in slug
-                        else f"{slug}-itertest")
+    """Per-iter TEST-sweep namespace for a run. ONLY the Mayo param-efficient
+    (code-evolving) was scored into pe-iter-testeval/; the BREAST param-efficient was
+    scored into the normal <slug>-itertest/ by score_breast_alliters.py (like every
+    other breast solver). Without the breast guard, the breast param-efficient row
+    read Mayo's pe-iter-testeval score (0.3241) and mis-ranked."""
+    if "param-efficient" in slug and "breast" not in slug:
+        return DOCS_RUNS / "pe-iter-testeval"
+    return DOCS_RUNS / f"{slug}-itertest"
 
 
 def _test_final_complete(obj: dict) -> bool:

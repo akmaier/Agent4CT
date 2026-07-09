@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-09T14:25:41Z",
+ "updated": "2026-07-09T15:11:05Z",
  "leaderboard": {
   "ranking_metric": "test hr (mean over 200 cases)",
   "tiebreak": "test_ssim",
@@ -228,6 +228,37 @@
     "rank": 7
    },
    {
+    "solver_key": "param-efficient",
+    "solver_name": "Param-efficient (evolved)",
+    "run_id": "breast-ct-claude-agentic-param-efficient-search-20260703-01",
+    "best_iter": 28,
+    "params_M": 0.000195,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": null,
+    "val_psnr": null,
+    "val_rmse": null,
+    "val_ssim_std": null,
+    "val_psnr_std": null,
+    "val_rmse_std": null,
+    "headroom_std": null,
+    "elapsed_s": 1180.296593427658,
+    "image": "runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0028/comparison.png",
+    "test_hr_mean": 0.6212057612713447,
+    "test_hr_std": 0.007619191787020001,
+    "test_ssim_mean": 0.9911722460389137,
+    "test_ssim_std": 0.0015034433672769037,
+    "test_psnr_mean": 45.17038045883179,
+    "test_psnr_std": 0.6480915697457805,
+    "test_rmse_mean": 0.0019784347165841608,
+    "test_rmse_std": 0.00014651927501045737,
+    "metric_basis": "test",
+    "rank_metric": 0.6212057612713447,
+    "rank_tiebreak": 0.9911722460389137,
+    "excluded_reason": null,
+    "rank": 8
+   },
+   {
     "solver_key": "hammernik-vn",
     "solver_name": "Hammernik VN (MRI port)",
     "run_id": "breast-ct-claude-agentic-hammernik-vn-search-20260703-01",
@@ -256,7 +287,7 @@
     "rank_metric": 0.5787294285529597,
     "rank_tiebreak": 0.986472314298153,
     "excluded_reason": null,
-    "rank": 8
+    "rank": 9
    },
    {
     "solver_key": "fastdiff-flow-pixel-constrained",
@@ -287,7 +318,7 @@
     "rank_metric": 0.5119377621088875,
     "rank_tiebreak": 0.979174302816391,
     "excluded_reason": null,
-    "rank": 9
+    "rank": 10
    },
    {
     "solver_key": "ram-zeroshot",
@@ -318,7 +349,7 @@
     "rank_metric": 0.36934335257553463,
     "rank_tiebreak": 0.9787384071946144,
     "excluded_reason": null,
-    "rank": 10
+    "rank": 11
    },
    {
     "solver_key": "tv-iterative",
@@ -349,7 +380,7 @@
     "rank_metric": 0.36014903261433234,
     "rank_tiebreak": 0.9918481773138046,
     "excluded_reason": null,
-    "rank": 11
+    "rank": 12
    },
    {
     "solver_key": "manhart-pwls-tv",
@@ -380,7 +411,7 @@
     "rank_metric": 0.3601452930931596,
     "rank_tiebreak": 0.9918481782078743,
     "excluded_reason": null,
-    "rank": 12
+    "rank": 13
    },
    {
     "solver_key": "wu-2015-trainable",
@@ -411,7 +442,7 @@
     "rank_metric": 0.31563203059683825,
     "rank_tiebreak": 0.9536797580122948,
     "excluded_reason": null,
-    "rank": 13
+    "rank": 14
    },
    {
     "solver_key": "manduca-bilateral",
@@ -442,7 +473,7 @@
     "rank_metric": 0.2763372957236417,
     "rank_tiebreak": 0.9830213233828544,
     "excluded_reason": null,
-    "rank": 14
+    "rank": 15
    },
    {
     "solver_key": "fastdiff-flow-pixel-unconstrained",
@@ -473,7 +504,7 @@
     "rank_metric": 0.2693045084683372,
     "rank_tiebreak": 0.9775520750880241,
     "excluded_reason": null,
-    "rank": 15
+    "rank": 16
    },
    {
     "solver_key": "fastdiff-wdm-wavelet-constrained",
@@ -504,7 +535,7 @@
     "rank_metric": 0.2692917146126529,
     "rank_tiebreak": 0.9339555355906487,
     "excluded_reason": null,
-    "rank": 16
+    "rank": 17
    },
    {
     "solver_key": "dual-domain-bilateral-supervised",
@@ -535,7 +566,7 @@
     "rank_metric": 0.2546087986419895,
     "rank_tiebreak": 0.984759738445282,
     "excluded_reason": null,
-    "rank": 17
+    "rank": 18
    },
    {
     "solver_key": "wu-2015",
@@ -566,7 +597,7 @@
     "rank_metric": 0.15166368210564085,
     "rank_tiebreak": 0.9611412900686264,
     "excluded_reason": null,
-    "rank": 18
+    "rank": 19
    },
    {
     "solver_key": "tv-iterative-supervised",
@@ -597,7 +628,7 @@
     "rank_metric": 0.15131201220126064,
     "rank_tiebreak": 0.9612921553850174,
     "excluded_reason": null,
-    "rank": 19
+    "rank": 20
    },
    {
     "solver_key": "dual-domain-bilateral-n2i",
@@ -628,38 +659,7 @@
     "rank_metric": 0.0001251812764975041,
     "rank_tiebreak": 0.9583047103881835,
     "excluded_reason": null,
-    "rank": 20
-   },
-   {
-    "solver_key": "param-efficient",
-    "solver_name": "Param-efficient (evolved)",
-    "run_id": "breast-ct-claude-agentic-param-efficient-search-20260703-01",
-    "best_iter": 33,
-    "params_M": 0.000195,
-    "params_source": "observation",
-    "val_ssim": null,
-    "headroom": null,
-    "val_psnr": null,
-    "val_rmse": null,
-    "val_ssim_std": null,
-    "val_psnr_std": null,
-    "val_rmse_std": null,
-    "headroom_std": null,
-    "elapsed_s": 1156.968751192093,
-    "image": "runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0033/comparison.png",
-    "test_hr_mean": 0.3241284803525243,
-    "test_hr_std": 0.06285895272632018,
-    "test_ssim_mean": 0.9726762294769287,
-    "test_ssim_std": 0.01138818025786438,
-    "test_psnr_mean": 42.68409881591797,
-    "test_psnr_std": 2.498904959076813,
-    "test_rmse_mean": 0.0005493076518177986,
-    "test_rmse_std": 0.00019763564666574983,
-    "metric_basis": "test",
-    "rank_metric": 0.3241284803525243,
-    "rank_tiebreak": 0.9726762294769287,
-    "excluded_reason": "discard",
-    "rank": null
+    "rank": 21
    },
    {
     "solver_key": "dual-domain-n2i",
@@ -2695,23 +2695,23 @@
    "challenge": "breast_ct",
    "campaign": "search-20260703-01",
    "n_iterations": 36,
-   "best_iter": 33,
+   "best_iter": 28,
    "metric_basis": "test",
-   "best_headroom": 0.3241284803525243,
-   "best_ssim": 0.9726762294769287,
-   "best_score": 0.9726762294769287,
-   "test_hr_mean": 0.3241284803525243,
-   "test_hr_std": 0.06285895272632018,
-   "test_ssim_mean": 0.9726762294769287,
-   "test_ssim_std": 0.01138818025786438,
-   "test_psnr_mean": 42.68409881591797,
-   "test_psnr_std": 2.498904959076813,
-   "test_rmse_mean": 0.0005493076518177986,
-   "test_rmse_std": 0.00019763564666574983,
+   "best_headroom": 0.6212057612713447,
+   "best_ssim": 0.9911722460389137,
+   "best_score": 0.9911722460389137,
+   "test_hr_mean": 0.6212057612713447,
+   "test_hr_std": 0.007619191787020001,
+   "test_ssim_mean": 0.9911722460389137,
+   "test_ssim_std": 0.0015034433672769037,
+   "test_psnr_mean": 45.17038045883179,
+   "test_psnr_std": 0.6480915697457805,
+   "test_rmse_mean": 0.0019784347165841608,
+   "test_rmse_std": 0.00014651927501045737,
    "started": "2026-07-08T09:06:03Z",
-   "status": "excluded",
+   "status": "ranked",
    "params_M": 0.000195,
-   "excluded_reason": "discard",
+   "excluded_reason": null,
    "agent": "param_efficient-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-08T09:06:03Z",
@@ -2861,7 +2861,7 @@
      0.6201
     ]
    ],
-   "val_image": "runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0033/comparison.png",
+   "val_image": "runs/breast-ct-claude-agentic-param-efficient-search-20260703-01/iterations/iter-0028/comparison.png",
    "test_image": null
   },
   {
