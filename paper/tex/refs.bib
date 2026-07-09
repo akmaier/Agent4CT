@@ -1,0 +1,452 @@
+% refs.bib — Bibliography for "Agentic Autoresearch for CT Reconstruction"
+% Medical Physics submission.
+% Every entry below was verified against a DOI / publisher page or an
+% authoritative offline copy in the repo's literature/ directory.
+% Fields that could not be verified are omitted rather than guessed.
+
+% =====================================================================
+%  Core references
+% =====================================================================
+
+@article{sidky2022,
+  author  = {Sidky, Emil Y. and Pan, Xiaochuan},
+  title   = {Report on the {AAPM} Deep-Learning Sparse-View {CT} ({DL}-Sparse-View {CT}) Grand Challenge},
+  journal = {Medical Physics},
+  year    = {2022},
+  volume  = {49},
+  number  = {8},
+  pages   = {4935--4943},
+  doi     = {10.1002/mp.15489},
+}
+
+@article{adler2018lpd,
+  author  = {Adler, Jonas and {\"O}ktem, Ozan},
+  title   = {Learned Primal-Dual Reconstruction},
+  journal = {IEEE Transactions on Medical Imaging},
+  year    = {2018},
+  volume  = {37},
+  number  = {6},
+  pages   = {1322--1332},
+  doi     = {10.1109/TMI.2018.2799231},
+}
+
+@article{hammernik2018vn,
+  author  = {Hammernik, Kerstin and Klatzer, Teresa and Kobler, Erich and
+             Recht, Michael P. and Sodickson, Daniel K. and Pock, Thomas and
+             Knoll, Florian},
+  title   = {Learning a Variational Network for Reconstruction of Accelerated {MRI} Data},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2018},
+  volume  = {79},
+  number  = {6},
+  pages   = {3055--3071},
+  doi     = {10.1002/mrm.26977},
+}
+
+@article{wuerfl2018,
+  author  = {W{\"u}rfl, Tobias and Hoffmann, Mathis and Christlein, Vincent and
+             Breininger, Katharina and Huang, Yixin and Unberath, Mathias and
+             Maier, Andreas K.},
+  title   = {Deep Learning Computed Tomography: Learning Projection-Domain Weights
+             From Image Domain in Limited Angle Problems},
+  journal = {IEEE Transactions on Medical Imaging},
+  year    = {2018},
+  volume  = {37},
+  number  = {6},
+  pages   = {1454--1463},
+  doi     = {10.1109/TMI.2018.2833499},
+}
+
+@article{ongie2020,
+  author  = {Ongie, Gregory and Jalal, Ajil and Metzler, Christopher A. and
+             Baraniuk, Richard G. and Dimakis, Alexandros G. and Willett, Rebecca},
+  title   = {Deep Learning Techniques for Inverse Problems in Imaging},
+  journal = {IEEE Journal on Selected Areas in Information Theory},
+  year    = {2020},
+  volume  = {1},
+  number  = {1},
+  pages   = {39--56},
+  doi     = {10.1109/JSAIT.2020.2991563},
+}
+
+@article{maier2019gentle,
+  author  = {Maier, Andreas and Syben, Christopher and Lasser, Tobias and Riess, Christian},
+  title   = {A Gentle Introduction to Deep Learning in Medical Image Processing},
+  journal = {Zeitschrift f{\"u}r Medizinische Physik},
+  year    = {2019},
+  volume  = {29},
+  number  = {2},
+  pages   = {86--101},
+  doi     = {10.1016/j.zemedi.2018.12.003},
+}
+
+@article{maier2019knownop,
+  author  = {Maier, Andreas K. and Syben, Christopher and Stimpel, Bernhard and
+             W{\"u}rfl, Tobias and Hoffmann, Mathis and Schebesch, Frank and
+             Fu, Weilin and Mill, Leonid and Kling, Lasse and Christiansen, Silke},
+  title   = {Learning with Known Operators Reduces Maximum Error Bounds},
+  journal = {Nature Machine Intelligence},
+  year    = {2019},
+  volume  = {1},
+  number  = {8},
+  pages   = {373--380},
+  doi     = {10.1038/s42256-019-0077-5},
+}
+
+@article{maier2022review,
+  author  = {Maier, Andreas and K{\"o}stler, Harald and Heisig, Marco and
+             Krauss, Patrick and Yang, Seung Hee},
+  title   = {Known Operator Learning and Hybrid Machine Learning in Medical
+             Imaging---A Review of the Past, the Present, and the Future},
+  journal = {Progress in Biomedical Engineering},
+  year    = {2022},
+  volume  = {4},
+  number  = {2},
+  pages   = {022002},
+  doi     = {10.1088/2516-1091/ac5b13},
+}
+
+@article{syben2019pyronn,
+  author  = {Syben, Christopher and Michen, Markus and Stimpel, Bernhard and
+             Seitz, Stephan and Ploner, Stefan and Maier, Andreas K.},
+  title   = {Technical Note: {PYRO-NN}: {P}ython Reconstruction Operators in Neural Networks},
+  journal = {Medical Physics},
+  year    = {2019},
+  volume  = {46},
+  number  = {11},
+  pages   = {5110--5115},
+  doi     = {10.1002/mp.13753},
+}
+
+% =====================================================================
+%  Recon backbone & Agent4* framework (repo literature/)
+% =====================================================================
+
+@inproceedings{wagner2023dualdomain,
+  author    = {Wagner, Fabian and Thies, Mareike and Pfaff, Laura and Aust, Oliver and
+               Pechmann, Sabrina and Weidner, Daniela and Maul, Noah and
+               Rohleder, Maximilian and Gu, Mingxuan and Utz, Jonas and
+               Denzinger, Felix and Maier, Andreas},
+  title     = {On the Benefit of Dual-Domain Denoising in a Self-Supervised Low-Dose {CT} Setting},
+  booktitle = {2023 IEEE 20th International Symposium on Biomedical Imaging (ISBI)},
+  year      = {2023},
+  pages     = {1--5},
+  publisher = {IEEE},
+  doi       = {10.1109/ISBI53787.2023.10230511},
+}
+
+@article{wagner2022bilateral,
+  author  = {Wagner, Fabian and Thies, Mareike and Gu, Mingxuan and Huang, Yixing and
+             Pechmann, Sabrina and Patwari, Mayank and Ploner, Stefan and Aust, Oliver and
+             Uderhardt, Stefan and Schett, Georg and Christiansen, Silke and Maier, Andreas},
+  title   = {Ultralow-Parameter Denoising: Trainable Bilateral Filter Layers in Computed Tomography},
+  journal = {Medical Physics},
+  year    = {2022},
+  volume  = {49},
+  number  = {8},
+  pages   = {5107--5120},
+  doi     = {10.1002/mp.15718},
+}
+
+% =====================================================================
+%  Pentathlon challenge reports
+% =====================================================================
+
+@article{mccollough2017mayo,
+  author  = {McCollough, Cynthia H. and Bartley, Adam C. and Carter, Rickey E. and
+             Chen, Baiyu and Drees, Tammy A. and Edwards, Phillip and
+             Holmes III, David R. and Huang, Alice E. and Khan, Farhana and
+             Leng, Shuai and McMillan, Kyle L. and Michalak, Gregory J. and
+             Nunez, Kristina M. and Yu, Lifeng and Fletcher, Joel G.},
+  title   = {Low-Dose {CT} for the Detection and Classification of Metastatic
+             Liver Lesions: Results of the 2016 Low Dose {CT} Grand Challenge},
+  journal = {Medical Physics},
+  year    = {2017},
+  volume  = {44},
+  number  = {10},
+  pages   = {e339--e352},
+  doi     = {10.1002/mp.12345},
+}
+
+@article{sidky2024spectral,
+  author  = {Sidky, Emil Y. and Pan, Xiaochuan},
+  title   = {Report on the {AAPM} Deep-Learning Spectral {CT} Grand Challenge},
+  journal = {Medical Physics},
+  year    = {2024},
+  doi     = {10.1002/mp.16612},
+  note    = {arXiv:2212.06718},
+}
+
+@article{abadi2025truect,
+  author  = {Abadi, Ehsan and Segars, W. Paul and Felice, Nicholas and
+             Hoffman, Eric A. and Samei, Ehsan},
+  title   = {The {AAPM} Truth-Based {CT} ({TrueCT}) Reconstruction Grand Challenge},
+  journal = {Medical Physics},
+  year    = {2025},
+  volume  = {52},
+  number  = {4},
+  pages   = {1978--1990},
+  doi     = {10.1002/mp.17619},
+}
+
+@article{haneda2025ctmar,
+  author  = {Haneda, Eri and Peters, Nils and Zhang, Jiayong and Karageorgos, Grigorios and
+             Xia, Wenjun and Paganetti, Harald and Wang, Ge and Guo, Yi and Ma, Jianhua and
+             Park, Hyoung Suk and Jeon, Kiwan and Fan, Fuxin and Thies, Mareike and
+             De Man, Bruno},
+  title   = {{AAPM} {CT} Metal Artifact Reduction Grand Challenge},
+  journal = {Medical Physics},
+  year    = {2025},
+  volume  = {52},
+  number  = {10},
+  pages   = {e70050},
+  doi     = {10.1002/mp.70050},
+}
+
+% =====================================================================
+%  Method / context references (repo literature/, verified DOIs)
+% =====================================================================
+
+@inproceedings{hammernik2017deep,
+  author       = {Hammernik, Kerstin and W{\"u}rfl, Tobias and Pock, Thomas and Maier, Andreas},
+  title        = {A Deep Learning Architecture for Limited-Angle Computed Tomography Reconstruction},
+  booktitle    = {Bildverarbeitung f{\"u}r die Medizin 2017},
+  series       = {Informatik aktuell},
+  year         = {2017},
+  pages        = {92--97},
+  publisher    = {Springer},
+  doi          = {10.1007/978-3-662-54345-0_25},
+}
+
+@inproceedings{zha2022naf,
+  author    = {Zha, Ruyi and Zhang, Yanhao and Li, Hongdong},
+  title     = {{NAF}: Neural Attenuation Fields for Sparse-View {CBCT} Reconstruction},
+  booktitle = {Medical Image Computing and Computer-Assisted Intervention --- MICCAI 2022},
+  series    = {Lecture Notes in Computer Science},
+  year      = {2022},
+  pages     = {442--452},
+  publisher = {Springer},
+  doi       = {10.1007/978-3-031-16446-0_42},
+  note      = {arXiv:2209.14540},
+}
+
+@inproceedings{zha2024r2gaussian,
+  author    = {Zha, Ruyi and Lin, Tao Jun and Cai, Yuanhao and Cao, Jiwen and
+               Zhang, Yanhao and Li, Hongdong},
+  title     = {{R$^2$-Gaussian}: Rectifying Radiative {G}aussian Splatting for Tomographic Reconstruction},
+  booktitle = {Advances in Neural Information Processing Systems 37 (NeurIPS 2024)},
+  year      = {2024},
+  note      = {arXiv:2405.20693},
+}
+
+@inproceedings{zhang2021transct,
+  author    = {Zhang, Zhicheng and Yu, Lequan and Liang, Xiaokun and Zhao, Wei and Xing, Lei},
+  title     = {{TransCT}: Dual-Path Transformer for Low-Dose Computed Tomography},
+  booktitle = {Medical Image Computing and Computer-Assisted Intervention --- MICCAI 2021},
+  series    = {Lecture Notes in Computer Science},
+  year      = {2021},
+  pages     = {55--64},
+  publisher = {Springer},
+  doi       = {10.1007/978-3-030-87231-1_6},
+  note      = {arXiv:2103.00634},
+}
+
+@article{xu2024hybrid,
+  author  = {Xu, Yongshun and Han, Shuo and Wang, Dayang and Wang, Ge and
+             Maltz, Jonathan S. and Yu, Hengyong},
+  title   = {Hybrid {U}-{N}et and {S}win-Transformer Network for Limited-Angle
+             Cardiac Computed Tomography},
+  journal = {Physics in Medicine \& Biology},
+  year    = {2024},
+  volume  = {69},
+  number  = {10},
+  pages   = {105012},
+  doi     = {10.1088/1361-6560/ad3db9},
+}
+
+@inproceedings{wu2015sparseview,
+  author    = {Wu, Meng and Maier, Andreas and Yang, Qiao and Fahrig, Rebecca},
+  title     = {A Novel Filtered Backprojection-Based Algorithm for Sparse-View {CT} Image Reconstruction},
+  booktitle = {The 13th International Meeting on Fully Three-Dimensional Image
+               Reconstruction in Radiology and Nuclear Medicine (Fully3D)},
+  year      = {2015},
+  pages     = {202--205},
+}
+
+@inproceedings{shi2026dm4ct,
+  author    = {Shi, Jiayang and Pelt, Dani{\"e}l M. and Batenburg, K. Joost},
+  title     = {{DM4CT}: Benchmarking Diffusion Models for Computed Tomography Reconstruction},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2026},
+  note      = {arXiv:2602.18589},
+}
+
+@article{liu2025review,
+  author  = {Liu, Haitian and Liu, Binglin and Hu, Qianchao and Du, Peilun and
+             Li, Jing and Bao, Yang and Wang, Feng},
+  title   = {A Review on {3D} {G}aussian Splatting for Sparse View Reconstruction},
+  journal = {Artificial Intelligence Review},
+  year    = {2025},
+  volume  = {58},
+  pages   = {215},
+  doi     = {10.1007/s10462-025-11171-4},
+}
+
+@article{terris2025ram,
+  author  = {Terris, Matthieu and Hurault, Samuel and Song, Maxime and Tachella, Juli{\'a}n},
+  title   = {Reconstruct Anything Model: A Lightweight Foundational Model for Computational Imaging},
+  journal = {arXiv preprint arXiv:2503.08915},
+  year    = {2025},
+  note    = {arXiv:2503.08915},
+}
+
+@incollection{maier2022proprietary,
+  author    = {Maier, Andreas and Yang, Seung Hee and Maleki, Farhad and
+               Muthukrishnan, Nikesh and Forghani, Reza},
+  title     = {Offer Proprietary Algorithms Still Protection of Intellectual
+               Property in the Age of Machine Learning? A Case Study Using Dual
+               Energy {CT} Data},
+  booktitle = {Bildverarbeitung f{\"u}r die Medizin 2022},
+  series    = {Informatik aktuell},
+  year      = {2022},
+  pages     = {345--350},
+  publisher = {Springer Vieweg, Wiesbaden},
+  doi       = {10.1007/978-3-658-36932-3_70},
+  note      = {arXiv:2112.03678},
+}
+
+@article{noo1999singleslice,
+  author  = {Noo, Fr{\'e}d{\'e}ric and Defrise, Michel and Clackdoyle, Rolf},
+  title   = {Single-Slice Rebinning Method for Helical Cone-Beam {CT}},
+  journal = {Physics in Medicine \& Biology},
+  year    = {1999},
+  volume  = {44},
+  number  = {2},
+  pages   = {561--570},
+  doi     = {10.1088/0031-9155/44/2/019},
+}
+
+% =====================================================================
+%  Agentic framework / autoresearch
+% =====================================================================
+
+@article{zaiss2026agent4mr,
+  author  = {Zaiss, Moritz and Aly, Amr and Endres, Jonathan and
+             Dornstetter, Tobias and Weinm{\"u}ller, Simon and Maier, Andreas},
+  title   = {{MR} {LLM}s with {MR} Agentic Sequence Development: Leveraging Skills
+             for Automatic Physics-Informed Sequence Development},
+  journal = {arXiv preprint arXiv:2604.13282},
+  year    = {2026},
+  note    = {arXiv:2604.13282; Agent4MR},
+}
+
+@inproceedings{yang2024sweagent,
+  author    = {Yang, John and Jimenez, Carlos E. and Wettig, Alexander and
+               Lieret, Kilian and Yao, Shunyu and Narasimhan, Karthik and Press, Ofir},
+  title     = {{SWE}-agent: Agent-Computer Interfaces Enable Automated Software Engineering},
+  booktitle = {Advances in Neural Information Processing Systems 37 (NeurIPS 2024)},
+  year      = {2024},
+  note      = {arXiv:2405.15793},
+}
+
+@inproceedings{jimenez2024swebench,
+  author    = {Jimenez, Carlos E. and Yang, John and Wettig, Alexander and
+               Yao, Shunyu and Pei, Kexin and Press, Ofir and Narasimhan, Karthik},
+  title     = {{SWE}-bench: Can Language Models Resolve Real-World {G}it{H}ub Issues?},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+  note      = {arXiv:2310.06770},
+}
+
+@article{lu2024aiscientist,
+  author  = {Lu, Chris and Lu, Cong and Lange, Robert Tjarko and Foerster, Jakob and
+             Clune, Jeff and Ha, David},
+  title   = {The {AI} Scientist: Towards Fully Automated Open-Ended Scientific Discovery},
+  journal = {arXiv preprint arXiv:2408.06292},
+  year    = {2024},
+  note    = {arXiv:2408.06292},
+}
+
+% =====================================================================
+%  Self-supervised / classical iterative CT denoising
+% =====================================================================
+
+@article{hendriksen2020noise2inverse,
+  author  = {Hendriksen, Allard A. and Pelt, Dani{\"e}l M. and Batenburg, K. Joost},
+  title   = {Noise2Inverse: Self-Supervised Deep Convolutional Denoising for Tomography},
+  journal = {IEEE Transactions on Computational Imaging},
+  year    = {2020},
+  volume  = {6},
+  pages   = {1320--1335},
+  doi     = {10.1109/TCI.2020.3019647},
+}
+
+@article{manduca2009bilateral,
+  author  = {Manduca, Armando and Yu, Lifeng and Trzasko, Joshua D. and
+             Khaylova, Natalia and Kofler, James M. and McCollough, Cynthia M. and
+             Fletcher, Joel G.},
+  title   = {Projection Space Denoising with Bilateral Filtering and {CT} Noise
+             Modeling for Dose Reduction in {CT}},
+  journal = {Medical Physics},
+  year    = {2009},
+  volume  = {36},
+  number  = {11},
+  pages   = {4911--4919},
+  doi     = {10.1118/1.3232004},
+}
+
+@article{sidky2008tv,
+  author  = {Sidky, Emil Y. and Pan, Xiaochuan},
+  title   = {Image Reconstruction in Circular Cone-Beam Computed Tomography by
+             Constrained, Total-Variation Minimization},
+  journal = {Physics in Medicine \& Biology},
+  year    = {2008},
+  volume  = {53},
+  number  = {17},
+  pages   = {4777--4807},
+  doi     = {10.1088/0031-9155/53/17/021},
+}
+
+% =====================================================================
+%  Transformer restoration & diffusion / score-based reconstruction
+% =====================================================================
+
+@inproceedings{liang2021swinir,
+  author    = {Liang, Jingyun and Cao, Jiezhang and Sun, Guolei and Zhang, Kai and
+               Van Gool, Luc and Timofte, Radu},
+  title     = {{SwinIR}: Image Restoration Using {S}win Transformer},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer
+               Vision (ICCV) Workshops},
+  year      = {2021},
+  pages     = {1833--1844},
+  doi       = {10.1109/ICCVW54120.2021.00210},
+  note      = {arXiv:2108.10257},
+}
+
+@inproceedings{liu2021swin,
+  author    = {Liu, Ze and Lin, Yutong and Cao, Yue and Hu, Han and Wei, Yixuan and
+               Zhang, Zheng and Lin, Stephen and Guo, Baining},
+  title     = {{S}win Transformer: Hierarchical Vision Transformer Using Shifted Windows},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  year      = {2021},
+  pages     = {9992--10002},
+  doi       = {10.1109/ICCV48922.2021.00986},
+  note      = {arXiv:2103.14030},
+}
+
+@inproceedings{chung2023dps,
+  author    = {Chung, Hyungjin and Kim, Jeongsol and McCann, Michael T. and
+               Klasky, Marc L. and Ye, Jong Chul},
+  title     = {Diffusion Posterior Sampling for General Noisy Inverse Problems},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023},
+  note      = {arXiv:2209.14687},
+}
+
+@inproceedings{song2022scorebased,
+  author    = {Song, Yang and Shen, Liyue and Xing, Lei and Ermon, Stefano},
+  title     = {Solving Inverse Problems in Medical Imaging with Score-Based Generative Models},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022},
+  note      = {arXiv:2111.08005},
+}

@@ -1,0 +1,12 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.out
+*.blg
+*.bbl
+*.synctex.gz
+*.toc
+# Unzipped Wiley template (derivable from WileyDesign.zip; tex/ has the needed copies)
+WileyDesign/
