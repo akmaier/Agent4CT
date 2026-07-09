@@ -1,6 +1,6 @@
 {
  "schema_version": 3,
- "updated": "2026-07-09T15:11:05Z",
+ "updated": "2026-07-09T17:51:22Z",
  "datasets": [
   {
    "challenge": "mayo_ldct",
@@ -33,6 +33,22 @@
    "champion_test_n": 200,
    "champion_score": 0.8947838666483249,
    "thumbnail": "runs/breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01/iterations/iter-0020/comparison.png"
+  },
+  {
+   "challenge": "breast_ct_noise",
+   "label": "BreastCT-Noise",
+   "campaign": "calibrated+agentic",
+   "n_runs": 25,
+   "n_iterations": 515,
+   "n_solvers": 25,
+   "champion_slug": "breast-ct-claude-agentic-learned-primal-dual-search-20260703-01",
+   "champion_name": "Learned Primal-Dual",
+   "champion_headroom": 0.9348650378652437,
+   "champion_ssim": 0.9905061355233192,
+   "champion_metric_basis": "test",
+   "champion_test_n": 200,
+   "champion_score": 0.9348650378652437,
+   "thumbnail": "runs/breast-ct-claude-agentic-learned-primal-dual-search-20260703-01/iterations/iter-0012/comparison.png"
   },
   {
    "challenge": "demo_dl",

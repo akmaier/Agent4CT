@@ -368,7 +368,7 @@ function renderRunCard(r) {
   // breast n=200 i.i.d. cases). Datasets without a held-out test set (demo_dl)
   // report their single-split val metrics as before.
   if (r.metric_basis === "test") {
-    const _tn = (r.challenge === "breast_ct") ? 200
+    const _tn = (r.challenge === "breast_ct" || r.challenge === "breast_ct_noise") ? 200
               : (r.challenge === "mayo_ldct") ? 5 : null;
     const _s = _tn ? " (n=" + _tn + ")" : "";
     stat("test SSIM" + _s, fmtMeanStd(r.test_ssim_mean, r.test_ssim_std, 4));

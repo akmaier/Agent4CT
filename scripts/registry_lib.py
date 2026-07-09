@@ -39,7 +39,8 @@ _PREFIX_TO_CHALLENGE = [
 ]
 
 DATASET_LABELS = {
-    "mayo_ldct": "Mayo-LDCT", "breast_ct": "Breast-CT", "demo_dl": "Demo-DL",
+    "mayo_ldct": "Mayo-LDCT", "breast_ct": "Breast-CT",
+    "breast_ct_noise": "BreastCT-Noise", "demo_dl": "Demo-DL",
     "dl_sparse_view": "DL-Sparse-View", "dl_spectral": "DL-Spectral",
     "ct_mar": "CT-MAR", "truect": "TrueCT",
 }
@@ -53,7 +54,7 @@ DATASET_LABELS = {
 #     no patients; the redo added a train/val/test split, paper §5.0). Its
 #     final.json (breast_testset_final_v1) carries the same test_*_mean/std keys.
 # ---------------------------------------------------------------------------
-TEST_RANKED_DATASETS = {"mayo_ldct", "breast_ct"}  # both test-selected (breast finale 2026-07-09: 200-case per-case mean±std)
+TEST_RANKED_DATASETS = {"mayo_ldct", "breast_ct", "breast_ct_noise"}  # all test-selected; breast_ct_noise = same 200 cases, Poisson-noised sino (paper §5.6.7)
 
 
 def metric_basis(challenge: str | None) -> str:

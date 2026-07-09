@@ -420,6 +420,23 @@ def load_val_split(kind: str, split: str, n: int, *, device,
 
     truth_path = info.staged_dir / info.truth_file_tmpl.format(split=split)
     sino_path  = info.staged_dir / info.sino_file_tmpl .format(split=split)
+    # BreastCT_Noise second board (paper §5.6.7): when AGENT4CT_TEST_NOISE_I0 names a
+    # dose, swap ONLY the sinogram to the pre-staged Poisson-noised copy at that I0
+    # (<split>_sinograms_noise_i0_<I0>.h5, from data/stage_breast_noise.py). Truth stays
+    # the CLEAN phantom, so the noisy board still measures recovery of the clean image
+    # (robustness to input noise); the solver's FBP baseline is then also computed from
+    # the noisy sino, so hr = improvement over the NOISY FBP. Unset -> unchanged; the
+    # split=="train" load is excluded so training never sees the noisy sino.
+    _noise_i0 = _os.environ.get("AGENT4CT_TEST_NOISE_I0")
+    if _noise_i0 and kind == "breast_ct" and split in ("test", "val"):
+        _nz = info.staged_dir / f"{split}_sinograms_noise_i0_{int(float(_noise_i0))}.h5"
+        if not _nz.exists():
+            raise FileNotFoundError(
+                f"AGENT4CT_TEST_NOISE_I0={_noise_i0}: missing {_nz} — run "
+                f"`python data/stage_breast_noise.py --i0 {int(float(_noise_i0))} --split {split}`")
+        sino_path = _nz
+        print(f"[staged] AGENT4CT_TEST_NOISE_I0={_noise_i0}: breast_ct sino -> "
+              f"{_nz.name} (clean truth, noisy input)", flush=True)
     # Presentation-only TEST showcase (AGENT4CT_SHOWCASE): replace the Mayo val
     # load (single patient L277) with one CENTRAL slice from each of the 5
     # held-out TEST patients, for diverse leaderboard figures. Only the val

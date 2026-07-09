@@ -256,7 +256,7 @@ def _score_recon_per_case(npz_path: Path, cfg: dict) -> dict:
 # WORKER role (cluster-side): run solver once on the test split, re-score per case
 # ==========================================================================
 def run_worker(slug: str, solver_key: str, cfg_json: Path, split: str = "test",
-               solver_src: str | None = None) -> int:
+               solver_src: str | None = None, noise_i0: float | None = None) -> int:
     if solver_key not in SOLVER_MAP:
         print(f"[breast-test] unknown solver {solver_key!r}; choices: {list(SOLVER_MAP)}",
               flush=True)
@@ -264,7 +264,11 @@ def run_worker(slug: str, solver_key: str, cfg_json: Path, split: str = "test",
     default_path, env_var = SOLVER_MAP[solver_key]
     solver_path = solver_src if solver_src else default_path
 
-    base_out = RUNS_BASE / f"{slug.replace('/', '__')}-breasttest"
+    # BreastCT_Noise board (paper §5.6.7): a NO-RETRAIN robustness eval. Recon scratch +
+    # docs namespace get a -noise<I0> suffix so the noisy run never clobbers the noiseless
+    # one, and the loader is told to feed the Poisson-noised sino (AGENT4CT_TEST_NOISE_I0).
+    noise_tag = f"-noise{int(noise_i0)}" if noise_i0 else ""
+    base_out = RUNS_BASE / f"{slug.replace('/', '__')}-breasttest{noise_tag}"
     out_dir = base_out / split
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -282,13 +286,23 @@ def run_worker(slug: str, solver_key: str, cfg_json: Path, split: str = "test",
     # + reusable. Unlike Mayo (5 patients share one ckpt) the breast worker runs
     # the solver ONCE, so this is a single train -> save. Backward-compatible:
     # unset AGENT4CT_MODEL_CKPT (the prior behaviour) simply skipped this save.
-    model_ckpt = out_dir / "model_ckpt.pt"
+    if noise_i0:
+        # NO-RETRAIN: load the NOISELESS-trained checkpoint (the solver's opt-in
+        # AGENT4CT_MODEL_CKPT loads + skips training when the file EXISTS), then infer on
+        # the noisy sino. Per-scene / classical solvers have no such ckpt -> they simply
+        # re-fit on the noisy input, which IS their inference (still no supervised retrain).
+        model_ckpt = (RUNS_BASE / f"{slug.replace('/', '__')}-breasttest"
+                      / split / "model_ckpt.pt")
+    else:
+        model_ckpt = out_dir / "model_ckpt.pt"
 
     env = os.environ.copy()
     env["AGENT4CT_DATASET"] = "breast_ct"
     env["AGENT4CT_EVAL_SPLIT"] = split               # loader redirect val -> test
     env["AGENT4CT_SAVE_RECON"] = str(out_dir)        # persist raw recon for re-scoring
-    env["AGENT4CT_MODEL_CKPT"] = str(model_ckpt)      # persist trained checkpoint
+    env["AGENT4CT_MODEL_CKPT"] = str(model_ckpt)      # persist (or, in noise mode, LOAD) ckpt
+    if noise_i0:
+        env["AGENT4CT_TEST_NOISE_I0"] = str(int(noise_i0))  # loader feeds noisy sino
     env[env_var] = str(cfg_eff)
     env.pop("AGENT4CT_EVAL_PATIENT", None)            # never mixed with Mayo path
     env.pop("AGENT4CT_SHOWCASE", None)
@@ -319,11 +333,15 @@ def run_worker(slug: str, solver_key: str, cfg_json: Path, split: str = "test",
         print(f"[breast-test] WARN: model_ckpt not saved at {model_ckpt} "
               f"(solver may not honour AGENT4CT_MODEL_CKPT)", flush=True)
 
+    # In noise mode the result lives in a parallel docs namespace so it feeds the
+    # BreastCT_Noise board, not the noiseless breast_ct board.
+    out_slug = slug.replace("-itertest/", f"-itertest{noise_tag}/") if noise_i0 else slug
     final = {
         "schema": FINAL_SCHEMA,
-        "run_id": slug,
+        "run_id": out_slug,
         "solver_key": solver_key,
         "split": split,
+        "noise_i0": int(noise_i0) if noise_i0 else None,
         "test_n_cases": aggr["n_cases"],
         "n_test_expected": BREAST_TEST_N,
         "complete": aggr["n_cases"] == BREAST_TEST_N and aggr["test_hr_mean"] is not None,
@@ -339,7 +357,7 @@ def run_worker(slug: str, solver_key: str, cfg_json: Path, split: str = "test",
         "test_psnr_mean": aggr["test_psnr_mean"], "test_psnr_std": aggr["test_psnr_std"],
         "test_rmse_mean": aggr["test_rmse_mean"], "test_rmse_std": aggr["test_rmse_std"],
     }
-    out_path = DOCS_RUNS / slug / "final.json"
+    out_path = DOCS_RUNS / out_slug / "final.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(final, indent=2))
     print(f"[breast-test] wrote {out_path}  n={aggr['n_cases']}/{BREAST_TEST_N}  "
@@ -417,6 +435,10 @@ def main() -> int:
     ap.add_argument("--cfg", help="(worker) path to the best-iter cfg JSON")
     ap.add_argument("--solver-src", default=None,
                     help="(worker) explicit solver .py to run; empty -> SOLVER_MAP path")
+    ap.add_argument("--noise-i0", type=float, default=None,
+                    help="(worker) BreastCT_Noise mode: feed the Poisson-noised sino at this "
+                         "I0 (e.g. 100000), load the noiseless ckpt (skip retrain), write to "
+                         "the -noise<I0> namespace. Requires data/stage_breast_noise.py --i0 <I0>.")
     args = ap.parse_args()
 
     if args.worker:
@@ -426,7 +448,7 @@ def main() -> int:
         if smk is None:
             ap.error(f"--worker: unknown solver {args.solver!r}")
         return run_worker(args.slug, smk, Path(args.cfg), split=args.split,
-                          solver_src=(args.solver_src or None))
+                          solver_src=(args.solver_src or None), noise_i0=args.noise_i0)
 
     runids = load_allow_runids()
     if args.solver:

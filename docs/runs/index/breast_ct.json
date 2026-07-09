@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-09T15:11:05Z",
+ "updated": "2026-07-09T17:51:22Z",
  "leaderboard": {
   "ranking_metric": "test hr (mean over 200 cases)",
   "tiebreak": "test_ssim",

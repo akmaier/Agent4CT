@@ -83,9 +83,10 @@
   function renderChampions(mount, payload) {
     var board = payload.data.datasets || {};
     var base = imgBaseFor(payload.url);
-    var order = ["breast_ct", "demo_dl", "mayo_ldct"];
+    var order = ["breast_ct", "breast_ct_noise", "demo_dl", "mayo_ldct"];
     var labels = {
-      breast_ct: "Breast-CT", demo_dl: "Demo-DL", mayo_ldct: "Mayo-LDCT",
+      breast_ct: "Breast-CT", breast_ct_noise: "BreastCT-Noise",
+      demo_dl: "Demo-DL", mayo_ldct: "Mayo-LDCT",
     };
     var linkBase = mount.getAttribute("data-link-base") || "leaderboards/";
     mount.innerHTML = "";

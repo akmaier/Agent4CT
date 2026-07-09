@@ -110,7 +110,7 @@ def build_registry_lines(allow: dict, backstop: dict):
     """-> (lines, exclude_iters_by_run). One line per allowlisted run-iter, in a
     stable order (challenge, slug, iter)."""
     lines = []
-    for ch in ("mayo_ldct", "breast_ct", "demo_dl"):
+    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "demo_dl"):
         ds = allow["datasets"].get(ch, {})
         excl = ds.get("exclude_iters", {})
         for slug in ds.get("run_ids", []):
@@ -186,15 +186,23 @@ _TEST_PATIENTS = ("L014", "L056", "L058", "L075", "L123")
 
 # Held-out TEST-set size per test-ranked dataset, for the "(test, n=…)" basis tag
 # (Mayo = 5 Wagner patients; breast = 200 i.i.d. held-out cases, paper §5.0).
-_TEST_N_BY_CHALLENGE = {"mayo_ldct": 5, "breast_ct": 200}
+_TEST_N_BY_CHALLENGE = {"mayo_ldct": 5, "breast_ct": 200, "breast_ct_noise": 200}
+
+# BreastCT_Noise board (paper §5.6.7): the noisy re-eval of each breast solver's
+# noiseless best iter lives in <slug>-itertest-noise<I0>/. Same run-ids as breast_ct,
+# same base metadata; only the TEST scores come from this parallel namespace.
+BREAST_NOISE_I0 = 100000
 
 
-def _itertest_base(slug: str) -> Path:
-    """Per-iter TEST-sweep namespace for a run. ONLY the Mayo param-efficient
-    (code-evolving) was scored into pe-iter-testeval/; the BREAST param-efficient was
-    scored into the normal <slug>-itertest/ by score_breast_alliters.py (like every
-    other breast solver). Without the breast guard, the breast param-efficient row
-    read Mayo's pe-iter-testeval score (0.3241) and mis-ranked."""
+def _itertest_base(slug: str, ch: str | None = None) -> Path:
+    """Per-iter TEST-sweep namespace for a run, CHALLENGE-aware.
+    - breast_ct_noise: the noisy re-eval lives in <slug>-itertest-noise<I0>/.
+    - Mayo param-efficient (code-evolving) was scored into pe-iter-testeval/.
+    - everything else (incl. BREAST param-efficient): the normal <slug>-itertest/.
+    The challenge (not the slug prefix) selects the namespace, so breast_ct and
+    breast_ct_noise can share run-ids yet read different test scores."""
+    if ch == "breast_ct_noise":
+        return DOCS_RUNS / f"{slug}-itertest-noise{BREAST_NOISE_I0}"
     if "param-efficient" in slug and "breast" not in slug:
         return DOCS_RUNS / "pe-iter-testeval"
     return DOCS_RUNS / f"{slug}-itertest"
@@ -211,13 +219,13 @@ def _test_final_complete(obj: dict) -> bool:
     return bool(obj.get("complete"))            # breast per-case final.json
 
 
-def _test_best_iter(slug: str):
+def _test_best_iter(slug: str, ch: str | None = None):
     """Pick a run's leaderboard iter by MAX test_hr_mean (test_ssim_mean tiebreak)
     over the per-iter TEST-sweep aggregates. Complete iters only, so incomplete /
     refused iters are skipped. Returns (iter:int, aggr:dict over _TESTSET_KEYS) or
     None if the run has no complete sweep result (then the caller falls back to the
-    val-headroom iter)."""
-    base = _itertest_base(slug)
+    val-headroom iter). `ch` selects the itertest namespace (breast_ct_noise)."""
+    base = _itertest_base(slug, ch)
     if not base.is_dir():
         return None
     best = None
@@ -262,14 +270,17 @@ def best_iter_row(slug_lines: list[dict]) -> dict | None:
         return s if R.finite(s) else -math.inf
 
     run_id = slug_lines[0]["run_id"]
-    ch = R.challenge_from_slug(run_id)
+    # Use the line's challenge (set from the CURRENT_RUNIDS dataset the run is listed
+    # under), NOT the slug prefix — so breast_ct and breast_ct_noise (same run-ids)
+    # resolve to their OWN board + itertest namespace.
+    ch = slug_lines[0].get("challenge") or R.challenge_from_slug(run_id)
     is_test = R.metric_basis(ch) == "test"
 
     test_aggr = {k: None for k in _TESTSET_KEYS}
     has_final = False
     best = None
     if is_test:
-        tb = _test_best_iter(run_id)
+        tb = _test_best_iter(run_id, ch)
         if tb is not None:
             tb_iter, test_aggr = tb
             has_final = True
@@ -360,7 +371,8 @@ def build_leaderboard(ch_lines: list[dict], ch: str | None = None) -> dict:
 # carry no build stamp and are already stable.
 _TIMESTAMPED_VIEWS = {
     "datasets.json": 1, "leaderboard.json": 1,
-    "mayo_ldct.json": 1, "breast_ct.json": 1, "demo_dl.json": 1,
+    "mayo_ldct.json": 1, "breast_ct.json": 1, "breast_ct_noise.json": 1,
+    "demo_dl.json": 1,
 }
 
 
@@ -405,7 +417,7 @@ def main() -> int:
 
     leaderboards: dict[str, dict] = {}
     datasets_summary = []
-    for ch in ("mayo_ldct", "breast_ct", "demo_dl"):
+    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "demo_dl"):
         ch_lines = by_ch.get(ch, [])
         lb = build_leaderboard(ch_lines, ch)
         leaderboards[ch] = lb
@@ -529,7 +541,7 @@ def main() -> int:
     }, indent=1, allow_nan=False))
 
     # scratch/<ch>.jsonl — capped recent observations (newest-first) for advice.
-    for ch in ("mayo_ldct", "breast_ct", "demo_dl"):
+    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "demo_dl"):
         ch_lines = sorted(by_ch.get(ch, []), key=lambda l: (l["ts"] or "", l["iter"]))
         recent = list(reversed(ch_lines))[:SCRATCH_CAP]
         cards = [{
@@ -589,7 +601,8 @@ def main() -> int:
 # The gate rebuilds and compares this to catch committed-view-vs-fresh-build drift.
 # --------------------------------------------------------------------------
 _HASHED_VIEWS = ["registry.jsonl", "datasets.json", "leaderboard.json",
-                 "mayo_ldct.json", "breast_ct.json", "demo_dl.json"]
+                 "mayo_ldct.json", "breast_ct.json", "breast_ct_noise.json",
+                 "demo_dl.json"]
 # Volatile build-stamp keys excluded from the content hash so two builds of the
 # SAME data hash identically (the gate compares substance, not the wall clock).
 _VOLATILE_KEYS = {"updated", "built_at"}
@@ -616,7 +629,7 @@ def compute_content_hash() -> str:
         p = IDX / name
         h.update(name.encode())
         h.update(_canonical_bytes(name, p.read_bytes()) if p.exists() else b"")
-    for ch in ("mayo_ldct", "breast_ct", "demo_dl"):
+    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "demo_dl"):
         p = SCR / f"{ch}.jsonl"
         rel = f"scratch/{ch}.jsonl"
         h.update(rel.encode())
