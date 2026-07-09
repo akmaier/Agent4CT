@@ -234,6 +234,16 @@ with one plain-English sentence. Target ~6 numbered display equations:
    ($\boldsymbol{\varepsilon}=\mathbf{0}$ for the noiseless Sidky breast data). Reconstruction
    = recover $\mathbf{x}$ from $\mathbf{g}$; sparse-view makes $\mathbf{A}$ under-determined.
 
+   **1b. One framework for all 26 solvers.** Intuition: "trade measurement fit against a
+   prior." Almost every method is an instance of the regularized inversion
+   $$ \hat{\mathbf{x}}=\arg\min_{\mathbf{x}}\ \tfrac12\|\mathbf{A}\mathbf{x}-\mathbf{g}\|_2^2
+      +\lambda\,\mathcal{R}(\mathbf{x}), $$
+   solved by the unrolled step below. A solver is fixed by **two choices**: the
+   **data-consistency operator** $\mathbf{D}$ (how the residual returns to image space —
+   $\mathbf{A}^{\!\top}$, $\mathrm{FBP}$, or a CG solve) and the **prior/prox** $\mathcal{R}$.
+   This describes the whole zoo in *one table*, not 26 paragraphs — and it names the agent's
+   job in the compact study: re-select $(\mathbf{D},\mathcal{R})$.
+
 2. **Unrolled reconstruction with data consistency.** Intuition: "walk toward images that
    agree with the measurements, then clean up." $K$ unrolled steps
    $$ \mathbf{x}_{k+1} = \mathbf{x}_k - \alpha_k\,\mathbf{D}(\mathbf{A}\mathbf{x}_k-\mathbf{g})
@@ -272,6 +282,35 @@ with one plain-English sentence. Target ~6 numbered display equations:
 the exact operator $\mathbf{A}$ cannot raise, and generally lowers, the maximum error bound
 vs. a fully-learned map — and cite Maier et al., Nature Mach. Intell. 2019. One sentence, no
 proof.)*
+
+**Solver taxonomy — Table 1 (replaces per-method prose; describe the 26 in ONE table).**
+Building on the framework (Eq. 1b), place every solver on **two axes** — the same axes
+Ongie et al. (2020) use for DL inverse problems, which Sidky's challenge adopts:
+- **Axis A — physics engagement (how the known operator $\mathbf{A}$ is used at inference):**
+  *none* (post-process the FBP once, $\mathbf{D}=0$) · *single* data-consistency · *in-loop
+  unrolled* DC · *full per-scene fit* to $\mathbf{g}$.
+- **Axis B — prior source $\mathcal{R}$:** *hand-crafted* (TV, bilateral) · *supervised* ·
+  *self-supervised* (Noise2Inverse) · *generative* (diffusion) · *implicit/per-scene* (NAF,
+  Gaussian-splatting) · *foundation model* (RAM).
+
+Table columns: family · representative solver(s) · $\mathbf{D}$ · $\mathcal{R}$ · # params.
+Rows group the 26: classical iterative (TV, PWLS-TV) · image-domain denoisers (bilateral,
+DD-UNet) · unrolled/learned-iterative (ITNet v1/v2/v3, U-Swin) · variational networks
+(Hammernik-2017, VN) · learned primal–dual (LPD) · dual-domain (supervised / bilateral / N2I)
+· generative-prior (fastdiff flow/wavelet) · per-scene implicit (NAF, R²-Gaussian) ·
+foundation zero-shot (RAM) · band-decomposition (Wu-2015) · **param-efficient recombination
+(ours).**
+
+**Why this framework earns its place (both findings read off the axes):**
+- *Compact study* = a deliberate walk in $(\mathbf{D},\mathcal{R})$ space: filtered
+  $\mathbf{D}=\mathrm{FBP}$ + a learned combination + an output bilateral prox → VN-tier at
+  ~195 params.
+- *Noise reversal* = a split across the axes. Brittleness concentrates in the **supervised,
+  weak-physics** corner (image-domain maps trained only on clean FBP — DD-supervised: rank 1
+  → last). Robustness concentrates where the prior is **not tuned to the clean distribution**:
+  either **in-loop physics** (LPD: keeps $\mathbf{A}$ in the loop → champion) or a
+  **hand-crafted smoothing prior** (bilateral, TV: noise-agnostic by construction → rise).
+  One picture, two axes, both results.
 
 > **10-PAGE DISCIPLINE (hard limit).** §5.6 is a lab notebook, not the paper. The main
 > text carries ~5–7 figures + ~3 tables and the distilled narrative above; the full
