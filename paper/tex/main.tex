@@ -1,7 +1,8 @@
-\documentclass[ASNA,twocolumn]{USG} %twocolumn
-% USG.cls is the Wiley "Optimal Design" layout class. The ASNA option
-% selects the wileyNJD-Chicago bibliography style automatically (see USG.cls).
-% TODO swap to WileyNJD-AMA.bst at submission (Med Phys wants AMA superscript).
+\documentclass[AMA,twocolumn]{USG} %twocolumn
+% USG.cls is the Wiley "Optimal Design" layout class. The AMA option selects
+% the WileyNJD-AMA.bst bibliography style automatically and loads NJDnatbib
+% with [numbers,super] + \setcitestyle{super} (see USG.cls) --- numbered
+% references, superscript-numeral citation marks, as Medical Physics requires.
 
 \usepackage{anyfontsize}
 \usepackage{booktabs}   % \toprule \midrule \bottomrule for the two main tables
@@ -71,7 +72,7 @@ Deep learning has changed CT reconstruction. A decade of work has produced many 
 
 Yet a purely data-driven reconstructor learns a map that is not tied to the physics. Such a map is free to \emph{hallucinate}. It can add anatomy that the measurements do not support.\cite{maier2019gentle} This is not a small tuning issue. It is a structural risk. The field's durable answer is to put the physics back in. We embed the \textbf{known operator} --- the differentiable forward and back projector --- into the learned pipeline.\cite{maier2019knownop,maier2022review} This trade is quantified. Constraining a network with an exact operator provably cannot raise, and usually lowers, the maximum error bound. In practice it also lowers the number of parameters and the amount of training data needed.\cite{maier2019knownop} All models are wrong, but a model that knows its own forward operator is useful for a principled reason.
 
-There is a second problem, and it sits one level up. The method zoo is itself the product of slow, human-bound work. To compare or improve any method, a researcher must implement a solver, wire it to the data and geometry, launch a job, read a metric, form a hypothesis, change one thing, and repeat. This takes days per method. Recent ``autoresearch'' ideas imagine automating this loop. LLM agents that write and run code now make the question concrete. \emph{Can an LLM agent do reconstruction research?} Not just tune one number, but implement an unfamiliar method, diagnose why a reconstruction fails, edit its own solver code, and benchmark the result fairly --- if we ground it in the same two things that discipline a human: a differentiable projector and a fair, frozen metric.
+There is a second problem, and it sits one level up. The method zoo is itself the product of slow, human-bound work. The reconstruction problem can be framed as a learned inverse problem,\cite{ongie2020} but to compare or improve any method, a researcher must implement a solver, wire it to the data and geometry, launch a job, read a metric, form a hypothesis, change one thing, and repeat. This takes days per method. Recent ``autoresearch'' ideas imagine automating this loop.\cite{lu2024aiscientist} LLM agents that write and run code now make the question concrete: general-purpose coding agents already resolve real software-engineering tasks,\cite{yang2024sweagent,jimenez2024swebench} and physics-informed agentic development has begun in adjacent imaging fields.\cite{zaiss2026agent4mr} \emph{Can an LLM agent do reconstruction research?} Not just tune one number, but implement an unfamiliar method, diagnose why a reconstruction fails, edit its own solver code, and benchmark the result fairly --- if we ground it in the same two things that discipline a human: a differentiable projector and a fair, frozen metric.
 
 We built such a loop and let an agent run it. We benchmarked 26 methods across two CT problems. One is noise-limited (Mayo low-dose). One is incompleteness-limited (128-view sparse-view breast, from noiseless challenge data). We then asked a second question that the ideal-data benchmark cannot answer on its own: does the ranking survive a little noise? We added mild Poisson noise to the test inputs and re-scored every trained model without retraining.
 
@@ -113,29 +114,32 @@ The convolutions $\Gamma_\phi,\Lambda_\theta$ are small and weight-tied. We zero
 Table~\ref{tab:taxonomy} places all 26 methods on two axes. Axis~A is physics engagement: how much $\mathbf{A}$ is used at inference (none, a single data-consistency step, an in-loop unrolled scheme, or a full per-scene fit). Axis~B is the prior source: hand-crafted (total variation, bilateral), supervised, self-supervised (Noise2Inverse), generative (diffusion), implicit/per-scene (neural fields, Gaussian splatting), or a frozen foundation model. This one table replaces 26 separate descriptions. It also names the agent's job in the compact study: re-select the pair $(\mathbf{D},\mathcal{R})$. Full per-solver configurations are in Supplement~S1.
 
 \begin{table}[t]
-\caption{Solver taxonomy (condensed). Each family is placed on Axis~A (physics engagement, i.e.\ how the operator $\mathbf{A}$ is used at inference) and Axis~B (prior source $\mathcal{R}$). The full per-solver configuration and parameter counts are in Supplement~S1.\label{tab:taxonomy}}
-\begin{tabular*}{\columnwidth}{@{\extracolsep\fill}lll@{\extracolsep\fill}}
+\caption{Solver taxonomy (condensed). Each family is placed on Axis~A (physics engagement, i.e.\ how the operator $\mathbf{A}$ is used at inference) and Axis~B (prior source $\mathcal{R}$), with a source citation per family. The full per-solver configuration and parameter counts are in Supplement~S1.\label{tab:taxonomy}}
+\centering
+\setlength{\tabcolsep}{4pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llll@{}}
 \toprule
-\textbf{Family} & \textbf{Axis A} & \textbf{Axis B} \\
+\textbf{Family} & \textbf{Axis A} & \textbf{Axis B} & \textbf{Ref.} \\
 \midrule
-Classical iterative (TV, PWLS-TV)        & in-loop    & hand-crafted \\
-Image-domain denoiser (bilateral, U-Net) & none       & hand-crafted / sup. \\
-Unrolled learned-iterative (ITNet, U-Swin) & in-loop  & supervised \\
-Variational network (Hammernik)          & in-loop    & supervised \\
-Learned primal-dual (LPD)                & in-loop    & supervised \\
-Dual-domain (sup., bilateral, N2I)       & single / in-loop & sup. / self-sup. \\
-Generative prior (fastdiff $\times4$)     & in-loop    & generative \\
-Per-scene implicit (NAF, R$^2$-Gaussian) & per-scene  & implicit \\
-Foundation zero-shot (RAM)               & single     & foundation \\
-Band decomposition (Wu-2015)             & in-loop    & hand-cr. / sup. \\
-\textbf{Recombination (ours)}            & \textbf{in-loop} & \textbf{hybrid} \\
+Classical iterative (TV, PWLS-TV)        & in-loop    & hand-crafted & \cite{sidky2008tv,wu2015sparseview} \\
+Image-domain denoiser (bilateral, U-Net) & none       & hand-cr. / sup. & \cite{manduca2009bilateral,wagner2022bilateral} \\
+Unrolled learned-iterative (ITNet, U-Swin) & in-loop  & supervised & \cite{wuerfl2018,xu2024hybrid,liang2021swinir,liu2021swin,zhang2021transct} \\
+Variational network (Hammernik)          & in-loop    & supervised & \cite{hammernik2017deep,hammernik2018vn} \\
+Learned primal-dual (LPD)                & in-loop    & supervised & \cite{adler2018lpd} \\
+Dual-domain (sup., bilateral, N2I)       & single / in-loop & sup. / self-sup. & \cite{wagner2023dualdomain,hendriksen2020noise2inverse} \\
+Generative prior (fastdiff $\times4$)     & in-loop    & generative & \cite{shi2026dm4ct,friedrich2024wdm,song2022scorebased,chung2023dps} \\
+Per-scene implicit (NAF, R$^2$-Gaussian) & per-scene  & implicit & \cite{zha2022naf,zha2024r2gaussian,liu2025review} \\
+Foundation zero-shot (RAM)               & single     & foundation & \cite{terris2025ram} \\
+Band decomposition (Wu-2015)             & in-loop    & hand-cr. / sup. & \cite{wu2015sparseview} \\
+\textbf{Recombination (ours)}            & \textbf{in-loop} & \textbf{hybrid} & --- \\
 \bottomrule
-\end{tabular*}
+\end{tabular}}
 \end{table}
 
 \subsection{Datasets and geometry}\label{sec:data}
 
-\textbf{Mayo low-dose CT.} Real helical low-dose data. The main human cost here is the geometry: rebinning helical to fan-beam. We built and validated this pipeline as a first-class artifact. We use a fixed train/val/test split (Supplement~S2).
+\textbf{Mayo low-dose CT.} Real helical low-dose data from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} The main human cost here is the geometry: rebinning helical to fan-beam via single-slice rebinning.\cite{noo1999singleslice} We built and validated this pipeline as a first-class artifact. We use a fixed train/val/test split (Supplement~S2). This is one of a family of AAPM reconstruction grand challenges spanning spectral, truth-based, and metal-artifact tasks\cite{sidky2024spectral,abadi2025truect,haneda2025ctmar}; handling proprietary or multi-energy inputs raises further intellectual-property questions studied elsewhere.\cite{maier2022proprietary}
 
 \textbf{Breast (Sidky DL-Sparse-View).} 128-view 2-D fan-beam sparse-view data of synthetic breast phantoms.\cite{sidky2022} This data is \textbf{noiseless by design}. The challenge asks whether deep learning can solve the sparse-view inverse problem, so its RMSE floor is exactly zero. We re-partitioned the public 4000-case train pool into train (3600), validation (200), and test (200), with a fixed seed and disjoint cases. We verified disjointness by image hashing: no test image appears in train or validation (Supplement~S3).
 
@@ -179,17 +183,14 @@ The breast headroom values are high (champion hr 0.89). This is a property of th
 We now add mild noise to the inputs and re-score, with no retraining. The ranking nearly inverts. Table~\ref{tab:reversal} shows the two boards side by side. The headline entries:
 
 \begin{itemize}
-\item \textbf{learned-primal-dual} rises from hr 0.72 (rank 6) to \textbf{0.93} (rank 1). Its noisy SSIM is 0.99. It genuinely reconstructs under noise.
-\item \textbf{manduca-bilateral} (21 parameters) rises from 0.28 to \textbf{0.84}. A hand-crafted smoothing prior is noise-robust by construction.
-\item \textbf{dual-domain-supervised}, the noiseless champion (0.89, rank 1), \textbf{collapses to 0.00} (last), with SSIM 0.35. It is a pure supervised image-domain denoiser. It was trained only on clean FBP. It is brittle to a distribution it never saw.
+\item \textbf{learned-primal-dual}\cite{adler2018lpd} rises from hr 0.72 (rank 6) to \textbf{0.93} (rank 1). Its noisy SSIM is 0.99. It genuinely reconstructs under noise.
+\item \textbf{manduca-bilateral} (21 parameters)\cite{manduca2009bilateral} rises from 0.28 to \textbf{0.84}. A hand-crafted smoothing prior is noise-robust by construction.
+\item \textbf{dual-domain-supervised}, the noiseless champion (0.89, rank 1),\cite{wagner2023dualdomain} \textbf{collapses to 0.00} (last), with SSIM 0.35. It is a pure supervised image-domain denoiser. It was trained only on clean FBP. It is brittle to a distribution it never saw.
 \item The \textbf{ITNet family} (in-loop data-consistency) degrades in the middle (0.89 $\to$ 0.55--0.70). Our compact solver holds relatively well (0.62 $\to$ 0.52).
-\item Per-scene neural-field and Gaussian-splatting methods (NAF, R$^2$-Gaussian) do not complete under the budget on either board and are reported as DNF.
+\item Per-scene neural-field and Gaussian-splatting methods (NAF, R$^2$-Gaussian)\cite{zha2022naf,zha2024r2gaussian} do not complete under the budget on either board and are reported as DNF.
 \end{itemize}
 
-The absolute SSIM and PSNR columns confirm that the rise of learned-primal-dual and the fall of dual-domain-supervised are real, not an artifact of the changing FBP baseline (Supplement~S6). The reversal is shown in Figure~\ref{fig:reversal}.
-
-% TODO fig4_recon_panels: example reconstructions (truth, clean-input recon,
-% noisy-input recon) for the noiseless champion vs. learned-primal-dual.
+The absolute SSIM and PSNR columns confirm that the rise of learned-primal-dual and the fall of dual-domain-supervised are real, not an artifact of the changing FBP baseline (Supplement~S6). The reversal is shown in Figure~\ref{fig:reversal}, and example reconstructions for the two contrasting methods are in Figure~\ref{fig:panels}.
 
 \subsection{The framework explains the reversal}\label{sec:explain}
 
@@ -211,6 +212,11 @@ The reversal reads off the two axes of Table~\ref{tab:taxonomy}. Brittleness con
 \begin{figure*}[t]
 \centerline{\includegraphics[width=\textwidth]{fig3_reversal.pdf}}
 \caption{The reversal (main result). Paired rank plot from the noiseless breast board to the noisy breast board ($I_0=10^5$, same trained models, same 200 test cases, no retraining), with an arrow per method. The supervised image-domain champion collapses from rank~1 to last; the learned primal-dual method rises from mid-pack to champion; hand-crafted smoothing and in-loop physics priors rise. A small, realistic noise perturbation reorders almost the whole leaderboard.\label{fig:reversal}}
+\end{figure*}
+
+\begin{figure*}[t]
+\centerline{\includegraphics[width=\linewidth]{fig4_recon_panels.pdf}}
+\caption{Example reconstructions behind the reversal, for the two methods at opposite ends of it. Rows: the noiseless champion \emph{dual-domain-supervised} (a supervised image-domain denoiser) versus \emph{learned-primal-dual} (in-loop physics). Columns: ground truth, reconstruction from the clean input, reconstruction from the noisy input ($I_0=10^5$, same trained model, no retraining), and the difference to truth; SSIM is annotated on each recon. On clean inputs both are near-perfect. Under mild input noise the supervised denoiser collapses (SSIM $0.999\!\to\!0.301$), spraying structured error across the field of view, while the physics-in-the-loop primal-dual method holds (SSIM $0.995\!\to\!0.986$). This is the pixel-level face of the ranking inversion in Figure~\ref{fig:reversal} and Table~\ref{tab:reversal}.\label{fig:panels}}
 \end{figure*}
 
 %------------------------------------------------------------
@@ -279,12 +285,9 @@ The authors declare no relevant conflicts of interest.
 \bmsubsection*{Data and Code Availability}
 Boards, provenance records, and code are at \url{https://github.com/akmaier/Agent4CT}; live dashboards at \url{https://akmaier.github.io/Agent4CT}.
 
-% The ASNA class option auto-selects wileyNJD-Chicago.bst. The copy of that
-% file in this directory is the working Chicago variant (the vendor's original
-% wileyNJD-Chicago.bst has broken function defs; the shipped
-% wileyNJD-Chicago-lastoo.bst content was substituted under the same name so
-% natbib's single \bibstyle resolves to it). See wileyNJD-Chicago-lastoo.bst.
-% TODO swap to WileyNJD-AMA.bst at submission (Med Phys wants AMA superscript).
+% The AMA class option auto-selects WileyNJD-AMA.bst (numbered, order-of-
+% appearance, AMA 10th-edition style). natbib's single \bibstyle is set by the
+% class, so no \bibliographystyle is issued here.
 \bibliography{refs}
 
 \end{document}
