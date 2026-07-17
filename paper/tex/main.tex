@@ -113,6 +113,8 @@ The convolutions $\Gamma_\phi,\Lambda_\theta$ are small and weight-tied. We zero
 
 Table~\ref{tab:taxonomy} places all 26 methods on two axes. Axis~A is physics engagement: how much $\mathbf{A}$ is used at inference (none, a single data-consistency step, an in-loop unrolled scheme, or a full per-scene fit). Axis~B is the prior source, and its categories are worth naming plainly. \emph{Hand-crafted} priors (total variation, bilateral) encode smoothness by hand. \emph{Supervised} priors are trained on paired examples with a known answer (low-dose input, full-dose truth). \emph{Self-supervised} priors train without a clean reference, using structure in the data itself; Noise2Inverse (N2I), for example, splits the measured projections into subsets so one subset's reconstruction predicts another's. \emph{Generative} priors are diffusion models --- networks that make realistic images by reversing a gradual noising process --- used to ``imagine'' plausible detail. \emph{Implicit/per-scene} methods fit a small network to each single scan that returns the attenuation at any queried coordinate, rather than storing a pixel grid; neural fields and Gaussian splatting (which models the volume as many small 3-D Gaussian blobs) are examples. A \emph{foundation model} is a large network pre-trained once on generic data and applied here with no task-specific training (``zero-shot''); we include the Reconstruct Anything Model.\cite{terris2025ram} This table also names the agent's job in the compact study: re-select the pair $(\mathbf{D},\mathcal{R})$. Full per-solver configurations are in Supplement~S1.
 
+\textbf{Search protocol.} Each of the 25 established methods was tuned by 20 autoresearch iterations of the loop in Section~\ref{sec:loop}. The 26th method --- our compact solver --- was searched for 40 iterations, with the explicit aim of an ultra-low-parameter recombination of the pair $(\mathbf{D},\mathcal{R})$. During its first 20 iterations the agent worked alone and was free to recombine any component of the other 25 solvers. During the second 20, a human operator added mild suggestions about directions not yet tried. This was the only stage where the human shaped the search beyond setting targets and auditing.
+
 \begin{table}[t]
 \caption{Solver taxonomy (condensed). Each family is placed on Axis~A (physics engagement, i.e.\ how the operator $\mathbf{A}$ is used at inference) and Axis~B (prior source $\mathcal{R}$), with a source citation per family. The full per-solver configuration and parameter counts are in Supplement~S1.\label{tab:taxonomy}}
 \centering
@@ -139,9 +141,9 @@ Band decomposition (Wu-2015)             & in-loop    & hand-cr. / sup. & \cite{
 
 \subsection{Datasets and geometry}\label{sec:data}
 
-\textbf{Mayo low-dose CT.} Real helical low-dose data from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} Rebinning helical to fan-beam via single-slice rebinning\cite{noo1999singleslice} allows direct use of the fan-beam projector. We built and validated this pipeline, and use a fixed train/val/test split (Supplement~S2). This is one of a family of AAPM reconstruction grand challenges spanning spectral, truth-based, and metal-artifact tasks\cite{sidky2024spectral,abadi2025truect,haneda2025ctmar}; handling proprietary or multi-energy inputs raises further intellectual-property questions studied elsewhere.\cite{maier2022proprietary}
+\textbf{Mayo low-dose CT.} Real helical low-dose data from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} Rebinning helical to fan-beam via single-slice rebinning\cite{noo1999singleslice} allows direct use of the fan-beam projector. We built and validated this pipeline, and use a fixed train/val/test split (Supplement~S2). This is one of a family of AAPM reconstruction grand challenges spanning spectral, truth-based, and metal-artifact tasks.\cite{sidky2024spectral,abadi2025truect,haneda2025ctmar}
 
-\textbf{Breast (Sidky DL-Sparse-View).} 128-view 2-D fan-beam sparse-view data of synthetic breast phantoms.\cite{sidky2022} This data is \textbf{noiseless by design}. The challenge asks whether deep learning can solve the sparse-view inverse problem, so its RMSE floor is exactly zero. We re-partitioned the public 4000-case train pool into train (3600), validation (200), and test (200), with a fixed seed and disjoint cases. To confirm the split, we verified disjointness by image hashing: no test image appears in train or validation (Supplement~S3).
+\textbf{Breast CT Challenge.} 128-view 2-D fan-beam sparse-view data of synthetic breast phantoms.\cite{sidky2022} This data is \textbf{noiseless by design}. The challenge asks whether deep learning can solve the sparse-view inverse problem, so its RMSE floor is exactly zero. We re-partitioned the public 4000-case train pool into train (3600), validation (200), and test (200), with a fixed seed and disjoint cases. To confirm the split, we verified disjointness by image hashing: no test image appears in train or validation (Supplement~S3).
 
 \subsection{The calibrated-headroom metric}\label{sec:metric}
 
@@ -153,15 +155,15 @@ An hr of 0 means no better than FBP; an hr near 1 means near-perfect. We select 
 
 \subsection{The noise-robustness experiment}\label{sec:noiseexp}
 
-We ask whether the noiseless ranking survives a little input noise. For each method we take its noiseless best iteration. We then re-evaluate it on the \textbf{same} 200 breast test cases, but with photon-counting noise added to the sinograms. For a line integral $p$ and incident photon count $I_0$,
+We ask whether the noiseless ranking survives a little input noise. For each method we take its noiseless best iteration. We then re-evaluate it on the \textbf{same} 200 breast test cases, but with photon noise added to the sinograms. For a line integral $p$ and incident photon count $I_0$,
 \begin{equation}\label{eq:noise}
 N\sim\mathrm{Poisson}\big(I_0\,e^{-p}\big),\qquad \hat p=-\log\!\big(\max(N,1)/I_0\big).
 \end{equation}
-We use $I_0=10^5$ photons. This is a high dose. The noise is mild --- about 1--2\,\% at the thickest ray. We apply it to the test inputs only. Note that the ground truth stays clean. Supervised solvers \textbf{load their noiseless-trained weights and skip training}. Per-scene and classical solvers re-fit on the noisy input, which is their normal inference. The FBP baseline in Eq.~(\ref{eq:hr}) is recomputed from the same noisy data, so hr measures improvement over the noisy FBP. This is exactly the realistic model $\mathbf{A}\mathbf{x}+\boldsymbol{\varepsilon}$ that the noiseless challenge does not study.
+We use $I_0=10^5$ photons. This is a rather high dose. The noise is mild --- about 1--2\,\% at the thickest ray. We apply it to the test inputs only. Note that the ground truth stays clean. Supervised solvers \textbf{load their noiseless-trained weights and no additional training is applied}. Per-scene and classical solvers re-fit on the noisy input, which is their normal inference. The FBP baseline in Eq.~(\ref{eq:hr}) is recomputed from the same noisy data, so hr measures improvement over the noisy FBP. This is exactly the realistic model $\mathbf{A}\mathbf{x}+\boldsymbol{\varepsilon}$ that the noiseless challenge does not study.
 
 \subsection{Statistics}\label{sec:stats}
 
-The 200 test cases are shared by all methods, so comparisons are paired. With $n=200$ the paired $t$-test is very high-powered: tiny mean gaps reach $p<0.01$. Hence, we report \textbf{effect size} --- how large a difference is, independent of sample size --- not just $p$. We use Cohen's $d_z=\bar d/s_d$, the mean of the paired differences over their standard deviation, and lead with $d_z$ and the raw difference. On Mayo, where $n=5$ patients, the same test has low power; we report both levels and note the contrast (Section~\ref{sec:discussion}).
+We begin with Mayo. There the five held-out patients give $n=5$, so the paired $t$-test has low power; we therefore report both the 5\,\% and 1\,\% levels. For Breast CT, the 200 test cases are shared by all methods, so comparisons are paired. With $n=200$ the paired $t$-test is very high-powered: tiny mean gaps reach $p<0.01$. Hence, we report \textbf{effect size} --- how large a difference is, independent of sample size --- not just $p$. We use Cohen's $d_z=\bar d/s_d$, the mean of the paired differences over their standard deviation, and lead with $d_z$ and the raw difference. The contrast between $n=5$ and $n=200$ is discussed in Section~\ref{sec:discussion}.
 
 %============================================================
 \section{Results}\label{sec:results}
@@ -210,7 +212,7 @@ The reversal reads off the two axes of Table~\ref{tab:taxonomy}. Brittleness con
 \end{figure}
 
 \begin{figure*}[t]
-\centerline{\includegraphics[width=\textwidth]{fig3_reversal.pdf}}
+\centerline{\includegraphics[width=0.5\textwidth]{fig3_reversal.pdf}}
 \caption{The reversal (main result). Paired rank plot from the noiseless breast board to the noisy breast board ($I_0=10^5$, same trained models, same 200 test cases, no retraining), with an arrow per method. The supervised image-domain champion collapses from rank~1 to last; the learned primal-dual method rises from mid-pack to champion; hand-crafted smoothing and in-loop physics priors rise. A small, realistic noise perturbation reorders almost the whole leaderboard.\label{fig:reversal}}
 \end{figure*}
 
