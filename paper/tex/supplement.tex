@@ -65,7 +65,7 @@
 We place the 26 methods on two axes. Axis~A is physics engagement (how the operator $\mathbf{A}$ is used at inference). Axis~B is the prior source $\mathcal{R}$.
 
 \begin{table}[t]
-\caption{Full solver taxonomy. Axis~A = physics engagement; Axis~B = prior source. The final column cites the source(s) for each family.\label{tab:s1taxonomy}}
+\caption{Full solver taxonomy. Axis~A = physics engagement; Axis~B = prior source. The final column cites the source(s) for each family. Abbreviations: DC, data consistency; N2I, Noise2Inverse; rectified-flow prior, a fast diffusion-type generative prior; FoE, field of experts (a learned filter-bank image prior).\label{tab:s1taxonomy}}
 \centering
 \setlength{\tabcolsep}{3pt}
 \resizebox{\columnwidth}{!}{%
@@ -119,7 +119,7 @@ data           & noiseless, ideal        & real low-dose, quantum noise \\
 bottleneck     & data incompleteness     & noise / dose \\
 RMSE floor     & 0                       & $>0$ \\
 best hr        & $\sim$0.89              & $\sim$0.38 \\
-dominant lever & data-consistency / KO   & denoising \\
+dominant lever & data-consistency / known operator & denoising \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -151,7 +151,7 @@ $+$ learned primal-dual combination        & $W=4$ & 183 & 0.5047 \\
 \end{tabular}}
 \end{table}
 
-Findings, each earned by an iteration: the image-domain denoiser caps at $\sim$0.26; deeper \emph{adjoint} data-consistency lowers hr (it re-injects streaks); the \emph{filtered} gradient breaks the ceiling at 13 parameters; an in-loop prox hurts (the filtered gradient already reconstructs); a learned cross-step combination helps; a full conjugate-gradient DC solve does not beat the single filtered gradient under a fixed wall; and Wu-2015 band machinery adds nothing here. The champion is seed-fragile in the variational-network manner: 4 of 5 seeds cluster at $0.571\pm0.033$, one collapses; two stabilizers did not recover it. On the held-out test set the compact solver scores hr $0.6212\pm0.0076$ --- the tightest per-case std of any solver.
+Findings, each earned by an iteration: the image-domain denoiser caps at $\sim$0.26; deeper \emph{adjoint} data-consistency lowers hr (it re-injects streaks); the \emph{filtered} gradient breaks the ceiling at 13 parameters; an in-loop prox (proximal / denoising step) hurts (the filtered gradient already reconstructs); a learned cross-step combination helps; a full conjugate-gradient DC solve does not beat the single filtered gradient under a fixed wall; and Wu-2015 band machinery adds nothing here. The champion is seed-fragile in the variational-network manner: 4 of 5 seeds cluster at $0.571\pm0.033$, one collapses; two stabilizers did not recover it. On the held-out test set the compact solver scores hr $0.6212\pm0.0076$ --- the tightest per-case std of any solver.
 
 \textbf{Mayo vs breast contrast.} On Mayo the compact optimum is an evolved field-of-experts plus multi-scale bilateral denoiser (hr 0.324 at $\sim$0.00097 M params), statistically tied with the top tier at the 1\,\% level. On a denoising problem, a tiny denoiser suffices. On sparse-view breast, that same denoiser fails; data-consistency is the differentiator.\cite{adler2018lpd} This problem-dependence is the practical face of the known-operator principle\cite{maier2019knownop,maier2022review}: embedding the exact forward operator cannot raise, and usually lowers, the maximum error bound, and it curbs the hallucination risk of unconstrained learned maps.\cite{maier2019gentle,ongie2020} The agent re-derived each optimum; it did not transfer.
 
