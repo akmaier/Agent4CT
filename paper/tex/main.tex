@@ -230,7 +230,7 @@ From the 26 methods the agent recombined a compact solver. On breast it uses a f
 
 The breast headroom values are high (champion hr 0.89). This is a property of the data, not a flaw. The Sidky data is noiseless, so near-perfect recovery is possible in principle. We ruled out train/test leakage three ways: the training loader never sees the test split; test and train images are hash-disjoint; and test-hr tracks val-hr for every method, often lower on test (Supplement~S3). The high numbers reflect an easy, well-posed problem, not memorization.
 
-\subsection{The main result: a little noise inverts the ranking}\label{sec:reversal}
+\subsection{A little noise inverts the ranking}\label{sec:reversal}
 
 We now add mild noise to the inputs and re-score, with no retraining. The ranking nearly inverts. Table~\ref{tab:reversal} shows the two boards side by side. The headline entries:
 
