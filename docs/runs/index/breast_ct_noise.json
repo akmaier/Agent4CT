@@ -228,6 +228,37 @@
     "rank": 7
    },
    {
+    "solver_key": "fastdiff-wdm-wavelet-unconstrained",
+    "solver_name": "Fast-diffusion WDM (wavelet, unconstrained)",
+    "run_id": "breast-ct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260703-01",
+    "best_iter": 9,
+    "params_M": 3.824908,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": null,
+    "val_psnr": null,
+    "val_rmse": null,
+    "val_ssim_std": null,
+    "val_psnr_std": null,
+    "val_rmse_std": null,
+    "headroom_std": null,
+    "elapsed_s": 112.45543193817139,
+    "image": "runs/breast-ct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260703-01/iterations/iter-0009/comparison.png",
+    "test_hr_mean": 0.6350067106267799,
+    "test_hr_std": 0.03338922400622843,
+    "test_ssim_mean": 0.9449539759755134,
+    "test_ssim_std": 0.011603642692492535,
+    "test_psnr_mean": 30.122860345840454,
+    "test_psnr_std": 0.9679472112697673,
+    "test_rmse_mean": 0.011223081373609603,
+    "test_rmse_std": 0.0012031459326979803,
+    "metric_basis": "test",
+    "rank_metric": 0.6350067106267799,
+    "rank_tiebreak": 0.9449539759755134,
+    "excluded_reason": null,
+    "rank": 8
+   },
+   {
     "solver_key": "uswin",
     "solver_name": "U-Swin",
     "run_id": "breast-ct-claude-agentic-uswin-search-20260703-01",
@@ -256,7 +287,7 @@
     "rank_metric": 0.5915000390104183,
     "rank_tiebreak": 0.6407698294520379,
     "excluded_reason": null,
-    "rank": 8
+    "rank": 9
    },
    {
     "solver_key": "itnet",
@@ -287,7 +318,7 @@
     "rank_metric": 0.578365657311381,
     "rank_tiebreak": 0.6294672268629075,
     "excluded_reason": null,
-    "rank": 9
+    "rank": 10
    },
    {
     "solver_key": "hammernik-vn",
@@ -318,7 +349,7 @@
     "rank_metric": 0.5529289958694413,
     "rank_tiebreak": 0.5962351167201996,
     "excluded_reason": null,
-    "rank": 10
+    "rank": 11
    },
    {
     "solver_key": "itnet-v2",
@@ -349,7 +380,7 @@
     "rank_metric": 0.5480435854644196,
     "rank_tiebreak": 0.6201288479566575,
     "excluded_reason": null,
-    "rank": 11
+    "rank": 12
    },
    {
     "solver_key": "param-efficient",
@@ -380,7 +411,7 @@
     "rank_metric": 0.5152565671733735,
     "rank_tiebreak": 0.5770784458518028,
     "excluded_reason": null,
-    "rank": 12
+    "rank": 13
    },
    {
     "solver_key": "manhart-pwls-tv",
@@ -411,7 +442,7 @@
     "rank_metric": 0.5067934198964514,
     "rank_tiebreak": 0.6163687017560006,
     "excluded_reason": null,
-    "rank": 13
+    "rank": 14
    },
    {
     "solver_key": "tv-iterative",
@@ -442,7 +473,7 @@
     "rank_metric": 0.5067909017851028,
     "rank_tiebreak": 0.6163674145936966,
     "excluded_reason": null,
-    "rank": 14
+    "rank": 15
    },
    {
     "solver_key": "wu-2015",
@@ -473,7 +504,7 @@
     "rank_metric": 0.3700495675638626,
     "rank_tiebreak": 0.5243812471628189,
     "excluded_reason": null,
-    "rank": 15
+    "rank": 16
    },
    {
     "solver_key": "wu-2015-trainable",
@@ -504,7 +535,7 @@
     "rank_metric": 0.2591213618315681,
     "rank_tiebreak": 0.43997726976871493,
     "excluded_reason": null,
-    "rank": 16
+    "rank": 17
    },
    {
     "solver_key": "tv-iterative-supervised",
@@ -535,7 +566,7 @@
     "rank_metric": 0.10705015273404614,
     "rank_tiebreak": 0.4567089141905308,
     "excluded_reason": null,
-    "rank": 17
+    "rank": 18
    },
    {
     "solver_key": "dual-domain-bilateral-supervised",
@@ -566,38 +597,7 @@
     "rank_metric": 0.1002933686588086,
     "rank_tiebreak": 0.452400324344635,
     "excluded_reason": null,
-    "rank": 18
-   },
-   {
-    "solver_key": "fastdiff-wdm-wavelet-unconstrained",
-    "solver_name": "Fast-diffusion WDM (wavelet, unconstrained)",
-    "run_id": "breast-ct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260703-01",
-    "best_iter": 9,
-    "params_M": 3.824908,
-    "params_source": "observation",
-    "val_ssim": null,
-    "headroom": null,
-    "val_psnr": null,
-    "val_rmse": null,
-    "val_ssim_std": null,
-    "val_psnr_std": null,
-    "val_rmse_std": null,
-    "headroom_std": null,
-    "elapsed_s": 112.45543193817139,
-    "image": "runs/breast-ct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260703-01/iterations/iter-0009/comparison.png",
-    "test_hr_mean": 0.6350067106267799,
-    "test_hr_std": 0.03338922400622843,
-    "test_ssim_mean": 0.9449539759755134,
-    "test_ssim_std": 0.011603642692492535,
-    "test_psnr_mean": 30.122860345840454,
-    "test_psnr_std": 0.9679472112697673,
-    "test_rmse_mean": 0.011223081373609603,
-    "test_rmse_std": 0.0012031459326979803,
-    "metric_basis": "test",
-    "rank_metric": 0.6350067106267799,
-    "rank_tiebreak": 0.9449539759755134,
-    "excluded_reason": "discard",
-    "rank": null
+    "rank": 19
    },
    {
     "solver_key": "dual-domain-supervised",
@@ -720,7 +720,7 @@
     "metric_basis": "test",
     "rank_metric": null,
     "rank_tiebreak": null,
-    "excluded_reason": "discard",
+    "excluded_reason": "non-finite",
     "rank": null
    },
    {
@@ -751,7 +751,7 @@
     "metric_basis": "test",
     "rank_metric": null,
     "rank_tiebreak": null,
-    "excluded_reason": "discard",
+    "excluded_reason": "non-finite",
     "rank": null
    },
    {
@@ -782,7 +782,7 @@
     "metric_basis": "test",
     "rank_metric": null,
     "rank_tiebreak": null,
-    "excluded_reason": "discard",
+    "excluded_reason": "non-finite",
     "rank": null
    }
   ]
@@ -1035,7 +1035,7 @@
    "started": "2026-07-06T12:39:33Z",
    "status": "excluded",
    "params_M": 0.117298,
-   "excluded_reason": "discard",
+   "excluded_reason": "non-finite",
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-06T12:39:33Z",
@@ -1593,9 +1593,9 @@
    "test_rmse_mean": 0.011223081373609603,
    "test_rmse_std": 0.0012031459326979803,
    "started": "2026-07-07T04:26:12Z",
-   "status": "excluded",
+   "status": "ranked",
    "params_M": 3.824908,
-   "excluded_reason": "discard",
+   "excluded_reason": null,
    "agent": "fastdiff_wdm_wavelet_unconstrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-07T04:26:12Z",
@@ -2599,7 +2599,7 @@
    "started": "2026-07-06T13:31:59Z",
    "status": "excluded",
    "params_M": 33.562817,
-   "excluded_reason": "discard",
+   "excluded_reason": "non-finite",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-06T13:31:59Z",
@@ -2887,7 +2887,7 @@
    "started": "2026-07-05T22:51:29Z",
    "status": "excluded",
    "params_M": 0.006144,
-   "excluded_reason": "discard",
+   "excluded_reason": "non-finite",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-05T22:51:29Z",

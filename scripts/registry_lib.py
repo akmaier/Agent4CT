@@ -76,12 +76,21 @@ def rank_fields(row: dict, status: str, challenge: str | None,
         raw = row.get("test_hr_mean")
         rm = raw if (isinstance(raw, (int, float)) and math.isfinite(raw)) else None
         tb = row.get("test_ssim_mean")
-        if (status or "").strip().lower() == "discard":
+        # breast_ct_noise is a no-retrain RE-EVALUATION of frozen checkpoints. A
+        # run's "discard" status is a verdict from the *noiseless* val-search and
+        # does not apply to the noisy test: rank such a run by its genuine noisy
+        # test headroom. (Native test boards keep discard as an exclusion.)
+        reeval = challenge == "breast_ct_noise"
+        if (status or "").strip().lower() == "discard" and not reeval:
             reason = "discard"
         elif not has_final:
             reason = "pending-test"                 # no test-eval yet
+        elif rm is None:
+            reason = "non-finite"
+        elif rm <= 0:
+            reason = "hr<=0"
         else:
-            reason = excluded_reason(status, rm)     # scored: non-finite / hr<=0 / ok
+            reason = None                            # valid positive test score -> ranked
         return rm, tb, reason
     rm = row.get("headroom")
     rm = rm if (isinstance(rm, (int, float)) and math.isfinite(rm)) else None
