@@ -55,7 +55,7 @@
 
 \keywords{CT reconstruction | sparse-view | low-dose | known operators | benchmarking | noise robustness}
 
-\abstract[ABSTRACT]{This document contains the supplementary material for \emph{Agentic Autoresearch for CT Reconstruction}. It provides the full solver taxonomy and per-method configuration (S1), the Mayo-LDCT data, split, and geometry pipeline (S2), the breast split and train/test leakage audit (S3), the Mayo test board and significance (S4), the parameter-efficient recombination study (S5), the framework-axis reading of the breast reversal and the noise protocol (S6; the full boards are in the main text), an extended account of agent behavior (S7), and additional results with pointers to the public repository and live leaderboard (S8).}
+\abstract[ABSTRACT]{This document contains the supplementary material for \emph{Agentic Autoresearch for CT Reconstruction}. It provides the full solver taxonomy and per-method configuration (S1), the Mayo-LDCT data, split, and geometry pipeline (S2), the breast split and train/test leakage audit (S3), the Mayo test board and significance (S4), the parameter-efficient recombination study (S5), the noise model and no-retrain protocol (S6; the full boards and the framework-axis reading are in the main text), an extended account of agent behavior (S7), and additional results with pointers to the public repository and live leaderboard (S8).}
 
 \maketitle
 
@@ -189,15 +189,11 @@ Findings, each earned by an iteration: the image-domain denoiser caps at $\sim$0
 \textbf{Human role in this study.} The recombination \emph{strategy} was a human idea, on both datasets. On Mayo the human repeatedly asked whether more parameter-efficient approaches existed and explicitly suggested combining the pieces. On breast the finale was framed as a cross-method recombination and steered away from copying Mayo. The agent executed and mechanistically refined; it did not originate the recombination strategy.
 
 %============================================================
-\section{Breast reversal --- axes and noise protocol}\label{sec:s6}
+\section{Noise model and no-retrain protocol}\label{sec:s6}
 
-The full noiseless and noisy breast boards (all 25 solvers each) are in the main text, in the table that shows the two boards side by side. This section records how the reversal reads off the framework axes and the exact noise protocol behind it.
+The full noiseless and noisy breast boards, and the framework-axis reading of the reversal, are now in the main text; this section records only the exact noise protocol behind the re-evaluation.
 
-\textbf{Reading the reversal by framework axes.} Robust: in-loop physics (learned-primal-dual) or hand-crafted smoothing priors (bilateral, total variation). Brittle: supervised image-domain maps trained on clean FBP (dual-domain-supervised; the constrained fastdiff variants). The hr metric is fair \emph{within} the noisy board --- all methods share the same noisy FBP baseline. The absolute SSIM/PSNR columns confirm the ranking is genuine, not baseline-gaming.
-
-\subsection{Noise model and no-retrain protocol}\label{sec:s6-3}
-
-Poisson photon noise per Eq.~(6) of the main text, $I_0=10^5$, applied to the 200 test sinograms with a fixed seed (deterministic; every method sees the identical noisy input). RMS of the sinogram perturbation $\approx0.012$ (line-integral units), $\sim$1.8\,\% at the thickest ray. Supervised methods load their noiseless checkpoint and skip training; per-scene/classical methods re-fit on the noisy input. The FBP baseline is recomputed from the noisy sinogram.
+Poisson photon noise per Eq.~(6) of the main text, $I_0=10^5$, applied to the 200 test sinograms with a fixed seed (deterministic; every method sees the identical noisy input). RMS of the sinogram perturbation $\approx0.012$ (line-integral units), $\sim$1.8\,\% at the thickest ray. Supervised methods load their noiseless checkpoint and skip training; per-scene/classical methods re-fit on the noisy input. The FBP baseline is recomputed from the noisy sinogram, so hr measures improvement over the noisy FBP and the comparison is fair within the noisy board.
 
 %============================================================
 \section{Agent-behavior --- extended account}\label{sec:s7}
@@ -213,12 +209,7 @@ This account follows the autoresearch paradigm of automated open-ended scientifi
 %============================================================
 \section{Additional results and the live leaderboard}\label{sec:s8}
 
-Two further figures are included here. Figure~\ref{fig:pareto} shows the breast parameter/headroom Pareto front traced by the recombination search: the compact solver reaches the variational-network tier at 195 parameters. Figure~\ref{fig:effectsize} shows, on the breast board ($n=200$), the effect size (Cohen's $d_z$) against the raw $\Delta$hr to the champion for each solver; with $n=200$ even small hr gaps are highly significant, in contrast to the low-power $n=5$ Mayo setting.
-
-\begin{figure}[t]
-\centerline{\includegraphics[width=\columnwidth]{sfig_pareto.pdf}}
-\caption{Breast parameter/headroom Pareto front from the recombination search. The filtered data-consistency step breaks the image-domain ceiling at 13 parameters; the final design reaches the variational-network tier at 195 parameters.\label{fig:pareto}}
-\end{figure}
+One further figure is included here. Figure~\ref{fig:effectsize} shows, on the breast board ($n=200$), the effect size (Cohen's $d_z$) against the raw $\Delta$hr to the champion for each solver; with $n=200$ even small hr gaps are highly significant, in contrast to the low-power $n=5$ Mayo setting. The parameter/accuracy trade-off itself --- for both datasets --- is Figure~2 of the main text, and the per-step climb is quantified in the recombination-arc tables above (Tables~\ref{tab:s5mayoarc} and~\ref{tab:s5arc}).
 
 \begin{figure}[t]
 \centerline{\includegraphics[width=\columnwidth]{sfig_effectsize.pdf}}
