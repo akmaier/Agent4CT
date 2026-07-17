@@ -411,6 +411,58 @@ def sfig_pareto():
 
 
 # ===========================================================================
+# SFIG hint-climb — compact-solver search: agent-alone plateau vs the break
+# once human hints begin at iteration 20.
+# ===========================================================================
+def sfig_hint_climb():
+    import csv
+    run = "breast-ct-claude-agentic-param-efficient-search-20260703-01"
+    tsv = os.path.join(REPO, "docs", "runs", run, "results.tsv")
+    data = []
+    for r in csv.DictReader(open(tsv), delimiter="\t"):
+        try:
+            it = int(r["iter"])
+            hr = float(r.get("headroom") or 0)
+        except (ValueError, TypeError):
+            continue
+        data.append((it, hr, (r.get("status") or "").strip().lower()))
+    data.sort(key=lambda d: d[0])
+    its = [d[0] for d in data]
+    hrs = [d[1] for d in data]
+    best, m = [], 0.0
+    for h in hrs:
+        m = max(m, h)
+        best.append(m)
+    kept = [(i, h) for (i, h, s) in data if s != "discard" and h > 0]
+    disc = [i for (i, h, s) in data if s == "discard" or h <= 0]
+
+    HINT = 20  # human hints begin (second half of the 40-iteration search)
+    fig, ax = plt.subplots(figsize=(SINGLE, 2.8))
+    ax.axvspan(HINT, max(its) + 0.6, color=CB["orange"], alpha=0.09, zorder=0)
+    ax.axvline(HINT, color=CB["orange"], lw=1.0, ls="--", zorder=1)
+    ax.step(its, best, where="post", color=CB["green"], lw=1.5, zorder=3,
+            label="best so far")
+    ax.scatter([i for i, _ in kept], [h for _, h in kept], s=20,
+               color=CB["blue"], edgecolors="white", linewidths=0.4,
+               zorder=4, label="kept iteration")
+    ax.scatter(disc, [0.0] * len(disc), s=18, color=CB["gray"],
+               marker="x", linewidths=0.9, zorder=4, label="discarded")
+    ax.annotate("human hints\nbegin", (HINT, 0.70),
+                textcoords="offset points", xytext=(-4, 0), fontsize=6.4,
+                color=CB["orange"], fontweight="bold", va="top", ha="right")
+    ax.annotate("break to hr 0.62", (28, 0.620), textcoords="offset points",
+                xytext=(6, 6), fontsize=6.6, color=CB["green"],
+                fontweight="bold", ha="left")
+    ax.set_xlabel("autoresearch iteration")
+    ax.set_ylabel("val hr")
+    ax.set_ylim(-0.04, 0.72)
+    ax.legend(loc="lower right", frameon=False, fontsize=6.2,
+              handletextpad=0.3, labelspacing=0.2)
+    fig.tight_layout()
+    savefig(fig, os.path.join(OUTDIR, "sfig_hint_climb.pdf"))
+
+
+# ===========================================================================
 def main():
     print(f"Writing figures into {OUTDIR}")
     dropped = fig3_reversal()
@@ -418,6 +470,7 @@ def main():
     fig1_agentic_loop()
     champ, n = sfig_effectsize()
     sfig_pareto()
+    sfig_hint_climb()
 
     print("\nSummary")
     print(f"  effect-size champion: {champ}  (n={n} cases)")
