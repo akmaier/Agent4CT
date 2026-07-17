@@ -294,12 +294,6 @@ def fig1_agentic_loop():
     ax.text(6.0, 3.0, "loop", ha="center", va="center", fontsize=8,
             style="italic", color="#444444")
 
-    # Side note on provenance.
-    ax.text(0.15, 0.15,
-            "provenance: config + recon + metric saved per iteration",
-            ha="left", va="bottom", fontsize=7, style="italic",
-            color="#555555")
-
     fig.tight_layout()
     savefig(fig, os.path.join(OUTDIR, "fig1_agentic_loop.pdf"))
 

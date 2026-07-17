@@ -225,26 +225,79 @@ The reversal reads off the two axes of Table~\ref{tab:taxonomy}. Brittleness con
 % Table 2 (reversal)
 %------------------------------------------------------------
 \begin{table*}[t]
-\caption{Breast task: noiseless test headroom versus noisy test headroom ($I_0=10^5$), for the same trained models on the same 200 test cases, with \emph{no retraining}. The ranking nearly inverts. hr is the calibrated headroom (Eq.~\ref{eq:hr}); SSIM/PSNR use a batch-wide data range. Full boards (all rows) are in Supplement~S6.\label{tab:reversal}}
-\begin{tabular*}{\textwidth}{@{\extracolsep\fill}llrrrl@{\extracolsep\fill}}
+\caption{The two breast boards side by side, for the same trained models on the same 200 test cases with \emph{no retraining}. Left: noiseless test headroom. Right: noisy test headroom ($I_0=10^5$) with SSIM. The ranking nearly inverts. hr is the calibrated headroom (Eq.~\ref{eq:hr}); SSIM uses a batch-wide data range. ``--'' marks a solver that did not clear the ranking floor (hr $\le 0$) or did not finish (---). Solver keys as in Table~\ref{tab:taxonomy}; per-solver configurations are in Supplement~S1.\label{tab:reversal}}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{minipage}[t]{0.47\textwidth}
+\centering
+\textbf{Noiseless board}\\[2pt]
+\begin{tabular}{@{}rlr@{}}
 \toprule
-\textbf{Rank (noisy)} & \textbf{Solver} & \textbf{Noisy hr} & \textbf{Noisy SSIM} & \textbf{Noiseless hr} & \textbf{Change} \\
+\textbf{Rank} & \textbf{Solver} & \textbf{hr} \\
 \midrule
-1  & learned-primal-dual              & 0.9349 & 0.9905 & 0.7233 & $\uparrow$ (6$\to$1) \\
-2  & manduca-bilateral                & 0.8420 & 0.9537 & 0.276  & $\uparrow\uparrow$ \\
-3  & dual-domain-bilateral-n2i        & 0.7927 & 0.9532 & 0.206  & $\uparrow\uparrow$ \\
-4  & hammernik-2017                   & 0.7016 & 0.7178 & 0.6265 & $\uparrow$ \\
-5  & itnet-v3                         & 0.7007 & 0.7564 & 0.8749 & $\downarrow$ \\
-6  & fastdiff-flow-pixel-uncon.       & 0.6620 & 0.7058 & 0.269  & $\uparrow$ \\
-7  & ram-zeroshot                     & 0.6382 & 0.6578 & 0.295  & $\uparrow$ \\
-8  & uswin                            & 0.5915 & 0.6408 & 0.8586 & $\downarrow$ \\
-9  & itnet                            & 0.5784 & 0.6295 & 0.8926 & $\downarrow$ \\
-10 & hammernik-vn                     & 0.5529 & 0.5962 & 0.5787 & $\approx$ \\
-11 & itnet-v2                         & 0.5480 & 0.6201 & 0.8893 & $\downarrow$ \\
-12 & param-efficient (195 p)          & 0.5153 & 0.5771 & 0.6212 & $\downarrow$ (holds) \\
-\;\;-- & dual-domain-supervised       & 0.0000 & 0.3483 & \textbf{0.8948} & \textbf{$\downarrow\downarrow$ (1$\to$last)} \\
+1  & dual-domain-supervised            & 0.8948 \\
+2  & itnet                             & 0.8926 \\
+3  & itnet-v2                          & 0.8893 \\
+4  & itnet-v3                          & 0.8749 \\
+5  & uswin                             & 0.8586 \\
+6  & learned-primal-dual              & 0.7233 \\
+7  & hammernik-2017                    & 0.6265 \\
+8  & param-efficient                   & 0.6212 \\
+9  & hammernik-vn                      & 0.5787 \\
+10 & fastdiff-flow-pixel-constrained   & 0.5119 \\
+11 & ram-zeroshot                      & 0.3693 \\
+12 & tv-iterative                      & 0.3601 \\
+13 & manhart-pwls-tv                   & 0.3601 \\
+14 & wu-2015-trainable                 & 0.3156 \\
+15 & manduca-bilateral                 & 0.2763 \\
+16 & fastdiff-flow-pixel-unconstrained & 0.2693 \\
+17 & fastdiff-wdm-wavelet-constrained  & 0.2693 \\
+18 & dual-domain-bilateral-supervised  & 0.2546 \\
+19 & wu-2015                           & 0.1517 \\
+20 & tv-iterative-supervised           & 0.1513 \\
+21 & dual-domain-bilateral-n2i         & 0.0001 \\
+-- & dual-domain-n2i                   & 0.0001 \\
+-- & fastdiff-wdm-wavelet-uncon.       & 0.0000 \\
+-- & naf                               & ---    \\
+-- & r2gaussian                        & ---    \\
 \bottomrule
-\end{tabular*}
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.51\textwidth}
+\centering
+\textbf{Noisy board} ($I_0=10^5$)\\[2pt]
+\begin{tabular}{@{}rlrr@{}}
+\toprule
+\textbf{Rank} & \textbf{Solver} & \textbf{hr} & \textbf{SSIM} \\
+\midrule
+1  & learned-primal-dual              & 0.9349 & 0.9905 \\
+2  & manduca-bilateral                & 0.8420 & 0.9537 \\
+3  & dual-domain-bilateral-n2i        & 0.7927 & 0.9532 \\
+4  & hammernik-2017                   & 0.7016 & 0.7178 \\
+5  & itnet-v3                         & 0.7007 & 0.7564 \\
+6  & fastdiff-flow-pixel-uncon.       & 0.6620 & 0.7058 \\
+7  & ram-zeroshot                     & 0.6382 & 0.6578 \\
+8  & uswin                            & 0.5915 & 0.6408 \\
+9  & itnet                            & 0.5784 & 0.6295 \\
+10 & hammernik-vn                     & 0.5529 & 0.5962 \\
+11 & itnet-v2                         & 0.5480 & 0.6201 \\
+12 & param-efficient                  & 0.5153 & 0.5771 \\
+13 & manhart-pwls-tv                  & 0.5068 & 0.6164 \\
+14 & tv-iterative                     & 0.5068 & 0.6164 \\
+15 & wu-2015                          & 0.3700 & 0.5244 \\
+16 & wu-2015-trainable                & 0.2591 & 0.4400 \\
+17 & tv-iterative-supervised          & 0.1071 & 0.4567 \\
+18 & dual-domain-bilateral-supervised & 0.1003 & 0.4524 \\
+-- & fastdiff-wdm-wavelet-uncon.      & 0.6350 & 0.9450 \\
+-- & dual-domain-supervised           & 0.0000 & 0.3483 \\
+-- & fastdiff-wdm-wavelet-con.        & 0.0000 & 0.3104 \\
+-- & fastdiff-flow-pixel-con.         & 0.0000 & 0.2769 \\
+-- & dual-domain-n2i                  & ---    & ---    \\
+-- & naf                              & ---    & ---    \\
+-- & r2gaussian                       & ---    & ---    \\
+\bottomrule
+\end{tabular}
+\end{minipage}
 \end{table*}
 
 %============================================================

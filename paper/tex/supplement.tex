@@ -55,7 +55,7 @@
 
 \keywords{CT reconstruction | sparse-view | low-dose | known operators | benchmarking | noise robustness}
 
-\abstract[ABSTRACT]{This document contains the supplementary material for \emph{Agentic Autoresearch for CT Reconstruction}. It provides the full solver taxonomy and per-method configuration (S1), the Mayo-LDCT data, split, and geometry pipeline (S2), the breast split and train/test leakage audit (S3), the Mayo test board and significance (S4), the parameter-efficient recombination study (S5), the full breast noiseless and noisy boards (S6), an extended account of agent behavior (S7), and the list of additional supplementary figures (S8).}
+\abstract[ABSTRACT]{This document contains the supplementary material for \emph{Agentic Autoresearch for CT Reconstruction}. It provides the full solver taxonomy and per-method configuration (S1), the Mayo-LDCT data, split, and geometry pipeline (S2), the breast split and train/test leakage audit (S3), the Mayo test board and significance (S4), the parameter-efficient recombination study (S5), the framework-axis reading of the breast reversal and the noise protocol (S6; the full boards are in the main text), an extended account of agent behavior (S7), and the list of additional supplementary figures (S8).}
 
 \maketitle
 
@@ -127,7 +127,46 @@ dominant lever & data-consistency / known operator & denoising \\
 %============================================================
 \section{Mayo test board and significance}\label{sec:s4}
 
-Champion ITNet v1, test hr 0.376 ($n=5$). The top tier is a statistical tie: ITNet v1 / ITNet v2 / U-Swin at the 5\,\% level; the compact param-efficient solver joins at the 1\,\% level ($p=0.02$--$0.027$). At $n=5$ the paired $t$-test has low power (a Wilcoxon test cannot even reach $p<0.05$). Full per-solver table, per-patient hr, and the pairwise significance matrix are in \texttt{docs/runs/mayo\_significance\_stats.md} and the forest/matrix figures.
+Champion ITNet v1, test hr 0.376 ($n=5$). The top tier is a statistical tie: ITNet v1 / ITNet v2 / U-Swin at the 5\,\% level; the compact param-efficient solver joins at the 1\,\% level ($p=0.02$--$0.027$). At $n=5$ the paired $t$-test has low power (a Wilcoxon test cannot even reach $p<0.05$). The full board is Table~\ref{tab:s4mayo}; per-patient hr and the pairwise significance matrix are in \texttt{docs/runs/mayo\_significance\_stats.md} and the forest/matrix figures.
+
+\begin{table}[t]
+\caption{Mayo low-dose CT test board ($n=5$ test patients, hr mean $\pm$ std). SSIM uses a batch-wide data range. Parameters in millions (M) unless marked \,p (raw count). ``--'' marks a solver below the ranking floor (hr $\le 0$).\label{tab:s4mayo}}
+\centering
+\setlength{\tabcolsep}{4pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}rlrrr@{}}
+\toprule
+\textbf{\#} & \textbf{solver} & \textbf{test hr} & \textbf{SSIM} & \textbf{params} \\
+\midrule
+1  & itnet                             & 0.3756\,$\pm$\,0.0890 & 0.9790 & 0.233 \\
+2  & itnet-v2                          & 0.3735\,$\pm$\,0.0905 & 0.9784 & 0.233 \\
+3  & uswin                             & 0.3700\,$\pm$\,0.0581 & 0.9770 & 3.954 \\
+4  & dual-domain-supervised            & 0.3607\,$\pm$\,0.0876 & 0.9758 & 0.466 \\
+5  & param-efficient                   & 0.3241\,$\pm$\,0.0629 & 0.9727 & 969\,p \\
+6  & itnet-v3                          & 0.3066\,$\pm$\,0.0902 & 0.9707 & 3.699 \\
+7  & hammernik-vn                      & 0.1591\,$\pm$\,0.0183 & 0.9520 & 0.005 \\
+8  & tv-iterative                      & 0.0959\,$\pm$\,0.0170 & 0.9642 & 0 \\
+9  & hammernik-2017                    & 0.0843\,$\pm$\,0.0352 & 0.9358 & 0.012 \\
+10 & manhart-pwls-tv                   & 0.0624\,$\pm$\,0.0460 & 0.9649 & 0 \\
+11 & wu-2015-trainable                 & 0.0207\,$\pm$\,0.0233 & 0.8923 & 8\,p \\
+12 & dual-domain-n2i                   & 0.0176\,$\pm$\,0.0298 & 0.9590 & 0.466 \\
+13 & manduca-bilateral                 & 0.0159\,$\pm$\,0.0356 & 0.9561 & 7\,p \\
+14 & dual-domain-bilateral-supervised  & 0.0040\,$\pm$\,0.0090 & 0.9541 & 12\,p \\
+-- & tv-iterative-supervised           & 0.0109\,$\pm$\,0.0158 & 0.9366 & 2\,p \\
+-- & dual-domain-bilateral-n2i         & 0.0000 & 0.9587 & 12\,p \\
+-- & fastdiff-flow-pixel-unconstrained & 0.0000 & 0.9523 & 3.823 \\
+-- & fastdiff-wdm-wavelet-constrained  & 0.0000 & 0.9501 & 3.825 \\
+-- & ram                               & 0.0000 & 0.9446 & 35.619 \\
+-- & learned-primal-dual               & 0.0000 & 0.9415 & 0.155 \\
+-- & fastdiff-wdm-wavelet-uncon.       & 0.0000 & 0.9404 & 3.825 \\
+-- & fastdiff-flow-pixel-constrained   & 0.0000 & 0.9300 & 3.823 \\
+-- & diff-recon-dcstep-unconstrained   & 0.0000 & 0.9084 & 8.594 \\
+-- & diff-recon-dcstep-constrained     & 0.0000 & 0.8766 & 8.594 \\
+-- & r2gaussian                        & 0.0000 & 0.8234 & 0.003 \\
+-- & naf                               & 0.0000 & 0.8172 & 33.558 \\
+\bottomrule
+\end{tabular}}
+\end{table}
 
 %============================================================
 \section{The parameter-efficient recombination study (search arc)}\label{sec:s5}
@@ -158,68 +197,9 @@ Findings, each earned by an iteration: the image-domain denoiser caps at $\sim$0
 \textbf{Human role in this study.} The recombination \emph{strategy} was a human idea, on both datasets. On Mayo the human repeatedly asked whether more parameter-efficient approaches existed and explicitly suggested combining the pieces. On breast the finale was framed as a cross-method recombination and steered away from copying Mayo. The agent executed and mechanistically refined; it did not originate the recombination strategy.
 
 %============================================================
-\section{Breast boards --- noiseless and noisy (full)}\label{sec:s6}
+\section{Breast reversal --- axes and noise protocol}\label{sec:s6}
 
-\subsection{Noiseless test board ($n=200$, hr mean $\pm$ std)}\label{sec:s6-1}
-
-\begin{table}[t]
-\caption{Breast noiseless test board ($n=200$).\label{tab:s6noiseless}}
-\centering
-\setlength{\tabcolsep}{4pt}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}rlrrr@{}}
-\toprule
-\textbf{\#} & \textbf{solver} & \textbf{test hr} & \textbf{$\pm$std} & \textbf{best iter} \\
-\midrule
-1  & dual-domain-supervised          & 0.8948 & 0.0127 & 20 \\
-2  & itnet                           & 0.8926 & 0.0150 & 16 \\
-3  & itnet-v2                        & 0.8893 & 0.0151 & 15 \\
-4  & itnet-v3                        & 0.8749 & 0.0157 & 12 \\
-5  & uswin                           & 0.8586 & 0.0153 & 20 \\
-6  & learned-primal-dual             & 0.7233 & 0.0143 & 12 \\
-7  & hammernik-2017                  & 0.6265 & 0.0135 & 12 \\
-8  & param-efficient (195 p)         & 0.6212 & 0.0076 & 28 \\
-9  & hammernik-vn                    & 0.5787 & 0.0119 & 16 \\
-10 & fastdiff-flow-pixel-constrained & 0.5119 & 0.0211 & 15 \\
-\multicolumn{5}{@{}l}{11--23\quad ram $\cdot$ tv-iterative $\cdot$ manhart-PWLS-TV $\cdot$ wu-2015-trainable $\cdot$}\\
-\multicolumn{5}{@{}l}{\quad\quad manduca-bilateral $\cdot$ fastdiff-* $\cdot$ dd-bilateral-sup $\cdot$ wu-2015 $\cdot$}\\
-\multicolumn{5}{@{}l}{\quad\quad tv-iter-sup $\cdot$ dd-bilateral-n2i $\cdot$ dd-n2i:\quad hr $0.37\to0.00$}\\
-\multicolumn{5}{@{}l}{DNF\quad naf, r2gaussian (per-scene; $\sim$14--20/200 cases under budget)}\\
-\bottomrule
-\end{tabular}}
-\end{table}
-
-\subsection{Noisy test board ($I_0=10^5$, same models, no retraining)}\label{sec:s6-2}
-
-\begin{table}[t]
-\caption{Breast noisy test board ($I_0=10^5$, same trained models, no retraining).\label{tab:s6noisy}}
-\centering
-\setlength{\tabcolsep}{4pt}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}rlrrrl@{}}
-\toprule
-\textbf{\#} & \textbf{solver} & \textbf{noisy hr} & \textbf{noisy SSIM} & \textbf{nl. hr} & \textbf{chg.} \\
-\midrule
-1  & learned-primal-dual               & 0.9349 & 0.9905 & 0.7233 & $\uparrow$ (6$\to$1) \\
-2  & manduca-bilateral                 & 0.8420 & 0.9537 & 0.276  & $\uparrow\uparrow$ \\
-3  & dual-domain-bilateral-n2i         & 0.7927 & 0.9532 & 0.206  & $\uparrow\uparrow$ \\
-4  & hammernik-2017                    & 0.7016 & 0.7178 & 0.6265 & $\uparrow$ \\
-5  & itnet-v3                          & 0.7007 & 0.7564 & 0.8749 & $\downarrow$ \\
-6  & fastdiff-flow-pixel-uncon.        & 0.6620 & 0.7058 & 0.269  & $\uparrow$ \\
-7  & ram-zeroshot                      & 0.6382 & 0.6578 & 0.295  & $\uparrow$ \\
-8  & uswin                             & 0.5915 & 0.6408 & 0.8586 & $\downarrow$ \\
-9  & itnet                             & 0.5784 & 0.6295 & 0.8926 & $\downarrow$ \\
-10 & hammernik-vn                      & 0.5529 & 0.5962 & 0.5787 & $\approx$ \\
-11 & itnet-v2                          & 0.5480 & 0.6201 & 0.8893 & $\downarrow$ \\
-12 & param-efficient (195 p)           & 0.5153 & 0.5771 & 0.6212 & $\downarrow$ (holds) \\
-\multicolumn{6}{@{}l}{13--14\quad manhart-PWLS-TV, tv-iterative:\quad hr 0.5068, SSIM 0.6164 ($\uparrow$)}\\
-\multicolumn{6}{@{}l}{15--18\quad wu-2015, wu-2015-trainable, tv-iter-sup, dd-bilateral-sup:\ $0.37\to0.10$}\\
-\multicolumn{6}{@{}l}{low\quad\ \, dual-domain-supervised:\ hr \textbf{0.0000}, SSIM 0.3483, nl.\ \textbf{0.8948} ($\downarrow\downarrow$, 1$\to$last)}\\
-\multicolumn{6}{@{}l}{low\quad\ \, fastdiff-wdm-* constr., fastdiff-flow-pixel-constr.:\ 0.00--0.64 (some incomplete)}\\
-\multicolumn{6}{@{}l}{DNF\quad\ naf, r2gaussian (per-scene, incomplete)}\\
-\bottomrule
-\end{tabular}}
-\end{table}
+The full noiseless and noisy breast boards (all 25 solvers each) are in the main text, in the table that shows the two boards side by side. This section records how the reversal reads off the framework axes and the exact noise protocol behind it.
 
 \textbf{Reading the reversal by framework axes.} Robust: in-loop physics (learned-primal-dual) or hand-crafted smoothing priors (bilateral, total variation). Brittle: supervised image-domain maps trained on clean FBP (dual-domain-supervised; the constrained fastdiff variants). The hr metric is fair \emph{within} the noisy board --- all methods share the same noisy FBP baseline. The absolute SSIM/PSNR columns confirm the ranking is genuine, not baseline-gaming.
 
