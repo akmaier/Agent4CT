@@ -62,7 +62,7 @@
 %============================================================
 \section{Solver taxonomy and per-method configuration (Table~1, full)}\label{sec:s1}
 
-We place the 26 methods on two axes (Table~\ref{tab:s1taxonomy}). Axis~A is physics engagement (how the operator $\mathbf{A}$ is used at inference). Axis~B is the prior source $\mathcal{R}$. Each row groups a family, names its representative solvers, and records the data-consistency operator $\mathbf{D}$, the prior, the two axis positions, and a source citation.
+We place the 26 methods on two axes (Table~\ref{tab:s1taxonomy}) so that the reversal in the main text can be read off a method's \emph{position} rather than its name. Axis~A is \emph{physics engagement}: how much the forward operator $\mathbf{A}$ is used at inference. It runs from \emph{none} --- a purely image-domain map that never revisits the sinogram --- through a \emph{single} data-consistency step, to an \emph{in-loop} unrolled scheme that re-applies $\mathbf{A}$ at every iteration, to a full \emph{per-scene} fit that optimises one network per scan. Axis~B is the \emph{prior source} $\mathcal{R}$: where the regularising knowledge comes from. \emph{Hand-crafted} priors (total variation, bilateral filtering) encode smoothness analytically and have no trainable content to overfit. \emph{Supervised} priors are trained on paired low-dose/full-dose examples. \emph{Self-supervised} priors (Noise2Inverse) learn without a clean reference by splitting the measured projections into complementary subsets. \emph{Generative} priors are diffusion or rectified-flow models that synthesise plausible detail. \emph{Implicit/per-scene} priors (neural fields, Gaussian splatting) fit a coordinate network to each individual scan rather than storing a pixel grid. A \emph{foundation} prior is a large network pre-trained once on generic data and applied zero-shot. Each row of Table~\ref{tab:s1taxonomy} names a family, its representative solvers, the data-consistency operator $\mathbf{D}$ each uses, the prior $\mathcal{R}$, the two axis positions, and a source citation; the final row is our own recombination (Section~\ref{sec:s5}), deliberately a hybrid --- filtered data-consistency, a learned primal-dual combination, and a hand-crafted bilateral post-filter.
 
 \begin{table*}[tbp]
 \caption{Full solver taxonomy. Axis~A = physics engagement; Axis~B = prior source. The final column cites the source(s) for each family. Abbreviations: DC, data consistency; N2I, Noise2Inverse; rectified-flow prior, a fast diffusion-type generative prior; FoE, field of experts (a learned filter-bank image prior).\label{tab:s1taxonomy}}
@@ -88,23 +88,73 @@ Band decomposition        & Wu-2015, Wu-2015-trainable           & band-weighted
 \end{tabular}}
 \end{table*}
 
-Full per-solver \texttt{CONFIG} defaults, parameter counts, and design notes are in each solver's design doc under \texttt{pentathlon/demo\_dl\_reference/} and the observation records under \texttt{docs/runs/}.
+Full per-solver \texttt{CONFIG} defaults, parameter counts, and design notes are in each solver's design document under \texttt{pentathlon/demo\_dl\_reference/}, and the complete per-iteration observation records --- configuration, reconstruction, and metric for every run --- are under \texttt{docs/runs/}. The taxonomy is not merely descriptive. Because every solver is grounded in the same differentiable projector, two methods that occupy the same Axis-A/Axis-B cell share the same relationship to the measurements, and --- as the reversal shows --- they tend to share the same robustness behaviour under noise. That is what lets a method's cell, fixed before any noise is added, predict whether it will prove brittle or robust.
 
 %============================================================
-\section{Mayo-LDCT --- data, split, and the geometry pipeline}\label{sec:s2}
+\section{Mayo-LDCT --- data, split, geometry pipeline, and solver implementation}\label{sec:s2}
 
-Real helical low-dose CT from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} We rebinned helical to fan-beam by single-slice rebinning.\cite{noo1999singleslice} The differentiable fan-beam projector used at every step is PYRO-NN.\cite{syben2019pyronn} This pipeline --- not any solver --- was the dominant human cost of the study. The effort-timeline record (\texttt{docs/runs/mayo\_effort\_timeline.png}) logs roughly 24 active engineering days for it, spread intermittently across the calendar and interrupted by three travel gaps, rather than continuous full-time work. By contrast the benchmark campaign that followed was almost entirely agent-driven: 439 of its 443 version-control commits are machine-written per-iteration provenance. We use a fixed patient split: train L145/186/209/219, validation L277, test L014/056/058/075/123. Test scores are the per-patient mean $\pm$ std over the five test patients ($n=5$). Geometry details and rebinning validation are in the repository. The Mayo challenge is one of a family of AAPM reconstruction grand challenges spanning sparse-view, spectral, truth-based, and metal-artifact tasks.\cite{sidky2022,sidky2024spectral,abadi2025truect,haneda2025ctmar,maier2022proprietary}
+\textbf{Data and geometry.} We use real helical low-dose CT from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} The raw acquisition is helical, but our differentiable projector and every solver operate in 2-D fan-beam geometry, so the helical data cannot be used directly. We therefore rebinned helical to fan-beam by single-slice rebinning,\cite{noo1999singleslice} which resamples the helical cone-beam rays onto a stack of transaxial fan-beam slices. Getting this right --- the detector geometry, the redundancy weighting, and the slice interpolation, so that the low-dose FBP baseline is physically correct rather than merely plausible --- was the single hardest engineering task in the study. The differentiable fan-beam projector used at every training and inference step is PYRO-NN,\cite{syben2019pyronn} which supplies a matched forward/back-projector pair with analytic gradients, so that the same operator $\mathbf{A}$ appears in the loss, in every unrolled solver, and in the hr metric.
+
+\textbf{Effort.} This pipeline --- not any solver --- was the dominant human cost of the study. The effort-timeline record (\texttt{docs/runs/mayo\_effort\_timeline.png}) logs roughly 24 active engineering days for it, spread intermittently across the calendar and interrupted by three travel gaps, rather than continuous full-time work. By contrast the benchmark campaign that followed was almost entirely agent-driven: 439 of its 443 version-control commits are machine-written per-iteration provenance, only four human-authored.
+
+\textbf{Split.} We use a fixed patient-level split so that no patient appears in more than one partition: train L145/186/209/219, validation L277, test L014/056/058/075/123. Splitting by patient rather than by slice matters, because adjacent slices of one patient are highly correlated; a slice-level split would leak near-duplicate anatomy between train and test. Test scores are the per-patient mean $\pm$ standard deviation over the five test patients ($n=5$), and this small $n$ is the direct cause of the low statistical power discussed in Section~\ref{sec:s4}. Geometry details and rebinning validation are in the repository. The Mayo challenge is one of a family of AAPM reconstruction grand challenges spanning sparse-view, spectral, truth-based, and metal-artifact tasks.\cite{sidky2022,sidky2024spectral,abadi2025truect,haneda2025ctmar,maier2022proprietary}
+
+\textbf{Implementation effort for the 25 solvers.} The solvers themselves were fast to build, and the version-control history of the reference implementations (\texttt{pentathlon/demo\_dl\_reference/solver\_*.py}) lets us quantify it. The 25 established solvers were implemented on 22 active days in 63 commits; strikingly, 14 of them were onboarded across only two days (15--16 May 2026, seven per day). The remainder were added in small batches as the study grew: RAM (18 May), Wu-2015-trainable and DD-bilateral-supervised (22 May), learned-primal-dual and TV-iterative-supervised (23 May), the four fast-diffusion variants (20 June), and manduca-bilateral (23 June). Table~\ref{tab:s2impl} lists the first-implementation date and the number of commits that touched each solver's file. Two caveats apply when reading time from commits: the agent committed in bursts, so commit \emph{timestamps} bound but do not fully measure the coding-session duration; and several solvers were introduced together in a single commit, so per-solver counts are approximate. The unambiguous signal is nonetheless that turning a published method into a running, benchmarked solver took the agent a fraction of a day, not days --- the same speed-up, at the implementation level, that made a 26-method benchmark feasible for one supervisor.
+
+\begin{table}[tbp]
+\caption{Implementation record for the 25 established solvers, read from the git history of the reference implementations. ``First'' is the first commit touching the solver's file; ``\#c'' is the number of commits that touched it. The four fast-diffusion variants share two files (grouped).\label{tab:s2impl}}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{minipage}[t]{0.49\columnwidth}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{solver} & \textbf{first} & \textbf{\#c} \\
+\midrule
+itnet                  & May 15 & 14 \\
+itnet-v2               & May 15 & 13 \\
+itnet-v3               & May 16 & 11 \\
+uswin                  & May 16 & 10 \\
+dd-supervised          & May 15 & 14 \\
+learned-primal-dual    & May 23 & 3 \\
+hammernik-2017         & May 16 & 10 \\
+hammernik-vn           & May 16 & 11 \\
+tv-iterative           & May 15 & 10 \\
+manhart-pwls-tv        & May 15 & 12 \\
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\columnwidth}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{solver} & \textbf{first} & \textbf{\#c} \\
+\midrule
+manduca-bilateral      & Jun 23 & 1 \\
+wu-2015                & May 16 & 10 \\
+wu-2015-trainable      & May 22 & 6 \\
+dd-n2i                 & May 15 & 14 \\
+dd-bilateral-sup       & May 22 & 4 \\
+dd-bilateral-n2i       & May 15 & 16 \\
+tv-iterative-sup       & May 23 & 4 \\
+ram                    & May 18 & 9 \\
+naf                    & May 16 & 12 \\
+r2gaussian             & May 16 & 12 \\
+fastdiff ($\times$4)   & Jun 20 & 3 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table}
 
 %============================================================
 \section{Breast split and the train/test leakage audit}\label{sec:s3}
 
-\textbf{Split.} We re-partitioned the public 4000-case Breast CT Challenge train pool into train (3600), validation (200), and test (200). The split is deterministic (seed 20260703) and disjoint. The official challenge val/test truths are withheld, so we cannot use them; our test split is drawn from the public pool.
+\textbf{Split.} The Breast CT Challenge releases a public pool of 4000 training cases; its official validation and test truths are withheld for scoring, so we cannot use the challenge's own held-out sets. We therefore re-partitioned the public pool ourselves into train (3600), validation (200), and test (200). The partition is deterministic --- a fixed seed (20260703) assigns each case exactly once --- and the three subsets are disjoint. Because the truths in our test split are known to us, the headroom metric can be evaluated directly on it; the price is that we must then prove no test information reaches training. We did so three independent ways.
 
 \textbf{Leakage audit (three independent checks).}
 \begin{enumerate}
-\item \emph{Mechanism.} Training loads the \texttt{train} split. The test redirect fires only for the evaluation load. Training never sees test.
-\item \emph{Pixel-hash disjointness.} Over all 3600 train, 200 val, and 200 test truth images: TEST$\cap$TRAIN $=0$, TEST$\cap$VAL $=0$, VAL$\cap$TRAIN $=0$.
-\item \emph{Behavioral.} Test-hr tracks val-hr for every method, within $\pm0.01$, and several methods score \emph{lower} on test than val. Training on test would make test-hr much higher. It does not. The high absolute hr is the dataset (noiseless, well-posed), not a leak.
+\item \emph{By mechanism.} The training data loader is wired to read only the \texttt{train} split; the redirect to the test split fires exclusively inside the evaluation path. No code path exposes a test image during optimisation, so training cannot see test even in principle.
+\item \emph{By content.} We hashed every truth image and compared the subsets pixel-for-pixel. Across all 3600 train, 200 validation, and 200 test truths there is zero overlap in every direction --- TEST$\cap$TRAIN $=0$, TEST$\cap$VAL $=0$, VAL$\cap$TRAIN $=0$ --- so no near-duplicate case straddles the split.
+\item \emph{By behaviour.} For every method the test headroom tracks the validation headroom to within about $\pm0.01$, and several methods in fact score \emph{lower} on test than on validation. A model that had memorised the test set would score conspicuously \emph{higher} on test than on validation; the observed pattern is the opposite, which rules memorisation out. The high absolute hr is therefore a property of the data --- noiseless and well-posed --- and not a leak.
 \end{enumerate}
 
 \textbf{Why breast hr is high, and not comparable to Mayo.} The Breast CT Challenge data is noiseless by design; its RMSE floor is zero. Breast is incompleteness-limited (128 of $\sim$1000 views). Mayo is noise-limited (real quantum noise). The two absolute hr scales are therefore not comparable; Table~\ref{tab:s3contrast} contrasts the two problems side by side.
@@ -129,7 +179,9 @@ dominant lever & data-consistency / known operator & denoising \\
 %============================================================
 \section{Mayo test board and significance}\label{sec:s4}
 
-Champion ITNet v1, test hr 0.376 ($n=5$). The top tier is a statistical tie: ITNet v1 / ITNet v2 / U-Swin at the 5\,\% level; the compact param-efficient solver joins at the 1\,\% level ($p=0.02$--$0.027$). At $n=5$ the paired $t$-test has low power (a Wilcoxon test cannot even reach $p<0.05$). The full board (all 26 solvers, hr/SSIM/RMSE) is in the main text; per-patient hr and the pairwise significance matrix are in \texttt{docs/runs/mayo\_significance\_stats.md} and the forest/matrix figures.
+\textbf{The board.} The champion is ITNet v1 at test hr $0.376$, averaged over the five test patients. We test differences with a paired comparison on the per-patient hr values: for each pair of solvers we form the five per-patient hr differences and run a paired $t$-test, with a Wilcoxon signed-rank test as a distribution-free cross-check. On this basis the top of the board is a statistical tie --- ITNet v1, ITNet v2, and U-Swin are indistinguishable at the 5\,\% level, and the compact param-efficient solver joins this group at the 1\,\% level ($p=0.02$--$0.027$).
+
+\textbf{Why the tie is unavoidable at $n=5$.} With only five test patients the tests have very little power, and the point is sharpest for the Wilcoxon signed-rank test: with $n=5$ its smallest attainable two-sided $p$-value is $2/2^5=0.0625$, so it \emph{cannot} reach $p<0.05$ for any pair, no matter how large the effect. The paired $t$-test can cross 0.05, but only for the widest gaps. Hence ``a tier, not a winner'' is not a hedge; it is the honest ceiling of what five patients can resolve, and it is why we report the per-case mean $\pm$ standard deviation rather than a bare ranking. The per-patient hr values, the full pairwise significance matrix, and the forest plot are in \texttt{docs/runs/mayo\_significance\_stats.md} and the accompanying figures; the full board (all 26 solvers, hr/SSIM/RMSE) is in the main text.
 
 %============================================================
 \section{The parameter-efficient recombination study (search arc)}\label{sec:s5}
@@ -191,20 +243,24 @@ Findings, each earned by an iteration: the image-domain denoiser caps at $\sim$0
 %============================================================
 \section{Noise model and no-retrain protocol}\label{sec:s6}
 
-The full noiseless and noisy breast boards, and the framework-axis reading of the reversal, are now in the main text; this section records only the exact noise protocol behind the re-evaluation.
+The full noiseless and noisy breast boards, and the framework-axis reading of the reversal, are in the main text; this section records only the exact noise protocol behind the re-evaluation.
 
-Poisson photon noise per Eq.~(6) of the main text, $I_0=10^5$, applied to the 200 test sinograms with a fixed seed (deterministic; every method sees the identical noisy input). RMS of the sinogram perturbation $\approx0.012$ (line-integral units), $\sim$1.8\,\% at the thickest ray. Supervised methods load their noiseless checkpoint and skip training; per-scene/classical methods re-fit on the noisy input. The FBP baseline is recomputed from the noisy sinogram, so hr measures improvement over the noisy FBP and the comparison is fair within the noisy board.
+\textbf{Noise model.} We convert each clean line-integral sinogram $\mathbf{g}$ to expected photon counts $I_0\,e^{-\mathbf{g}}$, draw Poisson counts, and take the logarithm back to line integrals, following the standard low-dose forward model (Eq.~(6) of the main text). The single parameter is the incident photon count $I_0$; we use $I_0=10^5$, a comparatively high dose, so the perturbation is deliberately mild --- the RMS of the sinogram perturbation is $\approx0.012$ in line-integral units, about $1.8\,\%$ at the thickest (most attenuating) ray. The intent is not to stress-test at low dose but to ask whether a \emph{small}, realistic departure from the idealised noiseless data already reorders the leaderboard. It does.
+
+\textbf{Determinism and fairness.} The noise is drawn once per test case from a fixed seed and cached, so every method is evaluated on the byte-identical noisy input. Two solvers that change places do so because of how they process the same measurements, not because they happened to see different noise.
+
+\textbf{No retraining.} Supervised solvers load the checkpoint they trained on the noiseless data and run inference only --- their weights never see a noisy example. Classical and per-scene solvers (TV, PWLS-TV, bilateral, NAF, R$^2$-Gaussian) carry no pretrained weights and simply re-run their normal inference-time fit on the noisy input, which is their intended mode of use. The FBP baseline in the headroom metric is recomputed from the \emph{noisy} sinogram, so hr measures each method's improvement over the noisy FBP and every method on the board is scored against the same baseline. The comparison is thus fair \emph{within} the noisy board, even though the noisy and noiseless hr scales are not directly comparable.
 
 %============================================================
 \section{Agent-behavior --- extended account}\label{sec:s7}
 
-This account follows the autoresearch paradigm of automated open-ended scientific discovery\cite{lu2024aiscientist} realized through LLM code agents that resolve real software tasks\cite{yang2024sweagent,jimenez2024swebench} and physics-informed agentic development in adjacent imaging fields.\cite{zaiss2026agent4mr}
+This account follows the autoresearch paradigm of automated open-ended scientific discovery\cite{lu2024aiscientist} realised through LLM code agents that resolve real software tasks\cite{yang2024sweagent,jimenez2024swebench} and physics-informed agentic development in adjacent imaging fields.\cite{zaiss2026agent4mr} We summarise here what the agent did well, where it failed, and which parts of the study still required a human.
 
-\textbf{Strengths.} Fast paper$\to$code; strong hyper-parameter optimization; strict fixed-budget discipline; scales evaluation across many parallel benchmarks; follows well-decomposed instructions.
+\textbf{Strengths.} The agent is fast from paper to code: it read a method description and produced a running solver in a fraction of a day (Section~\ref{sec:s2}), which is what made 26 methods across two datasets tractable for one supervisor. It is a strong hyper-parameter optimiser, moving one knob at a time against the frozen metric and reliably driving each solver to its ceiling. It keeps a fixed compute budget without drift --- the 20-minute per-iteration wall was honoured across every run, a discipline humans find tedious. It scales evaluation almost for free, launching and tracking dozens of independent benchmark jobs in parallel; this parallelism, not raw single-task speed, is its most valuable practical property. And it follows well-decomposed instructions faithfully, provided each sub-task is stated concretely.
 
-\textbf{Weaknesses.} Does not invent new methods. Must be forced to recombine (converges early and pads if unsupervised --- one breast sub-run replayed identical configs until an audit caught it). CT-image vision misses obvious artifacts, so numbers are the source of truth. Long tasks must be decomposed or even a 1M-token context is exhausted. Overfits to the task/metric (not only an agent trait).
+\textbf{Weaknesses.} The agent does not invent new methods; it implements, tunes, and recombines existing ones, and it proposed no new reconstruction principle. It must be \emph{forced} to recombine: left unsupervised it converges early and then pads --- in one breast sub-run it replayed near-identical configurations until an audit caught the repetition. Its CT-image ``vision'' is unreliable: it repeatedly failed to see obvious streaks and artefacts in reconstructions and sinograms, so throughout the study the numeric metric, never the rendered image, had to be the source of truth. Long tasks must be decomposed into sub-tasks; without decomposition even a one-million-token context is exhausted before the task finishes. Finally, it overfits to the task and the chosen metric --- though, as the reversal shows, that failing is not unique to agents; human researchers overfit to benchmarks too.
 
-\textbf{Human meta-strategies (repeatable, same on both datasets).} Persistence/breadth (keep asking for more directions); recombination (the idea to assemble pieces); redirection (do not mimic the other dataset); auditing (catch padding, enforce budget, fix provenance). The defensible claim: agent = tireless, mechanistically reasoning, self-modifying executor; human = strategist $+$ auditor.
+\textbf{Human meta-strategies (repeatable, and the same on both datasets).} Four human interventions recurred and mattered. \emph{Persistence and breadth}: repeatedly asking the agent for more directions once it had stalled. \emph{Recombination}: supplying the idea of assembling proven pieces into one compact solver --- the decisive move behind the parameter-efficient result on both datasets (Section~\ref{sec:s5}). \emph{Redirection}: forbidding the agent from copying the other dataset's answer, which forced it to re-derive each optimum from local evidence. \emph{Auditing}: catching padding, enforcing the compute budget, and repairing provenance. The defensible division of labour is therefore this: the agent is a tireless, mechanistically reasoning, self-modifying executor, and the human is the strategist and the auditor.
 
 %============================================================
 \section{Additional results and the live leaderboard}\label{sec:s8}
