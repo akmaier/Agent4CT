@@ -173,7 +173,7 @@ We begin with Mayo. There the five held-out patients give $n=5$, so the paired $
 On Mayo, the test-selected leaderboard has a small top tier that is statistically indistinguishable. ITNet, its variants, and U-Swin tie at the 5\,\% level. Our compact solver joins at the 1\,\% level. The champion is ITNet at hr 0.376; the full board is Table~\ref{tab:mayo}, and the pairwise significance matrix is in Supplement~S4. Notably, the dominant cost was not any one method. It was the helical-to-fan geometry pipeline ($\sim$24 active working days), which the agent did not remove.
 
 \begin{table*}[t]
-\caption{Mayo low-dose CT test board (all 26 solvers; $n=5$ test patients). hr is the calibrated headroom (Eq.~\ref{eq:hr}) and the ranking metric; SSIM and RMSE use a batch-wide data range (RMSE in line-integral units). Params are trainable-parameter counts, in millions (M) unless marked \,p (raw count). ``--'' marks a solver below the ranking floor (hr $\le 0$). Solver keys abbreviated: dd = dual-domain, px = pixel, wav = wavelet, dc = data-consistency step, con./unc.\ = (un)constrained, sup = supervised.\label{tab:mayo}}
+\caption{Mayo low-dose CT test board (all 26 solvers; $n=5$ test patients). hr is the calibrated headroom (Eq.~\ref{eq:hr}) and the ranking metric; SSIM and RMSE use a batch-wide data range (RMSE in line-integral units). Params are trainable-parameter counts; entries suffixed M are in millions, an unsuffixed number is a raw count. ``--'' marks a solver below the ranking floor (hr $\le 0$). Solver keys abbreviated: dd = dual-domain, px = pixel, wav = wavelet, dc = data-consistency step, con./unc.\ = (un)constrained, sup = supervised.\label{tab:mayo}}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
 \begin{minipage}[t]{0.49\textwidth}
@@ -182,19 +182,19 @@ On Mayo, the test-selected leaderboard has a small top tier that is statisticall
 \toprule
 \textbf{Rank} & \textbf{Solver} & \textbf{hr} & \textbf{SSIM} & \textbf{RMSE} & \textbf{Params} \\
 \midrule
-1  & itnet             & 0.3756 & 0.9790 & 0.0005 & 0.233 \\
-2  & itnet-v2          & 0.3735 & 0.9784 & 0.0005 & 0.233 \\
-3  & uswin             & 0.3700 & 0.9770 & 0.0005 & 3.954 \\
-4  & dd-supervised     & 0.3607 & 0.9758 & 0.0005 & 0.466 \\
-5  & param-efficient   & 0.3241 & 0.9727 & 0.0005 & 969\,p \\
-6  & itnet-v3          & 0.3066 & 0.9707 & 0.0006 & 3.699 \\
-7  & hammernik-vn      & 0.1591 & 0.9520 & 0.0007 & 0.005 \\
+1  & itnet             & 0.3756 & 0.9790 & 0.0005 & 0.233\,M \\
+2  & itnet-v2          & 0.3735 & 0.9784 & 0.0005 & 0.233\,M \\
+3  & uswin             & 0.3700 & 0.9770 & 0.0005 & 3.954\,M \\
+4  & dd-supervised     & 0.3607 & 0.9758 & 0.0005 & 0.466\,M \\
+5  & param-efficient   & 0.3241 & 0.9727 & 0.0005 & 969 \\
+6  & itnet-v3          & 0.3066 & 0.9707 & 0.0006 & 3.699\,M \\
+7  & hammernik-vn      & 0.1591 & 0.9520 & 0.0007 & 0.005\,M \\
 8  & tv-iterative      & 0.0959 & 0.9642 & 0.0007 & 0 \\
-9  & hammernik-2017    & 0.0843 & 0.9358 & 0.0007 & 0.012 \\
+9  & hammernik-2017    & 0.0843 & 0.9358 & 0.0007 & 0.012\,M \\
 10 & manhart-pwls-tv   & 0.0624 & 0.9649 & 0.0007 & 0 \\
-11 & wu-2015-trainable & 0.0207 & 0.8923 & 0.0008 & 8\,p \\
-12 & dd-n2i            & 0.0176 & 0.9590 & 0.0008 & 0.466 \\
-13 & manduca-bilateral & 0.0159 & 0.9561 & 0.0009 & 7\,p \\
+11 & wu-2015-trainable & 0.0207 & 0.8923 & 0.0008 & 8 \\
+12 & dd-n2i            & 0.0176 & 0.9590 & 0.0008 & 0.466\,M \\
+13 & manduca-bilateral & 0.0159 & 0.9561 & 0.0009 & 7 \\
 \bottomrule
 \end{tabular}
 \end{minipage}\hfill
@@ -204,19 +204,19 @@ On Mayo, the test-selected leaderboard has a small top tier that is statisticall
 \toprule
 \textbf{Rank} & \textbf{Solver} & \textbf{hr} & \textbf{SSIM} & \textbf{RMSE} & \textbf{Params} \\
 \midrule
-14 & dd-bilateral-sup     & 0.0040 & 0.9541 & 0.0009 & 12\,p \\
--- & tv-iterative-sup     & 0.0109 & 0.9366 & 0.0008 & 2\,p \\
--- & dd-bilateral-n2i     & 0.0000 & 0.9587 & 0.0010 & 12\,p \\
--- & fastdiff-flow-px-unc & 0.0000 & 0.9523 & 0.0012 & 3.823 \\
--- & fastdiff-wdm-wav-con & 0.0000 & 0.9501 & 0.0013 & 3.825 \\
--- & ram                  & 0.0000 & 0.9446 & 0.0012 & 35.619 \\
--- & learned-primal-dual  & 0.0000 & 0.9415 & 0.0011 & 0.155 \\
--- & fastdiff-wdm-wav-unc & 0.0000 & 0.9404 & 0.0013 & 3.825 \\
--- & fastdiff-flow-px-con & 0.0000 & 0.9300 & 0.0013 & 3.823 \\
--- & diff-recon-dc-unc    & 0.0000 & 0.9084 & 0.0014 & 8.594 \\
--- & diff-recon-dc-con    & 0.0000 & 0.8766 & 0.0016 & 8.594 \\
--- & r2gaussian           & 0.0000 & 0.8234 & 0.0043 & 0.003 \\
--- & naf                  & 0.0000 & 0.8172 & 0.0028 & 33.558 \\
+14 & dd-bilateral-sup     & 0.0040 & 0.9541 & 0.0009 & 12 \\
+-- & tv-iterative-sup     & 0.0109 & 0.9366 & 0.0008 & 2 \\
+-- & dd-bilateral-n2i     & 0.0000 & 0.9587 & 0.0010 & 12 \\
+-- & fastdiff-flow-px-unc & 0.0000 & 0.9523 & 0.0012 & 3.823\,M \\
+-- & fastdiff-wdm-wav-con & 0.0000 & 0.9501 & 0.0013 & 3.825\,M \\
+-- & ram                  & 0.0000 & 0.9446 & 0.0012 & 35.619\,M \\
+-- & learned-primal-dual  & 0.0000 & 0.9415 & 0.0011 & 0.155\,M \\
+-- & fastdiff-wdm-wav-unc & 0.0000 & 0.9404 & 0.0013 & 3.825\,M \\
+-- & fastdiff-flow-px-con & 0.0000 & 0.9300 & 0.0013 & 3.823\,M \\
+-- & diff-recon-dc-unc    & 0.0000 & 0.9084 & 0.0014 & 8.594\,M \\
+-- & diff-recon-dc-con    & 0.0000 & 0.8766 & 0.0016 & 8.594\,M \\
+-- & r2gaussian           & 0.0000 & 0.8234 & 0.0043 & 0.003\,M \\
+-- & naf                  & 0.0000 & 0.8172 & 0.0028 & 33.558\,M \\
 \bottomrule
 \end{tabular}
 \end{minipage}
@@ -275,7 +275,7 @@ The reversal reads off the two axes of Table~\ref{tab:taxonomy}. Brittleness con
 % Table 2 (reversal)
 %------------------------------------------------------------
 \begin{table*}[t]
-\caption{The two breast boards side by side, for the same trained models on the same 200 test cases with \emph{no retraining}. Left: noiseless board. Right: noisy board ($I_0=10^5$). The ranking nearly inverts. hr is the calibrated headroom (Eq.~\ref{eq:hr}) and the ranking metric; SSIM and RMSE use a batch-wide data range (RMSE in line-integral units). ``--'' marks a solver that did not clear the ranking floor (hr $\le 0$) or did not finish (---). Params (millions M, or \,p raw count) and solver keys as in Table~\ref{tab:mayo}.\label{tab:reversal}}
+\caption{The two breast boards side by side, for the same trained models on the same 200 test cases with \emph{no retraining}. Left: noiseless board. Right: noisy board ($I_0=10^5$). The ranking nearly inverts. hr is the calibrated headroom (Eq.~\ref{eq:hr}) and the ranking metric; SSIM and RMSE use a batch-wide data range (RMSE in line-integral units). ``--'' marks a solver that did not clear the ranking floor (hr $\le 0$) or did not finish (---). Params (M suffix = millions, otherwise a raw count) and solver keys as in Table~\ref{tab:mayo}.\label{tab:reversal}}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
 \begin{minipage}[t]{0.49\textwidth}
@@ -285,31 +285,31 @@ The reversal reads off the two axes of Table~\ref{tab:taxonomy}. Brittleness con
 \toprule
 \textbf{Rank} & \textbf{Solver} & \textbf{hr} & \textbf{SSIM} & \textbf{RMSE} & \textbf{Params} \\
 \midrule
-1  & dd-supervised        & 0.8948 & 0.9992 & 0.0005 & 0.466 \\
-2  & itnet                & 0.8926 & 0.9991 & 0.0006 & 0.233 \\
-3  & itnet-v2             & 0.8893 & 0.9991 & 0.0006 & 0.928 \\
-4  & itnet-v3             & 0.8749 & 0.9989 & 0.0007 & 8.318 \\
-5  & uswin                & 0.8586 & 0.9986 & 0.0007 & 7.025 \\
-6  & learned-primal-dual  & 0.7233 & 0.9962 & 0.0014 & 0.304 \\
-7  & hammernik-2017       & 0.6265 & 0.9902 & 0.0019 & 0.009 \\
-8  & param-efficient      & 0.6212 & 0.9912 & 0.0020 & 195\,p \\
-9  & hammernik-vn         & 0.5787 & 0.9865 & 0.0022 & 0.008 \\
-10 & fastdiff-flow-px-con & 0.5119 & 0.9792 & 0.0025 & 3.823 \\
-11 & ram-zeroshot         & 0.3693 & 0.9787 & 0.0033 & 35.619 \\
+1  & dd-supervised        & 0.8948 & 0.9992 & 0.0005 & 0.466\,M \\
+2  & itnet                & 0.8926 & 0.9991 & 0.0006 & 0.233\,M \\
+3  & itnet-v2             & 0.8893 & 0.9991 & 0.0006 & 0.928\,M \\
+4  & itnet-v3             & 0.8749 & 0.9989 & 0.0007 & 8.318\,M \\
+5  & uswin                & 0.8586 & 0.9986 & 0.0007 & 7.025\,M \\
+6  & learned-primal-dual  & 0.7233 & 0.9962 & 0.0014 & 0.304\,M \\
+7  & hammernik-2017       & 0.6265 & 0.9902 & 0.0019 & 0.009\,M \\
+8  & param-efficient      & 0.6212 & 0.9912 & 0.0020 & 195 \\
+9  & hammernik-vn         & 0.5787 & 0.9865 & 0.0022 & 0.008\,M \\
+10 & fastdiff-flow-px-con & 0.5119 & 0.9792 & 0.0025 & 3.823\,M \\
+11 & ram-zeroshot         & 0.3693 & 0.9787 & 0.0033 & 35.619\,M \\
 12 & tv-iterative         & 0.3601 & 0.9918 & 0.0033 & 0 \\
 13 & manhart-pwls-tv      & 0.3601 & 0.9918 & 0.0033 & 0 \\
-14 & wu-2015-trainable    & 0.3156 & 0.9537 & 0.0035 & 12\,p \\
-15 & manduca-bilateral    & 0.2763 & 0.9830 & 0.0037 & 22\,p \\
-16 & fastdiff-flow-px-unc & 0.2693 & 0.9776 & 0.0038 & 3.823 \\
-17 & fastdiff-wdm-wav-con & 0.2693 & 0.9340 & 0.0038 & 3.825 \\
-18 & dd-bilateral-sup     & 0.2546 & 0.9848 & 0.0039 & 24\,p \\
+14 & wu-2015-trainable    & 0.3156 & 0.9537 & 0.0035 & 12 \\
+15 & manduca-bilateral    & 0.2763 & 0.9830 & 0.0037 & 22 \\
+16 & fastdiff-flow-px-unc & 0.2693 & 0.9776 & 0.0038 & 3.823\,M \\
+17 & fastdiff-wdm-wav-con & 0.2693 & 0.9340 & 0.0038 & 3.825\,M \\
+18 & dd-bilateral-sup     & 0.2546 & 0.9848 & 0.0039 & 24 \\
 19 & wu-2015              & 0.1517 & 0.9611 & 0.0044 & 0 \\
-20 & tv-iterative-sup     & 0.1513 & 0.9613 & 0.0044 & 20\,p \\
-21 & dd-bilateral-n2i     & 0.0001 & 0.9583 & 0.0061 & 6\,p \\
--- & dd-n2i               & 0.0001 & 0.9461 & 0.0062 & 0.466 \\
--- & fastdiff-wdm-wav-unc & 0.0000 & 0.9448 & 0.0112 & 3.825 \\
--- & naf                  & ---    & ---    & ---    & 33.563 \\
--- & r2gaussian           & ---    & ---    & ---    & 0.006 \\
+20 & tv-iterative-sup     & 0.1513 & 0.9613 & 0.0044 & 20 \\
+21 & dd-bilateral-n2i     & 0.0001 & 0.9583 & 0.0061 & 6 \\
+-- & dd-n2i               & 0.0001 & 0.9461 & 0.0062 & 0.466\,M \\
+-- & fastdiff-wdm-wav-unc & 0.0000 & 0.9448 & 0.0112 & 3.825\,M \\
+-- & naf                  & ---    & ---    & ---    & 33.563\,M \\
+-- & r2gaussian           & ---    & ---    & ---    & 0.006\,M \\
 \bottomrule
 \end{tabular}
 \end{minipage}\hfill
@@ -320,31 +320,31 @@ The reversal reads off the two axes of Table~\ref{tab:taxonomy}. Brittleness con
 \toprule
 \textbf{Rank} & \textbf{Solver} & \textbf{hr} & \textbf{SSIM} & \textbf{RMSE} & \textbf{Params} \\
 \midrule
-1  & learned-primal-dual  & 0.9349 & 0.9905 & 0.0020 & 0.304 \\
-2  & manduca-bilateral    & 0.8420 & 0.9537 & 0.0049 & 22\,p \\
-3  & dd-bilateral-n2i     & 0.7927 & 0.9532 & 0.0064 & 6\,p \\
-4  & hammernik-2017       & 0.7016 & 0.7178 & 0.0092 & 0.009 \\
-5  & itnet-v3             & 0.7007 & 0.7564 & 0.0092 & 8.318 \\
-6  & fastdiff-flow-px-unc & 0.6620 & 0.7058 & 0.0104 & 3.823 \\
-7  & ram-zeroshot         & 0.6382 & 0.6578 & 0.0111 & 35.619 \\
-8  & uswin                & 0.5915 & 0.6408 & 0.0125 & 7.025 \\
-9  & itnet                & 0.5784 & 0.6295 & 0.0129 & 0.233 \\
-10 & hammernik-vn         & 0.5529 & 0.5962 & 0.0137 & 0.008 \\
-11 & itnet-v2             & 0.5480 & 0.6201 & 0.0139 & 0.928 \\
-12 & param-efficient      & 0.5153 & 0.5771 & 0.0149 & 195\,p \\
+1  & learned-primal-dual  & 0.9349 & 0.9905 & 0.0020 & 0.304\,M \\
+2  & manduca-bilateral    & 0.8420 & 0.9537 & 0.0049 & 22 \\
+3  & dd-bilateral-n2i     & 0.7927 & 0.9532 & 0.0064 & 6 \\
+4  & hammernik-2017       & 0.7016 & 0.7178 & 0.0092 & 0.009\,M \\
+5  & itnet-v3             & 0.7007 & 0.7564 & 0.0092 & 8.318\,M \\
+6  & fastdiff-flow-px-unc & 0.6620 & 0.7058 & 0.0104 & 3.823\,M \\
+7  & ram-zeroshot         & 0.6382 & 0.6578 & 0.0111 & 35.619\,M \\
+8  & uswin                & 0.5915 & 0.6408 & 0.0125 & 7.025\,M \\
+9  & itnet                & 0.5784 & 0.6295 & 0.0129 & 0.233\,M \\
+10 & hammernik-vn         & 0.5529 & 0.5962 & 0.0137 & 0.008\,M \\
+11 & itnet-v2             & 0.5480 & 0.6201 & 0.0139 & 0.928\,M \\
+12 & param-efficient      & 0.5153 & 0.5771 & 0.0149 & 195 \\
 13 & manhart-pwls-tv      & 0.5068 & 0.6164 & 0.0151 & 0 \\
 14 & tv-iterative         & 0.5068 & 0.6164 & 0.0151 & 0 \\
 15 & wu-2015              & 0.3700 & 0.5244 & 0.0193 & 0 \\
-16 & wu-2015-trainable    & 0.2591 & 0.4400 & 0.0227 & 12\,p \\
-17 & tv-iterative-sup     & 0.1071 & 0.4567 & 0.0274 & 20\,p \\
-18 & dd-bilateral-sup     & 0.1003 & 0.4524 & 0.0276 & 24\,p \\
--- & fastdiff-wdm-wav-unc & 0.6350 & 0.9450 & 0.0112 & 3.825 \\
--- & dd-supervised        & 0.0000 & 0.3483 & 0.0338 & 0.466 \\
--- & fastdiff-wdm-wav-con & 0.0000 & 0.3104 & 0.0477 & 3.825 \\
--- & fastdiff-flow-px-con & 0.0000 & 0.2769 & 0.0583 & 3.823 \\
--- & dd-n2i               & ---    & ---    & ---    & 0.117 \\
--- & naf                  & ---    & ---    & ---    & 33.563 \\
--- & r2gaussian           & ---    & ---    & ---    & 0.006 \\
+16 & wu-2015-trainable    & 0.2591 & 0.4400 & 0.0227 & 12 \\
+17 & tv-iterative-sup     & 0.1071 & 0.4567 & 0.0274 & 20 \\
+18 & dd-bilateral-sup     & 0.1003 & 0.4524 & 0.0276 & 24 \\
+-- & fastdiff-wdm-wav-unc & 0.6350 & 0.9450 & 0.0112 & 3.825\,M \\
+-- & dd-supervised        & 0.0000 & 0.3483 & 0.0338 & 0.466\,M \\
+-- & fastdiff-wdm-wav-con & 0.0000 & 0.3104 & 0.0477 & 3.825\,M \\
+-- & fastdiff-flow-px-con & 0.0000 & 0.2769 & 0.0583 & 3.823\,M \\
+-- & dd-n2i               & ---    & ---    & ---    & 0.117\,M \\
+-- & naf                  & ---    & ---    & ---    & 33.563\,M \\
+-- & r2gaussian           & ---    & ---    & ---    & 0.006\,M \\
 \bottomrule
 \end{tabular}
 \end{minipage}
