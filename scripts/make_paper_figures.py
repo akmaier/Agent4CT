@@ -197,12 +197,11 @@ def fig3_reversal():
 # FIG 2 — params (log) vs test hr, Mayo & breast(noiseless)
 # ===========================================================================
 def fig2_params_vs_hr():
-    # Three boards. y is normalized per dataset to "% of the best hr reached
-    # on that dataset", so the three very different hr scales overlay cleanly
-    # (Mayo ~0.38, breast noiseless ~0.89, breast noisy ~0.93 all map to 100).
+    # Two boards. y is normalized per dataset to "% of the best hr reached
+    # on that dataset", so the two very different hr scales overlay cleanly
+    # (Mayo ~0.38, breast noiseless ~0.89 both map to 100).
     mayo = load_board("mayo_ldct")
     breast_nl = load_board("breast_ct")
-    breast_nz = load_board("breast_ct_noise")
     HILITE = "param-efficient"
 
     def pts(rows):
@@ -228,7 +227,6 @@ def fig2_params_vs_hr():
 
     mayo_pts = norm(mayo)
     nl_pts = norm(breast_nl)
-    nz_pts = norm(breast_nz)
 
     fig, ax = plt.subplots(figsize=(SINGLE, 2.8))
 
@@ -241,7 +239,6 @@ def fig2_params_vs_hr():
 
     scatter(mayo_pts, CB["blue"], "o", "Mayo (noise-limited)")
     scatter(nl_pts, CB["orange"], "^", "Breast, noiseless")
-    scatter(nz_pts, CB["purple"], "s", "Breast, noisy ($I_0{=}10^5$)")
 
     def highlight(data, annotate, dxdy=(8, 4), ha="left"):
         """Ring param-efficient; optionally label it with its exact count."""
@@ -258,13 +255,11 @@ def fig2_params_vs_hr():
                                                 lw=0.6))
                 return
 
-    # Mayo has 969 params, both breast variants 195; label one per count and
-    # ring the third to avoid a duplicate "195 params" tag on the pair. Put the
+    # Mayo has 969 params, breast 195; label each with its exact count. Put the
     # breast tag up-left of x=195 and the Mayo tag up-right of x=969 so the two
     # labels sit in separate zones.
     highlight(nl_pts, annotate=True, dxdy=(-10, 14), ha="right")
     highlight(mayo_pts, annotate=True, dxdy=(10, 10), ha="left")
-    highlight(nz_pts, annotate=False)
 
     ax.set_xscale("log")
     ax.set_xlabel("trainable parameters (log scale)")

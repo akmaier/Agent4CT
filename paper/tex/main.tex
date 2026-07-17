@@ -129,7 +129,7 @@ Image-domain denoiser (bilateral, U-Net) & none       & hand-cr. / sup. & \cite{
 Unrolled learned-iterative (ITNet, U-Swin) & in-loop  & supervised & \cite{wuerfl2018,xu2024hybrid,liang2021swinir,liu2021swin,zhang2021transct} \\
 Variational network (Hammernik)          & in-loop    & supervised & \cite{hammernik2017deep,hammernik2018vn} \\
 Learned primal-dual (LPD)                & in-loop    & supervised & \cite{adler2018lpd} \\
-Dual-domain (sup., bilateral, N2I)       & single / in-loop & sup. / self-sup. & \cite{wagner2023dualdomain,hendriksen2020noise2inverse} \\
+Dual-domain (DD sup., bilateral, N2I)     & single / in-loop & sup. / self-sup. & \cite{wagner2023dualdomain,hendriksen2020noise2inverse} \\
 Generative prior (fastdiff $\times4$)     & in-loop    & generative & \cite{shi2026dm4ct,friedrich2024wdm,song2022scorebased,chung2023dps} \\
 Per-scene implicit (NAF, R$^2$-Gaussian) & per-scene  & implicit & \cite{zha2022naf,zha2024r2gaussian,liu2025review} \\
 Foundation zero-shot (RAM)               & single     & foundation & \cite{terris2025ram} \\
@@ -147,9 +147,9 @@ Band decomposition (Wu-2015)             & in-loop    & hand-cr. / sup. & \cite{
 
 \subsection{The calibrated-headroom metric}\label{sec:metric}
 
-We score how far a method closes the gap between the low-dose FBP and the truth. Let $\mathcal{C}$ be a two-point intensity calibration and $\mathbf{M}$ a field-of-view mask. The headroom is
+We score how far a method closes the gap between the low-dose FBP and the truth. Let $\mathbf{M}$ be a field-of-view mask. The headroom is
 \begin{equation}\label{eq:hr}
-\mathrm{hr}=\max\!\Big(0,\ 1-\frac{\mathrm{RMSE}\big(\mathbf{M}\!\odot\!\mathcal{C}\hat{\mathbf{x}},\,\mathbf{M}\!\odot\!\mathbf{x}\big)}{\mathrm{RMSE}\big(\mathbf{M}\!\odot\!\mathbf{x}_{\mathrm{FBP}},\,\mathbf{M}\!\odot\!\mathbf{x}\big)}\Big).
+\mathrm{hr}=\max\!\Big(0,\ 1-\frac{\mathrm{RMSE}\big(\mathbf{M}\!\odot\!\hat{\mathbf{x}},\,\mathbf{M}\!\odot\!\mathbf{x}\big)}{\mathrm{RMSE}\big(\mathbf{M}\!\odot\!\mathbf{x}_{\mathrm{FBP}},\,\mathbf{M}\!\odot\!\mathbf{x}\big)}\Big).
 \end{equation}
 An hr of 0 means no better than FBP; an hr near 1 means near-perfect. We select each method's best iteration on the held-out test set, then report the per-case mean $\pm$ standard deviation. SSIM and PSNR use a batch-wide data range so that they are comparable across cases.
 
@@ -224,7 +224,7 @@ On Mayo, the test-selected leaderboard has a small top tier that is statisticall
 
 \subsection{A compact, problem-dependent solver}\label{sec:compact}
 
-From the 26 methods the agent recombined a compact solver. On breast it uses a filtered data-consistency step ($\mathbf{D}=\mathrm{FBP}$), a learned cross-step combination (Eq.~\ref{eq:lpd}), and an output bilateral filter. It has \textbf{195 parameters} and reaches hr 0.62 on the breast test set. This is the variational-network tier at $\sim$2\,\% of that network's parameters. On Mayo the compact optimum is different: a small multi-scale bilateral denoiser. The two compact solutions do not transfer. The agent re-derived each from the evidence of its own runs (Supplement~S5). Figure~\ref{fig:params} shows accuracy against parameter count for all three boards.
+From the 26 methods the agent recombined a compact solver. On breast it uses a filtered data-consistency step ($\mathbf{D}=\mathrm{FBP}$), a learned cross-step combination (Eq.~\ref{eq:lpd}), and an output bilateral filter. It has \textbf{195 parameters} and reaches hr 0.62 on the breast test set. This is the variational-network tier at $\sim$2\,\% of that network's parameters. On Mayo the compact optimum is different: a small multi-scale bilateral denoiser. The two compact solutions do not transfer. The agent re-derived each from the evidence of its own runs (Supplement~S5). Figure~\ref{fig:params} shows accuracy against parameter count for both datasets.
 
 \subsection{The breast task is noiseless --- and the numbers are not a leak}\label{sec:noleak}
 
@@ -258,7 +258,7 @@ The reversal reads off the two axes of Table~\ref{tab:taxonomy}. Brittleness con
 
 \begin{figure}[t]
 \centerline{\includegraphics[width=\columnwidth]{fig2_params_vs_hr.pdf}}
-\caption{Accuracy versus parameter count for all three boards (Mayo, breast noiseless, breast noisy). To overlay the three different hr scales, each solver's hr is normalized to the percent of the best hr reached on its own board. The agent's compact recombination solver is ringed: 969 parameters on Mayo, 195 on both breast boards. It reaches the top accuracy tier at $\sim$1--2\,\% of the parameters of the variational network.\label{fig:params}}
+\caption{Accuracy versus parameter count for both datasets (Mayo and breast noiseless). To overlay the two different hr scales, each solver's hr is normalized to the percent of the best hr reached on its own board. The agent's compact recombination solver is ringed: 969 parameters on Mayo, 195 on breast. It reaches the top accuracy tier at $\sim$1--2\,\% of the parameters of the variational network.\label{fig:params}}
 \end{figure}
 
 \begin{figure}[t]
