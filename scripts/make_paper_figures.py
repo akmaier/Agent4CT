@@ -128,7 +128,8 @@ def fig3_reversal():
             dropped.append(k)
 
     fig, ax = plt.subplots(figsize=(SINGLE, 4.7))  # single-column slopegraph
-    x_left, x_right = 0.0, 1.0  # rank lists close enough to keep arrows readable in one column
+    x_left, x_right = 0.0, 2.4  # wide node gap so the two lists clear >=2cm
+    LBL_FS, HDR_FS = 5.6, 6.4   # 20% smaller than before, frees the middle
 
     def color_for(k):
         if k == COLLAPSE:
@@ -152,32 +153,42 @@ def fig3_reversal():
         lbl_col = col if k in (COLLAPSE, RISE) else "#555555"
         weight = "bold" if k in (COLLAPSE, RISE) else "normal"
         # left labels: rank number prefixed so ranks are legible without ticks
-        ax.text(x_left - 0.05, lr, f"{lr}. {name}", ha="right", va="center",
-                fontsize=7, color=lbl_col, fontweight=weight, zorder=z + 2)
+        ax.text(x_left - 0.08, lr, f"{lr}. {name}", ha="right", va="center",
+                fontsize=LBL_FS, color=lbl_col, fontweight=weight, zorder=z + 2)
         # right labels: rank number + DNF marker for the collapse solver
         if k in nz_rank:
             rlabel = f"{name}  {rr}"
         else:
             rlabel = f"{name}  (DNF)"
-        ax.text(x_right + 0.05, rr, rlabel, ha="left", va="center",
-                fontsize=7, color=lbl_col, fontweight=weight, zorder=z + 2)
+        ax.text(x_right + 0.08, rr, rlabel, ha="left", va="center",
+                fontsize=LBL_FS, color=lbl_col, fontweight=weight, zorder=z + 2)
 
-    ax.set_xlim(-1.7, 2.7)
-    top = 0.15
+    ax.set_xlim(x_left - 0.25, x_right + 0.25)  # tight around nodes; labels
+    top = 0.15                                  # overflow and tight-bbox keeps them
     ax.set_ylim(collapse_dest + 0.6, top)  # inverted: rank 1 at top
     ax.set_xticks([])
     ax.set_yticks([])
-    # column headers anchored to the node columns (x=0 left, x=1 right) but
-    # aligned so their text grows outward, away from each other.
+    # column headers anchored to the node columns, aligned to grow outward.
     ax.text(x_left, top - 0.12, "Noiseless rank", ha="right", va="bottom",
-            fontsize=8, fontweight="bold")
+            fontsize=HDR_FS, fontweight="bold")
     ax.text(x_right, top - 0.12, "Noisy (I$_0$=100k) rank", ha="left",
-            va="bottom", fontsize=8, fontweight="bold")
+            va="bottom", fontsize=HDR_FS, fontweight="bold")
     for sp in ("left", "bottom"):
         ax.spines[sp].set_visible(False)
     ax.grid(False)
 
     fig.tight_layout()
+    # Verify the whitespace gap between the two lists at the printed
+    # \columnwidth (244.7pt = 8.60cm). The gap is node-to-node distance.
+    fig.canvas.draw()
+    COLW_CM = 8.60
+    mid = 0.5 * (top + (collapse_dest + 0.6))
+    dl = ax.transData.transform((x_left, mid))
+    dr = ax.transData.transform((x_right, mid))
+    tb = fig.get_tightbbox(fig.canvas.get_renderer())
+    gap_cm = COLW_CM * ((dr[0] - dl[0]) / fig.dpi) / tb.width
+    print(f"  fig3 node gap ~ {gap_cm:.2f} cm at columnwidth "
+          f"({'OK' if gap_cm >= 2.0 else 'TOO NARROW'})")
     savefig(fig, os.path.join(OUTDIR, "fig3_reversal.pdf"))
     return dropped
 
@@ -186,8 +197,12 @@ def fig3_reversal():
 # FIG 2 — params (log) vs test hr, Mayo & breast(noiseless)
 # ===========================================================================
 def fig2_params_vs_hr():
+    # Three boards. y is normalized per dataset to "% of the best hr reached
+    # on that dataset", so the three very different hr scales overlay cleanly
+    # (Mayo ~0.38, breast noiseless ~0.89, breast noisy ~0.93 all map to 100).
     mayo = load_board("mayo_ldct")
-    breast = load_board("breast_ct")
+    breast_nl = load_board("breast_ct")
+    breast_nz = load_board("breast_ct_noise")
     HILITE = "param-efficient"
 
     def pts(rows):
@@ -199,18 +214,21 @@ def fig2_params_vs_hr():
             hr = r.get("test_hr_mean")
             if p is None or hr is None:
                 continue
-            # params_M given in millions; param-efficient is ~195 params.
-            # Guard: a genuine 0.0 (TV etc.) can't sit on a log axis; give
-            # it a tiny floor so it still plots, but keep highlighted solver
-            # at its true count.
-            params = p * 1e6
+            params = p * 1e6  # params_M is in millions; param-efficient is 195
             if params <= 0:
                 params = 0.5  # < 1 param -> floor so log-x is defined
             out.append((r["solver_key"], params, hr))
         return out
 
-    mayo_pts = pts(mayo)
-    breast_pts = pts(breast)
+    def norm(rows):
+        """Scale hr to percent of the best hr on this board."""
+        data = pts(rows)
+        best = max(d[2] for d in data)
+        return [(k, x, 100.0 * y / best) for (k, x, y) in data]
+
+    mayo_pts = norm(mayo)
+    nl_pts = norm(breast_nl)
+    nz_pts = norm(breast_nz)
 
     fig, ax = plt.subplots(figsize=(SINGLE, 2.8))
 
@@ -221,26 +239,39 @@ def fig2_params_vs_hr():
                    edgecolors="white", linewidths=0.4, alpha=0.85,
                    label=label, zorder=3)
 
-    scatter(mayo_pts, CB["blue"], "o", "Mayo-LDCT")
-    scatter(breast_pts, CB["orange"], "^", "Breast (noiseless)")
+    scatter(mayo_pts, CB["blue"], "o", "Mayo (noise-limited)")
+    scatter(nl_pts, CB["orange"], "^", "Breast, noiseless")
+    scatter(nz_pts, CB["purple"], "s", "Breast, noisy ($I_0{=}10^5$)")
 
-    # Highlight param-efficient on both boards.
-    for data, color in ((mayo_pts, CB["blue"]), (breast_pts, CB["orange"])):
+    def highlight(data, annotate, dxdy=(8, 4), ha="left"):
+        """Ring param-efficient; optionally label it with its exact count."""
         for k, x, y in data:
             if k == HILITE:
                 ax.scatter([x], [y], s=90, facecolors="none",
                            edgecolors=CB["red"], linewidths=1.6, zorder=5)
-                ax.annotate("param-efficient\n(~195 params)",
-                            (x, y), textcoords="offset points",
-                            xytext=(8, -2), fontsize=6.8, color=CB["red"],
-                            fontweight="bold",
-                            arrowprops=dict(arrowstyle="-", color=CB["red"],
-                                            lw=0.6))
+                if annotate:
+                    ax.annotate(f"param-efficient\n({int(round(x))} params)",
+                                (x, y), textcoords="offset points",
+                                xytext=dxdy, fontsize=6.6, color=CB["red"],
+                                fontweight="bold", ha=ha,
+                                arrowprops=dict(arrowstyle="-", color=CB["red"],
+                                                lw=0.6))
+                return
+
+    # Mayo has 969 params, both breast variants 195; label one per count and
+    # ring the third to avoid a duplicate "195 params" tag on the pair. Put the
+    # breast tag up-left of x=195 and the Mayo tag up-right of x=969 so the two
+    # labels sit in separate zones.
+    highlight(nl_pts, annotate=True, dxdy=(-10, 14), ha="right")
+    highlight(mayo_pts, annotate=True, dxdy=(10, 10), ha="left")
+    highlight(nz_pts, annotate=False)
 
     ax.set_xscale("log")
     ax.set_xlabel("trainable parameters (log scale)")
-    ax.set_ylabel("test hr (mean)")
-    ax.legend(loc="lower right", frameon=False, handletextpad=0.3)
+    ax.set_ylabel("hr (% of best on dataset)")
+    ax.set_ylim(-4, 110)
+    ax.legend(loc="lower center", frameon=False, handletextpad=0.3,
+              fontsize=6.6, borderpad=0.2, labelspacing=0.25)
     ax.grid(True, which="major", axis="x", ls=":", lw=0.4, color="#dddddd")
     fig.tight_layout()
     savefig(fig, os.path.join(OUTDIR, "fig2_params_vs_hr.pdf"))

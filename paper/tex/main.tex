@@ -224,7 +224,7 @@ On Mayo, the test-selected leaderboard has a small top tier that is statisticall
 
 \subsection{A compact, problem-dependent solver}\label{sec:compact}
 
-From the 26 methods the agent recombined a compact solver. On breast it uses a filtered data-consistency step ($\mathbf{D}=\mathrm{FBP}$), a learned cross-step combination (Eq.~\ref{eq:lpd}), and an output bilateral filter. It has \textbf{195 parameters} and reaches hr 0.62 on the breast test set. This is the variational-network tier at $\sim$2\,\% of that network's parameters. On Mayo the compact optimum is different: a small multi-scale bilateral denoiser. The two compact solutions do not transfer. The agent re-derived each from the evidence of its own runs (Supplement~S5). Figure~\ref{fig:params} shows accuracy against parameter count for both datasets.
+From the 26 methods the agent recombined a compact solver. On breast it uses a filtered data-consistency step ($\mathbf{D}=\mathrm{FBP}$), a learned cross-step combination (Eq.~\ref{eq:lpd}), and an output bilateral filter. It has \textbf{195 parameters} and reaches hr 0.62 on the breast test set. This is the variational-network tier at $\sim$2\,\% of that network's parameters. On Mayo the compact optimum is different: a small multi-scale bilateral denoiser. The two compact solutions do not transfer. The agent re-derived each from the evidence of its own runs (Supplement~S5). Figure~\ref{fig:params} shows accuracy against parameter count for all three boards.
 
 \subsection{The breast task is noiseless --- and the numbers are not a leak}\label{sec:noleak}
 
@@ -258,7 +258,7 @@ The reversal reads off the two axes of Table~\ref{tab:taxonomy}. Brittleness con
 
 \begin{figure}[t]
 \centerline{\includegraphics[width=\columnwidth]{fig2_params_vs_hr.pdf}}
-\caption{Accuracy (headroom hr) versus parameter count, both datasets, with the agent's compact recombination solver highlighted. The compact solver reaches the top accuracy tier at $\sim$1--2\,\% of the parameters of the variational network.\label{fig:params}}
+\caption{Accuracy versus parameter count for all three boards (Mayo, breast noiseless, breast noisy). To overlay the three different hr scales, each solver's hr is normalized to the percent of the best hr reached on its own board. The agent's compact recombination solver is ringed: 969 parameters on Mayo, 195 on both breast boards. It reaches the top accuracy tier at $\sim$1--2\,\% of the parameters of the variational network.\label{fig:params}}
 \end{figure}
 
 \begin{figure}[t]
