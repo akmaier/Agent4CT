@@ -64,7 +64,7 @@
 
 We place the 26 methods on two axes (Table~\ref{tab:s1taxonomy}). Axis~A is physics engagement (how the operator $\mathbf{A}$ is used at inference). Axis~B is the prior source $\mathcal{R}$. Each row groups a family, names its representative solvers, and records the data-consistency operator $\mathbf{D}$, the prior, the two axis positions, and a source citation.
 
-\begin{table*}[t]
+\begin{table*}[tbp]
 \caption{Full solver taxonomy. Axis~A = physics engagement; Axis~B = prior source. The final column cites the source(s) for each family. Abbreviations: DC, data consistency; N2I, Noise2Inverse; rectified-flow prior, a fast diffusion-type generative prior; FoE, field of experts (a learned filter-bank image prior).\label{tab:s1taxonomy}}
 \centering
 \setlength{\tabcolsep}{6pt}
@@ -93,7 +93,7 @@ Full per-solver \texttt{CONFIG} defaults, parameter counts, and design notes are
 %============================================================
 \section{Mayo-LDCT --- data, split, and the geometry pipeline}\label{sec:s2}
 
-Real helical low-dose CT from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} We rebinned helical to fan-beam by single-slice rebinning.\cite{noo1999singleslice} The differentiable fan-beam projector used at every step is PYRO-NN.\cite{syben2019pyronn} This pipeline was the dominant human cost of the whole study ($\sim$24 active working days; three travel gaps excluded). We use a fixed patient split: train L145/186/209/219, validation L277, test L014/056/058/075/123. Test scores are the per-patient mean $\pm$ std over the five test patients ($n=5$). Geometry details, rebinning validation, and the effort timeline figure are in the repository (\texttt{docs/runs/mayo\_effort\_timeline.png}). The Mayo challenge is one of a family of AAPM reconstruction grand challenges spanning sparse-view, spectral, truth-based, and metal-artifact tasks.\cite{sidky2022,sidky2024spectral,abadi2025truect,haneda2025ctmar,maier2022proprietary}
+Real helical low-dose CT from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} We rebinned helical to fan-beam by single-slice rebinning.\cite{noo1999singleslice} The differentiable fan-beam projector used at every step is PYRO-NN.\cite{syben2019pyronn} This pipeline --- not any solver --- was the dominant human cost of the study. The effort-timeline record (\texttt{docs/runs/mayo\_effort\_timeline.png}) logs roughly 24 active engineering days for it, spread intermittently across the calendar and interrupted by three travel gaps, rather than continuous full-time work. By contrast the benchmark campaign that followed was almost entirely agent-driven: 439 of its 443 version-control commits are machine-written per-iteration provenance. We use a fixed patient split: train L145/186/209/219, validation L277, test L014/056/058/075/123. Test scores are the per-patient mean $\pm$ std over the five test patients ($n=5$). Geometry details and rebinning validation are in the repository. The Mayo challenge is one of a family of AAPM reconstruction grand challenges spanning sparse-view, spectral, truth-based, and metal-artifact tasks.\cite{sidky2022,sidky2024spectral,abadi2025truect,haneda2025ctmar,maier2022proprietary}
 
 %============================================================
 \section{Breast split and the train/test leakage audit}\label{sec:s3}
@@ -109,7 +109,7 @@ Real helical low-dose CT from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mc
 
 \textbf{Why breast hr is high, and not comparable to Mayo.} The Breast CT Challenge data is noiseless by design; its RMSE floor is zero. Breast is incompleteness-limited (128 of $\sim$1000 views). Mayo is noise-limited (real quantum noise). The two absolute hr scales are therefore not comparable; Table~\ref{tab:s3contrast} contrasts the two problems side by side.
 
-\begin{table}[t]
+\begin{table}[tbp]
 \caption{Breast versus Mayo: the two problems are limited by different things, so their absolute hr scales are not comparable.\label{tab:s3contrast}}
 \centering
 \setlength{\tabcolsep}{4pt}
@@ -138,7 +138,7 @@ The agent recombined the method parts into a minimal-parameter solver on each da
 
 \textbf{Mayo (low-dose, denoising).} The seed is a learnable CNN regulariser in a tied prox--DC unroll. Switching the regulariser \emph{family} from a CNN to a field-of-experts (FoE) filter bank set the agent-alone ceiling at hr $\approx0.25$ (Table~\ref{tab:s5mayoarc}). The break came from the projection domain: prepending a noise-adaptive Manduca bilateral filter to the sinogram, then extending it to a multi-scale bank, lifted val hr to 0.40. Halving the FoE bank yields a 969-parameter Pareto pick (test hr 0.324) --- the reported Mayo compact solver.
 
-\begin{table}[t]
+\begin{table}[tbp]
 \caption{Parameter-efficient recombination arc on Mayo (low-dose, denoising). hr is validation headroom; the last row is the reported low-parameter pick.\label{tab:s5mayoarc}}
 \centering
 \setlength{\tabcolsep}{4pt}
@@ -158,7 +158,7 @@ $+$ multi-scale projection bank   & parallel Manduca scales              & 1937 
 
 \textbf{Breast (128-view sparse).} Key steps, all under the 20-min budget:
 
-\begin{table}[t]
+\begin{table}[tbp]
 \caption{Parameter-efficient recombination arc on breast (128-view sparse), all under the 20-min budget.\label{tab:s5arc}}
 \centering
 \setlength{\tabcolsep}{4pt}
@@ -179,7 +179,7 @@ Findings, each earned by an iteration: the image-domain denoiser caps at $\sim$0
 
 \textbf{The gains are back-loaded, and human-cued --- on both datasets.} They are not spread evenly across the $\sim$40-iteration searches. Under the agent alone the best value plateaued early --- at hr $\approx0.25$ on Mayo (by iteration~7) and $\approx0.50$ on breast (by iteration~15) --- and then sat flat for a dozen or more iterations. Only in the second half, after a human began suggesting untried directions, did each break through: Mayo to hr 0.40 from iteration~25, breast to hr 0.62 at iteration~28 (Figure~\ref{fig:hintclimb}). This is the clearest evidence in the study of the agent needing human steering to escape a local optimum; without the hints it would have reported both compact solvers at their plateaus.
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centerline{\includegraphics[width=\columnwidth]{sfig_hint_climb.pdf}}
 \caption{Compact-solver search trajectories. Top: Mayo (low-dose). Bottom: breast (128-view sparse). Points are per-iteration validation headroom (discarded iterations shown at hr 0); the step line is the best value so far. On both datasets the agent's own first 20 iterations plateau (hr $\approx0.25$ Mayo, $\approx0.50$ breast); the decisive break comes only in the hinted second half (shaded) --- to hr 0.40 and 0.62 respectively.\label{fig:hintclimb}}
 \end{figure}
@@ -211,7 +211,7 @@ This account follows the autoresearch paradigm of automated open-ended scientifi
 
 One further figure is included here. Figure~\ref{fig:effectsize} shows, on the breast board ($n=200$), the effect size (Cohen's $d_z$) against the raw $\Delta$hr to the champion for each solver; with $n=200$ even small hr gaps are highly significant, in contrast to the low-power $n=5$ Mayo setting. The parameter/accuracy trade-off itself --- for both datasets --- is Figure~2 of the main text, and the per-step climb is quantified in the recombination-arc tables above (Tables~\ref{tab:s5mayoarc} and~\ref{tab:s5arc}).
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centerline{\includegraphics[width=\columnwidth]{sfig_effectsize.pdf}}
 \caption{Effect size on the breast board ($n=200$): Cohen's $d_z$ versus raw $\Delta$hr against the champion, one point per solver. Large $|d_z|$ at $n=200$ is why the breast board separates cleanly, unlike the $n=5$ Mayo board.\label{fig:effectsize}}
 \end{figure}
