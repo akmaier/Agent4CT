@@ -127,46 +127,7 @@ dominant lever & data-consistency / known operator & denoising \\
 %============================================================
 \section{Mayo test board and significance}\label{sec:s4}
 
-Champion ITNet v1, test hr 0.376 ($n=5$). The top tier is a statistical tie: ITNet v1 / ITNet v2 / U-Swin at the 5\,\% level; the compact param-efficient solver joins at the 1\,\% level ($p=0.02$--$0.027$). At $n=5$ the paired $t$-test has low power (a Wilcoxon test cannot even reach $p<0.05$). The full board is Table~\ref{tab:s4mayo}; per-patient hr and the pairwise significance matrix are in \texttt{docs/runs/mayo\_significance\_stats.md} and the forest/matrix figures.
-
-\begin{table}[t]
-\caption{Mayo low-dose CT test board ($n=5$ test patients, hr mean $\pm$ std). SSIM uses a batch-wide data range. Parameters in millions (M) unless marked \,p (raw count). ``--'' marks a solver below the ranking floor (hr $\le 0$).\label{tab:s4mayo}}
-\centering
-\setlength{\tabcolsep}{4pt}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}rlrrr@{}}
-\toprule
-\textbf{\#} & \textbf{solver} & \textbf{test hr} & \textbf{SSIM} & \textbf{params} \\
-\midrule
-1  & itnet                             & 0.3756\,$\pm$\,0.0890 & 0.9790 & 0.233 \\
-2  & itnet-v2                          & 0.3735\,$\pm$\,0.0905 & 0.9784 & 0.233 \\
-3  & uswin                             & 0.3700\,$\pm$\,0.0581 & 0.9770 & 3.954 \\
-4  & dual-domain-supervised            & 0.3607\,$\pm$\,0.0876 & 0.9758 & 0.466 \\
-5  & param-efficient                   & 0.3241\,$\pm$\,0.0629 & 0.9727 & 969\,p \\
-6  & itnet-v3                          & 0.3066\,$\pm$\,0.0902 & 0.9707 & 3.699 \\
-7  & hammernik-vn                      & 0.1591\,$\pm$\,0.0183 & 0.9520 & 0.005 \\
-8  & tv-iterative                      & 0.0959\,$\pm$\,0.0170 & 0.9642 & 0 \\
-9  & hammernik-2017                    & 0.0843\,$\pm$\,0.0352 & 0.9358 & 0.012 \\
-10 & manhart-pwls-tv                   & 0.0624\,$\pm$\,0.0460 & 0.9649 & 0 \\
-11 & wu-2015-trainable                 & 0.0207\,$\pm$\,0.0233 & 0.8923 & 8\,p \\
-12 & dual-domain-n2i                   & 0.0176\,$\pm$\,0.0298 & 0.9590 & 0.466 \\
-13 & manduca-bilateral                 & 0.0159\,$\pm$\,0.0356 & 0.9561 & 7\,p \\
-14 & dual-domain-bilateral-supervised  & 0.0040\,$\pm$\,0.0090 & 0.9541 & 12\,p \\
--- & tv-iterative-supervised           & 0.0109\,$\pm$\,0.0158 & 0.9366 & 2\,p \\
--- & dual-domain-bilateral-n2i         & 0.0000 & 0.9587 & 12\,p \\
--- & fastdiff-flow-pixel-unconstrained & 0.0000 & 0.9523 & 3.823 \\
--- & fastdiff-wdm-wavelet-constrained  & 0.0000 & 0.9501 & 3.825 \\
--- & ram                               & 0.0000 & 0.9446 & 35.619 \\
--- & learned-primal-dual               & 0.0000 & 0.9415 & 0.155 \\
--- & fastdiff-wdm-wavelet-uncon.       & 0.0000 & 0.9404 & 3.825 \\
--- & fastdiff-flow-pixel-constrained   & 0.0000 & 0.9300 & 3.823 \\
--- & diff-recon-dcstep-unconstrained   & 0.0000 & 0.9084 & 8.594 \\
--- & diff-recon-dcstep-constrained     & 0.0000 & 0.8766 & 8.594 \\
--- & r2gaussian                        & 0.0000 & 0.8234 & 0.003 \\
--- & naf                               & 0.0000 & 0.8172 & 33.558 \\
-\bottomrule
-\end{tabular}}
-\end{table}
+Champion ITNet v1, test hr 0.376 ($n=5$). The top tier is a statistical tie: ITNet v1 / ITNet v2 / U-Swin at the 5\,\% level; the compact param-efficient solver joins at the 1\,\% level ($p=0.02$--$0.027$). At $n=5$ the paired $t$-test has low power (a Wilcoxon test cannot even reach $p<0.05$). The full board (all 26 solvers, hr/SSIM/RMSE) is in the main text; per-patient hr and the pairwise significance matrix are in \texttt{docs/runs/mayo\_significance\_stats.md} and the forest/matrix figures.
 
 %============================================================
 \section{The parameter-efficient recombination study (search arc)}\label{sec:s5}

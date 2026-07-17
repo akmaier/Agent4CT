@@ -127,8 +127,8 @@ def fig3_reversal():
         if k not in nz_rank and k != COLLAPSE:
             dropped.append(k)
 
-    fig, ax = plt.subplots(figsize=(SINGLE + 0.8, 4.7))  # +~2cm width for a wider column gap
-    x_left, x_right = 0.0, 1.9  # ~2cm more space between the noiseless and noisy rank lists
+    fig, ax = plt.subplots(figsize=(SINGLE, 4.7))  # single-column slopegraph
+    x_left, x_right = 0.0, 1.0  # rank lists close enough to keep arrows readable in one column
 
     def color_for(k):
         if k == COLLAPSE:
@@ -162,7 +162,7 @@ def fig3_reversal():
         ax.text(x_right + 0.05, rr, rlabel, ha="left", va="center",
                 fontsize=7, color=lbl_col, fontweight=weight, zorder=z + 2)
 
-    ax.set_xlim(-1.2, 3.05)
+    ax.set_xlim(-1.7, 2.7)
     top = 0.15
     ax.set_ylim(collapse_dest + 0.6, top)  # inverted: rank 1 at top
     ax.set_xticks([])
