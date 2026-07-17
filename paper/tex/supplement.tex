@@ -62,7 +62,7 @@
 %============================================================
 \section{Solver taxonomy and per-method configuration (Table~1, full)}\label{sec:s1}
 
-We place the 26 methods on two axes. Axis~A is physics engagement (how the operator $\mathbf{A}$ is used at inference). Axis~B is the prior source $\mathcal{R}$.
+We place the 26 methods on two axes (Table~\ref{tab:s1taxonomy}). Axis~A is physics engagement (how the operator $\mathbf{A}$ is used at inference). Axis~B is the prior source $\mathcal{R}$. Each row groups a family, names its representative solvers, and records the data-consistency operator $\mathbf{D}$, the prior, the two axis positions, and a source citation.
 
 \begin{table*}[t]
 \caption{Full solver taxonomy. Axis~A = physics engagement; Axis~B = prior source. The final column cites the source(s) for each family. Abbreviations: DC, data consistency; N2I, Noise2Inverse; rectified-flow prior, a fast diffusion-type generative prior; FoE, field of experts (a learned filter-bank image prior).\label{tab:s1taxonomy}}
@@ -107,7 +107,7 @@ Real helical low-dose CT from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mc
 \item \emph{Behavioral.} Test-hr tracks val-hr for every method, within $\pm0.01$, and several methods score \emph{lower} on test than val. Training on test would make test-hr much higher. It does not. The high absolute hr is the dataset (noiseless, well-posed), not a leak.
 \end{enumerate}
 
-\textbf{Why breast hr is high, and not comparable to Mayo.} The Breast CT Challenge data is noiseless by design; its RMSE floor is zero. Breast is incompleteness-limited (128 of $\sim$1000 views). Mayo is noise-limited (real quantum noise). The two absolute hr scales are therefore not comparable.
+\textbf{Why breast hr is high, and not comparable to Mayo.} The Breast CT Challenge data is noiseless by design; its RMSE floor is zero. Breast is incompleteness-limited (128 of $\sim$1000 views). Mayo is noise-limited (real quantum noise). The two absolute hr scales are therefore not comparable; Table~\ref{tab:s3contrast} contrasts the two problems side by side.
 
 \begin{table}[t]
 \caption{Breast versus Mayo: the two problems are limited by different things, so their absolute hr scales are not comparable.\label{tab:s3contrast}}
