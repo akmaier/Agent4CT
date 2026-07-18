@@ -513,7 +513,18 @@ def sfig_mayo_significance():
     for sp in ("left", "right", "top"):
         ax.spines[sp].set_visible(False)
     fig.tight_layout()
-    savefig(fig, os.path.join(OUTDIR, "sfig_mayo_significance.pdf"))
+    # Save with a tight bbox extended 3 mm on the left (the default tight crop
+    # was shaving the left edge of the axis label / leftmost marker).
+    from matplotlib.transforms import Bbox
+    fig.canvas.draw()
+    tb = fig.get_tightbbox(fig.canvas.get_renderer())
+    pad, left_extra = 0.01, 3.0 / 25.4  # inches (3 mm on the left)
+    bb = Bbox.from_extents(tb.x0 - left_extra - pad, tb.y0 - pad,
+                           tb.x1 + pad, tb.y1 + pad)
+    outp = os.path.join(OUTDIR, "sfig_mayo_significance.pdf")
+    fig.savefig(outp, format="pdf", bbox_inches=bb)
+    plt.close(fig)
+    print(f"  wrote {os.path.basename(outp)}  (+3mm left pad)")
 
 
 # ===========================================================================
