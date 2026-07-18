@@ -55,7 +55,7 @@
 
 \keywords{CT reconstruction | sparse-view | low-dose | known operators | benchmarking | noise robustness}
 
-\abstract[ABSTRACT]{This document contains the supplementary material for \emph{Agentic Autoresearch for CT Reconstruction}. It provides the full solver taxonomy and per-method configuration (S1), the Mayo-LDCT data, split, and geometry pipeline (S2), the breast split and train/test leakage audit (S3), the Mayo test board and significance (S4), the parameter-efficient recombination study (S5), the noise model and no-retrain protocol (S6; the full boards and the framework-axis reading are in the main text), an extended account of agent behavior (S7), and additional results with pointers to the public repository and live leaderboard (S8).}
+\abstract[ABSTRACT]{This document contains the supplementary material for \emph{Agentic Autoresearch for CT Reconstruction}. It provides the full solver taxonomy and per-method configuration (S1), the Mayo-LDCT data, split, and geometry pipeline (S2), the breast split and train/test leakage audit (S3), the Mayo test board and significance (S4), the parameter-efficient recombination study (S5), the noise model and no-retrain protocol (S6; the full boards and the framework-axis reading are in the main text), an extended account of agent behavior (S7), and additional results with data and code availability (S8).}
 
 \maketitle
 
@@ -64,7 +64,16 @@
 
 We place the 26 methods on two axes (Table~\ref{tab:s1taxonomy}) so that the reversal in the main text can be read off a method's \emph{position} rather than its name. Axis~A is \emph{physics engagement}: how much the forward operator $\mathbf{A}$ is used at inference. It runs from \emph{none} --- a purely image-domain map that never revisits the sinogram --- through a \emph{single} data-consistency step, to an \emph{in-loop} unrolled scheme that re-applies $\mathbf{A}$ at every iteration, to a full \emph{per-scene} fit that optimises one network per scan. Axis~B is the \emph{prior source} $\mathcal{R}$: where the regularising knowledge comes from. \emph{Hand-crafted} priors (total variation, bilateral filtering) encode smoothness analytically and have no trainable content to overfit. \emph{Supervised} priors are trained on paired low-dose/full-dose examples. \emph{Self-supervised} priors (Noise2Inverse) learn without a clean reference by splitting the measured projections into complementary subsets. \emph{Generative} priors are diffusion or rectified-flow models that synthesise plausible detail. \emph{Implicit/per-scene} priors (neural fields, Gaussian splatting) fit a coordinate network to each individual scan rather than storing a pixel grid. A \emph{foundation} prior is a large network pre-trained once on generic data and applied zero-shot. Each row of Table~\ref{tab:s1taxonomy} names a family, its representative solvers, the data-consistency operator $\mathbf{D}$ each uses, the prior $\mathcal{R}$, the two axis positions, and a source citation; the final row is our own recombination (Section~\ref{sec:s5}), deliberately a hybrid --- filtered data-consistency, a learned primal-dual combination, and a hand-crafted bilateral post-filter.
 
-\begin{table*}[tbp]
+Full per-solver \texttt{CONFIG} defaults, parameter counts, and design notes are in each solver's design document under \texttt{pentathlon/demo\_dl\_reference/}, and the complete per-iteration observation records --- configuration, reconstruction, and metric for every run --- are under \texttt{docs/runs/}. Because every solver is grounded in the same differentiable projector, two methods in the same Axis-A/Axis-B cell share the same relationship to the measurements and --- as the reversal shows --- the same robustness behaviour under noise. A method's cell therefore predicts, before any noise is added, whether it will be brittle or robust.
+
+%============================================================
+\section{Mayo-LDCT --- data, split, geometry pipeline, and solver implementation}\label{sec:s2}
+
+\textbf{Data and geometry.} We use real helical low-dose CT from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} The raw acquisition is helical, but our differentiable projector and every solver operate in 2-D fan-beam geometry, so the helical data cannot be used directly. We therefore rebinned helical to fan-beam by single-slice rebinning,\cite{noo1999singleslice} which resamples the helical cone-beam rays onto a stack of transaxial fan-beam slices. Getting this right --- the detector geometry, the redundancy weighting, and the slice interpolation, so that the low-dose FBP baseline is physically correct rather than merely plausible --- was the single hardest engineering task in the study. The differentiable fan-beam projector used at every training and inference step is PYRO-NN,\cite{syben2019pyronn} which supplies a matched forward/back-projector pair with analytic gradients, so that the same operator $\mathbf{A}$ appears in the loss, in every unrolled solver, and in the hr metric.
+
+\textbf{Effort accounting.} The entire repository is agent-generated --- the geometry pipeline, all solvers, and the benchmark harness were written by the agent; the human instructed rather than hand-coded. Two cautions therefore apply when reading effort from the version-control history: most commits are the agent's own automated output, and even a source-changing commit is often an autonomous edit made during a search rather than a human touchpoint. Of the 1{,}785 commits, 1{,}214 (68\,\%) change only results or dashboard data with no source edit --- automated provenance, no human interaction --- while 571 touch source code.
+
+\begin{table*}[tb]
 \caption{Full solver taxonomy. Axis~A = physics engagement; Axis~B = prior source. The final column cites the source(s) for each family. Abbreviations: DC, data consistency; N2I, Noise2Inverse; rectified-flow prior, a fast diffusion-type generative prior; FoE, field of experts (a learned filter-bank image prior).\label{tab:s1taxonomy}}
 \centering
 \setlength{\tabcolsep}{6pt}
@@ -88,18 +97,11 @@ Band decomposition        & Wu-2015, Wu-2015-trainable           & band-weighted
 \end{tabular}}
 \end{table*}
 
-Full per-solver \texttt{CONFIG} defaults, parameter counts, and design notes are in each solver's design document under \texttt{pentathlon/demo\_dl\_reference/}, and the complete per-iteration observation records --- configuration, reconstruction, and metric for every run --- are under \texttt{docs/runs/}. The taxonomy is not merely descriptive. Because every solver is grounded in the same differentiable projector, two methods that occupy the same Axis-A/Axis-B cell share the same relationship to the measurements, and --- as the reversal shows --- they tend to share the same robustness behaviour under noise. That is what lets a method's cell, fixed before any noise is added, predict whether it will prove brittle or robust.
 
-%============================================================
-\section{Mayo-LDCT --- data, split, geometry pipeline, and solver implementation}\label{sec:s2}
 
-\textbf{Data and geometry.} We use real helical low-dose CT from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} The raw acquisition is helical, but our differentiable projector and every solver operate in 2-D fan-beam geometry, so the helical data cannot be used directly. We therefore rebinned helical to fan-beam by single-slice rebinning,\cite{noo1999singleslice} which resamples the helical cone-beam rays onto a stack of transaxial fan-beam slices. Getting this right --- the detector geometry, the redundancy weighting, and the slice interpolation, so that the low-dose FBP baseline is physically correct rather than merely plausible --- was the single hardest engineering task in the study. The differentiable fan-beam projector used at every training and inference step is PYRO-NN,\cite{syben2019pyronn} which supplies a matched forward/back-projector pair with analytic gradients, so that the same operator $\mathbf{A}$ appears in the loss, in every unrolled solver, and in the hr metric.
+\emph{The geometry pipeline needed the most steering.} Making the helical-to-fan rebinning and its calibration physically correct (\texttt{helix2fan}, the rebinning scripts, the FBP-baseline validation) was the hardest problem: 40 source-code commits over 14 active days, each backed by many rebinning-and-validation runs, so it dominated the human supervision despite being a small share of the commits.
 
-\textbf{Effort accounting.} The entire repository is agent-generated --- the geometry pipeline, all solvers, and the benchmark harness were written by the agent; the human instructed rather than hand-coded. Two cautions therefore apply when reading effort from the version-control history: most commits are the agent's own automated output, and even a source-changing commit is often an autonomous edit made during a search rather than a human touchpoint. Of the 1{,}785 commits, 1{,}214 (68\,\%) change only results or dashboard data with no source edit --- automated provenance, no human interaction --- while 571 touch source code.
-
-\emph{The geometry pipeline needed the most steering.} Making the helical-to-fan rebinning and its calibration physically correct (\texttt{helix2fan}, the rebinning scripts, the FBP-baseline validation) was the hardest problem: 40 source-code commits over 14 active days, each backed by many rebinning-and-validation runs, so it dominated the human supervision despite being a small share of the commits. An earlier hand-kept estimate of ``$\sim$24 working days'' counted the whole calendar span minus travel and is not reproducible from the history; we drop it in favour of this commit-based figure.
-
-\emph{Solvers and benchmarking needed little.} The agent onboarded 13 of the 25 established solvers across two days (15--16 May 2026) and the rest in small batches (Table~\ref{tab:s2impl}); the three-week benchmark campaign is dominated by automated per-iteration provenance (roughly two-thirds of its commits change only results), and the agent ran $\sim$1{,}100 iterations for $\sim$134~GPU-hours, largely in parallel.
+\emph{Solvers and benchmarking needed little.} The agent onboarded 13 of the 26 established solvers across two days (15--16 May 2026) and the rest in small batches (Table~\ref{tab:s2impl}); the three-week benchmark campaign is dominated by automated per-iteration provenance (roughly two-thirds of its commits change only results), and the agent ran $\sim$1{,}100 iterations for $\sim$134~GPU-hours, largely in parallel.
 
 \emph{A rough human gauge.} Costing each source-changing commit at an estimated 7.5 minutes --- a rate from comparable projects --- the 571 code commits give an order-of-magnitude \emph{upper} bound of $\sim$70 hours of human steering across the whole two-month project; it is an upper bound because the agent authored many of those commits autonomously. The calendar span itself overstates the effort: it was stretched by the supervisor's travel and by intermittent, part-time attention, not continuous work.
 
@@ -107,8 +109,21 @@ Full per-solver \texttt{CONFIG} defaults, parameter counts, and design notes are
 
 Table~\ref{tab:s2impl} gives, per established solver, the first commit touching its reference file (repository-local time zone) and the number of commits that touched it. The remainder onboarded after 16 May came in small batches as the study grew: diffusion-reconstruction ($\times$2, 17 May), RAM (19 May), Wu-2015-trainable and DD-bilateral-supervised (22 May), learned-primal-dual and TV-iterative-supervised (23 May), the four fast-diffusion variants (20 June), and manduca-bilateral (23 June). Several solvers share a reference file and were introduced together, so per-file counts are approximate; the clear signal is that most methods went from paper to running code within a day.
 
+
+%============================================================
+\section{Breast split and the train/test leakage audit}\label{sec:s3}
+
+\textbf{Split.} The Breast CT Challenge releases a public pool of 4000 training cases; its official validation and test truths are withheld for scoring, so we cannot use the challenge's own held-out sets. We therefore re-partitioned the public pool ourselves into train (3600), validation (200), and test (200). The partition is deterministic --- a fixed seed (20260703) assigns each case exactly once --- and the three subsets are disjoint. Because the truths in our test split are known to us, the headroom metric can be evaluated directly on it; the price is that we must then prove no test information reaches training. We did so two independent ways.
+
+\textbf{Leakage audit.}
+\begin{enumerate}
+\item \emph{By construction.} The public 4000-case pool is partitioned by case index under a fixed seed (20260703): the train set is a fixed block and the validation and test sets are carved from the disjoint remainder, each case assigned exactly once and recorded in the split manifest (\texttt{scripts/restage\_breast\_valtest\_split.py} verifies index-disjointness). No index can appear in more than one subset, so the splits cannot straddle.
+\item \emph{By mechanism.} The training data loader is wired to read only the \texttt{train} split; the redirect to the test split fires exclusively inside the evaluation path. No code path exposes a test image during optimisation, so training cannot see test even in principle.
+\end{enumerate}
+We deliberately do \emph{not} rest the argument on a validation-versus-test comparison, because the board reports each solver at its best-by-\emph{test} iteration; test scores are therefore selection-optimistic, and a few methods (e.g.\ learned-primal-dual, RAM) score higher on test than on validation for that reason, not through leakage. The high absolute hr reflects an easy, well-posed, incompleteness-limited problem, not memorisation.
+
 \begin{table}[tbp]
-\caption{Implementation record for the 25 established solvers (the Mayo board minus the novel param-efficient solver), from the git history of the reference implementations. ``First'' is the first commit touching the solver's file (repository-local time zone); ``\#c'' is the number of commits that touched it. The four fast-diffusion variants share two files and the two diffusion-reconstruction variants share one file (grouped).\label{tab:s2impl}}
+\caption{Implementation record for the 26 established solvers (every benchmarked method except the param-efficient recombination), from the git history of the reference implementations. ``First'' is the first commit touching the solver's file (repository-local time zone); ``\#c'' is the number of commits that touched it. The four fast-diffusion variants share two files and the two diffusion-reconstruction variants share one file (grouped).\label{tab:s2impl}}
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -137,6 +152,7 @@ manhart-pwls-tv        & May 15 & 12 \\
 \textbf{solver} & \textbf{first} & \textbf{\#c} \\
 \midrule
 manduca-bilateral       & Jun 23 & 1 \\
+wu-2015                 & May 16 & 10 \\
 wu-2015-trainable       & May 22 & 6 \\
 dd-n2i                  & May 15 & 14 \\
 dd-bilateral-sup        & May 22 & 4 \\
@@ -151,17 +167,6 @@ fastdiff ($\times$4)    & Jun 20 & 2 \\
 \end{minipage}
 \end{table}
 
-%============================================================
-\section{Breast split and the train/test leakage audit}\label{sec:s3}
-
-\textbf{Split.} The Breast CT Challenge releases a public pool of 4000 training cases; its official validation and test truths are withheld for scoring, so we cannot use the challenge's own held-out sets. We therefore re-partitioned the public pool ourselves into train (3600), validation (200), and test (200). The partition is deterministic --- a fixed seed (20260703) assigns each case exactly once --- and the three subsets are disjoint. Because the truths in our test split are known to us, the headroom metric can be evaluated directly on it; the price is that we must then prove no test information reaches training. We did so two independent ways.
-
-\textbf{Leakage audit.}
-\begin{enumerate}
-\item \emph{By construction.} The public 4000-case pool is partitioned by case index under a fixed seed (20260703): the train set is a fixed block and the validation and test sets are carved from the disjoint remainder, each case assigned exactly once and recorded in the split manifest (\texttt{scripts/restage\_breast\_valtest\_split.py} verifies index-disjointness). No index can appear in more than one subset, so the splits cannot straddle.
-\item \emph{By mechanism.} The training data loader is wired to read only the \texttt{train} split; the redirect to the test split fires exclusively inside the evaluation path. No code path exposes a test image during optimisation, so training cannot see test even in principle.
-\end{enumerate}
-We deliberately do \emph{not} rest the argument on a validation-versus-test comparison, because the board reports each solver at its best-by-\emph{test} iteration; test scores are therefore selection-optimistic, and a few methods (e.g.\ learned-primal-dual, RAM) score higher on test than on validation for that reason, not through leakage. The high absolute hr reflects an easy, well-posed, incompleteness-limited problem, not memorisation.
 
 \textbf{Why breast hr is high, and not comparable to Mayo.} The Breast CT Challenge data is noiseless by design; its RMSE floor is zero. Breast is incompleteness-limited (128 of $\sim$1000 views). Mayo is noise-limited (real quantum noise). The two absolute hr scales are therefore not comparable; Table~\ref{tab:s3contrast} contrasts the two problems side by side.
 
@@ -187,7 +192,31 @@ dominant lever & data-consistency / known operator & denoising \\
 
 \textbf{The board.} The champion is ITNet v1 at test hr $0.376$, averaged over the five test patients. We test differences with a paired comparison on the per-patient hr values: for each pair of solvers we form the five per-patient hr differences and run a paired $t$-test, with a Wilcoxon signed-rank test as a distribution-free cross-check. On this basis the top of the board is a statistical tie --- ITNet v1, ITNet v2, and U-Swin are indistinguishable at the 5\,\% level, and the compact param-efficient solver joins this group at the 1\,\% level ($p=0.02$--$0.027$).
 
-\textbf{Why the top tier ties at $n=5$.} With only five test patients the paired $t$-test we use has little power, so a difference clears significance only if it is large \emph{and} consistent across patients. It does separate such gaps at $n=5$: versus the champion, dual-domain-supervised reaches $p=0.0001$, ITNet~v3 $p<0.0001$, Hammernik-VN $p=0.003$, and even the compact solver $p=0.02$. The differences \emph{within} the top tier, by contrast, are both small and patient-to-patient noisy, so ITNet~v1/v2/U-Swin stay above 0.05 (and, with the compact solver, above 0.01). Significance here tracks consistency, not mean rank: dual-domain-supervised sits a \emph{smaller} mean gap below the champion than the compact solver, yet is far more significant, because its per-patient deficit is near-constant while the compact solver's is noisy. A distribution-free Wilcoxon signed-rank cross-check is blunter still at $n=5$: its smallest attainable two-sided $p$ is $2/2^5=0.0625$, so two-sided it cannot reject for \emph{any} pair (one-sided floor $1/2^5=0.03125$). Hence ``a tier, not a winner'' is not a hedge but the honest limit of what five patients resolve \emph{for gaps this small} --- which is why we report the per-case mean $\pm$ standard deviation rather than a bare ranking. The per-patient hr values, the full pairwise significance matrix, and the forest plot are in \texttt{docs/runs/mayo\_significance\_stats.md} and the accompanying figures; the full board (all 26 solvers, hr/SSIM/RMSE) is in the main text.
+\textbf{Why the top tier ties at $n=5$.} With only five test patients the paired $t$-test we use has little power, so a difference clears significance only if it is large \emph{and} consistent across patients. It does separate such gaps at $n=5$: versus the champion, dual-domain-supervised reaches $p=0.0001$, ITNet~v3 $p<0.0001$, Hammernik-VN $p=0.003$, and even the compact solver $p=0.02$. The differences \emph{within} the top tier, by contrast, are both small and patient-to-patient noisy, so ITNet~v1/v2/U-Swin stay above 0.05 (and, with the compact solver, above 0.01). Significance here tracks consistency, not mean rank: dual-domain-supervised sits a \emph{smaller} mean gap below the champion than the compact solver, yet is far more significant, because its per-patient deficit is near-constant while the compact solver's is noisy. A distribution-free Wilcoxon signed-rank cross-check is blunter still at $n=5$: its smallest attainable two-sided $p$ is $2/2^5=0.0625$, so two-sided it cannot reject for \emph{any} pair (one-sided floor $1/2^5=0.03125$). Hence ``a tier, not a winner'' is not a hedge but the honest limit of what five patients resolve \emph{for gaps this small} --- which is why we report the per-case mean $\pm$ standard deviation rather than a bare ranking. The pairwise $p$-values are in Table~\ref{tab:s4pvals} and the corresponding forest plot in Figure~\ref{fig:s4forest}; per-patient raw values and the full solver$\times$metric significance matrix are in the repository (\texttt{docs/runs/mayo\_significance\_stats.md}). The full board (all 26 solvers, hr/SSIM/RMSE) is in the main text.
+
+\begin{table}[tbp]
+\caption{Paired $t$-test $p$-values versus the champion (ITNet~v1), $n=5$ patients, one test per metric; \textbf{bold} marks $p<0.05$. No multiple-comparison correction is applied. On hr, ITNet~v2 and U-Swin tie with the champion at the 5\,\% level and param-efficient joins the tie at the 1\,\% level.\label{tab:s4pvals}}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{vs ITNet~v1} & \textbf{hr} & \textbf{SSIM} & \textbf{PSNR} & \textbf{RMSE} \\
+\midrule
+ITNet~v2         & 0.264 & \textbf{0.042} & 0.279 & 0.231 \\
+U-Swin           & 0.738 & \textbf{0.006} & 0.591 & 0.941 \\
+DD-supervised    & \textbf{0.0001} & \textbf{0.004} & \textbf{0.0004} & \textbf{$<$0.001} \\
+param-efficient  & \textbf{0.022} & \textbf{0.027} & \textbf{0.020} & \textbf{0.025} \\
+ITNet~v3         & \textbf{$<$0.001} & \textbf{0.004} & \textbf{0.0001} & \textbf{0.002} \\
+Hammernik-VN     & \textbf{0.003} & \textbf{0.003} & \textbf{0.005} & \textbf{0.001} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[tbp]
+\centerline{\includegraphics[width=\columnwidth]{sfig_mayo_significance.png}}
+\caption{Mayo top-solver significance: paired $\Delta$headroom versus the champion (ITNet~v1), mean $\pm$ 95\,\% CI over $n=5$ patients. A confidence interval that crosses zero (grey) is a statistical tie with the champion; one that does not (red) is significantly worse. ITNet~v2 and U-Swin tie; dual-domain-supervised, param-efficient, ITNet~v3, and Hammernik-VN separate. Param-efficient's interval is wide --- its per-patient deficit is noisy --- which is why it ties on hr at the 1\,\% level despite a larger mean gap than dual-domain-supervised.\label{fig:s4forest}}
+\end{figure}
 
 %============================================================
 \section{The parameter-efficient recombination study (search arc)}\label{sec:s5}
@@ -269,21 +298,21 @@ This account follows the autoresearch paradigm of automated open-ended scientifi
 \textbf{Human meta-strategies (repeatable, and the same on both datasets).} Four human interventions recurred and mattered. \emph{Persistence and breadth}: repeatedly asking the agent for more directions once it had stalled. \emph{Recombination}: supplying the idea of assembling proven pieces into one compact solver --- the decisive move behind the parameter-efficient result on both datasets (Section~\ref{sec:s5}). \emph{Redirection}: forbidding the agent from copying the other dataset's answer, which forced it to re-derive each optimum from local evidence. \emph{Auditing}: catching padding, enforcing the compute budget, and repairing provenance. The defensible division of labour is therefore this: the agent is a tireless, mechanistically reasoning, self-modifying executor, and the human is the strategist and the auditor.
 
 %============================================================
-\section{Additional results and the live leaderboard}\label{sec:s8}
+\section{Additional results and data availability}\label{sec:s8}
 
-One further figure is included here. Figure~\ref{fig:effectsize} shows, on the breast board ($n=200$), the effect size (Cohen's $d_z$) against the raw $\Delta$hr to the champion for each of the top-10 solvers; with $n=200$ even small hr gaps are highly significant, in contrast to the low-power $n=5$ Mayo setting. The parameter/accuracy trade-off itself --- for both datasets --- is Figure~2 of the main text, and the per-step climb is quantified in the recombination-arc tables above (Tables~\ref{tab:s5mayoarc} and~\ref{tab:s5arc}).
+Figure~\ref{fig:effectsize} reports the effect size (Cohen's $d_z$) against the raw $\Delta$hr to the champion on the breast board ($n=200$), for the ten highest-ranked solvers. Effect size is only meaningful for solvers that clear the baseline, so we restrict it to ranked solvers with hr$>0$. At $n=200$ even small hr gaps are statistically significant, unlike the $n=5$ Mayo board. The parameter/accuracy trade-off is Figure~2 of the main text, and the per-step recombination climb is in Tables~\ref{tab:s5mayoarc} and~\ref{tab:s5arc}.
 
 \begin{figure}[tbp]
 \centerline{\includegraphics[width=\columnwidth]{sfig_effectsize.pdf}}
-\caption{Effect size on the breast board ($n=200$): Cohen's $d_z$ versus raw $\Delta$hr against the champion, one point per top-10 solver (9 non-champion points). It is the high statistical power at $n=200$ --- not the size of the effects --- that makes the breast board separate cleanly (every pairwise $p<10^{-4}$), unlike the low-power $n=5$ Mayo board; $d_z$ then ranks the tier, since even small hr gaps are significant at this sample size.\label{fig:effectsize}}
+\caption{Effect size on the breast board ($n=200$): Cohen's $d_z$ versus raw $\Delta$hr against the champion, for the ten highest-ranked solvers (nine non-champion points; all hr$>0$). The breast board separates cleanly because of the sample size ($n=200$, every pairwise $p<10^{-4}$), not because the effects are large; at the $n=5$ Mayo board the same-size gaps are not significant.\label{fig:effectsize}}
 \end{figure}
 
-\textbf{Everything that did not fit the paper is public.} The complete results live in the repository and the live dashboard:
+\textbf{Data and code.} The code, the 26 solvers and the compact recombination, and the per-iteration records are in the public repository, with the leaderboards on the project page:
 \begin{center}
 \url{https://github.com/akmaier/Agent4CT}\\
 \url{https://akmaier.github.io/Agent4CT/}
 \end{center}
-The dashboard hosts the full leaderboards for all datasets --- Mayo, noiseless breast, and the noisy re-evaluation --- with every solver's per-iteration trajectory. Each iteration carries an immutable provenance record: the exact configuration, the reconstruction, and the frozen metric, so any number in this paper can be traced to the run that produced it. The repository additionally holds the Mayo significance forest plot and solver$\times$metric matrix, the val-vs-test selection-honesty curves, the effort-timeline figure, the noiseless-versus-noisy reconstruction montages for the top solvers, and the per-solver design docs and \texttt{CONFIG} defaults.
+The dashboard lists the boards for all three datasets (Mayo, noiseless breast, noisy breast) with each solver's per-iteration trajectory. Every iteration stores its configuration, reconstruction, and metric, so each number in this paper can be traced to the run that produced it. The repository also contains the Mayo solver$\times$metric significance matrix, the noiseless-versus-noisy reconstruction montages, the per-solver design documents, and the \texttt{CONFIG} defaults.
 
 % Bibliography style (WileyNJD-AMA.bst) is set by the AMA class option.
 \bibliography{refs}
