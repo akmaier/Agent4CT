@@ -476,6 +476,47 @@ def sfig_hint_climb():
 
 
 # ===========================================================================
+# SFIG mayo-significance — clean forest plot: paired Delta-hr vs champion.
+# Per-patient hr (L014,L056,L058,L075,L123) from docs/runs/mayo_significance_stats.md.
+# ===========================================================================
+def sfig_mayo_significance():
+    champ = [0.443, 0.381, 0.227, 0.380, 0.446]  # ITNet v1 (champion)
+    others = [
+        ("ITNet v2",               0.374, [0.443, 0.384, 0.223, 0.373, 0.445]),
+        ("U-Swin",                 0.370, [0.428, 0.357, 0.284, 0.362, 0.420]),
+        ("dual-domain-supervised", 0.361, [0.428, 0.365, 0.215, 0.363, 0.432]),
+        ("param-efficient",        0.324, [0.377, 0.317, 0.231, 0.308, 0.388]),
+        ("ITNet v3",               0.307, [0.377, 0.302, 0.156, 0.321, 0.376]),
+        ("Hammernik-VN",           0.159, [0.174, 0.145, 0.143, 0.151, 0.183]),
+    ]
+    TCRIT = 2.776  # t_{0.975, df=4}
+    fig, ax = plt.subplots(figsize=(SINGLE, 2.9))
+    ys = list(range(len(others)))[::-1]  # first entry at top
+    for y, (name, hrm, vals) in zip(ys, others):
+        d = [champ[i] - vals[i] for i in range(5)]
+        m = sum(d) / 5
+        sd = (sum((x - m) ** 2 for x in d) / 4) ** 0.5
+        ci = TCRIT * sd / (5 ** 0.5)
+        sig = (m - ci) > 0                 # CI clears 0 -> significantly worse
+        col = CB["red"] if sig else CB["gray"]
+        ax.errorbar([m], [y], xerr=[[ci], [ci]], fmt="o", color=col, ecolor=col,
+                    elinewidth=1.4, capsize=2.5, ms=5, zorder=3)
+        ax.text(m + ci + 0.006, y, f"{name}  (hr {hrm:.3f})", va="center",
+                ha="left", fontsize=6.4, color=col)
+    ax.axvline(0, color="#888888", lw=0.8, ls="--", zorder=1)
+    ax.set_yticks([])
+    ax.set_ylim(-0.7, len(others) - 0.3)
+    ax.set_xlim(-0.03, 0.56)  # room for the solver labels inside the axes so the
+                              # centred x-label is not pushed off the (tight-bbox) edge
+    ax.set_xticks([0.0, 0.1, 0.2, 0.3])
+    ax.set_xlabel(r"$\Delta$ headroom vs champion ITNet v1")  # CI/n stated in caption
+    for sp in ("left", "right", "top"):
+        ax.spines[sp].set_visible(False)
+    fig.tight_layout()
+    savefig(fig, os.path.join(OUTDIR, "sfig_mayo_significance.pdf"))
+
+
+# ===========================================================================
 def main():
     print(f"Writing figures into {OUTDIR}")
     dropped = fig3_reversal()
@@ -484,6 +525,7 @@ def main():
     champ, n = sfig_effectsize()
     sfig_pareto()
     sfig_hint_climb()
+    sfig_mayo_significance()
 
     print("\nSummary")
     print(f"  effect-size champion: {champ}  (n={n} cases)")
