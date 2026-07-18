@@ -473,10 +473,19 @@ FUNCTION {format.chapter.pages}
 FUNCTION {format.in.ed.booktitle}
 { booktitle empty$
     { "In: " }
-    { "In: " 
+    { "In: "
       editor empty$
-    'skip$
+    { booktitle emphasize * }
     { " " * format.editors * " " * booktitle emphasize * "" * }
+      if$
+      volume empty$
+    { series empty$ number empty$ and organization empty$ and
+      publisher empty$ and
+        'skip$
+        { ". " * }
+      if$
+    }
+    'skip$
       if$
     }
   if$
@@ -754,11 +763,13 @@ FUNCTION {book}
       if$
     }
   if$
+  new.block
   format.btitle "title" output.check
   crossref missing$
       { format.bvolume output
       new.block
       format.number.series output
+      new.block
       format.addr.pub "publisher" output.check
     }
     { new.block
