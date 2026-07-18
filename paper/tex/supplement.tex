@@ -84,7 +84,7 @@ Full per-solver \texttt{CONFIG} defaults, parameter counts, and design notes are
 \midrule
 Classical iterative       & tv-iterative, manhart-PWLS-TV        & filtered / SART grad   & total variation           & in-loop        & hand-crafted & \cite{sidky2008tv,manhart2013pwls} \\
 Image-domain denoiser     & manduca-bilateral, DD-UNet sup.      & none (post-FBP)        & bilateral / U-Net         & none           & hand-cr. / sup. & \cite{manduca2009bilateral,wagner2022bilateral} \\
-Unrolled learned-iterative& ITNet v1/v2/v3, U-Swin               & in-loop DC             & learned CNN / transformer & in-loop        & supervised & \cite{wuerfl2018,xu2024hybrid,liang2021swinir,liu2021swin,zhang2021transct} \\
+Unrolled learned-iterative& ITNet v1/v2/v3, U-Swin               & in-loop DC             & learned CNN / transformer & in-loop        & supervised & \cite{wurfl2016deep,wuerfl2018,xu2024hybrid,liang2021swinir,liu2021swin,zhang2021transct} \\
 Variational network       & Hammernik-2017, Hammernik-VN         & in-loop DC             & field-of-experts          & in-loop        & supervised & \cite{hammernik2017deep,hammernik2018vn} \\
 Learned primal-dual       & learned-primal-dual (LPD)            & filtered + learned dual& learned combination       & in-loop        & supervised & \cite{adler2018lpd} \\
 Dual-domain               & DD-supervised, DD-bilateral, DD-N2I  & image + sinogram       & sup. / bilateral / self-sup.& single/in-loop & sup. / self-sup. & \cite{wagner2023dualdomain,hendriksen2020noise2inverse} \\
