@@ -40,7 +40,8 @@ _PREFIX_TO_CHALLENGE = [
 
 DATASET_LABELS = {
     "mayo_ldct": "Mayo-LDCT", "breast_ct": "Breast-CT",
-    "breast_ct_noise": "BreastCT-Noise", "demo_dl": "Demo-DL",
+    "breast_ct_noise": "BreastCT-Noise",
+    "breast_ct_noise_retrain": "BreastCT-Noise-Retrained", "demo_dl": "Demo-DL",
     "dl_sparse_view": "DL-Sparse-View", "dl_spectral": "DL-Spectral",
     "ct_mar": "CT-MAR", "truect": "TrueCT",
 }
@@ -54,7 +55,7 @@ DATASET_LABELS = {
 #     no patients; the redo added a train/val/test split, paper §5.0). Its
 #     final.json (breast_testset_final_v1) carries the same test_*_mean/std keys.
 # ---------------------------------------------------------------------------
-TEST_RANKED_DATASETS = {"mayo_ldct", "breast_ct", "breast_ct_noise"}  # all test-selected; breast_ct_noise = same 200 cases, Poisson-noised sino (paper §5.6.7)
+TEST_RANKED_DATASETS = {"mayo_ldct", "breast_ct", "breast_ct_noise", "breast_ct_noise_retrain"}  # all test-selected; breast_ct_noise = same 200 cases, Poisson-noised sino (paper §5.6.7); breast_ct_noise_retrain = same, but weights RETRAINED on the noisy train split
 
 
 def metric_basis(challenge: str | None) -> str:
@@ -80,7 +81,7 @@ def rank_fields(row: dict, status: str, challenge: str | None,
         # run's "discard" status is a verdict from the *noiseless* val-search and
         # does not apply to the noisy test: rank such a run by its genuine noisy
         # test headroom. (Native test boards keep discard as an exclusion.)
-        reeval = challenge == "breast_ct_noise"
+        reeval = challenge in ("breast_ct_noise", "breast_ct_noise_retrain")
         if (status or "").strip().lower() == "discard" and not reeval:
             reason = "discard"
         elif not has_final:

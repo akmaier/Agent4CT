@@ -61,7 +61,7 @@
 \textbf{Purpose.} We test two things. First, can a large language model (LLM) agent do the labor of reconstruction research --- implement, tune, and benchmark many methods on its own? Second, does a ranking measured on ideal data predict how methods behave under realistic noise?
 \textbf{Methods.} We built an agentic loop. The agent edits a solver, runs a short job on a compute cluster, reads one frozen metric, and revises. The metric is a calibrated headroom score, $\mathrm{hr}=\max(0,\,1-\mathrm{RMSE}/\mathrm{RMSE}_{\mathrm{FBP}})$, computed inside the field of view. We grounded every method in the same differentiable fan-beam projector. We benchmarked 26 reconstruction methods on two problems: Mayo low-dose CT (noise-limited) and a 128-view sparse-view breast task from the noiseless DL-Sparse-View Challenge. We selected each method's best iteration on validation and report its score on the held-out test set (per-case mean $\pm$ standard deviation). To investigate the effect of noise in the noiseless breast CT challenge, we then re-evaluated every trained model on the same breast test cases with mild Poisson noise added to the inputs ($I_0=10^5$ photons), \emph{without any retraining}.
 \textbf{Results.} Benchmarking gives a small tier of statistically indistinguishable top methods, not one winner. From the 26 methods the agent recombined a compact solver of $\sim$195 parameters that reaches the top accuracy tier at $\sim$2\,\% of its parameters. The best compact architecture is problem-dependent: a denoiser for noisy Mayo, a filtered data-consistency and learned primal-dual unroll for sparse-view breast. Mild input noise nearly inverts the breast ranking. The noiseless champion (supervised image denoiser, hr 0.89) collapses to last (hr 0.00). A learned primal-dual method rises from mid-pack to champion (hr 0.72 $\to$ 0.93). Physics-regularized and hand-crafted-smoothing methods rise; supervised image-domain denoisers collapse.
-\textbf{Conclusions.} An LLM agent can implement, tune, and benchmark reconstruction methods at scale under a fixed metric and compute budget. It did not invent new methods, and it required some human guidance to develop highly efficient parameter methods. More importantly, a leaderboard measured on ideal data does not predict robustness --- it can invert under a small, realistic perturbation. We argue that benchmarks must include noise and other perturbations by default, and that agentic autoresearch makes such multi-condition benchmarking ready for routine use.%
+\textbf{Conclusions.} An LLM agent can implement, tune, and benchmark reconstruction methods at scale under a fixed metric and compute budget. It did not invent new methods, and it required some human guidance to develop highly efficient parameter methods. More importantly, a leaderboard measured on ideal data does not predict robustness --- it can invert under a small, realistic perturbation. The inversion is a transfer effect, not a permanent deficit: retraining the collapsed methods on matched noise restores much of the clean ranking (Spearman $\rho$ rises from $0.16$ to $0.65$). We argue that benchmarks must include noise and other perturbations by default --- reporting both transfer to unseen noise and performance after matched retraining --- and that agentic autoresearch makes such multi-condition benchmarking ready for routine use.%
 }
 
 \maketitle
@@ -250,6 +250,56 @@ The absolute SSIM and PSNR columns confirm the reordering is genuine, not an art
 
 The reversal is not a surprise once we read it off the two axes of Table~\ref{tab:taxonomy}. Brittleness concentrates in one corner: supervised priors with weak physics engagement --- image-domain maps trained on clean FBP. Dual-domain-supervised is the extreme case. It applies a learned image-to-image map with no forward operator at inference, so a small input shift it never saw during training moves it off its learned manifold and the reconstruction collapses. The constrained diffusion variants, which also lean on a clean-data fit, fall the same way. Robustness concentrates where the prior is not tuned to the clean distribution, and two disjoint mechanisms reach it. The first is in-loop physics: learned-primal-dual and the variational networks keep the forward operator $\mathbf{A}$ in the loop, so they re-solve the noisy measurements instead of denoising a fixed image, and their ranking rises or holds. The second is a prior that never fit the clean data at all: hand-crafted smoothing (bilateral, total variation) has nothing to overfit, and even the generative and foundation priors that failed on clean data degrade gracefully precisely because they never matched the clean forward model. As such, the framework turns the reversal from a curiosity into a prediction. A method's position on the physics-engagement and prior-source axes tells us, before any noise is added, whether it is likely to be brittle or robust. The lesson for benchmarking follows directly: a leaderboard measured on a single, idealized distribution rewards exactly the methods most likely to fail under a small, realistic perturbation.
 
+\subsection{Retraining on the noise restores the ranking}\label{sec:retrain}
+
+The reversal above is a \emph{no-retrain} result: it measures how clean-optimal models transfer to an unseen noise level --- the realistic deployment question, where a model shipped after training on clean data later meets noisier inputs. The converse question is also worth asking: if the noise is known at training time, does the clean ranking return? We retrained each trainable solver's clean-best configuration --- unchanged architecture and hyper-parameters --- from scratch on the same breast training set with matched Poisson noise added ($I_0=10^5$), selected the checkpoint on the noisy validation split, and scored it on the noisy test set. Classical, per-scene, and zero-shot solvers carry no trainable weights and are unchanged. We retrained only the frozen clean-best configuration and did not re-search hyper-parameters, so these numbers are a lower bound on what matched-noise training could reach.
+
+The clean ranking largely returns. Its Spearman correlation with the noisy board rises from $\rho\approx0.16$ without retraining (3\,\% of the variance) to $\rho\approx0.65$ with it (42\,\%). Table~\ref{tab:retrain} and Figure~\ref{fig:retrain} show the recovery. The noiseless champion, dual-domain-supervised, which had collapsed to hr $0.00$, retrains to \textbf{hr $0.958$} and reclaims rank~1 --- above its own noiseless score, because hr is now measured against the worse noisy FBP baseline. Its collapse was therefore a train/test distribution mismatch, not a limit of the architecture, exactly as the framework predicts. The whole supervised unrolled family (ITNet v1/v2/v3, U-Swin) returns to the top tier (hr $\approx0.94$). Learned-primal-dual, already robust because it keeps the forward operator in the loop, barely moves ($0.935\!\to\!0.936$): it had nothing to regain.
+
+Two groups do not recover. The two \emph{constrained} fast-diffusion variants stay at hr $0$; their hard fit to the clean forward model does not survive noisy training. And a few solvers dip slightly (Hammernik-2017, $0.70\!\to\!0.61$) because we retrained the fixed clean-best configuration rather than re-searching the noisy optimum. The lesson for benchmarking sharpens rather than softens: a single-distribution leaderboard does not predict robustness to \emph{unseen} noise, yet that brittleness is largely repairable once the noise is known and trained for. A complete benchmark should therefore report both conditions --- transfer to an unseen perturbation, and performance after matched retraining.
+
+%------------------------------------------------------------
+% Table 3 (retrain recovery)
+%------------------------------------------------------------
+\begin{table}[t]
+\caption{Retraining on the noise restores the ranking. Per-solver headroom (hr) on the three breast boards: noiseless; noisy with \emph{no} retraining ($I_0=10^5$, frozen clean weights); and noisy after \emph{retraining} each solver's clean-best configuration on matched-noise training data. Rows are ordered by the retrained rank. ``---'' = did not clear the hr floor (hr $\le0$) or did not finish. $^\dagger$ marks a classical / per-scene / zero-shot solver with no trainable weights, carried over unchanged. The clean-favored supervised methods, which collapse without retraining, return to the top: Spearman correlation with the noiseless ranking rises from $\rho\approx0.16$ (no retrain) to $\rho\approx0.65$ (retrained).\label{tab:retrain}}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\centering
+\begin{tabular}{@{}rlrrr@{}}
+\toprule
+\textbf{Rank} & \textbf{Solver} & \textbf{Noiseless} & \textbf{Noisy} & \textbf{Noisy} \\
+              &                 & \textbf{hr}        & \textbf{no-retr.} & \textbf{retrain} \\
+\midrule
+ 1 & dd-supervised & 0.895 & 0.000 & 0.958 \\
+ 2 & itnet-v2 & 0.889 & 0.548 & 0.939 \\
+ 3 & itnet-v3 & 0.875 & 0.701 & 0.938 \\
+ 4 & itnet & 0.893 & 0.578 & 0.938 \\
+ 5 & learned-primal-dual & 0.723 & 0.935 & 0.936 \\
+ 6 & uswin & 0.859 & 0.592 & 0.936 \\
+ 7 & hammernik-vn & 0.579 & 0.553 & 0.903 \\
+ 8 & param-efficient & 0.621 & 0.515 & 0.851 \\
+ 9 & manduca-bilateral$^\dagger$ & 0.276 & 0.842 & 0.842 \\
+10 & dd-bilateral-sup & 0.255 & 0.100 & 0.821 \\
+11 & dd-bilateral-n2i & 0.000 & 0.793 & 0.789 \\
+12 & tv-iterative-sup & 0.151 & 0.107 & 0.773 \\
+13 & dd-n2i & 0.000 & --- & 0.725 \\
+14 & fastdiff-flow-px-unc & 0.269 & 0.662 & 0.662 \\
+15 & ram-zeroshot$^\dagger$ & 0.369 & 0.638 & 0.638 \\
+16 & fastdiff-wdm-wav-unc & 0.000 & 0.635 & 0.635 \\
+17 & hammernik-2017 & 0.627 & 0.702 & 0.610 \\
+18 & manhart-pwls-tv$^\dagger$ & 0.360 & 0.507 & 0.507 \\
+19 & tv-iterative$^\dagger$ & 0.360 & 0.507 & 0.507 \\
+20 & wu-2015$^\dagger$ & 0.152 & 0.370 & 0.370 \\
+21 & wu-2015-trainable & 0.316 & 0.259 & 0.268 \\
+-- & fastdiff-wdm-wav-con & 0.269 & 0.000 & 0.000 \\
+-- & fastdiff-flow-px-con & 0.512 & 0.000 & 0.000 \\
+-- & naf$^\dagger$ & --- & --- & --- \\
+-- & r2gaussian$^\dagger$ & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 %============================================================
 % Figures
 %------------------------------------------------------------
@@ -271,6 +321,11 @@ The reversal is not a surprise once we read it off the two axes of Table~\ref{ta
 \begin{figure*}[t]
 \centerline{\includegraphics[width=\linewidth]{fig4_recon_panels.pdf}}
 \caption{Example reconstructions behind the reversal, for the two methods at opposite ends of it. Rows: the noiseless champion \emph{dual-domain-supervised} (a supervised image-domain denoiser) versus \emph{learned-primal-dual} (in-loop physics). Columns: ground truth, reconstruction from the clean input, reconstruction from the noisy input ($I_0=10^5$, same trained model, no retraining), and the difference to truth. Per-case SSIM and hr are annotated on each reconstruction; these are single-case values and differ from the 200-case board means in Table~\ref{tab:reversal}. On clean inputs both are near-perfect. Under mild input noise the supervised denoiser collapses (single-case SSIM $0.999\!\to\!0.301$), spraying structured error across the field of view, while the physics-in-the-loop primal-dual method holds (SSIM $0.995\!\to\!0.986$). This is the pixel-level face of the ranking reshuffle in Figure~\ref{fig:reversal} and Table~\ref{tab:reversal}.\label{fig:panels}}
+\end{figure*}
+
+\begin{figure*}[t]
+\centerline{\includegraphics[width=\textwidth]{fig5_retrain_slope.pdf}}
+\caption{Retraining on the noise restores the ranking. Three-column rank plot across the breast boards: noiseless (left), noisy with no retraining (middle, $I_0=10^5$), and noisy after retraining each solver's clean-best configuration on matched-noise data (right); ``--'' marks a solver that did not clear the hr floor on that board. The noiseless champion \textbf{dual-domain-supervised} (orange) plunges from rank~1 to below the floor without retraining and returns to rank~1 once retrained; \textbf{learned-primal-dual} (green), which keeps the operator in the loop, stays near the top throughout. Grey traces show the supervised unrolled family scrambling under unseen noise and re-converging to the top after matched retraining. Spearman correlation with the noiseless ranking rises from $\rho\approx0.16$ (middle) to $\rho\approx0.65$ (right).\label{fig:retrain}}
 \end{figure*}
 
 %------------------------------------------------------------
@@ -373,7 +428,7 @@ Second, a little noise broke the whole breast leaderboard. The methods that won 
 
 \subsection{Limitations}\label{sec:limits}
 
-We used a single agent and a single frozen metric, under a fixed short per-iteration compute budget. The geometry/data-engineering bottleneck remains; the agent did not remove it. The agent-written solvers reproduce each method's design but may differ in detail from its official implementation. Our breast split is an internal partition of the public pool, not the withheld official challenge test set, and the Mayo comparison rests on only five test patients ($n=5$), which limits statistical power. Some compact solutions are seed-fragile, and two per-scene methods did not complete under the budget. The noise study is deliberately narrow: we do not retrain or augment the supervised methods with matched noise --- a condition that would likely restore much of their robustness, and whose effect on clean-trained networks is already documented\cite{huang2018some} --- and we use a single dose level ($I_0=10^5$) rather than a full dose sweep, which we leave to future work. Finally, we report no clinical or diagnostic endpoint.
+We used a single agent and a single frozen metric, under a fixed short per-iteration compute budget. The geometry/data-engineering bottleneck remains; the agent did not remove it. The agent-written solvers reproduce each method's design but may differ in detail from its official implementation. Our breast split is an internal partition of the public pool, not the withheld official challenge test set, and the Mayo comparison rests on only five test patients ($n=5$), which limits statistical power. Some compact solutions are seed-fragile, and two per-scene methods did not complete under the budget. The noise study covers two conditions --- transfer to an unseen noise level (no retraining) and matched-noise retraining (Section~\ref{sec:retrain}) --- but at a single dose ($I_0=10^5$) rather than a full dose sweep, and for the retrained board we re-trained only each solver's frozen clean-best configuration rather than re-searching the noisy optimum, so those scores are a lower bound; the effect of matched-noise training on clean-trained networks is also documented independently.\cite{huang2018some} We leave a full dose sweep to future work. Finally, we report no clinical or diagnostic endpoint.
 
 %============================================================
 \section{Conclusions}\label{sec:conclusions}

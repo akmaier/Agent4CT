@@ -126,6 +126,38 @@
       ],
       "exclude_iters": {},
       "_note": "BreastCT_Noise: same run-ids as breast_ct, re-evaluated on the Poisson-noised (I0=100k) test sinograms; scores read from <run>-itertest-noise100000/ (paper 5.6.7)."
+    },
+    "breast_ct_noise_retrain": {
+      "label": "BreastCT-Noise-Retrained",
+      "campaign": "calibrated+agentic",
+      "note": "Retrained-noisy board: each TRAINABLE solver's noiseless best iter, RETRAINED from scratch on the Poisson-noised (I0=1e5) train split, scored on the noisy test set (n=200). Classical/per-scene/zero-shot solvers are carried over from the no-retrain BreastCT-Noise board.",
+      "run_ids": [
+        "breast-ct-claude-agentic-dual-domain-bilateral-n2i-search-20260703-01",
+        "breast-ct-claude-agentic-dual-domain-bilateral-supervised-search-20260703-01",
+        "breast-ct-claude-agentic-dual-domain-n2i-search-20260703-01",
+        "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01",
+        "breast-ct-claude-agentic-fastdiff-flow-pixel-constrained-search-20260703-01",
+        "breast-ct-claude-agentic-fastdiff-flow-pixel-unconstrained-search-20260703-01",
+        "breast-ct-claude-agentic-fastdiff-wdm-wavelet-constrained-search-20260703-01",
+        "breast-ct-claude-agentic-fastdiff-wdm-wavelet-unconstrained-search-20260703-01",
+        "breast-ct-claude-agentic-hammernik-2017-search-20260703-01",
+        "breast-ct-claude-agentic-hammernik-vn-search-20260703-01",
+        "breast-ct-claude-agentic-itnet-search-20260703-01",
+        "breast-ct-claude-agentic-itnet-v2-search-20260703-01",
+        "breast-ct-claude-agentic-itnet-v3-search-20260703-01",
+        "breast-ct-claude-agentic-learned-primal-dual-search-20260703-01",
+        "breast-ct-claude-agentic-manduca-bilateral-search-20260703-01",
+        "breast-ct-claude-agentic-manhart-pwls-tv-search-20260703-01",
+        "breast-ct-claude-agentic-naf-search-20260703-01",
+        "breast-ct-claude-agentic-param-efficient-search-20260703-01",
+        "breast-ct-claude-agentic-r2gaussian-search-20260703-01",
+        "breast-ct-claude-agentic-ram-zeroshot-search-20260703-01",
+        "breast-ct-claude-agentic-tv-iterative-search-20260703-01",
+        "breast-ct-claude-agentic-tv-iterative-supervised-search-20260703-01",
+        "breast-ct-claude-agentic-uswin-search-20260703-01",
+        "breast-ct-claude-agentic-wu-2015-search-20260703-01",
+        "breast-ct-claude-agentic-wu-2015-trainable-search-20260703-01"
+      ]
     }
   },
   "purge": {

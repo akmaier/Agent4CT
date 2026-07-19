@@ -110,7 +110,7 @@ def build_registry_lines(allow: dict, backstop: dict):
     """-> (lines, exclude_iters_by_run). One line per allowlisted run-iter, in a
     stable order (challenge, slug, iter)."""
     lines = []
-    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "demo_dl"):
+    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "breast_ct_noise_retrain", "demo_dl"):
         ds = allow["datasets"].get(ch, {})
         excl = ds.get("exclude_iters", {})
         for slug in ds.get("run_ids", []):
@@ -186,7 +186,8 @@ _TEST_PATIENTS = ("L014", "L056", "L058", "L075", "L123")
 
 # Held-out TEST-set size per test-ranked dataset, for the "(test, n=…)" basis tag
 # (Mayo = 5 Wagner patients; breast = 200 i.i.d. held-out cases, paper §5.0).
-_TEST_N_BY_CHALLENGE = {"mayo_ldct": 5, "breast_ct": 200, "breast_ct_noise": 200}
+_TEST_N_BY_CHALLENGE = {"mayo_ldct": 5, "breast_ct": 200, "breast_ct_noise": 200,
+                        "breast_ct_noise_retrain": 200}
 
 # BreastCT_Noise board (paper §5.6.7): the noisy re-eval of each breast solver's
 # noiseless best iter lives in <slug>-itertest-noise<I0>/. Same run-ids as breast_ct,
@@ -203,6 +204,13 @@ def _itertest_base(slug: str, ch: str | None = None) -> Path:
     breast_ct_noise can share run-ids yet read different test scores."""
     if ch == "breast_ct_noise":
         return DOCS_RUNS / f"{slug}-itertest-noise{BREAST_NOISE_I0}"
+    if ch == "breast_ct_noise_retrain":
+        # Trainable solvers were RETRAINED on the noisy train split -> read the
+        # -retrain namespace. Classical/per-scene/zero-shot solvers were NOT retrained
+        # (no supervised weights); they have no -retrain dir, so fall back to their
+        # no-retrain noisy scores (identical, since they re-fit on the noisy input).
+        rt = DOCS_RUNS / f"{slug}-itertest-noise{BREAST_NOISE_I0}-retrain"
+        return rt if rt.is_dir() else DOCS_RUNS / f"{slug}-itertest-noise{BREAST_NOISE_I0}"
     if "param-efficient" in slug and "breast" not in slug:
         return DOCS_RUNS / "pe-iter-testeval"
     return DOCS_RUNS / f"{slug}-itertest"
@@ -372,7 +380,7 @@ def build_leaderboard(ch_lines: list[dict], ch: str | None = None) -> dict:
 _TIMESTAMPED_VIEWS = {
     "datasets.json": 1, "leaderboard.json": 1,
     "mayo_ldct.json": 1, "breast_ct.json": 1, "breast_ct_noise.json": 1,
-    "demo_dl.json": 1,
+    "breast_ct_noise_retrain.json": 1, "demo_dl.json": 1,
 }
 
 
@@ -417,7 +425,7 @@ def main() -> int:
 
     leaderboards: dict[str, dict] = {}
     datasets_summary = []
-    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "demo_dl"):
+    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "breast_ct_noise_retrain", "demo_dl"):
         ch_lines = by_ch.get(ch, [])
         lb = build_leaderboard(ch_lines, ch)
         leaderboards[ch] = lb
@@ -541,7 +549,7 @@ def main() -> int:
     }, indent=1, allow_nan=False))
 
     # scratch/<ch>.jsonl — capped recent observations (newest-first) for advice.
-    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "demo_dl"):
+    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "breast_ct_noise_retrain", "demo_dl"):
         ch_lines = sorted(by_ch.get(ch, []), key=lambda l: (l["ts"] or "", l["iter"]))
         recent = list(reversed(ch_lines))[:SCRATCH_CAP]
         cards = [{
@@ -602,7 +610,7 @@ def main() -> int:
 # --------------------------------------------------------------------------
 _HASHED_VIEWS = ["registry.jsonl", "datasets.json", "leaderboard.json",
                  "mayo_ldct.json", "breast_ct.json", "breast_ct_noise.json",
-                 "demo_dl.json"]
+                 "breast_ct_noise_retrain.json", "demo_dl.json"]
 # Volatile build-stamp keys excluded from the content hash so two builds of the
 # SAME data hash identically (the gate compares substance, not the wall clock).
 _VOLATILE_KEYS = {"updated", "built_at"}
@@ -629,7 +637,7 @@ def compute_content_hash() -> str:
         p = IDX / name
         h.update(name.encode())
         h.update(_canonical_bytes(name, p.read_bytes()) if p.exists() else b"")
-    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "demo_dl"):
+    for ch in ("mayo_ldct", "breast_ct", "breast_ct_noise", "breast_ct_noise_retrain", "demo_dl"):
         p = SCR / f"{ch}.jsonl"
         rel = f"scratch/{ch}.jsonl"
         h.update(rel.encode())

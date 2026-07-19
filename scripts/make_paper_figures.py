@@ -528,9 +528,91 @@ def sfig_mayo_significance():
 
 
 # ===========================================================================
+def fig_retrain_slope():
+    """Three-column slopegraph: noiseless -> noisy (no retrain) -> noisy (retrained).
+    Shows the clean ranking scrambling under unseen noise and largely RETURNING once
+    the weights are retrained on matched noise. dd-supervised (collapse & recover) and
+    learned-primal-dual (robust throughout) are highlighted."""
+    noiseless = load_board("breast_ct")
+    noisy = load_board("breast_ct_noise")
+    retrain = load_board("breast_ct_noise_retrain")
+
+    def ranked(rows):
+        rk = [r for r in rows if r.get("rank") is not None
+              and r.get("test_hr_mean") is not None]
+        rk.sort(key=lambda r: r["test_hr_mean"], reverse=True)
+        return {r["solver_key"]: i + 1 for i, r in enumerate(rk)}
+
+    nl_rank, nz_rank, rt_rank = ranked(noiseless), ranked(noisy), ranked(retrain)
+    COLLAPSE, RISE = "dual-domain-supervised", "learned-primal-dual"
+    xs = [0.0, 2.2, 4.4]
+    keys = [k for k in nl_rank]                       # trace every noiseless-ranked solver
+
+    # Solvers excluded (hr<=0 / DNF) on a board get distinct y-slots BELOW the ranked
+    # set (ordered by noiseless rank), so their labels never pile on one line.
+    def positions(rank_dict):
+        pos = dict(rank_dict)
+        excl = sorted((k for k in keys if k not in rank_dict),
+                      key=lambda k: nl_rank.get(k, 999))
+        for j, k in enumerate(excl):
+            pos[k] = len(rank_dict) + 1 + j
+        return pos
+
+    nl_pos, nz_pos, rt_pos = positions(nl_rank), positions(nz_rank), positions(rt_rank)
+    bottom = max(max(nl_pos.values()), max(nz_pos.values()), max(rt_pos.values()))
+
+    fig, ax = plt.subplots(figsize=(DOUBLE, 5.0))
+    LBL_FS, HDR_FS = 6.0, 7.2
+
+    def style(k):
+        if k == COLLAPSE:
+            return CB["red"], 2.2, 1.0, 20
+        if k == RISE:
+            return CB["green"], 2.2, 1.0, 20
+        return CB["gray"], 0.9, 0.5, 5
+
+    for k in keys:
+        rks = [nl_pos[k], nz_pos[k], rt_pos[k]]
+        col, lw, alpha, z = style(k)
+        for i in range(2):
+            ax.plot([xs[i], xs[i + 1]], [rks[i], rks[i + 1]], color=col, lw=lw,
+                    alpha=alpha, zorder=z, solid_capstyle="round")
+        big = k in (COLLAPSE, RISE)
+        ax.scatter(xs, rks, s=14 if big else 7, color=col, alpha=alpha, zorder=z + 1)
+        name = pretty(k, noiseless)
+        lbl_col = col if big else "#555555"
+        wt = "bold" if big else "normal"
+        # left names (noiseless), right names (retrained); middle rank numbers only.
+        # "--" marks a solver that did not clear the hr floor on that board.
+        ax.text(xs[0] - 0.08, rks[0], f"{nl_rank[k]}. {name}", ha="right", va="center",
+                fontsize=LBL_FS, color=lbl_col, fontweight=wt, zorder=z + 2)
+        mid_lbl = str(nz_rank[k]) if k in nz_rank else "--"
+        ax.text(xs[1] - 0.10, rks[1], mid_lbl, ha="right", va="center",
+                fontsize=LBL_FS - 0.5, color=lbl_col, fontweight=wt, zorder=z + 2)
+        rlabel = f"{rt_rank[k]}  {name}" if k in rt_rank else f"--  {name}"
+        ax.text(xs[2] + 0.08, rks[2], rlabel, ha="left", va="center",
+                fontsize=LBL_FS, color=lbl_col, fontweight=wt, zorder=z + 2)
+
+    ax.set_xlim(xs[0] - 1.15, xs[2] + 1.35)
+    top = 0.15
+    ax.set_ylim(bottom + 0.6, top)                    # inverted: rank 1 at top
+    ax.set_xticks([]); ax.set_yticks([])
+    heads = [(xs[0], "Noiseless", "right"),
+             (xs[1], "Noisy\n(no retrain)", "center"),
+             (xs[2], "Noisy\n(retrained)", "left")]
+    for x, t, ha in heads:
+        ax.text(x, top - 0.55, t, ha=ha, va="bottom", fontsize=HDR_FS, fontweight="bold")
+    for sp in ("left", "bottom"):
+        ax.spines[sp].set_visible(False)
+    ax.grid(False)
+    fig.tight_layout()
+    savefig(fig, os.path.join(OUTDIR, "fig5_retrain_slope.pdf"))
+
+
 def main():
     print(f"Writing figures into {OUTDIR}")
     dropped = fig3_reversal()
+    fig_retrain_slope()
     fig2_params_vs_hr()
     fig1_agentic_loop()
     champ, n = sfig_effectsize()

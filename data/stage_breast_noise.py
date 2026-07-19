@@ -35,6 +35,10 @@ def main():
     ap.add_argument("--i0", type=float, default=100000.0, help="incident photons/bin (dose)")
     ap.add_argument("--seed", type=int, default=20260709)
     ap.add_argument("--split", default="test", choices=["test", "val", "train"])
+    ap.add_argument("--clevel", type=int, default=5,
+                    help="Blosc/zstd compression level (lower = faster staging, "
+                         "slightly larger file; data is identical). Use 1 for the "
+                         "3600-case train set to stay well under a short wall limit.")
     ap.add_argument("--staged", default=str(STAGED))
     args = ap.parse_args()
 
@@ -55,7 +59,7 @@ def main():
         print(f"[noise] {src.name}: {n} cases {H}x{W}  I0={i0_tag}  seed={args.seed}", flush=True)
         # write incrementally to bound memory (200 * 128 * 1024 * 4 ~ 100MB is fine, but
         # stream anyway so this scales to the 3600 train set if ever needed).
-        comp = hdf5plugin.Blosc(cname="zstd", clevel=5, shuffle=hdf5plugin.Blosc.SHUFFLE)
+        comp = hdf5plugin.Blosc(cname="zstd", clevel=args.clevel, shuffle=hdf5plugin.Blosc.SHUFFLE)
         with h5py.File(dst, "w") as g:
             out = g.create_dataset("sino", shape=(n, H, W), dtype="float32", **comp)
             eps_stats = {"max_noise_p": 0.0, "mean_abs_dp": 0.0}
