@@ -34,7 +34,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--i0", type=float, default=100000.0, help="incident photons/bin (dose)")
     ap.add_argument("--seed", type=int, default=20260709)
-    ap.add_argument("--split", default="test", choices=["test", "val"])
+    ap.add_argument("--split", default="test", choices=["test", "val", "train"])
     ap.add_argument("--staged", default=str(STAGED))
     args = ap.parse_args()
 

@@ -427,15 +427,25 @@ def load_val_split(kind: str, split: str, n: int, *, device,
     # (robustness to input noise); the solver's FBP baseline is then also computed from
     # the noisy sino, so hr = improvement over the NOISY FBP. Unset -> unchanged; the
     # split=="train" load is excluded so training never sees the noisy sino.
-    _noise_i0 = _os.environ.get("AGENT4CT_TEST_NOISE_I0")
-    if _noise_i0 and kind == "breast_ct" and split in ("test", "val"):
+    # Retrain-on-noise path (retrained-noisy board): AGENT4CT_TRAIN_NOISE_I0 swaps the
+    # noisy sino for ALL splits (train, val AND test), so a supervised solver both
+    # TRAINS and is scored on Poisson-noised sinograms. AGENT4CT_TEST_NOISE_I0 (the
+    # no-retrain board) swaps only the scored splits (test/val); training stays clean.
+    # Truth is always the clean phantom either way, so both boards measure recovery of
+    # the clean image; the FBP baseline is recomputed from the noisy sino. Both unset
+    # -> byte-identical to before.
+    _train_noise_i0 = _os.environ.get("AGENT4CT_TRAIN_NOISE_I0")
+    _noise_i0 = _train_noise_i0 or _os.environ.get("AGENT4CT_TEST_NOISE_I0")
+    _noise_splits = ("train", "val", "test") if _train_noise_i0 else ("test", "val")
+    if _noise_i0 and kind == "breast_ct" and split in _noise_splits:
         _nz = info.staged_dir / f"{split}_sinograms_noise_i0_{int(float(_noise_i0))}.h5"
         if not _nz.exists():
             raise FileNotFoundError(
-                f"AGENT4CT_TEST_NOISE_I0={_noise_i0}: missing {_nz} — run "
+                f"noise I0={_noise_i0}: missing {_nz} — run "
                 f"`python data/stage_breast_noise.py --i0 {int(float(_noise_i0))} --split {split}`")
         sino_path = _nz
-        print(f"[staged] AGENT4CT_TEST_NOISE_I0={_noise_i0}: breast_ct sino -> "
+        _mode = "TRAIN_NOISE (all splits)" if _train_noise_i0 else "TEST_NOISE"
+        print(f"[staged] {_mode} I0={_noise_i0}: breast_ct {split} sino -> "
               f"{_nz.name} (clean truth, noisy input)", flush=True)
     # Presentation-only TEST showcase (AGENT4CT_SHOWCASE): replace the Mayo val
     # load (single patient L277) with one CENTRAL slice from each of the 5
