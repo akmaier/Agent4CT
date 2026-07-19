@@ -30,7 +30,7 @@
 \title{Agentic Autoresearch for CT Reconstruction}
 
 \author[1]{Andreas Maier}
-\author[1,2]{Lukas Kachelrie\ss}
+\author[1,2]{Lucas Kachelrie\ss}
 \author[1]{Siming Bayer}
 \author[3]{Yixing Huang}
 \author[2]{Yan Xia}
@@ -84,7 +84,7 @@ This paper makes five contributions. (i) An agentic CT-reconstruction loop groun
 
 \subsection{The agentic loop}\label{sec:loop}
 
-The agent works in a fixed cycle. First it reads the previous result and names the failure. It then changes one thing --- a hyper-parameter, or the solver code itself --- and states a hypothesis. A single short cluster job runs under a fixed compute budget. The agent reads the frozen metric and accepts or discards the change. The cycle then repeats.
+The agent is driven by a single large language model, Claude Opus~4.8 (Anthropic; model \texttt{claude-opus-4-8}, 1M-token context), throughout. It works in a fixed cycle. First it reads the previous result and names the failure. By \emph{failure} we mean the specific way the current best reconstruction falls short of the frozen metric --- a stalled or low headroom score, or a dominant error mode read off the comparison figure (residual streaks, over-smoothing, or noise amplification) --- which the agent then targets. It changes one thing --- a hyper-parameter, or the solver code itself --- and states a hypothesis. A single short cluster job runs under a fixed compute budget. The agent reads the frozen metric and accepts or discards the change. The cycle then repeats.
 
 Every run is grounded in the same \emph{differentiable} fan-beam projector (PYRO-NN\cite{syben2019pyronn}) --- a forward/back-projector built so that gradients flow through it, so it can sit inside a trainable network and be optimized by back-propagation. Each run also writes an immutable record: the configuration, the reconstruction, the metric, and a comparison figure. We enforced a fixed wall-clock budget per iteration (20~min on breast; matched on Mayo) so that all methods are compared under equal compute. A human coordinator supervised the loop: setting targets, redirecting across problems, and auditing for padding and provenance gaps (Section~\ref{sec:discussion}). The loop is sketched in Figure~\ref{fig:loop}.
 

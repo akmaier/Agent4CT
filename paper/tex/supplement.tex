@@ -32,7 +32,7 @@
 \title{Supplementary Material: Agentic Autoresearch for CT Reconstruction}
 
 \author[1]{Andreas Maier}
-\author[1,2]{Lukas Kachelrie\ss}
+\author[1,2]{Lucas Kachelrie\ss}
 \author[1]{Siming Bayer}
 \author[3]{Yixing Huang}
 \author[2]{Yan Xia}
@@ -289,7 +289,7 @@ The full noiseless and noisy breast boards, and the framework-axis reading of th
 %============================================================
 \section{Agent-behavior --- extended account}\label{sec:s7}
 
-This account follows the autoresearch paradigm of automated open-ended scientific discovery\cite{lu2024aiscientist} realised through LLM code agents that resolve real software tasks\cite{yang2024sweagent,jimenez2024swebench} and physics-informed agentic development in adjacent imaging fields.\cite{zaiss2026agent4mr} We summarise here what the agent did well, where it failed, and which parts of the study still required a human.
+This account follows the autoresearch paradigm of automated open-ended scientific discovery\cite{lu2024aiscientist} realised through LLM code agents that resolve real software tasks\cite{yang2024sweagent,jimenez2024swebench} and physics-informed agentic development in adjacent imaging fields.\cite{zaiss2026agent4mr} All iterations on both datasets were driven by a single language model, Claude Opus~4.8 (Anthropic; model \texttt{claude-opus-4-8}, 1M-token context); the model identifier is recorded in every iteration's provenance record. We summarise here what the agent did well, where it failed, and which parts of the study still required a human.
 
 \textbf{Strengths.} The agent is fast from paper to code: it read a method description and produced a running solver in a fraction of a day (Section~\ref{sec:s2}), which is what made 26 methods across two datasets tractable for one supervisor. It is a strong hyper-parameter optimiser, moving one knob at a time against the frozen metric and reliably driving each solver to its ceiling. It keeps a fixed compute budget without drift --- the 20-minute per-iteration wall was honoured across every run, a discipline humans find tedious. It scales evaluation almost for free, launching and tracking dozens of independent benchmark jobs in parallel; this parallelism, not raw single-task speed, is its most valuable practical property. And it follows well-decomposed instructions faithfully, provided each sub-task is stated concretely.
 
