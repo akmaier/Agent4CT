@@ -119,7 +119,8 @@ Click a leaderboard for the full all-solver table.
 | **Breast-CT** (128-view sparse) | DD-UNet supervised L2 | 0.9992 | **0.8948** (test, n=200) | [`docs/leaderboards/breast_ct.md`](docs/leaderboards/breast_ct.md) |
 | **Demo-DL** (Sidky ellipse, 128-view sparse) | Learned Primal-Dual | — | **0.4947** (val) | [`docs/leaderboards/demo_dl.md`](docs/leaderboards/demo_dl.md) |
 | **Mayo-LDCT** (Wagner split, real helical) | ITNet v1 | 0.9790 | **0.3756** (test, n=5) | [`docs/leaderboards/mayo_ldct.md`](docs/leaderboards/mayo_ldct.md) |
-| **BreastCT-Noise | Learned Primal-Dual | 0.9905 | **0.9349** (test, n=200) | [`#`](#) |
+| **BreastCT-Noise** (128-view sparse, I0=100k, no retrain) | Learned Primal-Dual | 0.9905 | **0.9349** (test, n=200) | [`docs/leaderboards/breast_ct_noise.md`](docs/leaderboards/breast_ct_noise.md) |
+| **BreastCT-Noise-Retrained** (retrained on noisy train) | DD-UNet supervised L2 | 0.9958 | **0.9579** (test, n=200) | [`docs/leaderboards/breast_ct_noise_retrain.md`](docs/leaderboards/breast_ct_noise_retrain.md) |
 <!--/REGISTRY_TABLE-->
 
 Mayo-LDCT was **RESET on 2026-06-19** (the second reset). The 2026-06-14

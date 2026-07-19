@@ -51,6 +51,22 @@
    "thumbnail": "runs/breast-ct-claude-agentic-learned-primal-dual-search-20260703-01/iterations/iter-0012/comparison.png"
   },
   {
+   "challenge": "breast_ct_noise_retrain",
+   "label": "BreastCT-Noise-Retrained",
+   "campaign": "calibrated+agentic",
+   "n_runs": 25,
+   "n_iterations": 515,
+   "n_solvers": 25,
+   "champion_slug": "breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01",
+   "champion_name": "DD-UNet supervised L2",
+   "champion_headroom": 0.9578807464928745,
+   "champion_ssim": 0.9958341774344445,
+   "champion_metric_basis": "test",
+   "champion_test_n": 200,
+   "champion_score": 0.9578807464928745,
+   "thumbnail": "runs/breast-ct-claude-agentic-dual-domain-supervised-search-20260703-01/iterations/iter-0020/comparison.png"
+  },
+  {
    "challenge": "demo_dl",
    "label": "Demo-DL",
    "campaign": "intensity-calibrated+agentic",

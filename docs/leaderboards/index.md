@@ -28,6 +28,8 @@ baseline tables, open the dataset board linked under "Full standings".
 <div data-leaderboard="breast_ct">loading leaderboard…</div>
 <h3>BreastCT-Noise <small>(high-dose robustness re-eval, I0 = 100k photons)</small></h3>
 <div data-leaderboard="breast_ct_noise">loading leaderboard…</div>
+<h3>BreastCT-Noise-Retrained <small>(retrained on noisy train data, I0 = 100k photons)</small></h3>
+<div data-leaderboard="breast_ct_noise_retrain">loading leaderboard…</div>
 <h3>Demo-DL</h3>
 <div data-leaderboard="demo_dl">loading leaderboard…</div>
 
@@ -43,6 +45,7 @@ are the single source of truth and list **every** solver (no truncated summary):
 - **[Mayo-LDCT — all 19 solvers →](mayo_ldct.html)** &nbsp; _(live `search-20260619-01`, auto-regenerated every wave)_
 - **[Breast-CT — all solvers →](breast_ct.html)**
 - **[BreastCT-Noise — no-retrain robustness re-eval →](breast_ct_noise.html)** &nbsp; _(same models, Poisson-noised inputs)_
+- **[BreastCT-Noise-Retrained — matched-noise retraining →](breast_ct_noise_retrain.html)** &nbsp; _(clean ranking largely returns; ρ 0.16→0.65)_
 - **[Demo-DL — all 19 solvers →](demo_dl.html)**
 
 ## Methodology
