@@ -54,6 +54,7 @@ def calibrate(img, truth, f):
 
 def main():
     m_fbp, m_truth = load(MAYO, None)     # central slice of the patient volume
+    m_fbp, m_truth = m_fbp[::-1, ::-1], m_truth[::-1, ::-1]  # 180 deg: table at bottom
     b_fbp, b_truth = load(BREAST, 100)    # a mid-index test case
     H, W = m_truth.shape
     f = fov(H, W)
