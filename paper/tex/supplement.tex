@@ -31,13 +31,13 @@
 
 \title{Supplementary Material: Agentic Autoresearch for CT Reconstruction}
 
-\author[1]{Andreas Maier}
+\author[1,5]{Andreas Maier}
 \author[1,2]{Lucas Kachelrie\ss}
 \author[1]{Siming Bayer}
 \author[3]{Yixing Huang}
 \author[2]{Yan Xia}
 \author[4]{Amber Simpson}
-\author[2]{Moritz Zaiss}
+\author[2,5]{Moritz Zaiss}
 
 \authormark{MAIER \textsc{et al.}}
 \titlemark{Agentic Autoresearch for CT Reconstruction --- Supplement}
@@ -50,6 +50,9 @@
 \orgaddress{\state{Beijing, }\country{China}}}
 \address[4]{\orgname{University of Alberta, }%
 \orgaddress{\state{Edmonton, }\country{Canada}}}
+
+\address[5]{\orgdiv{Department Artificial Intelligence in Biomedical Engineering (AIBE), }\orgname{Friedrich-Alexander-Universit\"at Erlangen-N\"urnberg (FAU), }%
+\orgaddress{\state{Erlangen, }\country{Germany}}}
 
 \corres{Andreas Maier (\email{andreas.maier@fau.de})}
 
@@ -190,9 +193,59 @@ dominant lever & data-consistency / known operator & denoising \\
 %============================================================
 \section{Mayo test board and significance}\label{sec:s4}
 
-\textbf{The board.} The champion is ITNet v1 at test hr $0.376$, averaged over the five test patients. We test differences with a paired comparison on the per-patient hr values: for each pair of solvers we form the five per-patient hr differences and run a paired $t$-test, with a Wilcoxon signed-rank test as a distribution-free cross-check. On this basis the top of the board is a statistical tie --- ITNet v1, ITNet v2, and U-Swin are indistinguishable at the 5\,\% level, and the compact param-efficient solver joins this group at the 1\,\% level ($p=0.02$--$0.027$).
+\textbf{The board.} The champion is ITNet v1 at test hr $0.376$, averaged over the five test patients. We test differences with a paired comparison on the per-patient hr values: for each pair of solvers we form the five per-patient hr differences and run a paired $t$-test, with a Wilcoxon signed-rank test as a distribution-free cross-check. On this basis the top of the board is a statistical tie --- ITNet v1, ITNet v2, and U-Swin are indistinguishable at the 5\,\% level, and the compact param-efficient solver joins this group at the 1\,\% level ($p=0.02$--$0.027$). Table~\ref{tab:mayofull} gives the full board; the main text lists the 14 ranked solvers.
 
-\textbf{Why the top tier ties at $n=5$.} With only five test patients the paired $t$-test we use has little power, so a difference clears significance only if it is large \emph{and} consistent across patients. It does separate such gaps at $n=5$: versus the champion, dual-domain-supervised reaches $p=0.0001$, ITNet~v3 $p<0.0001$, Hammernik-VN $p=0.003$, and even the compact solver $p=0.02$. The differences \emph{within} the top tier, by contrast, are both small and patient-to-patient noisy, so ITNet~v1/v2/U-Swin stay above 0.05 (and, with the compact solver, above 0.01). Significance here tracks consistency, not mean rank: dual-domain-supervised sits a \emph{smaller} mean gap below the champion than the compact solver, yet is far more significant, because its per-patient deficit is near-constant while the compact solver's is noisy. A distribution-free Wilcoxon signed-rank cross-check is blunter still at $n=5$: its smallest attainable two-sided $p$ is $2/2^5=0.0625$, so two-sided it cannot reject for \emph{any} pair (one-sided floor $1/2^5=0.03125$). Hence ``a tier, not a winner'' is not a hedge but the limit of what five patients resolve \emph{for gaps this small}, which is why we report the per-case mean $\pm$ standard deviation rather than a bare ranking. The pairwise $p$-values are in Table~\ref{tab:s4pvals} and the corresponding forest plot in Figure~\ref{fig:s4forest}; per-patient raw values and the full solver$\times$metric significance matrix are in the repository. The full board (all 26 solvers, hr/SSIM/RMSE) is in the main text.
+\begin{table*}[tb]
+\caption{Mayo low-dose CT test board, all 26 solvers ($n=5$ test patients). hr is the calibrated headroom (Eq.~(1) of the main text) and the ranking metric; SSIM and RMSE use a batch-wide data range (RMSE in line-integral units). Params are trainable-parameter counts; entries suffixed M are in millions, an unsuffixed number is a raw count. ``--'' marks a solver below the ranking floor (hr $\le 0$). Solver keys abbreviated: dd = dual-domain, px = pixel, wav = wavelet, dc = data-consistency step, con./unc.\ = (un)constrained, sup = supervised. The main text reports the 14 ranked solvers only.\label{tab:mayofull}}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{minipage}[t]{0.49\textwidth}
+\centering
+\begin{tabular}{@{}rlrrrr@{}}
+\toprule
+\textbf{Rank} & \textbf{Solver} & \textbf{hr} & \textbf{SSIM} & \textbf{RMSE} & \textbf{Params} \\
+\midrule
+1  & itnet             & 0.3756 & 0.9790 & 0.0005 & 0.233\,M \\
+2  & itnet-v2          & 0.3735 & 0.9784 & 0.0005 & 0.233\,M \\
+3  & uswin             & 0.3700 & 0.9770 & 0.0005 & 3.954\,M \\
+4  & dd-supervised     & 0.3607 & 0.9758 & 0.0005 & 0.466\,M \\
+5  & param-efficient   & 0.3241 & 0.9727 & 0.0005 & 969 \\
+6  & itnet-v3          & 0.3066 & 0.9707 & 0.0006 & 3.699\,M \\
+7  & hammernik-vn      & 0.1591 & 0.9520 & 0.0007 & 0.005\,M \\
+8  & tv-iterative      & 0.0959 & 0.9642 & 0.0007 & 0 \\
+9  & hammernik-2017    & 0.0843 & 0.9358 & 0.0007 & 0.012\,M \\
+10 & manhart-pwls-tv   & 0.0624 & 0.9649 & 0.0007 & 0 \\
+11 & wu-2015-trainable & 0.0207 & 0.8923 & 0.0008 & 8 \\
+12 & dd-n2i            & 0.0176 & 0.9590 & 0.0008 & 0.466\,M \\
+13 & manduca-bilateral & 0.0159 & 0.9561 & 0.0009 & 7 \\
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\textwidth}
+\centering
+\begin{tabular}{@{}rlrrrr@{}}
+\toprule
+\textbf{Rank} & \textbf{Solver} & \textbf{hr} & \textbf{SSIM} & \textbf{RMSE} & \textbf{Params} \\
+\midrule
+14 & dd-bilateral-sup     & 0.0040 & 0.9541 & 0.0009 & 12 \\
+-- & tv-iterative-sup     & 0.0109 & 0.9366 & 0.0008 & 2 \\
+-- & dd-bilateral-n2i     & 0.0000 & 0.9587 & 0.0010 & 12 \\
+-- & fastdiff-flow-px-unc & 0.0000 & 0.9523 & 0.0012 & 3.823\,M \\
+-- & fastdiff-wdm-wav-con & 0.0000 & 0.9501 & 0.0013 & 3.825\,M \\
+-- & ram                  & 0.0000 & 0.9446 & 0.0012 & 35.619\,M \\
+-- & learned-primal-dual  & 0.0000 & 0.9415 & 0.0011 & 0.155\,M \\
+-- & fastdiff-wdm-wav-unc & 0.0000 & 0.9404 & 0.0013 & 3.825\,M \\
+-- & fastdiff-flow-px-con & 0.0000 & 0.9300 & 0.0013 & 3.823\,M \\
+-- & diff-recon-dc-unc    & 0.0000 & 0.9084 & 0.0014 & 8.594\,M \\
+-- & diff-recon-dc-con    & 0.0000 & 0.8766 & 0.0016 & 8.594\,M \\
+-- & r2gaussian           & 0.0000 & 0.8234 & 0.0043 & 0.003\,M \\
+-- & naf                  & 0.0000 & 0.8172 & 0.0028 & 33.558\,M \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table*}
+
+\textbf{Why the top tier ties at $n=5$.} With only five test patients the paired $t$-test we use has little power, so a difference clears significance only if it is large \emph{and} consistent across patients. It does separate such gaps at $n=5$: versus the champion, dual-domain-supervised reaches $p=0.0001$, ITNet~v3 $p<0.0001$, Hammernik-VN $p=0.003$, and even the compact solver $p=0.02$. The differences \emph{within} the top tier, by contrast, are both small and patient-to-patient noisy, so ITNet~v1/v2/U-Swin stay above 0.05 (and, with the compact solver, above 0.01). Significance here tracks consistency, not mean rank: dual-domain-supervised sits a \emph{smaller} mean gap below the champion than the compact solver, yet is far more significant, because its per-patient deficit is near-constant while the compact solver's is noisy. A distribution-free Wilcoxon signed-rank cross-check is blunter still at $n=5$: its smallest attainable two-sided $p$ is $2/2^5=0.0625$, so two-sided it cannot reject for \emph{any} pair (one-sided floor $1/2^5=0.03125$). Hence ``a tier, not a winner'' is not a hedge but the limit of what five patients resolve \emph{for gaps this small}, which is why we report the per-case mean $\pm$ standard deviation rather than a bare ranking. The pairwise $p$-values are in Table~\ref{tab:s4pvals} and the corresponding forest plot in Figure~\ref{fig:s4forest}; per-patient raw values and the full solver$\times$metric significance matrix are in the repository. The full board (all 26 solvers, hr/SSIM/RMSE) is Table~\ref{tab:mayofull} above.
 
 \begin{table}[tbp]
 \caption{Paired $t$-test $p$-values versus the champion (ITNet~v1), $n=5$ patients, one test per metric; \textbf{bold} marks $p<0.05$. No multiple-comparison correction is applied. On hr, ITNet~v2 and U-Swin tie with the champion at the 5\,\% level and param-efficient joins the tie at the 1\,\% level.\label{tab:s4pvals}}

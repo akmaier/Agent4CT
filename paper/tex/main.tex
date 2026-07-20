@@ -36,13 +36,13 @@
 
 \title{Agentic Autoresearch for CT Reconstruction}
 
-\author[1]{Andreas Maier}
+\author[1,5]{Andreas Maier}
 \author[1,2]{Lucas Kachelrie\ss}
 \author[1]{Siming Bayer}
 \author[3]{Yixing Huang}
 \author[2]{Yan Xia}
 \author[4]{Amber Simpson}
-\author[2]{Moritz Zaiss}
+\author[2,5]{Moritz Zaiss}
 
 \authormark{MAIER \textsc{et al.}}
 \titlemark{Agentic Autoresearch for CT Reconstruction}
@@ -58,6 +58,9 @@
 
 \address[4]{\orgname{University of Alberta, }%
 \orgaddress{\state{Edmonton, }\country{Canada}}}
+
+\address[5]{\orgdiv{Department Artificial Intelligence in Biomedical Engineering (AIBE), }\orgname{Friedrich-Alexander-Universit\"at Erlangen-N\"urnberg (FAU), }%
+\orgaddress{\state{Erlangen, }\country{Germany}}}
 
 \corres{Andreas Maier (\email{andreas.maier@fau.de})}
 
@@ -151,7 +154,12 @@ Band decomposition (Wu-2015)             & in-loop    & hand-cr. / sup. & \cite{
 
 \textbf{Mayo low-dose CT.} Real helical low-dose data from the 2016 AAPM Low-Dose CT Grand Challenge.\cite{mccollough2017mayo} Rebinning helical to fan-beam via single-slice rebinning\cite{noo1999singleslice} allows direct use of the fan-beam projector. We built and validated this pipeline, and use a fixed train/val/test split (Supplement~S2).
 
-\textbf{Breast CT Challenge.} 128-view 2-D fan-beam sparse-view data of synthetic breast phantoms.\cite{sidky2022} This data is \textbf{noiseless by design}. The challenge asks whether deep learning can solve the sparse-view inverse problem, so its RMSE floor is exactly zero. We re-partitioned the public 4000-case train pool into train (3600), validation (200), and test (200), with a fixed seed and disjoint cases. To confirm the split, we verified disjointness by image hashing: no test image appears in train or validation (Supplement~S3).
+\textbf{Breast CT Challenge.} 128-view 2-D fan-beam sparse-view data of synthetic breast phantoms.\cite{sidky2022} This data is \textbf{noiseless by design}. The challenge asks whether deep learning can solve the sparse-view inverse problem, so its RMSE floor is exactly zero. We re-partitioned the public 4000-case train pool into train (3600), validation (200), and test (200), with a fixed seed and disjoint cases. To confirm the split, we verified disjointness by image hashing: no test image appears in train or validation (Supplement~S3). Figure~\ref{fig:dataex} shows an example slice from each problem.
+
+\begin{figure}[t]
+\centerline{\includegraphics[width=\columnwidth]{fig_data_examples.pdf}}
+\caption{Example slices from the two problems, each showing the FBP input the solvers start from and the ground truth. Left: Mayo low-dose CT, where quantum noise (visible graininess) is the bottleneck. Right: the 128-view sparse-view breast phantom, where undersampling produces streak artifacts. Images are windowed for display, and the FBP is intensity-calibrated to the truth as in the metric.\label{fig:dataex}}
+\end{figure}
 
 \subsection{The calibrated-headroom metric}\label{sec:metric}
 
@@ -184,11 +192,10 @@ On Mayo the leaderboard yields no single winner, only a small top tier that is s
 
 One outcome deserves emphasis on its own, because it bears directly on using agents for research: the effort accounting. Every line of code in this study, the geometry pipeline, all solvers, and the benchmark harness, was written by the agent. The human did not hand-code but instructed. What varied, by a wide margin, was how much instruction each part needed. The helical-to-fan \emph{geometry pipeline} was by far the hardest: bringing the differentiable rebinning and its calibration to a physically correct FBP baseline took many supervised iterations and was the dominant human cost of the study (Supplement~S2). \emph{Implementing and benchmarking the 26 solvers} needed far less. The agent onboarded 13 of them across two days, and the three-week benchmark campaign was overwhelmingly automated, most of its commits changing only results and not code, while the agent ran $\sim$1{,}100 iterations for $\sim$134~GPU-hours of compute, largely in parallel. Costing each source-changing commit at an estimated 7.5 minutes (Supplement~S2), the human's hands-on share of the solver and benchmarking work was on the order of hours. The asymmetry is the lesson: instructing an agent is far cheaper than coding by hand, though not uniformly, since the hard, physics-heavy pipeline still demanded the most human supervision while the methods layered on top cost only hours.
 
-\begin{table*}[t]
-\caption{Mayo low-dose CT test board (all 26 solvers; $n=5$ test patients). hr is the calibrated headroom (Eq.~\ref{eq:hr}) and the ranking metric; SSIM and RMSE use a batch-wide data range (RMSE in line-integral units). Params are trainable-parameter counts; entries suffixed M are in millions, an unsuffixed number is a raw count. ``--'' marks a solver below the ranking floor (hr $\le 0$). Solver keys abbreviated: dd = dual-domain, px = pixel, wav = wavelet, dc = data-consistency step, con./unc.\ = (un)constrained, sup = supervised.\label{tab:mayo}}
+\begin{table}[t]
+\caption{Mayo low-dose CT test board, ranked solvers ($n=5$ test patients). hr is the calibrated headroom (Eq.~\ref{eq:hr}) and the ranking metric; SSIM and RMSE use a batch-wide data range (RMSE in line-integral units). Params are trainable-parameter counts (M = millions, otherwise a raw count; dd = dual-domain, sup = supervised). The 12 solvers that did not clear the FBP floor (hr $\le 0$) are omitted here; the full 26-solver board is in Supplement~S4.\label{tab:mayo}}
 \scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{minipage}[t]{0.49\textwidth}
+\setlength{\tabcolsep}{4pt}
 \centering
 \begin{tabular}{@{}rlrrrr@{}}
 \toprule
@@ -207,32 +214,10 @@ One outcome deserves emphasis on its own, because it bears directly on using age
 11 & wu-2015-trainable & 0.0207 & 0.8923 & 0.0008 & 8 \\
 12 & dd-n2i            & 0.0176 & 0.9590 & 0.0008 & 0.466\,M \\
 13 & manduca-bilateral & 0.0159 & 0.9561 & 0.0009 & 7 \\
+14 & dd-bilateral-sup  & 0.0040 & 0.9541 & 0.0009 & 12 \\
 \bottomrule
 \end{tabular}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.49\textwidth}
-\centering
-\begin{tabular}{@{}rlrrrr@{}}
-\toprule
-\textbf{Rank} & \textbf{Solver} & \textbf{hr} & \textbf{SSIM} & \textbf{RMSE} & \textbf{Params} \\
-\midrule
-14 & dd-bilateral-sup     & 0.0040 & 0.9541 & 0.0009 & 12 \\
--- & tv-iterative-sup     & 0.0109 & 0.9366 & 0.0008 & 2 \\
--- & dd-bilateral-n2i     & 0.0000 & 0.9587 & 0.0010 & 12 \\
--- & fastdiff-flow-px-unc & 0.0000 & 0.9523 & 0.0012 & 3.823\,M \\
--- & fastdiff-wdm-wav-con & 0.0000 & 0.9501 & 0.0013 & 3.825\,M \\
--- & ram                  & 0.0000 & 0.9446 & 0.0012 & 35.619\,M \\
--- & learned-primal-dual  & 0.0000 & 0.9415 & 0.0011 & 0.155\,M \\
--- & fastdiff-wdm-wav-unc & 0.0000 & 0.9404 & 0.0013 & 3.825\,M \\
--- & fastdiff-flow-px-con & 0.0000 & 0.9300 & 0.0013 & 3.823\,M \\
--- & diff-recon-dc-unc    & 0.0000 & 0.9084 & 0.0014 & 8.594\,M \\
--- & diff-recon-dc-con    & 0.0000 & 0.8766 & 0.0016 & 8.594\,M \\
--- & r2gaussian           & 0.0000 & 0.8234 & 0.0043 & 0.003\,M \\
--- & naf                  & 0.0000 & 0.8172 & 0.0028 & 33.558\,M \\
-\bottomrule
-\end{tabular}
-\end{minipage}
-\end{table*}
+\end{table}
 
 \subsection{Noiseless Breast CT Challenge: the numbers are not a leak}\label{sec:noleak}
 
