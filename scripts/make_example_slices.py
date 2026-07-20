@@ -74,7 +74,7 @@ def main():
     for k, (img, (vmin, vmax)) in enumerate(seq):
         ax = axs[k]
         m = img.copy(); m[~f] = vmin
-        ax.imshow(m, cmap="gray", vmin=vmin, vmax=vmax)
+        ax.imshow(m, cmap="gray", vmin=vmin, vmax=vmax, interpolation="none")
         ax.set_xticks([]); ax.set_yticks([])
         for s in ax.spines.values():
             s.set_visible(False)
@@ -83,7 +83,7 @@ def main():
     fig.text(0.27, 0.015, "Mayo (low-dose)", ha="center", fontsize=7.5, fontweight="bold")
     fig.text(0.76, 0.015, "Breast (128-view sparse)", ha="center", fontsize=7.5, fontweight="bold")
     fig.tight_layout(rect=[0, 0.08, 1, 1], w_pad=0.3)
-    fig.savefig(OUT, bbox_inches="tight")
+    fig.savefig(OUT, bbox_inches="tight", dpi=600)
     print("wrote", OUT, "  Mayo slice window [%.3f,%.3f], breast [%.3f,%.3f]" % (
         np.percentile(m_truth[f], 1), np.percentile(m_truth[f], 99),
         np.percentile(b_truth[f], 1), np.percentile(b_truth[f], 99)))
