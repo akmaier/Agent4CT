@@ -71,20 +71,22 @@ def rank_fields(row: dict, status: str, challenge: str | None,
     (`has_final=False`) is 'pending-test' (dimmed below the ranked set, never
     interleaved by a val number, which would be a different scale), distinct from a
     run scored-but-failed (final.json present, test_hr null/<=0 -> non-finite /
-    hr<=0). On a val board it is the val headroom. Excluded precedence:
-    discard > pending-test > non-finite > hr<=0."""
+    hr<=0). On a val board it is the val headroom. Test-board excluded precedence:
+    pending-test > non-finite > hr<=0 — a `discard` verdict does NOT exclude a
+    positive test score (see below); val boards keep the discard exclusion."""
     if metric_basis(challenge) == "test":
         raw = row.get("test_hr_mean")
         rm = raw if (isinstance(raw, (int, float)) and math.isfinite(raw)) else None
         tb = row.get("test_ssim_mean")
-        # breast_ct_noise is a no-retrain RE-EVALUATION of frozen checkpoints. A
-        # run's "discard" status is a verdict from the *noiseless* val-search and
-        # does not apply to the noisy test: rank such a run by its genuine noisy
-        # test headroom. (Native test boards keep discard as an exclusion.)
-        reeval = challenge in ("breast_ct_noise", "breast_ct_noise_retrain")
-        if (status or "").strip().lower() == "discard" and not reeval:
-            reason = "discard"
-        elif not has_final:
+        # A "discard" is a verdict from the noiseless val-SEARCH; it never gates a
+        # HELD-OUT TEST result. On every test board the ranking is purely the test
+        # metric: a finite, positive test hr is ALWAYS ranked, even if that
+        # iteration was discarded during the search — a config the search rejected
+        # that still beats the FBP baseline on the held-out test set is a real
+        # result, not an exclusion. Only a missing / non-finite / non-positive test
+        # score excludes. (Val boards rank by the same signal the search used to
+        # keep/discard, so there `discard` legitimately excludes — excluded_reason.)
+        if not has_final:
             reason = "pending-test"                 # no test-eval yet
         elif rm is None:
             reason = "non-finite"
