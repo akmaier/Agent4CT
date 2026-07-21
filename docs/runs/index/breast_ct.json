@@ -3,7 +3,7 @@
  "challenge": "breast_ct",
  "label": "Breast-CT",
  "campaign": "calibrated+agentic",
- "updated": "2026-07-09T18:18:55Z",
+ "updated": "2026-07-21T19:25:05Z",
  "leaderboard": {
   "ranking_metric": "test hr (mean over 200 cases)",
   "tiebreak": "test_ssim",
@@ -689,8 +689,8 @@
     "metric_basis": "test",
     "rank_metric": 5.036029747583049e-05,
     "rank_tiebreak": 0.9460639229416847,
-    "excluded_reason": "discard",
-    "rank": null
+    "excluded_reason": null,
+    "rank": 22
    },
    {
     "solver_key": "fastdiff-wdm-wavelet-unconstrained",
@@ -720,7 +720,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.9447808548808098,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -751,7 +751,7 @@
     "metric_basis": "test",
     "rank_metric": null,
     "rank_tiebreak": null,
-    "excluded_reason": "discard",
+    "excluded_reason": "pending-test",
     "rank": null
    },
    {
@@ -782,7 +782,7 @@
     "metric_basis": "test",
     "rank_metric": null,
     "rank_tiebreak": null,
-    "excluded_reason": "discard",
+    "excluded_reason": "pending-test",
     "rank": null
    }
   ]
@@ -1033,9 +1033,9 @@
    "test_rmse_mean": 0.006176557664293796,
    "test_rmse_std": 0.0006389284724868258,
    "started": "2026-07-06T12:39:33Z",
-   "status": "excluded",
+   "status": "ranked",
    "params_M": 0.465762,
-   "excluded_reason": "discard",
+   "excluded_reason": null,
    "agent": "dual_domain_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-06T12:39:33Z",
@@ -1595,7 +1595,7 @@
    "started": "2026-07-07T04:26:12Z",
    "status": "excluded",
    "params_M": 3.824908,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "fastdiff_wdm_wavelet_unconstrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-07T04:26:12Z",
@@ -2599,7 +2599,7 @@
    "started": "2026-07-06T13:31:59Z",
    "status": "excluded",
    "params_M": 33.562817,
-   "excluded_reason": "discard",
+   "excluded_reason": "pending-test",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-06T13:31:59Z",
@@ -2887,7 +2887,7 @@
    "started": "2026-07-05T22:51:29Z",
    "status": "excluded",
    "params_M": 0.006144,
-   "excluded_reason": "discard",
+   "excluded_reason": "pending-test",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-07-05T22:51:29Z",

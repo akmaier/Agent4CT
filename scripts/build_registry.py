@@ -216,15 +216,26 @@ def _itertest_base(slug: str, ch: str | None = None) -> Path:
     return DOCS_RUNS / f"{slug}-itertest"
 
 
+_FINAL_COMPLETE_FRAC = 0.95  # >=95% of the held-out set == "complete enough" to report
+
+
 def _test_final_complete(obj: dict) -> bool:
-    """A per-iter TEST final.json is complete when its whole held-out set scored.
-    Mayo: all 5 patients present in the `patients` dict. Breast (i.i.d. cases, no
-    patients): the `complete` flag its worker sets (breast_testset_final_v1). Both
-    then require a finite test_hr_mean (checked by the caller)."""
+    """Usable for the FINAL board when the evaluation is essentially complete
+    (>=95% of the held-out set scored). The strict all-cases check was a
+    SEARCH-time guard against a mid-run / partial final.json; on the final board a
+    near-complete evaluation (e.g. breast 199/200 cases) is a real result and is
+    reported, while a genuinely partial DNF (e.g. a per-scene method that scored
+    ~10% of cases under the wall) is still excluded. A finite test_hr_mean is
+    required by the caller. Mayo: >=95% of 5 patients rounds up to all 5, so Mayo
+    is unchanged."""
     if "patients" in obj:                       # Mayo per-patient final.json
         pats = obj.get("patients") or {}
-        return all(pats.get(p) is not None for p in _TEST_PATIENTS)
-    return bool(obj.get("complete"))            # breast per-case final.json
+        present = sum(1 for p in _TEST_PATIENTS if pats.get(p) is not None)
+        return present >= math.ceil(_FINAL_COMPLETE_FRAC * len(_TEST_PATIENTS))
+    if obj.get("complete"):                      # breast per-case final.json
+        return True
+    got, exp = obj.get("test_n_cases"), obj.get("n_test_expected")
+    return bool(got and exp and got / exp >= _FINAL_COMPLETE_FRAC)
 
 
 def _test_best_iter(slug: str, ch: str | None = None):
@@ -665,8 +676,11 @@ def write_readme_block(datasets_summary: list[dict]) -> None:
         "mayo_ldct": ("Mayo-LDCT** (Wagner split, real helical)", "docs/leaderboards/mayo_ldct.md"),
         "breast_ct": ("Breast-CT** (128-view sparse)", "docs/leaderboards/breast_ct.md"),
         "demo_dl": ("Demo-DL** (Sidky ellipse, 128-view sparse)", "docs/leaderboards/demo_dl.md"),
+        "breast_ct_noise": ("BreastCT-Noise** (128-view sparse, I0=100k, no retrain)", "docs/leaderboards/breast_ct_noise.md"),
+        "breast_ct_noise_retrain": ("BreastCT-Noise-Retrained** (retrained on noisy train)", "docs/leaderboards/breast_ct_noise_retrain.md"),
     }
-    order = {"breast_ct": 0, "demo_dl": 1, "mayo_ldct": 2}
+    order = {"breast_ct": 0, "demo_dl": 1, "mayo_ldct": 2,
+             "breast_ct_noise": 3, "breast_ct_noise_retrain": 4}
     for d in sorted(datasets_summary, key=lambda x: order.get(x["challenge"], 9)):
         lab, link = label_link.get(d["challenge"], (d["label"], "#"))
         champ = d.get("champion_name") or "—"

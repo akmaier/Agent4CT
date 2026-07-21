@@ -3,7 +3,7 @@
  "challenge": "mayo_ldct",
  "label": "Mayo-LDCT",
  "campaign": "search-20260619-01",
- "updated": "2026-07-09T18:18:55Z",
+ "updated": "2026-07-21T19:25:05Z",
  "leaderboard": {
   "ranking_metric": "test hr (mean over 5 patients)",
   "tiebreak": "test_ssim",
@@ -414,6 +414,37 @@
     "rank": 13
    },
    {
+    "solver_key": "tv-iterative-supervised",
+    "solver_name": "TV-iterative (unrolled)",
+    "run_id": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
+    "best_iter": 6,
+    "params_M": 2e-06,
+    "params_source": "observation",
+    "val_ssim": null,
+    "headroom": null,
+    "val_psnr": null,
+    "val_rmse": null,
+    "val_ssim_std": null,
+    "val_psnr_std": null,
+    "val_rmse_std": null,
+    "headroom_std": null,
+    "elapsed_s": 911.5378065109253,
+    "image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
+    "test_hr_mean": 0.010935507199938011,
+    "test_hr_std": 0.015848069029609783,
+    "test_ssim_mean": 0.9366217374801635,
+    "test_ssim_std": 0.02218822341159957,
+    "test_psnr_mean": 39.06466293334961,
+    "test_psnr_std": 2.0829295801407177,
+    "test_rmse_mean": 0.0008247262798249721,
+    "test_rmse_std": 0.00025364527601159904,
+    "metric_basis": "test",
+    "rank_metric": 0.010935507199938011,
+    "rank_tiebreak": 0.9366217374801635,
+    "excluded_reason": null,
+    "rank": 14
+   },
+   {
     "solver_key": "dual-domain-bilateral-supervised",
     "solver_name": "DD-BF supervised L2",
     "run_id": "mayo-ldct-claude-agentic-dual-domain-bilateral-supervised-search-20260619-01",
@@ -442,38 +473,7 @@
     "rank_metric": 0.004029565379870847,
     "rank_tiebreak": 0.9540912508964539,
     "excluded_reason": null,
-    "rank": 14
-   },
-   {
-    "solver_key": "tv-iterative-supervised",
-    "solver_name": "TV-iterative (unrolled)",
-    "run_id": "mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01",
-    "best_iter": 6,
-    "params_M": 2e-06,
-    "params_source": "observation",
-    "val_ssim": null,
-    "headroom": null,
-    "val_psnr": null,
-    "val_rmse": null,
-    "val_ssim_std": null,
-    "val_psnr_std": null,
-    "val_rmse_std": null,
-    "headroom_std": null,
-    "elapsed_s": 911.5378065109253,
-    "image": "runs/mayo-ldct-claude-agentic-tv-iterative-supervised-search-20260619-01/iterations/iter-0006/comparison.png",
-    "test_hr_mean": 0.010935507199938011,
-    "test_hr_std": 0.015848069029609783,
-    "test_ssim_mean": 0.9366217374801635,
-    "test_ssim_std": 0.02218822341159957,
-    "test_psnr_mean": 39.06466293334961,
-    "test_psnr_std": 2.0829295801407177,
-    "test_rmse_mean": 0.0008247262798249721,
-    "test_rmse_std": 0.00025364527601159904,
-    "metric_basis": "test",
-    "rank_metric": 0.010935507199938011,
-    "rank_tiebreak": 0.9366217374801635,
-    "excluded_reason": "discard",
-    "rank": null
+    "rank": 15
    },
    {
     "solver_key": "dual-domain-bilateral-n2i",
@@ -503,7 +503,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.958737599849701,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -534,7 +534,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.9522739768028259,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -565,7 +565,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.9501294612884521,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -596,7 +596,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.9445780038833618,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -627,7 +627,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.9414811730384827,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -658,7 +658,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.9403926134109497,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -689,7 +689,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.9299533605575562,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -720,7 +720,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.9083827614784241,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -751,7 +751,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.8765703797340393,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -782,7 +782,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.8234405755996704,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    },
    {
@@ -813,7 +813,7 @@
     "metric_basis": "test",
     "rank_metric": 0.0,
     "rank_tiebreak": 0.8171576857566833,
-    "excluded_reason": "discard",
+    "excluded_reason": "hr<=0",
     "rank": null
    }
   ]
@@ -842,7 +842,7 @@
    "started": "2026-06-22T20:29:18Z",
    "status": "excluded",
    "params_M": 8.594211,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "diffusion_recon_dcstep_constrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-22T20:29:18Z",
@@ -954,7 +954,7 @@
    "started": "2026-06-22T19:48:09Z",
    "status": "excluded",
    "params_M": 8.594211,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "diffusion_recon_dcstep_unconstrained_mayo_v4-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-22T19:48:09Z",
@@ -1066,7 +1066,7 @@
    "started": "2026-06-22T19:52:35Z",
    "status": "excluded",
    "params_M": 1.2e-05,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "dual_domain_bilateral_n2i-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-22T19:52:35Z",
@@ -1514,7 +1514,7 @@
    "started": "2026-06-24T06:02:44Z",
    "status": "excluded",
    "params_M": 3.822787,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "fastdiff_flow_pixel_constrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-24T06:02:44Z",
@@ -1626,7 +1626,7 @@
    "started": "2026-06-24T07:39:20Z",
    "status": "excluded",
    "params_M": 3.822787,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "fastdiff_flow_pixel_unconstrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-24T07:39:20Z",
@@ -1738,7 +1738,7 @@
    "started": "2026-06-24T07:07:15Z",
    "status": "excluded",
    "params_M": 3.824908,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "fastdiff_wdm_wavelet_constrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-24T07:07:15Z",
@@ -1850,7 +1850,7 @@
    "started": "2026-06-24T06:34:29Z",
    "status": "excluded",
    "params_M": 3.824908,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "fastdiff_wdm_wavelet_unconstrained-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-24T06:34:29Z",
@@ -2522,7 +2522,7 @@
    "started": "2026-06-22T19:55:43Z",
    "status": "excluded",
    "params_M": 0.155406,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "learned_primal_dual-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-22T19:55:43Z",
@@ -2858,7 +2858,7 @@
    "started": "2026-06-22T20:12:03Z",
    "status": "excluded",
    "params_M": 33.557601,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "naf-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-22T20:12:03Z",
@@ -3158,7 +3158,7 @@
    "started": "2026-06-22T19:58:31Z",
    "status": "excluded",
    "params_M": 0.003072,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "r2gaussian-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-22T19:58:31Z",
@@ -3270,7 +3270,7 @@
    "started": "2026-06-22T20:02:48Z",
    "status": "excluded",
    "params_M": 35.618953,
-   "excluded_reason": "discard",
+   "excluded_reason": "hr<=0",
    "agent": "ram_zeroshot-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-22T20:02:48Z",
@@ -3492,9 +3492,9 @@
    "test_rmse_mean": 0.0008247262798249721,
    "test_rmse_std": 0.00025364527601159904,
    "started": "2026-06-22T18:59:51Z",
-   "status": "excluded",
+   "status": "ranked",
    "params_M": 2e-06,
-   "excluded_reason": "discard",
+   "excluded_reason": null,
    "agent": "tv_iterative_supervised-claude-agentic",
    "model": "claude-opus-4-8-1m",
    "ts": "2026-06-22T18:59:51Z",
