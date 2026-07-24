@@ -372,9 +372,34 @@ def build_arxiv_article() -> Path:
     # note: \begin{@twocolumnfalse} needs no \makeatletter - \begin builds the
     # control sequence through \csname, which ignores the catcode of '@'.
 
+    # Stage and build, so the .bbl is generated NATIVELY by unsrtnat. The Wiley
+    # main.bbl must not be reused here: it is AMA-formatted (it even carries
+    # \doibase), i.e. a Medical Physics style smuggled into the preprint, and it
+    # would disagree with the \bibliographystyle this document declares if arXiv
+    # chose to re-run BibTeX.
+    stagedir = BUILD / "arxiv_article"
+    if stagedir.exists():
+        shutil.rmtree(stagedir)
+    (stagedir / "figures").mkdir(parents=True)
+    (stagedir / "anc").mkdir(parents=True)
+    (stagedir / "main.tex").write_text(doc)
+    shutil.copy2(TEX / "refs.bib", stagedir / "refs.bib")
+    for f in ARXIV_FIGS:
+        shutil.copy2(src / "figures" / f, stagedir / "figures" / f)
+    shutil.copy2(src / "supplement.pdf", stagedir / "anc" / "supplement.pdf")
+    (stagedir / "README.txt").write_text(ARXIV_ARTICLE_README)
+    for step in (["pdflatex", "-interaction=nonstopmode", "main.tex"],
+                 ["bibtex", "main"],
+                 ["pdflatex", "-interaction=nonstopmode", "main.tex"],
+                 ["pdflatex", "-interaction=nonstopmode", "main.tex"]):
+        subprocess.run(step, cwd=stagedir, capture_output=True)
+
+    bbl = (stagedir / "main.bbl").read_text()
+    assert "doibase" not in bbl, "Wiley AMA .bbl leaked into the article package"
+
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("main.tex", doc)
-        z.write(src / "main.bbl", "main.bbl")
+        z.write(stagedir / "main.bbl", "main.bbl")
         z.write(TEX / "refs.bib", "refs.bib")
         for f in ARXIV_FIGS:
             z.write(src / "figures" / f, f"figures/{f}")
