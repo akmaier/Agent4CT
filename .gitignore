@@ -59,3 +59,6 @@ hand-off.md
 model_ckpt.pt
 recon_raw.npz
 *.bak
+
+# Submission packages are build artifacts (regenerate: scripts/make_submission.py)
+paper/build/
