@@ -11,11 +11,11 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{etoolbox}
-% Compress the reference list (class default 8.5/10 -> 8.1/8.35) so the 39-item
+% Compress the reference list (class default 8.5/10 -> 8.3/8.55) so the 39-item
 % list fits within 10 pages. No references removed; only their size/leading is
 % reduced. Journal production re-typesets this anyway.
 \makeatletter
-\AtBeginDocument{\renewcommand{\bibfont}{\reset@font\fontfamily{\rmdefault}\fontsize{8.1}{8.35}\selectfont}}
+\AtBeginDocument{\renewcommand{\bibfont}{\reset@font\fontfamily{\rmdefault}\fontsize{8.3}{8.55}\selectfont}}
 \makeatother
 \AtBeginEnvironment{thebibliography}{\setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}}
 
@@ -105,7 +105,7 @@ We describe the forward model first. For the reconstruction, the scanner is assu
 \begin{equation}\label{eq:forward}
 \mathbf{g} = \mathbf{A}\,\mathbf{x} + \boldsymbol{\varepsilon}.
 \end{equation}
-Here $\mathbf{x}$ is the image, $\mathbf{A}$ the discrete fan-beam projector, $\mathbf{g}$ the measured projections, and $\boldsymbol{\varepsilon}$ the noise. For the noiseless Sidky breast data $\boldsymbol{\varepsilon}=\mathbf{0}$. Reconstruction means recovering $\mathbf{x}$ from $\mathbf{g}$. With 128 views, $\mathbf{A}$ is under-determined.
+Here $\mathbf{x}$ is the image, $\mathbf{A}$ the discrete fan-beam projector, $\mathbf{g}$ the measured projections, and $\boldsymbol{\varepsilon}$ the noise. For the noiseless breast data $\boldsymbol{\varepsilon}=\mathbf{0}$. Reconstruction means recovering $\mathbf{x}$ from $\mathbf{g}$. With 128 views, $\mathbf{A}$ is under-determined.
 
 Almost every method is one instance of the same regularized inversion. We trade fit to the measurements against a prior:
 \begin{equation}\label{eq:variational}
@@ -164,11 +164,11 @@ Band decomposition (Wu-2015)             & in-loop    & hand-cr. / sup. & \cite{
 
 \subsection{The calibrated-headroom metric}\label{sec:metric}
 
-We score how far a method closes the gap between the low-dose FBP and the truth. Let $\mathbf{M}$ be a field-of-view mask. The headroom is
+We score how far a reconstruction closes the gap between the FBP baseline and the reference. Let $\mathbf{M}$ be a field-of-view mask. For a reconstruction $\hat{\mathbf{x}}$ the headroom is
 \begin{equation}\label{eq:hr}
-\mathrm{hr}=\max\!\Big(0,\ 1-\frac{\mathrm{RMSE}\big(\mathbf{M}\!\odot\!\hat{\mathbf{x}},\,\mathbf{M}\!\odot\!\mathbf{x}\big)}{\mathrm{RMSE}\big(\mathbf{M}\!\odot\!\mathbf{x}_{\mathrm{FBP}},\,\mathbf{M}\!\odot\!\mathbf{x}\big)}\Big).
+\mathrm{hr}(\hat{\mathbf{x}})=\max\!\Big(0,\ 1-\frac{\mathrm{RMSE}\big(\mathbf{M}\!\odot\!\hat{\mathbf{x}},\,\mathbf{M}\!\odot\!\mathbf{x}\big)}{\mathrm{RMSE}\big(\mathbf{M}\!\odot\!\mathbf{x}_{\mathrm{FBP}},\,\mathbf{M}\!\odot\!\mathbf{x}\big)}\Big).
 \end{equation}
-Here $\mathbf{M}$ is the circular scan field-of-view mask, and $\mathbf{x}_{\mathrm{FBP}}$ is the filtered-back-projection baseline computed from the same input as $\hat{\mathbf{x}}$ (the clean sinogram on the noiseless board, the noisy sinogram on the noisy board). An hr of 0 means no better than that FBP baseline: the $\max(0,\cdot)$ floors any method that fails to beat it. An hr near 1 means near-perfect. The single error hr rewards is masked RMSE against the truth. hr is the only quantity the agent optimises and the only ranking metric; SSIM and PSNR are reported alongside as secondary, human-facing checks (on a batch-wide data range so they are comparable across cases), never optimised or ranked on. We select each method's best iteration on validation, then report its scores once on the held-out test set as the per-case mean $\pm$ standard deviation.
+Here $\mathbf{M}$ is the circular scan field-of-view mask and $\mathbf{x}$ is the reference: the noiseless phantom image on breast CT, and the high-dose scan on Mayo. $\mathbf{x}_{\mathrm{FBP}}$ is the filtered-back-projection baseline reconstructed from the same measurements the method itself receives, so hr always measures the improvement over doing nothing on that input: the low-dose sinogram on Mayo, the clean sinogram on the noiseless breast board, and the noisy sinogram on the two noisy breast boards. An hr of 0 means no better than that FBP baseline: the $\max(0,\cdot)$ floors any method that fails to beat it. An hr near 1 means near-perfect. The single error hr rewards is masked RMSE against the truth. hr is the only quantity the agent optimises and the only ranking metric; SSIM and PSNR are reported alongside as secondary, human-facing checks (on a batch-wide data range so they are comparable across cases), never optimised or ranked on. We select each method's best iteration on validation, then report its scores once on the held-out test set as the per-case mean $\pm$ standard deviation.
 
 \subsection{The noise-robustness experiment}\label{sec:noiseexp}
 
@@ -176,7 +176,7 @@ We ask whether the noiseless ranking survives a little input noise. For each met
 \begin{equation}\label{eq:noise}
 N\sim\mathrm{Poisson}\big(I_0\,e^{-p}\big),\qquad \hat p=-\log\!\big(\max(N,1)/I_0\big).
 \end{equation}
-We use $I_0=10^5$ photons. This is a rather high dose. The noise is mild --- about 1--2\,\% at the thickest ray. We apply it to the test inputs only. Note that the ground truth stays clean. Supervised solvers \textbf{load their noiseless-trained weights and no additional training is applied}. Per-scene and classical solvers re-fit on the noisy input, which is their normal inference. The FBP baseline in Eq.~(\ref{eq:hr}) is recomputed from the same noisy data, so hr measures improvement over the noisy FBP. This is exactly the realistic model $\mathbf{A}\mathbf{x}+\boldsymbol{\varepsilon}$ that the noiseless challenge does not study.
+We use $I_0=10^5$ photons. This is a rather high dose. The noise is mild --- about 1--2\,\% at the thickest ray. We apply it to the test inputs only. Note that the ground truth stays clean. Supervised solvers \textbf{load their noiseless-trained weights and no additional training is applied}. Per-scene and classical solvers re-fit on the noisy input, which is their normal inference. The FBP baseline in Eq.~(\ref{eq:hr}) is recomputed from the same noisy data, so hr measures improvement over the noisy FBP. This is exactly the realistic model $\mathbf{A}\mathbf{x}+\boldsymbol{\varepsilon}$ that the noiseless challenge does not study. In a second step, we retrained all models on the noisy data and checked the performance again, to see whether the rankings recover.
 
 \subsection{Statistics}\label{sec:stats}
 
@@ -188,10 +188,6 @@ We begin with Mayo. There the five held-out patients give $n=5$, so the paired $
 \subsection{Mayo low-dose CT: a tier, not a winner}\label{sec:tier}
 
 On Mayo the leaderboard yields no single winner, only a small top tier that is statistically indistinguishable. The champion is ITNet at hr $0.376\pm0.089$, with ITNet-v2 (0.374) and U-Swin (0.370) inside one standard error. A paired $t$-test cannot separate ITNet, its variants, and U-Swin at the 5\,\% level, and our compact recombination solver (Section~\ref{sec:compact}; listed as \emph{param-efficient} in the tables and figures) joins this tier at the 1\,\% level ($p=0.02$--$0.027$). The cause is sample size: with five patients ($n=5$), only large, consistent gaps clear significance. The paired $t$-test separates the wider gaps below the tier but not the small, patient-to-patient-noisy differences among the top methods (a two-sided Wilcoxon signed-rank test cannot reach $p<0.05$ at all at $n=5$), so the top of the board is best read as a tie. The absolute image metrics agree: the top six solvers all exceed SSIM 0.97 and sit at the RMSE floor of $5\times10^{-4}$, so SSIM saturates exactly where headroom still separates methods. Below the tier the board spreads cleanly, from the variational network (hr 0.159) and classical total variation (0.096) down through the PWLS-TV and bilateral baselines. Several families (diffusion priors, per-scene implicit methods, the zero-shot foundation model, and the primal-dual unroll as configured for the Mayo geometry) do not clear the low-dose FBP baseline and sit at hr 0 even though their SSIM stays high (0.82--0.95): SSIM rewards the smoothness that hr, measured against FBP, does not credit. The full board, per-patient headroom, and pairwise significance matrix are in Table~\ref{tab:mayo} and Supplement~S4.
-
-\subsection{A meta-result: instructing is far cheaper than coding}\label{sec:effort}
-
-One outcome deserves emphasis on its own, because it bears directly on using agents for research: the effort accounting. Every line of code in this study, the geometry pipeline, all solvers, and the benchmark harness, was written by the agent. The human did not hand-code but instructed. What varied, by a wide margin, was how much instruction each part needed. The helical-to-fan \emph{geometry pipeline} was by far the hardest: bringing the differentiable rebinning and its calibration to a physically correct FBP baseline took many supervised iterations and was the dominant human cost of the study (Supplement~S2). \emph{Implementing and benchmarking the 26 solvers} needed far less. The agent onboarded 13 of them across two days, and the three-week benchmark campaign was overwhelmingly automated, most of its commits changing only results and not code, while the agent ran $\sim$1{,}100 iterations for $\sim$134~GPU-hours of compute, largely in parallel. Costing each source-changing commit at an estimated 7.5 minutes (Supplement~S2), the human's hands-on share of the solver and benchmarking work was on the order of hours. The asymmetry is the lesson: instructing an agent is far cheaper than coding by hand, though not uniformly, since the hard, physics-heavy pipeline still demanded the most human supervision while the methods layered on top cost only hours.
 
 \begin{table}[t]
 \caption{Mayo low-dose CT test board, ranked solvers ($n=5$ test patients). hr is the calibrated headroom (Eq.~\ref{eq:hr}) and the ranking metric; SSIM and RMSE use a batch-wide data range (RMSE in line-integral units). Params are trainable-parameter counts (M = millions, otherwise a raw count; dd = dual-domain, sup = supervised). The 11 solvers that did not clear the FBP floor (hr $\le 0$) are omitted here; the full 26-solver board is in Supplement~S4.\label{tab:mayo}}
@@ -220,6 +216,10 @@ One outcome deserves emphasis on its own, because it bears directly on using age
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{A meta-result: instructing is far cheaper than coding}\label{sec:effort}
+
+One outcome deserves emphasis on its own, because it bears directly on using agents for research: the effort accounting. Every line of code in this study, the geometry pipeline, all solvers, and the benchmark harness, was written by the agent. The human did not hand-code but instructed. What varied, by a wide margin, was how much instruction each part needed. The helical-to-fan \emph{geometry pipeline} was by far the hardest: bringing the differentiable rebinning and its calibration to a physically correct FBP baseline took many supervised iterations and was the dominant human cost of the study (Supplement~S2). \emph{Implementing and benchmarking the 26 solvers} needed far less. The agent onboarded 13 of them across two days, and the three-week benchmark campaign was overwhelmingly automated, most of its commits changing only results and not code, while the agent ran $\sim$1{,}100 iterations for $\sim$134~GPU-hours of compute, largely in parallel. Costing each source-changing commit at an estimated 7.5 minutes (Supplement~S2), the human's hands-on share of the solver and benchmarking work was on the order of hours. The asymmetry is the lesson: instructing an agent is far cheaper than coding by hand, though not uniformly, since the hard, physics-heavy pipeline still demanded the most human supervision while the methods layered on top cost only hours.
 
 \subsection{Noiseless Breast CT Challenge: the numbers are not a leak}\label{sec:noleak}
 
@@ -317,7 +317,7 @@ Two groups do not recover. The two \emph{constrained} fast-diffusion variants st
 \end{figure}
 
 \begin{figure*}[t]
-\centerline{\includegraphics[width=\linewidth]{fig4_recon_panels.pdf}}
+\centerline{\includegraphics[width=0.85\linewidth]{fig4_recon_panels.pdf}}
 \caption{Example reconstructions behind the reversal, for the two methods at opposite ends of it. Rows: the noiseless champion \emph{dual-domain-supervised} (a supervised image-domain denoiser) versus \emph{learned-primal-dual} (in-loop physics). Columns: ground truth, reconstruction from the clean input, reconstruction from the noisy input ($I_0=10^5$, same trained model, no retraining), and the difference to truth. Per-case SSIM and hr are annotated on each reconstruction; these are single-case values and differ from the 200-case board means in Table~\ref{tab:reversal}. On clean inputs both are near-perfect. Under mild input noise the supervised denoiser collapses (single-case SSIM $0.999\!\to\!0.301$), spraying structured error across the field of view, while the physics-in-the-loop primal-dual method holds (SSIM $0.995\!\to\!0.986$). This is the pixel-level face of the ranking reshuffle in Figure~\ref{fig:reversal} and Table~\ref{tab:reversal}.\label{fig:panels}}
 \end{figure*}
 
