@@ -297,7 +297,7 @@ as an ancillary file, say so and it can be appended to main.tex instead.
 """
 
 
-ARTICLE_PREAMBLE = r"""\documentclass[10pt,twocolumn]{article}
+ARTICLE_PREAMBLE = r"""\documentclass[11pt]{article}
 % arXiv preprint build. Deliberately NOT the Wiley journal class: that class
 % stamps the manuscript with journal branding (masthead, OPEN ACCESS badge, the
 % Wiley/allergy/openaccess EPS logos) which is misleading on a preprint and is
@@ -350,23 +350,38 @@ def build_arxiv_article() -> Path:
         a = re.sub(r"\\(state|country)\{", "", a)
         return re.sub(r"[{}%]", "", a).replace("\n", " ").strip().rstrip(",")
 
-    auth = " \\quad ".join(f"{n}\\textsuperscript{{{k}}}" for k, n in authors)
+    auth = ", ".join(f"{n}\\textsuperscript{{{k}}}" for k, n in authors)
     aff = " \\\\\n".join(f"\\textsuperscript{{{i}}}{clean_addr(a)}" for i, a in addrs)
 
     # body: everything between \maketitle and \bibliography, minus Wiley macros
     body = s[s.index("\\maketitle") + len("\\maketitle"): s.index("\\bibliography{refs}")]
     body = body.replace("\\bmsubsection*", "\\subsection*")
+    # --- single-column adjustments -------------------------------------------
+    # Starred floats are a two-column construct; in a one-column document they
+    # are meaningless and can strand floats at the end. Demote them.
+    for env in ("figure", "table"):
+        body = body.replace(f"\\begin{{{env}*}}", f"\\begin{{{env}}}")
+        body = body.replace(f"\\end{{{env}*}}", f"\\end{{{env}}}")
+    # \columnwidth == \textwidth once single-column, so figures drawn for a
+    # narrow column would blow up to full width. Scale them to a sane size.
+    body = body.replace("width=\\columnwidth", "width=0.62\\linewidth")
+    body = body.replace("width=0.76\\linewidth", "width=0.80\\linewidth")
 
+    # Authors and affiliations go inside ONE centred minipage. \author alone puts
+    # its content in a non-wrapping box, so a long institution line runs off the
+    # page (it did: affiliation 1 was clipped mid-word). A fixed-width minipage
+    # with \centering wraps the author list and centres each affiliation line.
     doc = (ARTICLE_PREAMBLE
            + "\n\\begin{document}\n\n"
-           + "\\twocolumn[\\begin{@twocolumnfalse}\n"
            + f"\\title{{\\bfseries {title}}}\n"
-           + f"\\author{{{auth} \\\\[0.7em]\n\\normalsize\n{aff}\\\\[0.3em]\n"
-           + "\\normalsize Correspondence: \\texttt{andreas.maier@fau.de}}\n"
-           + "\\date{}\n\\maketitle\n"
+           + "\\author{%\n\\begin{minipage}{0.95\\textwidth}\\centering\n"
+           + f"\\normalsize {auth}\\\\[0.9em]\n"
+           + f"\\small\n{aff}\\\\[0.6em]\n"
+           + "Correspondence: \\texttt{andreas.maier@fau.de}\n"
+           + "\\end{minipage}}\n"
+           + "\\date{}\n\\maketitle\n\n"
            + "\\begin{abstract}\\noindent\n" + abstract + "\n\\end{abstract}\n"
-           + f"\\vspace{{0.5em}}\\noindent\\textbf{{Keywords:}} {keywords}\n"
-           + "\\vspace{1.5em}\n\\end{@twocolumnfalse}]\n"
+           + f"\\vspace{{0.5em}}\\noindent\\textbf{{Keywords:}} {keywords}\n\n"
            + body
            + "\n\\bibliographystyle{unsrtnat}\n\\bibliography{refs}\n\\end{document}\n")
     # note: \begin{@twocolumnfalse} needs no \makeatletter - \begin builds the
