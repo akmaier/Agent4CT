@@ -155,11 +155,16 @@ def fig3_reversal():
         # left labels: rank number prefixed so ranks are legible without ticks
         ax.text(x_left - 0.08, lr, f"{lr}. {name}", ha="right", va="center",
                 fontsize=LBL_FS, color=lbl_col, fontweight=weight, zorder=z + 2)
-        # right labels: rank number + DNF marker for the collapse solver
+        # right labels: rank number, or WHY the solver is unranked. The collapse
+        # solver FINISHED and scored hr 0 (below the floor) -- it is NOT a DNF;
+        # a true DNF (per-scene methods that ran out of wall) has no score at all.
+        # Mislabelling it "DNF" would contradict the text and the board tables.
         if k in nz_rank:
             rlabel = f"{name}  {rr}"
         else:
-            rlabel = f"{name}  (DNF)"
+            hrv = next((r.get("test_hr_mean") for r in noisy
+                        if r["solver_key"] == k), None)
+            rlabel = f"{name}  (hr 0)" if hrv is not None else f"{name}  (DNF)"
         ax.text(x_right + 0.08, rr, rlabel, ha="left", va="center",
                 fontsize=LBL_FS, color=lbl_col, fontweight=weight, zorder=z + 2)
 
