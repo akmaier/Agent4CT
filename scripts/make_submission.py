@@ -302,10 +302,14 @@ def build_arxiv_zip() -> Path:
     import zipfile
     src = BUILD / "arxiv"
     out = BUILD / "arxiv_upload.zip"
-    # \pdfoutput=1 tells arXiv: use pdflatex and produce PDF.
+    # Do NOT inject \pdfoutput=1. It is a pdfTeX-only primitive, and arXiv runs
+    # this submission through xelatex, where \pdfoutput is undefined: it aborts on
+    # line 1 and then swallows the class options, so the paper came out
+    # single-column at 12 pages. The document is engine-agnostic anyway (USG.cls
+    # has its fontspec lines commented out), so ship it unmodified and let arXiv
+    # pick either engine - both are verified to give the same 10-page result.
     tex = (src / "main.tex").read_text()
-    if "\\pdfoutput" not in tex:
-        tex = "\\pdfoutput=1\n" + tex
+    assert "\\pdfoutput" not in tex, "remove \\pdfoutput: breaks arXiv's xelatex"
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("main.tex", tex)
         z.write(src / "main.bbl", "main.bbl")
