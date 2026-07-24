@@ -19,7 +19,10 @@ train / validation / test split for our pipeline.
   Agent4CT pipeline will adopt. Where the challenge already defines a split
   we follow it verbatim; where it does not, we pick a held-out test set and
   document the choice.
-- **Where the data lives on the cluster.** The convention is
+- **Where the data lives on the cluster.** Since 2026-07-24 the data lives in
+  the lab-wide share at `/cluster/shared_dataset/Agent4CT/<challenge>/`, with
+  `/cluster/maier/Agent4CT/data/<challenge>` a symlink into it — so the paths
+  below still resolve unchanged. The convention is
   `/cluster/maier/Agent4CT/data/<challenge>/raw/` for the untouched download
   and `/cluster/maier/Agent4CT/data/<challenge>/staged/` for the
   pre-processed (re-binned, packed) form we feed PYRO-NN. Hot copies move to

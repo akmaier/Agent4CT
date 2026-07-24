@@ -367,6 +367,9 @@ These are part of every agent's `program.md` from iteration 1:
 
 - SSH key auth to `maier@cluster.i5.informatik.uni-erlangen.de` is set up.
 - `/cluster/maier/Agent4CT/` is the project root on the cluster.
+- Challenge data lives in `/cluster/shared_dataset/Agent4CT/<challenge>/`
+  (moved there 2026-07-24); each `data/<challenge>` is a symlink into it, so
+  all documented `data/...` paths still resolve. See [`data/README.md`](data/README.md).
 - The venv + PYRO-NN are built — see `cluster/setup.sh`.
 
 ### Pull data for one or more challenges
@@ -638,7 +641,8 @@ What is still **design**, not yet implemented:
 - Per-challenge `solver.py` and `program.md` templates.
 - Real data — only synthetic random-ellipse phantoms have been used so
   far. Replace `build_dataset()` in `scripts/run_experiment.py` with a
-  real-data loader once the challenge data is on `/cluster/maier`.
+  real-data loader once the challenge data is staged (now under
+  `/cluster/shared_dataset/Agent4CT/`, reachable as `data/<challenge>/`).
 - All-rounder training that maximises the Pentathlon mean across the five
   challenges' test sets.
 

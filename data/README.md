@@ -13,11 +13,21 @@ the same HDF5 files — they only differ in `train_n` / `val_n` / `epochs`
 overrides (see `cluster/slurm/dl_sparse_view*_5min.sbatch` vs the
 matching `*_stage.sbatch`). So you stage once per challenge, not twice.
 
-## Where the raw data lives on the cluster (state as of 2026-05-15)
+## Where the raw data lives on the cluster (moved 2026-07-24)
 
-All challenge data lives under `/cluster/maier/Agent4CT/data/<challenge>/`
-on the LME cluster (`maier@cluster.i5.informatik.uni-erlangen.de`).
-Subsequent agents can find what's already on disk here:
+Challenge data now lives in the lab-wide dataset share, under
+**`/cluster/shared_dataset/Agent4CT/<challenge>/`** on the LME cluster
+(`maier@cluster.i5.informatik.uni-erlangen.de`). Each
+`/cluster/maier/Agent4CT/data/<challenge>` is a **symlink** into it, so every
+path, script, and command in this repo keeps working unchanged:
+`data/mayo_ldct/staged_canonical/` resolves to
+`/cluster/shared_dataset/Agent4CT/mayo_ldct/staged_canonical/`.
+
+Only the five challenge *data* directories moved (`mayo_ldct`,
+`dl_sparse_view`, `ct_mar`, `dl_spectral`, `truect`). The fetch / stage /
+verify scripts stay in `data/`. `data/mri/` is likewise a symlink farm into
+the share (BraTS2024, Calgary-Campinas, fastMRI, ISLES24, TopCoW24) and is not
+used by the CT work. Subsequent agents can find what's already on disk here:
 
 | Challenge | On-cluster path | Raw | Staged HDF5 | Splits (train/val/test) | Notes |
 |---|---|---:|---:|---:|---|
@@ -68,14 +78,21 @@ Verify what's on the cluster:
 
 ```bash
 ssh maier@cluster.i5.informatik.uni-erlangen.de \
-    "du -sh /cluster/maier/Agent4CT/data/*/raw 2>/dev/null"
+    "du -sh /cluster/shared_dataset/Agent4CT/*/raw 2>/dev/null"
 ```
 
 ## Social storage budget
 
-Shared `/cluster` is at ~95 % full lab-wide. Stay under **~500 GB** total
-under `/cluster/maier/` so the rest of the lab has working room. Verify with
-`df -h /cluster` before any large pull — the headline figure drifts.
+Shared `/cluster` is at **~99 % full** lab-wide (517 GB free as of
+2026-07-24), so treat it as out of headroom: check `df -h /cluster` before any
+large pull, and prefer a same-filesystem `mv` over a copy (a copy of the
+~570 GB challenge set would not fit).
+
+The challenge data was moved out of `/cluster/maier/` into
+`/cluster/shared_dataset/Agent4CT/` on 2026-07-24, both to keep the personal
+tree small and so the rest of the lab can reuse these public challenge
+datasets. Note this was a rename within one filesystem: it frees the
+`/cluster/maier/` footprint, **not** space on `/cluster` itself.
 
 | Dataset | Estimated size | % of typical ~1.7 TB free | Pull? |
 |---|---:|---:|---|
