@@ -255,6 +255,73 @@ def finish(d: Path, readme: str) -> None:
     (d / "README.txt").write_text(readme)
 
 
+# --------------------------------------------------------------- arXiv upload
+# Exactly the files pdflatex actually reads (taken from main.fls / supplement.fls),
+# nothing more. Fonts/ is NOT needed: USG.cls has its fontspec/setmainfont lines
+# commented out, so the document builds under pdflatex and Stix comes from TeX
+# Live. NJDapacite.sty, mla.sty, refs.bib and the .bst are never read either -
+# the prebuilt .bbl covers the bibliography.
+ARXIV_NEED = ["USG.cls", "lettersp.sty", "NJDnatbib.sty"]
+ARXIV_FIGS = ["fig1_agentic_loop.pdf", "fig2_params_vs_hr.pdf", "fig3_reversal.pdf",
+              "fig4_recon_panels.pdf", "fig_data_examples.pdf"]
+ARXIV_IMGS = ["Wiley_logo.eps", "Wiley_logo-eps-converted-to.pdf",
+              "allergy.eps", "allergy-eps-converted-to.pdf",
+              "openaccess.eps", "openaccess-eps-converted-to.pdf"]
+
+ARXIV_ZIP_README = """arXiv upload - minimal source package
+=====================================
+
+Engine: pdflatex. USG.cls has its fontspec/setmainfont lines commented out, so
+nothing here needs XeLaTeX; main.tex carries \\pdfoutput=1 so arXiv selects
+pdflatex and PDF output explicitly. Verified: pdflatex gives the same 10-page
+result as our XeLaTeX build, with no errors and no undefined references.
+
+Contents - only the files the build actually reads:
+  main.tex, main.bbl        the manuscript (bbl prebuilt, so no BibTeX run)
+  USG.cls, lettersp.sty,    Wiley class + the two support packages it loads.
+  NJDnatbib.sty             lettersp.sty is lowercase on purpose: the Wiley
+                            distribution ships LETTERSP.STY, which resolves on
+                            case-insensitive macOS but NOT on arXiv's Linux.
+                            That is the "lettersp.sty not found" error.
+  figures/                  the five figures main.tex includes
+  images/                   the three logos USG.cls includes
+  anc/supplement.pdf        supplementary material as an ancillary file
+
+Deliberately excluded: Fonts/ (unused), NJDapacite.sty, mla.sty, refs.bib,
+WileyNJD-AMA.bst (never read), and supplement.tex. Only ONE .tex file with a
+\\documentclass is shipped - two would leave arXiv guessing which is the main
+document, which is the likely cause of the error repeating three times.
+
+If you would rather have the supplement typeset into the posting than attached
+as an ancillary file, say so and it can be appended to main.tex instead.
+"""
+
+
+def build_arxiv_zip() -> Path:
+    """Zip exactly the necessary files, flat at the archive root (no wrapper dir)."""
+    import zipfile
+    src = BUILD / "arxiv"
+    out = BUILD / "arxiv_upload.zip"
+    # \pdfoutput=1 tells arXiv: use pdflatex and produce PDF.
+    tex = (src / "main.tex").read_text()
+    if "\\pdfoutput" not in tex:
+        tex = "\\pdfoutput=1\n" + tex
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("main.tex", tex)
+        z.write(src / "main.bbl", "main.bbl")
+        for f in ARXIV_NEED:
+            z.write(src / f, f)
+        for f in ARXIV_FIGS:
+            z.write(src / "figures" / f, f"figures/{f}")
+        for f in ARXIV_IMGS:
+            p = src / "images" / f
+            if p.exists():
+                z.write(p, f"images/{f}")
+        z.write(src / "supplement.pdf", "anc/supplement.pdf")
+        z.writestr("README.txt", ARXIV_ZIP_README)
+    return out
+
+
 def main() -> int:
     if BUILD.exists():
         shutil.rmtree(BUILD)
@@ -288,6 +355,9 @@ def main() -> int:
     print("=== arxiv (full) ===")
     for k, v in arx_pages.items():
         print(f"  {k}.pdf: {v} pages")
+    z = build_arxiv_zip()
+    print(f"=== arXiv upload zip ===\n  {z.relative_to(REPO)}  "
+          f"({z.stat().st_size/1e6:.1f} MB)")
     return 0
 
 
