@@ -297,6 +297,113 @@ as an ancillary file, say so and it can be appended to main.tex instead.
 """
 
 
+ARTICLE_PREAMBLE = r"""\documentclass[10pt,twocolumn]{article}
+% arXiv preprint build. Deliberately NOT the Wiley journal class: that class
+% stamps the manuscript with journal branding (masthead, OPEN ACCESS badge, the
+% Wiley/allergy/openaccess EPS logos) which is misleading on a preprint and is
+% what produced arXiv's "TIFF preview stripped" warnings. Standard article also
+% drops the USG.cls / lettersp / NJDnatbib dependency chain entirely, so this
+% builds anywhere with either pdflatex or xelatex.
+\usepackage[margin=1.9cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{stix2}                 % same math/text face the journal build uses
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{anyfontsize}
+\usepackage[numbers,super,sort&compress]{natbib}  % superscript numeric, as in the journal style
+\usepackage{caption}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,allcolors=blue}
+\graphicspath{{figures/}}
+\captionsetup{font=small,labelfont=bf}
+\setlength{\bibsep}{0pt plus 0.3ex}
+\renewcommand{\bibfont}{\small}
+"""
+
+
+def build_arxiv_article() -> Path:
+    """Emit an arXiv package that uses standard `article`, not the Wiley class.
+
+    The Wiley front-matter macros (\\author[..]{}, \\address, \\corres, \\abstract,
+    \\articletype, ...) live only in the preamble/front matter, and the three
+    \\bmsubsection* in the back matter are the only class-specific commands in the
+    body - so the body transplants verbatim. main.bbl is portable: it emits plain
+    \\bibitem/\\newblock/\\href and \\providecommand's \\doibase itself.
+    """
+    import zipfile
+    src = BUILD / "arxiv"
+    out = BUILD / "arxiv_article.zip"
+    s = (TEX / "main.tex").read_text()
+
+    title = re.search(r"\\title\{(.+?)\}\n", s).group(1)
+    authors = re.findall(r"\\author\[([^\]]*)\]\{(.+?)\}", s)
+    addrs = re.findall(r"\\address\[(\d+)\]\{(.*?)\}\n\n", s, re.S)
+    abstract = re.search(r"\\abstract\[ABSTRACT\]\{%?\n(.*?)\n\}\n", s, re.S).group(1)
+    keywords = re.search(r"\\keywords\{(.+?)\}", s).group(1)
+
+    def clean_addr(a: str) -> str:
+        a = re.sub(r"\\org(div|name|address)\{", "", a)
+        a = re.sub(r"\\(state|country)\{", "", a)
+        return re.sub(r"[{}%]", "", a).replace("\n", " ").strip().rstrip(",")
+
+    auth = " \\quad ".join(f"{n}\\textsuperscript{{{k}}}" for k, n in authors)
+    aff = " \\\\\n".join(f"\\textsuperscript{{{i}}}{clean_addr(a)}" for i, a in addrs)
+
+    # body: everything between \maketitle and \bibliography, minus Wiley macros
+    body = s[s.index("\\maketitle") + len("\\maketitle"): s.index("\\bibliography{refs}")]
+    body = body.replace("\\bmsubsection*", "\\subsection*")
+
+    doc = (ARTICLE_PREAMBLE
+           + "\n\\begin{document}\n\n"
+           + "\\twocolumn[\\begin{@twocolumnfalse}\n"
+           + f"\\title{{\\bfseries {title}}}\n"
+           + f"\\author{{{auth} \\\\[0.7em]\n\\normalsize\n{aff}\\\\[0.3em]\n"
+           + "\\normalsize Correspondence: \\texttt{andreas.maier@fau.de}}\n"
+           + "\\date{}\n\\maketitle\n"
+           + "\\begin{abstract}\\noindent\n" + abstract + "\n\\end{abstract}\n"
+           + f"\\vspace{{0.5em}}\\noindent\\textbf{{Keywords:}} {keywords}\n"
+           + "\\vspace{1.5em}\n\\end{@twocolumnfalse}]\n"
+           + body
+           + "\n\\bibliographystyle{unsrtnat}\n\\bibliography{refs}\n\\end{document}\n")
+    # note: \begin{@twocolumnfalse} needs no \makeatletter - \begin builds the
+    # control sequence through \csname, which ignores the catcode of '@'.
+
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("main.tex", doc)
+        z.write(src / "main.bbl", "main.bbl")
+        z.write(TEX / "refs.bib", "refs.bib")
+        for f in ARXIV_FIGS:
+            z.write(src / "figures" / f, f"figures/{f}")
+        z.write(src / "supplement.pdf", "anc/supplement.pdf")
+        z.writestr("README.txt", ARXIV_ARTICLE_README)
+    return out
+
+
+ARXIV_ARTICLE_README = """arXiv package - standard `article` class
+=========================================
+
+Rebuilt off the Wiley journal class on purpose. USG.cls stamps the paper with
+journal branding (masthead, OPEN ACCESS badge, Wiley/allergy/openaccess EPS
+logos) that is misleading on a preprint, and those EPS files are what triggered
+arXiv's "TIFF preview stripped" warnings. Dropping the class also removes the
+USG.cls / lettersp.sty / NJDnatbib.sty dependency chain.
+
+  main.tex      article class, two-column, title+abstract spanning both columns
+  main.bbl      prebuilt bibliography (portable: plain \\bibitem/\\newblock/\\href)
+  refs.bib      source bibliography, in case arXiv prefers to run BibTeX
+  figures/      the five figures
+  anc/          supplement.pdf as an ancillary file
+
+Citations stay superscript-numeric via natbib [numbers,super], matching the
+journal look. No \\pdfoutput is set: the document is engine-agnostic and builds
+under pdflatex or xelatex.
+"""
+
+
 def build_arxiv_zip() -> Path:
     """Zip exactly the necessary files, flat at the archive root (no wrapper dir)."""
     import zipfile
@@ -359,9 +466,13 @@ def main() -> int:
     print("=== arxiv (full) ===")
     for k, v in arx_pages.items():
         print(f"  {k}.pdf: {v} pages")
+    a = build_arxiv_article()
     z = build_arxiv_zip()
-    print(f"=== arXiv upload zip ===\n  {z.relative_to(REPO)}  "
-          f"({z.stat().st_size/1e6:.1f} MB)")
+    print("=== arXiv upload zips ===")
+    print(f"  {a.relative_to(REPO)}  ({a.stat().st_size/1e6:.1f} MB)  "
+          f"<- USE THIS: standard article class, no journal branding")
+    print(f"  {z.relative_to(REPO)}  ({z.stat().st_size/1e6:.1f} MB)  "
+          f"(Wiley-class variant, kept as a fallback)")
     return 0
 
 
