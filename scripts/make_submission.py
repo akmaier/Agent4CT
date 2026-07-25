@@ -91,6 +91,41 @@ def delink(s: str) -> str:
     return s
 
 
+# Medical Physics requires continuous line numbering (and page numbering) on the
+# review copy. The class already prints page numbers ("N of M"); this adds the
+# line numbers. lineno suppresses numbering inside amsmath display environments
+# unless each is wrapped in \linenomath, so we apply the canonical patch to make
+# the numbering continuous THROUGH the equations too.
+LINENO_BLOCK = r"""
+% --- continuous line numbers for peer review (Medical Physics requirement) ---
+\usepackage{lineno}
+\newcommand*\patchAmsMathEnvironmentForLineno[1]{%
+  \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
+  \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
+  \renewenvironment{#1}%
+    {\linenomath\csname old#1\endcsname}%
+    {\csname oldend#1\endcsname\endlinenomath}}
+\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
+  \patchAmsMathEnvironmentForLineno{#1}\patchAmsMathEnvironmentForLineno{#1*}}
+\AtBeginDocument{%
+  \patchBothAmsMathEnvironmentsForLineno{equation}%
+  \patchBothAmsMathEnvironmentsForLineno{align}%
+  \patchBothAmsMathEnvironmentsForLineno{gather}%
+  \patchBothAmsMathEnvironmentsForLineno{multline}%
+  \patchBothAmsMathEnvironmentsForLineno{flalign}%
+  \patchBothAmsMathEnvironmentsForLineno{alignat}}
+\linenumbers
+% ----------------------------------------------------------------------------
+"""
+
+
+def add_linenumbers(s: str) -> str:
+    """Insert the lineno package + amsmath patch before \\graphicspath."""
+    anchor = "\\graphicspath"
+    assert anchor in s, "no \\graphicspath anchor for lineno injection"
+    return s.replace(anchor, LINENO_BLOCK + "\n" + anchor, 1)
+
+
 TITLE_PAGE = r"""\documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage[T1]{fontenc}
@@ -158,6 +193,9 @@ De-identification applied (per the journal's de-identifying checklist):
   - every repository / dashboard URL removed. Code availability now reads
     "will be published as open source upon acceptance of the manuscript"
   - PDFs carry no Author/Title/Subject/Keywords metadata and no XMP packet
+  - continuous line numbers (lineno) + page numbers, as Medical Physics
+    requires for review; the amsmath display environments are patched so the
+    numbering runs through the equations too
 
 Retained deliberately: reference-list citations to the authors' own prior work,
 written in the third person. That is standard for double-anonymized review; the
@@ -484,6 +522,7 @@ def main() -> int:
         s = (TEX / f"{stem}.tex").read_text()
         s = fix_graphicspath(strip_front_matter(s))
         s = delink(strip_backmatter(s) if stem == "main" else delink(s))
+        s = add_linenumbers(s)   # Medical Physics review requirement
         (anon / f"{stem}.tex").write_text(s)
     (anon / "title_page.tex").write_text(TITLE_PAGE)
     pages = {stem: compile_tex(anon, stem) for stem in ("main", "supplement", "title_page")}
